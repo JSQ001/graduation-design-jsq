@@ -5,10 +5,16 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import { Tabs, Table, Button, notification, Icon, Badge } from 'antd';
+import { Tabs, Table, Button, Badge } from 'antd';
+import { Link } from 'react-router'
 const TabPane = Tabs.TabPane;
 
-import 'styles/setting/value-list.scss'
+import menuRoute from 'share/menu-route'
+
+import 'styles/setting/value-list/value-list.scss'
+
+import {setCurrentPage} from 'actions/main'
+import NewValueList from 'containers/setting/value-list/new-value-list'
 
 class ValueList extends React.Component{
   constructor(props) {
@@ -29,7 +35,8 @@ class ValueList extends React.Component{
       ],
       pagination: {
         total: 0
-      }
+      },
+      valueListPage: menuRoute.getMenuItemByAttr('value-list','key').children.newValueList
     };
   }
 
@@ -84,7 +91,7 @@ class ValueList extends React.Component{
   }
 
   render(){
-    const { columns, data, loading,  pagination, status } = this.state;
+    const { columns, data, loading,  pagination, status, valueListPage } = this.state;
     return (
       <div className="value-list">
         <Tabs type="card" onChange={this.onChangeTabs.bind(this)}>
@@ -92,7 +99,12 @@ class ValueList extends React.Component{
         </Tabs>
         <div className="table-header">
           {status === 'SYSTEM' ? <div className="table-header-title">汇联易系统正常工作所必要的值列表，不可新增</div> : null}
-          {status === 'CUSTOM' ? <div className="table-header-buttons"><Button type="primary">新增值列表</Button></div> : null}
+          {status === 'CUSTOM' ?
+            <div className="table-header-buttons">
+              <Button type="primary">
+                <Link to={valueListPage.url}>新增值列表</Link>
+              </Button>
+            </div> : null}
         </div>
         <Table columns={columns}
                dataSource={data}
@@ -105,7 +117,9 @@ class ValueList extends React.Component{
 }
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    currentPage: state.main.currentPage,
+  }
 }
 
 export default connect(mapStateToProps)(ValueList);

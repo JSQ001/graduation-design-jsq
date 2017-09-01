@@ -2,7 +2,7 @@
 
 > huilianyi-refactoring
 
-  git clone https://ran.zhang@gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring.git
+  git clone https://ran.zhang@gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring.git -b develop
 
 > 环境配置
 

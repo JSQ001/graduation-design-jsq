@@ -3,7 +3,7 @@
  */
 import axios from 'axios'
 import config from 'config'
-import configureStore from '../stores'
+import configureStore from 'stores'
 import {setUser} from '../actions/login'
 
 function checkStatus(response, needRefresh, url, params, header, method) {

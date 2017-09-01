@@ -25,7 +25,7 @@ class Login extends React.Component{
     this.setState({loading: true});
     httpFetch.login(this.props.username, this.props.password).then((response)=>{
       this.setState({loading: false});
-      this.props.history.push('/main');
+      this.props.history.push('/main/dashboard');
     }).catch((err)=>{
       this.setState({loading: false});
       if(err.response.status == 401)
