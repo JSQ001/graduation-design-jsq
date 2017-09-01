@@ -74,11 +74,7 @@ class Login extends React.Component{
 }
 
 function mapStateToProps(state) {
-  return {
-    user: state.login.user,
-    profile: state.login.profile,
-    company: state.login.company
-  }
+  return {}
 }
 
 export default connect(mapStateToProps)(Login);
