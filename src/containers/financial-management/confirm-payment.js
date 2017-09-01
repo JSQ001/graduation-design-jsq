@@ -137,12 +137,12 @@ class ConfirmPayment extends React.Component{
   getList(){
     return httpFetch.post(`${config.baseUrl}/api/${this.state.nowType === 'INVOICE' ? 'v2/expense/reports' : 'loan/application'}/finance/admin/search?page=${this.state.page}&size=${this.state.pageSize}`,
       this.state.searchParams).then((response)=>{
-      response.map((item, index)=>{
+      response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
         item.key = item.index;
       });
       this.setState({
-        data: response,
+        data: response.data,
         loading: false
       }, ()=>{
         this.refreshRowSelection()
@@ -156,8 +156,8 @@ class ConfirmPayment extends React.Component{
     this.state.tabs.map(type => {
       fetchArray.push(httpFetch.get(`${config.baseUrl}/api/finance/statistics/by/staus?status=${type.key}`).then(response => {
         result[type.key] = {
-          expenseReportCount: response.expenseReportCount,
-          loanApplicationCount: response.loanApplicationCount
+          expenseReportCount: response.data.expenseReportCount,
+          loanApplicationCount: response.data.loanApplicationCount
         }
       }));
     });
@@ -240,7 +240,7 @@ class ConfirmPayment extends React.Component{
   addOptionsToForm(formId, url, labelName, valueName){
     let result = [];
     httpFetch.get(url).then(response => {
-      response.map(item => {
+      response.data.map(item => {
         result.push({label: item[labelName], value: item[valueName]})
       });
       let formItem = this.getFormItemFromStateByID(formId);
@@ -398,7 +398,8 @@ class ConfirmPayment extends React.Component{
                dataSource={data}
                rowSelection={rowSelection}
                pagination={pagination}
-               loading={loading}/>
+               loading={loading}
+               bordered/>
       </div>
     )
   }

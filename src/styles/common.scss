@@ -21,3 +21,20 @@
     display: none;
   }
 }
+
+.table-header{
+  width: 100%;
+  position: relative;
+  margin-top: 16px;
+  .table-header-title{
+    width: 100%;
+    font-size: 12px;
+    padding: 8px 0;
+  }
+  .table-header-buttons{
+    margin-bottom: 10px;
+    button{
+      margin-right: 8px;
+    }
+  }
+}
