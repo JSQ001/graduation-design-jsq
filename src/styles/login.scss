@@ -1,0 +1,81 @@
+$login-text-color: rgba(255,255,255,0.5);
+$login-background-color: #0092DA;
+
+.login{
+  background: $login-background-color;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  .login-area{
+    width: 40vw;
+    margin-top: 10vh;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    .login-logo{
+      width: 36px;
+    }
+    .login-logo-text{
+      font-size: 20px;
+      color: white;
+      letter-spacing: 2px;
+      margin: 10px 0 30px 0;
+      font-weight: 200;
+    }
+    .ant-input-affix-wrapper{
+      height: 40px;
+      width: 20vw;
+      margin-bottom: 10px;
+      font-size: 18px;
+      .anticon:before{
+        color: rgba(255,255,255,0.7);
+      }
+      input{
+        font-size: 16px;
+        padding-left: 34px;
+        color: white;
+        border: none;
+        background: transparent;
+        border-bottom: 1px solid $login-text-color;
+        border-radius: 0;
+        caret-color: $login-text-color;
+        font-weight: 200;
+      }
+      input::-webkit-input-placeholder{
+        color: $login-text-color;
+        font-weight: 200;
+      }
+      input:focus{
+        border-bottom-color: white;
+      }
+    }
+    .forget-password{
+      display: inline-block;
+      width: 20vw;
+      text-align: right;
+      color: $login-text-color;
+      font-weight: 200;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .ant-btn-circle{
+      margin-top: 20px;
+      background: $login-background-color;
+      border: 1px solid $login-text-color;
+      color: $login-text-color;
+      width: 40px;
+      height: 40px;
+    }
+    .ant-btn-circle:hover{
+      color: white;
+      border-color: white;
+    }
+  }
+  .bottom-logo{
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+}

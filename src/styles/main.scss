@@ -1,0 +1,79 @@
+.helios-main{
+  width: 100vw;
+  height: 100vh;
+  .helios-sider{
+    height: 100vh;
+    .company-name{
+      height: 64px;
+      line-height: 64px;
+      font-size: 12px;
+      color: #FFFFFF;
+      width: 100%;
+      text-align: center;
+    }
+  }
+  .helios-header{
+    padding: 16px;
+    background: #fff;
+    line-height: 32px;
+    display: flex;
+    position: relative;
+    .user-area{
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      height: 32px;
+      line-height: 32px;
+      .user-avatar{
+        display: inline-block;
+        width: 32px;
+        img{
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+        }
+      }
+      .user-name{
+        vertical-align: top;
+        display: inline-block;
+        height: 32px;
+        margin-right: 10px;
+        line-height: 32px;
+      }
+    }
+    .icon-logo{
+      display: inline-block;
+      margin-right: 16px;
+      width: 32px;
+      img{
+        width: 32px;
+      }
+    }
+    .breadcrumb{
+      font-family: PingFangSC-Regular;
+      font-size: 12px;
+      display: inline-block;
+      height: 32px;
+      span{
+        color: #999999;
+      }
+      .last-breadcrumb{
+        span{
+          font-size: 18px;
+          color: #292929;
+        }
+        .ant-breadcrumb-separator{
+          display: none;
+        }
+      }
+    }
+  }
+  .helios-content{
+    margin: 8px 16px;
+    padding: 27px 20px 0 20px;
+    height: calc(100vh - 80px);
+    overflow-y: scroll;
+    width: calc(100vw - 226px);
+    background: #fff;
+  }
+}

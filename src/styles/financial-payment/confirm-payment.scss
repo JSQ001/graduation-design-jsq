@@ -1,0 +1,29 @@
+.confirm-payment{
+  .ant-form-item-label{
+    line-height: 25px;
+  }
+  .table-header{
+    width: 100%;
+    position: relative;
+    margin-top: 16px;
+    .table-header-title{
+      width: 100%;
+      font-size: 12px;
+      padding: 8px 0;
+    }
+    .table-header-buttons{
+      margin-bottom: 10px;
+      button{
+        margin-right: 8px;
+      }
+    }
+  }
+  .ant-radio-group.ant-radio-group-large {
+    width: 100%;
+    .ant-radio-button-wrapper{
+      width: 50%;
+      padding: 0;
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "generator-react-webpack": {
+    "appName": "react-redux-demo",
+    "style": "scss",
+    "cssmodules": true,
+    "postcss": false,
+    "generatedWithVersion": 4
+  }
+}
