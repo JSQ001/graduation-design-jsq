@@ -3,29 +3,36 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import {inputUsername, inputPassword, setUser} from 'actions/login'
 import Button from 'antd/lib/button';
 import { Input, Icon, message } from 'antd';
 import httpFetch from 'share/httpFetch'
+
+import menuRoute from 'share/menu-route'
 
 import 'styles/login.scss'
 
 class Login extends React.Component{
   constructor(props){
     super(props);
-    this.state = {loading: false}
+    this.state = {
+      loading: false,
+      username: '',
+      password: ''
+    }
   }
+
   inputUsernameHandler(evt){
-    this.props.dispatch(inputUsername(evt.target.value))
+    this.setState({username: evt.target.value});
   }
   inputPasswordHandler(evt){
-    this.props.dispatch(inputPassword(evt.target.value))
+    this.setState({password: evt.target.value});
   }
+
   login(){
     this.setState({loading: true});
-    httpFetch.login(this.props.username, this.props.password).then((response)=>{
+    httpFetch.login(this.state.username, this.state.password).then(()=>{
       this.setState({loading: false});
-      this.props.history.push('/main/dashboard');
+      this.props.history.push(menuRoute.indexUrl);
     }).catch((err)=>{
       this.setState({loading: false});
       if(err.response.status == 401)
@@ -68,9 +75,9 @@ class Login extends React.Component{
 
 function mapStateToProps(state) {
   return {
-    username: state.login.username,
-    password: state.login.password,
-    user: state.login.user
+    user: state.login.user,
+    profile: state.login.profile,
+    company: state.login.company
   }
 }
 

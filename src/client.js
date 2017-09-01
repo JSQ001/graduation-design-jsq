@@ -6,6 +6,7 @@ import { Router, Route, browserHistory } from 'react-router'
 import Login from 'containers/Login'
 
 import 'share/common'
+
 import 'styles/common.scss'
 import 'static/animate.css'
 

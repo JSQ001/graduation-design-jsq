@@ -69,7 +69,7 @@ class ConfirmPayment extends React.Component{
         {title: '待支付金额', dataIndex: 'baseCurrencyRealPaymentAmount'},
         {title: '凭证编号', dataIndex: 'origDocumentSequence'}
       ],
-      status: 'prending_pay',
+      status: 'prending_pay',   //当前状态
       searchParams: {
         applicantOID: "",
         businessCode: "",
@@ -78,7 +78,7 @@ class ConfirmPayment extends React.Component{
         startDate: null,
         status: "prending_pay"
       },
-      data: [],
+      data: [],    //列表值
       page: 0,
       pageSize: 10,
       loading: true,
@@ -92,11 +92,12 @@ class ConfirmPayment extends React.Component{
       pagination: {
         total: 0
       },
-      selectedEntityOIDs: []
+      selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
     this.addOptionsToForm = debounce(this.addOptionsToForm, 250);
   }
 
+  //渲染Tab头
   renderTabs(){
     return (
       this.state.tabs.map(tab => {
@@ -119,6 +120,7 @@ class ConfirmPayment extends React.Component{
     this.getList();
   }
 
+  //Tab点击事件
   onChangeTabs(key){
     let temp = this.state.searchParams;
     temp.status = key;
@@ -134,6 +136,7 @@ class ConfirmPayment extends React.Component{
     });
   }
 
+  //得到对应单据列表数据
   getList(){
     return httpFetch.post(`${config.baseUrl}/api/${this.state.nowType === 'INVOICE' ? 'v2/expense/reports' : 'loan/application'}/finance/admin/search?page=${this.state.page}&size=${this.state.pageSize}`,
       this.state.searchParams).then((response)=>{
@@ -150,6 +153,7 @@ class ConfirmPayment extends React.Component{
     })
   }
 
+  //得到单据数量
   getCount(){
     let result = {};
     let fetchArray = [];
@@ -167,6 +171,7 @@ class ConfirmPayment extends React.Component{
     })
   }
 
+  //刷新单据数量（搜索区域和分页）
   refreshSearchCount(expenseReportCount, loanApplicationCount) {
     let temp = this.state.searchForm;
     temp[0].options = [
@@ -181,6 +186,7 @@ class ConfirmPayment extends React.Component{
     });
   }
 
+  //搜索
   search(result){
     result.dateFrom = result.dateFrom ? result.dateFrom.format('YYYY-MM-DD') : undefined;
     result.dateTo = result.dateTo ? result.dateTo.format('YYYY-MM-DD') : undefined;
@@ -206,6 +212,7 @@ class ConfirmPayment extends React.Component{
     })
   }
 
+  //清空搜索区域
   clear(){
     this.setState({searchParams: {
       applicantOID: "",
@@ -217,6 +224,7 @@ class ConfirmPayment extends React.Component{
     }})
   }
 
+  //根据ID得到表单项
   getFormItemFromStateByID(id){
     for(let i = 0; i < this.state.searchForm.length; i++){
       if(this.state.searchForm[i].id === id)
@@ -224,6 +232,7 @@ class ConfirmPayment extends React.Component{
     }
   }
 
+  //设置表单项（给下拉选框等需要数据的表单填值）
   setFormItem(item, callback){
     let temp = this.state.searchForm;
     for(let i = 0; i < temp.length; i++){
@@ -237,6 +246,7 @@ class ConfirmPayment extends React.Component{
     }
   }
 
+  //添加数据值到表单中（下拉选框等）
   addOptionsToForm(formId, url, labelName, valueName){
     let result = [];
     httpFetch.get(url).then(response => {
@@ -249,6 +259,7 @@ class ConfirmPayment extends React.Component{
     });
   }
 
+  //搜索区域点击事件
   searchEventHandle(event, value){
     switch(event){
       case 'CHANGE_TYPE': {
@@ -273,6 +284,7 @@ class ConfirmPayment extends React.Component{
     }
   }
 
+  //点击页码
   onChangePager(page){
     if(page - 1 !== this.state.page)
       this.setState({
@@ -283,10 +295,14 @@ class ConfirmPayment extends React.Component{
       })
   }
 
+  //列表选择更改
   onSelectChange(selectedRowKeys){
     this.setState({ selectedRowKeys });
   }
 
+  //选择一行
+  //选择逻辑：每一项设置selected属性，如果为true则为选中
+  //同时维护selectedEntityOIDs列表，记录已选择的OID，并每次分页、选择的时候根据该列表来刷新选择项
   onSelectRow(record, selected){
     let temp = this.state.selectedEntityOIDs;
     if(selected)
@@ -296,6 +312,7 @@ class ConfirmPayment extends React.Component{
     this.setState({selectedEntityOIDs: temp})
   }
 
+  //全选
   onSelectAllRow(selected){
     let temp = this.state.selectedEntityOIDs;
     if(selected){
@@ -310,6 +327,7 @@ class ConfirmPayment extends React.Component{
     this.setState({selectedEntityOIDs: temp})
   }
 
+  //换页后根据OIDs刷新选择框
   refreshRowSelection(){
     let selectedRowKeys = [];
     this.state.selectedEntityOIDs.map(selectedEntityOID => {
@@ -321,10 +339,12 @@ class ConfirmPayment extends React.Component{
     this.setState({ selectedRowKeys });
   }
 
+  //清空选择框
   clearRowSelection(){
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
+  //提交成功
   confirmSuccess(){
     notification.open({
       message: '确认付款成功！',
@@ -337,6 +357,7 @@ class ConfirmPayment extends React.Component{
     this.getList();
   }
 
+  //提交
   confirm(){
     this.setState({confirmLoading: true});
     httpFetch.post(`${config.baseUrl}/api/reimbursement/batch/pay/${this.state.status === 'prending_pay' ? 'processing' : 'finished'}/confirm`, {
