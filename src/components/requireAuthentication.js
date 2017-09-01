@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import {connect} from 'react-redux';
-import httpFetch from '../share/httpFetch'
+import httpFetch from 'share/httpFetch'
 
 function requireAuthentication(Component) {
 
