@@ -3,11 +3,10 @@
  */
 import {cac} from 'share/utils'
 
-export const INPUT_USERNAME = 'INPUT_USERNAME'
-export const INPUT_PASSWORD = 'INPUT_PASSWORD'
-
 export const SET_USER = 'SET_USER'
+export const SET_PROFILE = 'SET_PROFILE'
+export const SET_COMPANY = 'SET_COMPANY'
 
-export const inputUsername = cac(INPUT_USERNAME, 'value')
-export const inputPassword = cac(INPUT_PASSWORD, 'value')
 export const setUser = cac(SET_USER, 'user')
+export const setProfile = cac(SET_PROFILE, 'profile')
+export const setCompany = cac(SET_COMPANY, 'company')

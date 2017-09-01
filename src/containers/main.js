@@ -78,7 +78,7 @@ class Main extends React.Component{
     return (
       <Layout className="helios-main">
         <Sider width={202} className="helios-sider">
-          <div className="company-name">上海甄汇信息科技有限公司</div>
+          <div className="company-name">{this.props.company.name}</div>
           {this.renderMenu()}
         </Sider>
         <Layout>
@@ -108,7 +108,9 @@ class Main extends React.Component{
 function mapStateToProps(state) {
   return {
     currentPage: state.main.currentPage,
-    user: state.login.user
+    user: state.login.user,
+    profile: state.login.profile,
+    company: state.login.company
   }
 }
 

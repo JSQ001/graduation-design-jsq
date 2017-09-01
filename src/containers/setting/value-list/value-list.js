@@ -36,7 +36,7 @@ class ValueList extends React.Component{
       pagination: {
         total: 0
       },
-      valueListPage: menuRoute.getMenuItemByAttr('value-list','key').children.newValueList
+      valueListPage: menuRoute.getMenuItemByAttr('value-list','key').children.newValueList    //新建值列表的页面项
     };
   }
 
@@ -44,6 +44,7 @@ class ValueList extends React.Component{
     this.getList();
   }
 
+  //得到值列表数据
   getList(){
     return httpFetch.get(`${config.baseUrl}/api/v2/custom/enumerations?isCustom=${this.state.status}&page=${this.state.page}&size=${this.state.pageSize}`,
       this.state.searchParams).then((response)=>{
@@ -62,6 +63,7 @@ class ValueList extends React.Component{
     });
   }
 
+  //分页点击
   onChangePager(page){
     if(page - 1 !== this.state.page)
       this.setState({
@@ -72,6 +74,7 @@ class ValueList extends React.Component{
       })
   }
 
+  //渲染Tabs
   renderTabs(){
     return (
       this.state.tabs.map(tab => {
@@ -80,6 +83,7 @@ class ValueList extends React.Component{
     )
   }
 
+  //Tabs点击
   onChangeTabs(key){
     this.setState({
       loading: true,
@@ -116,10 +120,6 @@ class ValueList extends React.Component{
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    currentPage: state.main.currentPage,
-  }
-}
+function mapStateToProps(state) {}
 
 export default connect(mapStateToProps)(ValueList);
