@@ -3,9 +3,9 @@ import thunk from 'redux-thunk'
 import reducers from 'reducers'
 
 const logger = store => next => action => {
-  window.console.log('dispatching', action);
+  // window.console.log('dispatching', action);
   next(action);
-  window.console.log('next state', store.getState());
+  // window.console.log('next state', store.getState());
 }
 
 const store = {

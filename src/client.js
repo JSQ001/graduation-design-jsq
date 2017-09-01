@@ -7,13 +7,14 @@ import Login from 'containers/Login'
 
 import 'share/common'
 import 'styles/common.scss'
+import 'static/animate.css'
 
 import config from 'config'
 
-import configureStore from './stores';
+import configureStore from 'stores';
 const store = configureStore.reduxStore();
 
-import menuRoute from './menu-route'
+import menuRoute from './share/menu-route'
 
 ReactDOM.render(
   <AppContainer>

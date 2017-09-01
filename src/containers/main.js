@@ -9,7 +9,7 @@ const { Header, Content, Sider } = Layout;
 import { Link } from 'react-router'
 import 'styles/main.scss'
 
-import menuRoute from '../menu-route'
+import menuRoute from 'share/menu-route'
 
 import {setCurrentPage} from 'actions/main'
 
@@ -22,44 +22,21 @@ class Main extends React.Component{
       openKeys: []
     };
   }
-  getMenuItemByAttr(attr, attrName){
-    let current = null;
-    this.state.menu.map(menuItem => {
-      if(menuItem[attrName] === attr)
-        current = menuItem;
-      else{
-        if(menuItem.subMenu){
-          menuItem.subMenu.map(subMenuItem => {
-            if(subMenuItem[attrName] === attr)
-              current = subMenuItem;
-          })
-        }
-      }
-    });
-    return current;
-  }
   componentWillMount(){
-    let nowMenuItem = this.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
+    let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
     this.setState({
       selectedKeys: [nowMenuItem.key],
       openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
     }, ()=>{
       let newCurrent = [];
-      newCurrent.unshift(this.getMenuItemByAttr(this.state.selectedKeys[0], 'key'));
-      this.state.openKeys.length > 0 && newCurrent.unshift(this.getMenuItemByAttr(this.state.openKeys[0], 'key'));
+      newCurrent.unshift(menuRoute.getMenuItemByAttr(this.state.selectedKeys[0], 'key'));
+      this.state.openKeys.length > 0 && newCurrent.unshift(menuRoute.getMenuItemByAttr(this.state.openKeys[0], 'key'));
       this.props.dispatch(setCurrentPage(newCurrent))
     });
   }
-  handleClickMenu(item){
-    let newCurrent = [];
-    item.keyPath.map(key => {
-      newCurrent.unshift(this.getMenuItemByAttr(key, 'key'));
-    });
-    this.props.dispatch(setCurrentPage(newCurrent))
-  }
   renderMenu(){
     return (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys} onClick={this.handleClickMenu.bind(this)} >
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
         {this.state.menu.map(item =>
           item.subMenu ? (
             <SubMenu
