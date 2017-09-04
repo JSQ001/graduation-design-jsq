@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router'
-import Login from 'containers/Login'
+import Login from 'containers/login'
 
 import 'share/common'
 
