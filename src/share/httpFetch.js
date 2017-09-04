@@ -4,7 +4,7 @@
 import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
-import {setUser,setCompany,setProfile} from '../actions/login'
+import {setUser,setCompany,setProfile} from 'actions/login'
 
 /**
  * 检查是否token过期
@@ -100,7 +100,7 @@ const httpFetch = {
       mode: 'cors',
       headers: header,
       data: params
-    }).catch(e=>e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'POST'))
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'POST'))
   },
 
   get: function(url, params, header){
@@ -112,7 +112,7 @@ const httpFetch = {
       method: 'GET',
       mode: 'cors',
       headers: header
-    }).catch(e=>e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
   },
 
   /**

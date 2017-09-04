@@ -1,17 +1,17 @@
 import React from 'react';
-import YeomanImage from './YeomanImage';
-import './app.css';
+import { Router, Route, browserHistory } from 'react-router'
+import Login from 'containers/login'
+import menuRoute from 'share/menuRoute'
+
 
 class AppComponent extends React.Component {
 
   render() {
     return (
-      <div className="index">
-        <YeomanImage />
-        <div className="notice">
-          Please edit <code>src/components/App.js</code> to get started!
-        </div>
-      </div>
+      <Router history={browserHistory}>
+        <Route path="/" component={Login} />
+        {menuRoute.ClientRoute}
+      </Router>
     );
   }
 }
