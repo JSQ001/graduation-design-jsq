@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import { Router, Route, browserHistory } from 'react-router'
-import Login from 'containers/login'
+import App from 'containers/App'
 
 import 'share/common'
 
@@ -15,15 +14,10 @@ import config from 'config'
 import configureStore from 'stores';
 const store = configureStore.reduxStore();
 
-import menuRoute from './share/menu-route'
-
 ReactDOM.render(
   <AppContainer>
     <Provider store={store}>
-      <Router history={browserHistory}>
-        <Route path="/" component={Login} />
-        {menuRoute.ClientRoute}
-      </Router>
+      <App/>
     </Provider>
   </AppContainer>,
   document.getElementById('app')

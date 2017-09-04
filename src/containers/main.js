@@ -9,8 +9,7 @@ const { Header, Content, Sider } = Layout;
 import { Link } from 'react-router'
 import 'styles/main.scss'
 
-import menuRoute from 'share/menu-route'
-
+import menuRoute from 'share/menuRoute'
 import {setCurrentPage} from 'actions/main'
 
 class Main extends React.Component{
@@ -22,6 +21,7 @@ class Main extends React.Component{
       openKeys: []
     };
   }
+
   componentWillMount(){
     let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
     this.setState({
@@ -34,6 +34,7 @@ class Main extends React.Component{
       this.props.dispatch(setCurrentPage(newCurrent))
     });
   }
+
   renderMenu(){
     return (
       <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
@@ -61,6 +62,7 @@ class Main extends React.Component{
       </Menu>
     )
   }
+
   renderBreadcrumb(){
     return (
       <Breadcrumb className="breadcrumb">
@@ -74,6 +76,7 @@ class Main extends React.Component{
       </Breadcrumb>
     )
   }
+
   render(){
     return (
       <Layout className="helios-main">

@@ -9,12 +9,9 @@ import { Tabs, Table, Button, Badge } from 'antd';
 import { Link } from 'react-router'
 const TabPane = Tabs.TabPane;
 
-import menuRoute from 'share/menu-route'
+import menuRoute from 'share/menuRoute'
 
 import 'styles/setting/value-list/value-list.scss'
-
-import {setCurrentPage} from 'actions/main'
-import NewValueList from 'containers/setting/value-list/new-value-list'
 
 class ValueList extends React.Component{
   constructor(props) {
