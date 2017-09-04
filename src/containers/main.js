@@ -27,11 +27,6 @@ class Main extends React.Component{
     this.setState({
       selectedKeys: [nowMenuItem.key],
       openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
-    }, ()=>{
-      let newCurrent = [];
-      newCurrent.unshift(menuRoute.getMenuItemByAttr(this.state.selectedKeys[0], 'key'));
-      this.state.openKeys.length > 0 && newCurrent.unshift(menuRoute.getMenuItemByAttr(this.state.openKeys[0], 'key'));
-      this.props.dispatch(setCurrentPage(newCurrent))
     });
   }
 
