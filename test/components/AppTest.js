@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import App from 'src/client';
+import App from 'components/App';
 
 describe('<App />', function () {
 
