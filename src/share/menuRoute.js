@@ -161,6 +161,11 @@ function getMenuItemByAttr(attr, attrName){
         menuItem.subMenu.map(subMenuItem => {
           if(subMenuItem[attrName] === attr)
             current = subMenuItem;
+          if(subMenuItem.children){
+            for (let child in subMenuItem.children)
+              if(subMenuItem.children[child][attrName] === attr)
+                current = subMenuItem;
+          }
         })
       }
     }

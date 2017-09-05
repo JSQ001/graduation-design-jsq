@@ -8,6 +8,8 @@ import { connect } from 'react-redux'
 import { Tabs, Table, Button, notification, Icon, Badge } from 'antd';
 const TabPane = Tabs.TabPane;
 
+import SlideFrame from 'components/slide-frame'
+
 import 'styles/setting/value-list/new-value-list.scss'
 
 class ValueList extends React.Component{
@@ -27,7 +29,8 @@ class ValueList extends React.Component{
       ],
       pagination: {
         total: 0
-      }
+      },
+      showSlideFrame: false
     };
   }
 
@@ -35,11 +38,19 @@ class ValueList extends React.Component{
 
   }
 
+  showSlide(){
+    this.setState({
+      showSlideFrame: true
+    })
+  }
 
   render(){
     return (
       <div className="new-value-list">
-        new-value-list
+        <Button type="primary" onClick={this.showSlide.bind(this)}>新建值内容</Button>
+        <SlideFrame title="新建值内容" show={this.state.showSlideFrame}>
+          this is content
+        </SlideFrame>
       </div>
     )
   }
