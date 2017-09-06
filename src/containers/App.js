@@ -11,12 +11,24 @@ import React, {
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {} from 'actions/';
-import Main from 'components/App';
+import AppComponents from 'components/App';
+
+import { addLocaleData, IntlProvider } from 'react-intl';
+
+import zh from 'react-intl/locale-data/zh';
+import en from 'react-intl/locale-data/en';
+
+addLocaleData([...en, ...zh]);
+
 /* Populated by react-webpack-redux:reducer */
 class App extends Component {
   render() {
     const { actions } = this.props;
-    return <Main actions={actions} />;
+    return (
+      <IntlProvider key="intl" {...this.props.language}>
+        <AppComponents actions={actions} />
+      </IntlProvider>
+    );
   }
 }
 /* Populated by react-webpack-redux:reducer
@@ -24,12 +36,15 @@ class App extends Component {
  * HINT: if you adjust the initial type of your reducer, you will also have to
  *       adjust it here.
  */
+
 App.propTypes = {
   actions: PropTypes.shape({})
 };
 function mapStateToProps(state) { // eslint-disable-line no-unused-vars
   /* Populated by react-webpack-redux:reducer */
-  const props = {};
+  const props = {
+    language: state.main.language
+  };
   return props;
 }
 function mapDispatchToProps(dispatch) {

@@ -7,6 +7,7 @@ import Button from 'antd/lib/button';
 import { Input, Icon, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { injectIntl } from 'react-intl';
 
 import 'styles/login.scss'
 
@@ -31,13 +32,13 @@ class Login extends React.Component{
     this.setState({loading: true});
     httpFetch.login(this.state.username, this.state.password).then(()=>{
       this.setState({loading: false});
-      this.props.history.push(menuRoute.indexUrl);
+      this.context.router.push(menuRoute.indexUrl);
     }).catch((err)=>{
       this.setState({loading: false});
-      if(err.response.status == 401)
-        message.error('用户名或密码错误，请重新输入:)');
+      if(err.response.status === 401)
+        message.error(this.props.intl.formatMessage({id: 'login.wrong'})); //用户名或密码错误，请重新输入:)
       else
-        message.error('哦呼，服务器出了点问题，请联系管理员或稍后再试:(')
+        message.error(this.props.intl.formatMessage({id: 'login.error'})); //呼，服务器出了点问题，请联系管理员或稍后再试:(
     })
   }
 
@@ -46,10 +47,10 @@ class Login extends React.Component{
       <div className="login">
         <div className="login-area">
           <img src="../images/logo-white.png" className="login-logo"/><br/>
-          <div className="login-logo-text">汇联易</div>
+          <div className="login-logo-text">{this.props.intl.formatMessage({id: 'helios'})}</div>
           <Input
             size="large"
-            placeholder="手机号"
+            placeholder={this.props.intl.formatMessage({id: 'login.username'})} //用户名
             prefix={<Icon type="user" />}
             onChange={this.inputUsernameHandler.bind(this)}
           />
@@ -57,12 +58,12 @@ class Login extends React.Component{
           <Input
             size="large"
             type="password"
-            placeholder="密码"
+            placeholder={this.props.intl.formatMessage({id: 'login.password'})}  //密码
             prefix={<Icon type="lock" />}
             onChange={this.inputPasswordHandler.bind(this)}
           />
           <br/>
-          <span className="forget-password">找回密码</span>
+          <span className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</span>
           <br/>
           <Button type="primary" shape="circle" icon="arrow-right" size="large" onClick={this.login.bind(this)} loading={this.state.loading}/>
         </div>
@@ -72,8 +73,12 @@ class Login extends React.Component{
   }
 }
 
+Login.contextTypes = {
+  router: React.PropTypes.object
+};
+
 function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(Login);
+export default connect(mapStateToProps)(injectIntl(Login));

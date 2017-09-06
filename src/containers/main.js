@@ -3,14 +3,20 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select } from 'antd';
+const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 import { Link } from 'react-router'
 import 'styles/main.scss'
 
 import menuRoute from 'share/menuRoute'
-import {setCurrentPage} from 'actions/main'
+import {setLanguage} from 'actions/main'
+
+import { injectIntl } from 'react-intl';
+
+import en from 'static/i18n/en_US'
+import zh from 'static/i18n/zh_CN'
 
 class Main extends React.Component{
   constructor(props) {
@@ -37,10 +43,10 @@ class Main extends React.Component{
           item.subMenu ? (
             <SubMenu
               key={item.key}
-              title={<span><Icon type="user" /><span className="nav-text">{item.name}</span></span>}
+              title={<span><Icon type="user" /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
-                <Menu.Item key={subItem.key}><Link to={subItem.url}>{subItem.name}</Link></Menu.Item>
+                <Menu.Item key={subItem.key}><Link to={subItem.url}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Link></Menu.Item>
               )}
             </SubMenu>
           ) : (
@@ -48,7 +54,7 @@ class Main extends React.Component{
               <Link to={item.url}>
                 <span>
                   <Icon type="file" />
-                  <span className="nav-text">{item.name}</span>
+                  <span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span>
                 </span>
               </Link>
             </Menu.Item>
@@ -64,12 +70,31 @@ class Main extends React.Component{
         {this.props.currentPage.map((item,i) =>
           item.url ?
             <Breadcrumb.Item key={item.name}>
-              <Link to={item.url} className={i === this.props.currentPage.length - 1 ? 'last-breadcrumb' : null}>{item.name}</Link>
+              <Link to={item.url} className={i === this.props.currentPage.length - 1 ? 'last-breadcrumb' : null}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Link>
             </Breadcrumb.Item> :
-            <Breadcrumb.Item key={item.name}>{item.name}</Breadcrumb.Item>
+            <Breadcrumb.Item key={item.name}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Breadcrumb.Item>
         )}
       </Breadcrumb>
     )
+  }
+
+  handleChangeLanguage(value){
+    let language = {};
+    switch(value){
+      case 'en':
+        language = {
+          locale: 'en',
+          messages: en
+        };
+        break;
+      case 'zh':
+        language = {
+          locale: 'zh',
+          messages: zh
+        };
+        break;
+    }
+    this.props.dispatch(setLanguage(language));
   }
 
   render(){
@@ -84,9 +109,14 @@ class Main extends React.Component{
             <div className="icon-logo">
               <img src='../images/logo.png'/>
             </div>
+
             <div className="user-area">
+              <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage.bind(this)} className="language-set">
+                <Option value="zh">简体中文</Option>
+                <Option value="en">English</Option>
+              </Select>
               <div className="user-name">
-                欢迎你,{this.props.user.fullName}
+                {this.props.intl.formatMessage({id: 'menu.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
                 <img src={this.props.user.filePath}/>
@@ -105,6 +135,7 @@ class Main extends React.Component{
 
 function mapStateToProps(state) {
   return {
+    language: state.main.language,
     currentPage: state.main.currentPage,
     user: state.login.user,
     profile: state.login.profile,
@@ -112,4 +143,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(Main);
+export default connect(mapStateToProps)(injectIntl(Main));

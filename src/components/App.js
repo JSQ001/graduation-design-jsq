@@ -3,15 +3,11 @@ import { Router, Route, browserHistory } from 'react-router'
 import Login from 'containers/login'
 import menuRoute from 'share/menuRoute'
 
-
 class AppComponent extends React.Component {
-
   render() {
+    const routes = [].concat(menuRoute.ClientRoute).concat(<Route path="/" component={Login} />);
     return (
-      <Router history={browserHistory}>
-        <Route path="/" component={Login} />
-        {menuRoute.ClientRoute}
-      </Router>
+      <Router history={browserHistory} routes={routes}/>
     );
   }
 }
