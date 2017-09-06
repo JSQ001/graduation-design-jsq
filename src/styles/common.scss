@@ -38,3 +38,23 @@
     }
   }
 }
+
+.common-top-area{
+  padding: 16px;
+  width: 100%;
+  background: #F7F7F7;
+  border-radius: 6px;
+  .common-top-area-title{
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+    border-bottom: 1px solid #EEEEEE;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .common-top-area-content{
+    width: 100%;
+    padding: 16px 0;
+  }
+}

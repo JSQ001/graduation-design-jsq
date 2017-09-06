@@ -6,7 +6,7 @@ const logger = store => next => action => {
   // window.console.log('dispatching', action);
   next(action);
   // window.console.log('next state', store.getState());
-}
+};
 
 const store = {
   store: {},
@@ -31,7 +31,7 @@ const store = {
 
     return store;
   }
-}
+};
 
 
 export default store;

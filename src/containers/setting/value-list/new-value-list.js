@@ -5,8 +5,8 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import { Tabs, Table, Button, notification, Icon, Badge } from 'antd';
-const TabPane = Tabs.TabPane;
+import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch } from 'antd';
+const FormItem = Form.Item;
 
 import SlideFrame from 'components/slide-frame'
 
@@ -30,7 +30,11 @@ class ValueList extends React.Component{
       pagination: {
         total: 0
       },
-      showSlideFrame: false
+      showSlideFrame: false,
+      form: {
+        name: '',
+        enabled: true
+      }
     };
   }
 
@@ -44,11 +48,62 @@ class ValueList extends React.Component{
     })
   }
 
+  handleNameChange(evt){
+    let form = this.state.form;
+    form.name = evt.target.value;
+    this.setState({
+      form: form
+    })
+  }
+
+  handleEnabled(enabled){
+    let form = this.state.form;
+    form.enabled = enabled;
+    this.setState({
+      form: form
+    })
+  }
+
+  handleSave(){
+
+  }
+
+  handleCancel(){
+
+  }
+
+  renderForm(){
+    return (
+      <Row gutter={80}>
+        <Col span={8}>
+          <FormItem label="值列表名称" colon={false} required>
+            <Input placeholder="请输入" onChange={this.handleNameChange.bind(this)}/>
+          </FormItem>
+        </Col>
+        <Col span={8}>
+          <FormItem label="状态" colon={false}>
+            <Switch defaultChecked={true} onChange={this.handleEnabled.bind(this)} checkedChildren="启用" unCheckedChildren="禁用"/>
+          </FormItem>
+        </Col>
+        <Col span={24}>
+          <Button type="primary" htmlType="submit" onClick={this.handleSave.bind(this)}>保存</Button>
+          <Button style={{ marginLeft: 8 }} onClick={this.handleCancel.bind(this)}>取消</Button>
+        </Col>
+      </Row>
+    )
+  }
+
   render(){
     return (
       <div className="new-value-list">
+        <div className="common-top-area">
+          <div className="common-top-area-title">基本信息</div>
+          <div className="common-top-area-content">
+            {this.renderForm()}
+          </div>
+        </div>
         <Button type="primary" onClick={this.showSlide.bind(this)}>新建值内容</Button>
-        <SlideFrame title="新建值内容" show={this.state.showSlideFrame}>
+        <SlideFrame title="this is title" show={this.state.showSlideFrame}>
           this is content
         </SlideFrame>
       </div>
