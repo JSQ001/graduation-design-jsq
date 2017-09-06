@@ -46,7 +46,7 @@ class Main extends React.Component{
               title={<span><Icon type="user" /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
-                <Menu.Item key={subItem.key}><Link to={subItem.url}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Link></Menu.Item>
+                <Menu.Item key={subItem.key}><Link to={subItem.url}>{this.props.intl.formatMessage({id: `menu.${subItem.key}`})}</Link></Menu.Item>
               )}
             </SubMenu>
           ) : (
@@ -69,10 +69,10 @@ class Main extends React.Component{
       <Breadcrumb className="breadcrumb">
         {this.props.currentPage.map((item,i) =>
           item.url ?
-            <Breadcrumb.Item key={item.name}>
+            <Breadcrumb.Item key={item.key}>
               <Link to={item.url} className={i === this.props.currentPage.length - 1 ? 'last-breadcrumb' : null}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Link>
             </Breadcrumb.Item> :
-            <Breadcrumb.Item key={item.name}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Breadcrumb.Item>
+            <Breadcrumb.Item key={item.key}>{this.props.intl.formatMessage({id: `menu.${item.key}`})}</Breadcrumb.Item>
         )}
       </Breadcrumb>
     )
