@@ -28,7 +28,7 @@ class Login extends React.Component{
     this.setState({password: evt.target.value});
   }
 
-  login(){
+  login = () =>{
     this.setState({loading: true});
     httpFetch.login(this.state.username, this.state.password).then(()=>{
       this.setState({loading: false});
@@ -65,7 +65,7 @@ class Login extends React.Component{
           <br/>
           <span className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</span>
           <br/>
-          <Button type="primary" shape="circle" icon="arrow-right" size="large" onClick={this.login.bind(this)} loading={this.state.loading}/>
+          <Button type="primary" shape="circle" icon="arrow-right" size="large" onClick={this.login} loading={this.state.loading}/>
         </div>
         <img src="../images/huilianyi.png" className="bottom-logo"/>
       </div>
