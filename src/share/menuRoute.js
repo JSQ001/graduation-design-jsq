@@ -11,59 +11,81 @@ import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
-
+import EditReport from 'containers/expense-report/edit-report'
+import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
 
 import configureStore from 'stores';
 
 const menuIndexUrl = '/main/dashboard';
 
+//确认付款
 const confirmPayment = {
-  name: '确认付款',
   key:'confirm-payment',
   url:'/main/financial-management/confirm-payment',
   components: ConfirmManagement,
   parent: 'financial-management'
 };
 
+//新建值列表
 const newValueList = {
-  name: '新建值列表',
   key:'new-value-list',
   url:'/main/setting/value-list/new-value-list',
   components: NewValueList,
   parent: 'value-list'
 };
 
+//值列表
 const valueList = {
-  name: '值列表',
   key:'value-list',
   url:'/main/setting/value-list',
   components: ValueList,
   parent: 'setting',
   children: {
-    newValueList: newValueList
+    newValueList
   }
 };
 
+//我的账本
+const myAccount = {
+  key: 'my-account',
+  url:'/main/expense-report/my-account',
+  components:MyAccount,
+  parent:'expense-report'
+};
+
+//编辑报销单
+const editReport = {
+  key: 'edit-report',
+  url:'/main/expense-report/edit-report',
+  components:EditReport,
+  parent:'expense-report'
+};
+
+//仪表盘
 const dashboard = {
-  name: 'Dashboard',
   key:'dashboard',
   url: menuIndexUrl,
   components: Dashboard
 };
 
+//财务管理
 const financialManagement = {
-  name: '财务管理',
   key:'financial-management',
   subMenu: [confirmPayment]
 };
 
+//设置
 const setting = {
-  name: '设置',
   key:'setting',
   subMenu: [valueList]
 };
 
+//报销单
+const expenseReport = {
+  key: 'expense-report',
+  subMenu: [myAccount,editReport]
+};
 /**
  * 项目菜单整体路由配置
  * 分为三层: menuItem, subMenuItem, children
@@ -82,6 +104,7 @@ const menu = [
   dashboard,
   setting,
   financialManagement,
+  expenseReport
 ];
 
 /**
