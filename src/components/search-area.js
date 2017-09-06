@@ -131,7 +131,7 @@ class SearchArea extends React.Component{
   render(){
     return (
       <Form
-        className="ant-advanced-search-form"
+        className="ant-advanced-search-form common-top-area"
         onSubmit={this.handleSearch.bind(this)}
       >
         <Row gutter={40}>{this.getFields()}</Row>
