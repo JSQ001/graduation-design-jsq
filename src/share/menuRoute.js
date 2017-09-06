@@ -11,7 +11,8 @@ import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
-
+import EditReport from 'containers/expense-report/edit-report'
+import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
 
 import configureStore from 'stores';
@@ -41,8 +42,24 @@ const valueList = {
   components: ValueList,
   parent: 'setting',
   children: {
-    newValueList: newValueList
+    newValueList
   }
+};
+
+const myAccount = {
+  name:'我的账本',
+  key: 'my-account',
+  url:'/main/expense-report/my-account',
+  components:MyAccount,
+  parent:'expense-report'
+};
+
+const editReport = {
+  name:'新建报销单',
+  key: 'edit-report',
+  url:'/main/expense-report/edit-report',
+  components:EditReport,
+  parent:'expense-report'
 };
 
 const dashboard = {
@@ -64,6 +81,11 @@ const setting = {
   subMenu: [valueList]
 };
 
+const expenseReport = {
+  name: '报销单',
+  key: 'expense-report',
+  subMenu: [myAccount,editReport]
+};
 /**
  * 项目菜单整体路由配置
  * 分为三层: menuItem, subMenuItem, children
@@ -82,6 +104,7 @@ const menu = [
   dashboard,
   setting,
   financialManagement,
+  expenseReport
 ];
 
 /**

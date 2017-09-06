@@ -34,7 +34,7 @@ class Login extends React.Component{
       this.props.history.push(menuRoute.indexUrl);
     }).catch((err)=>{
       this.setState({loading: false});
-      if(err.response.status == 401)
+      if(err.response.status === 401)
         message.error('用户名或密码错误，请重新输入:)');
       else
         message.error('哦呼，服务器出了点问题，请联系管理员或稍后再试:(')
