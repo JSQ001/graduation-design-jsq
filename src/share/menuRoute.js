@@ -19,24 +19,24 @@ import configureStore from 'stores';
 
 const menuIndexUrl = '/main/dashboard';
 
+//确认付款
 const confirmPayment = {
-  name: '确认付款',
   key:'confirm-payment',
   url:'/main/financial-management/confirm-payment',
   components: ConfirmManagement,
   parent: 'financial-management'
 };
 
+//新建值列表
 const newValueList = {
-  name: '新建值列表',
   key:'new-value-list',
   url:'/main/setting/value-list/new-value-list',
   components: NewValueList,
   parent: 'value-list'
 };
 
+//值列表
 const valueList = {
-  name: '值列表',
   key:'value-list',
   url:'/main/setting/value-list',
   components: ValueList,
@@ -46,43 +46,43 @@ const valueList = {
   }
 };
 
+//我的账本
 const myAccount = {
-  name:'我的账本',
   key: 'my-account',
   url:'/main/expense-report/my-account',
   components:MyAccount,
   parent:'expense-report'
 };
 
+//编辑报销单
 const editReport = {
-  name:'新建报销单',
   key: 'edit-report',
   url:'/main/expense-report/edit-report',
   components:EditReport,
   parent:'expense-report'
 };
 
+//仪表盘
 const dashboard = {
-  name: 'Dashboard',
   key:'dashboard',
   url: menuIndexUrl,
   components: Dashboard
 };
 
+//财务管理
 const financialManagement = {
-  name: '财务管理',
   key:'financial-management',
   subMenu: [confirmPayment]
 };
 
+//设置
 const setting = {
-  name: '设置',
   key:'setting',
   subMenu: [valueList]
 };
 
+//报销单
 const expenseReport = {
-  name: '报销单',
   key: 'expense-report',
   subMenu: [myAccount,editReport]
 };

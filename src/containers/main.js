@@ -116,7 +116,7 @@ class Main extends React.Component{
                 <Option value="en">English</Option>
               </Select>
               <div className="user-name">
-                {this.props.intl.formatMessage({id: 'menu.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
+                {this.props.intl.formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
                 <img src={this.props.user.filePath}/>
