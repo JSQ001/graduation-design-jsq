@@ -33,6 +33,14 @@
   }
   .table-header-buttons{
     margin-bottom: 10px;
+    .ant-dropdown-button{
+      button{
+        margin-right: 0;
+      }
+      .ant-dropdown-trigger{
+        margin-right: 8px;
+      }
+    }
     button{
       margin-right: 8px;
     }

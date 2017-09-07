@@ -117,7 +117,7 @@ const renderSubItem = (subItem) => {
   if(subItem.children) {
     for (let childName in subItem.children)
       result.push(subItem.children[childName])
-    return result.map(item =>{
+    return result.map(item => {
       return <Route key={item.key} path={item.url} component={item.components}/>
     })
   }

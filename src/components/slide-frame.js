@@ -12,14 +12,14 @@ class SlideFrame extends React.Component{
     };
   }
 
-  show(){
+  show = () => {
     this.setState({
       className: 'slide-frame animated slideInRight',
       showFlag: false
     })
-  }
+  };
 
-  close(){
+  close = () => {
     this.setState({
       className: 'slide-frame animated slideOutRight',
       showFlag: false
@@ -28,8 +28,9 @@ class SlideFrame extends React.Component{
       this.setState({
         className: 'slide-frame animated hide'
       })
+      this.props.onClose();
     }, 500)
-  }
+  };
 
   componentWillReceiveProps(nextProps){
     nextProps.show !== this.state.showFlag && (nextProps.show ? this.show() : this.close);
@@ -38,7 +39,7 @@ class SlideFrame extends React.Component{
   render(){
     return (
       <div className={this.state.className} style={{width: this.props.width}}>
-        <div className="slide-title">{this.props.title}<Icon type="close" className="close-icon" onClick={this.close.bind(this)}/></div>
+        <div className="slide-title">{this.props.title}<Icon type="close" className="close-icon" onClick={this.close}/></div>
         <div className="slide-content">{this.props.children}</div>
       </div>
     )
@@ -48,7 +49,8 @@ class SlideFrame extends React.Component{
 SlideFrame.propTypes = {
   width: React.PropTypes.string,
   title: React.PropTypes.string,
-  show: React.PropTypes.bool
+  show: React.PropTypes.bool,
+  onClose: React.PropTypes.func
 };
 
 export default SlideFrame

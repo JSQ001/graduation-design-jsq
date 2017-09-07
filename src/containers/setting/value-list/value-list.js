@@ -54,14 +54,14 @@ class ValueList extends React.Component{
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
-          onChange: this.onChangePager.bind(this)
+          onChange: this.onChangePager
         }
       })
     });
   }
 
   //分页点击
-  onChangePager(page){
+  onChangePager = (page) => {
     if(page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
@@ -69,7 +69,7 @@ class ValueList extends React.Component{
       }, ()=>{
         this.getList();
       })
-  }
+  };
 
   //渲染Tabs
   renderTabs(){
@@ -81,7 +81,7 @@ class ValueList extends React.Component{
   }
 
   //Tabs点击
-  onChangeTabs(key){
+  onChangeTabs = (key) => {
     this.setState({
       loading: true,
       page: 0,
@@ -89,13 +89,13 @@ class ValueList extends React.Component{
     },()=>{
       this.getList()
     });
-  }
+  };
 
   render(){
     const { columns, data, loading,  pagination, status, valueListPage } = this.state;
     return (
       <div className="value-list">
-        <Tabs type="card" onChange={this.onChangeTabs.bind(this)}>
+        <Tabs type="card" onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
