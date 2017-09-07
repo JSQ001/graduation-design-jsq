@@ -5,7 +5,7 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch } from 'antd';
+import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal } from 'antd';
 const FormItem = Form.Item;
 
 import SlideFrame from 'components/slide-frame'
@@ -31,10 +31,12 @@ class ValueList extends React.Component{
         total: 0
       },
       showSlideFrame: false,
+      showImportFrame: false,
       form: {
         name: '',
         enabled: true
-      }
+      },
+      edit: true
     };
   }
 
@@ -42,70 +44,132 @@ class ValueList extends React.Component{
 
   }
 
-  showSlide(){
+  showSlide = (flag) => {
     this.setState({
-      showSlideFrame: true
+      showSlideFrame: flag
     })
-  }
+  };
 
-  handleNameChange(evt){
+  handleNameChange = (evt) => {
     let form = this.state.form;
     form.name = evt.target.value;
     this.setState({
       form: form
     })
-  }
+  };
 
-  handleEnabled(enabled){
+  handleEnabled = (enabled) => {
     let form = this.state.form;
     form.enabled = enabled;
     this.setState({
       form: form
     })
-  }
+  };
 
-  handleSave(){
+  handleSave = () => {
+    this.setState({edit: false})
+  };
 
-  }
+  handleEdit = () => {
+    this.setState({edit: true})
+  };
 
-  handleCancel(){
+  handleCancel = () => {
 
-  }
+  };
+
+  showImport = () => {
+    this.setState({
+      showImportFrame: !this.state.showImportFrame
+    })
+  };
+
+  handleImport = () => {
+    this.setState({
+      showImportFrame: false
+    })
+  };
+
+  handleSaveValue = () =>{
+
+  };
 
   renderForm(){
+    let length = this.state.form.name.length;
+    let validateStatus = length > 15 ? "error" : null;
+    let help = length > 15 ? "字符请控制在15个之内" : null;
     return (
+      this.state.edit ?
       <Row gutter={80}>
         <Col span={8}>
-          <FormItem label="值列表名称" colon={false} required>
-            <Input placeholder="请输入" onChange={this.handleNameChange.bind(this)}/>
+          <FormItem label="值列表名称" colon={false} required
+                    validateStatus={validateStatus}
+                    help={help}>
+            <Input placeholder="请输入最多15个字符" defaultValue={this.state.form.name}
+                   onChange={this.handleNameChange}/>
           </FormItem>
         </Col>
         <Col span={8}>
           <FormItem label="状态" colon={false}>
-            <Switch defaultChecked={true} onChange={this.handleEnabled.bind(this)} checkedChildren="启用" unCheckedChildren="禁用"/>
+            <Switch defaultChecked={true} onChange={this.handleEnabled} checkedChildren="启用" unCheckedChildren="禁用"/>
           </FormItem>
         </Col>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" onClick={this.handleSave.bind(this)}>保存</Button>
-          <Button style={{ marginLeft: 8 }} onClick={this.handleCancel.bind(this)}>取消</Button>
+          <Button type="primary" htmlType="submit" onClick={this.handleSave} disabled={length === 0 || length > 15}>保存</Button>
+          <Button style={{ marginLeft: 8 }} onClick={this.handleCancel}>取消</Button>
         </Col>
-      </Row>
+      </Row> :
+      <div>
+        <div className="form-title">值列表名称</div>
+        <div>{this.state.form.name}</div>
+      </div>
+    )
+  }
+
+  renderDropDown(){
+    return (
+      <Menu onClick={this.showImport}>
+        <Menu.Item key="1">值导入</Menu.Item>
+      </Menu>
     )
   }
 
   render(){
+    const { showSlideFrame, edit, data, columns, pagination, showImportFrame } = this.state;
     return (
       <div className="new-value-list">
         <div className="common-top-area">
-          <div className="common-top-area-title">基本信息</div>
-          <div className="common-top-area-content">
+          <div className="common-top-area-title">
+            {!edit ? <Icon type="check-circle" className="title-icon" /> : null}
+            基本信息
+            {!edit ? <span className="title-edit" onClick={this.handleEdit}>编辑</span> : null}
+          </div>
+          <div className="common-top-area-content form-title-area">
             {this.renderForm()}
           </div>
         </div>
-        <Button type="primary" onClick={this.showSlide.bind(this)}>新建值内容</Button>
-        <SlideFrame title="this is title" show={this.state.showSlideFrame}>
-          this is content
+
+        <div className="table-header">
+          <div className="table-header-title">{`共${data.length}条数据`}</div>
+          <div className="table-header-buttons">
+            <Dropdown.Button overlay={this.renderDropDown()} type="primary" onClick={() => this.showSlide(true)}>
+              新建值内容
+            </Dropdown.Button>
+            <Button>值导出</Button>
+          </div>
+        </div>
+        <Table columns={columns}
+               dataSource={data}
+               pagination={pagination}
+               bordered/>
+
+        <SlideFrame title="新建值内容" show={showSlideFrame} onClose={() => this.showSlide(false)}>
         </SlideFrame>
+
+        <Modal visible={showImportFrame} title="值导入" onCancel={this.showImport} onOk={this.handleImport}>
+
+        </Modal>
+
       </div>
     )
   }

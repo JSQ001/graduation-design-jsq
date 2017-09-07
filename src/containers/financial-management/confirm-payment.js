@@ -121,7 +121,7 @@ class ConfirmPayment extends React.Component{
   }
 
   //Tab点击事件
-  onChangeTabs(key){
+  onChangeTabs = (key) => {
     let temp = this.state.searchParams;
     temp.status = key;
     this.refreshSearchCount(this.state.count[key].expenseReportCount, this.state.count[key].loanApplicationCount);
@@ -134,7 +134,7 @@ class ConfirmPayment extends React.Component{
       this.clearRowSelection();
       this.getList()
     });
-  }
+  };
 
   //得到对应单据列表数据
   getList(){
@@ -176,7 +176,7 @@ class ConfirmPayment extends React.Component{
     let temp = this.state.searchForm;
     temp[0].options = [
       {label: `报销单（共${expenseReportCount}笔）`, value: 'INVOICE'},
-      {label: `借款单（共${loanApplicationCount}笔）`, value: 'BORROW'}]
+      {label: `借款单（共${loanApplicationCount}笔）`, value: 'BORROW'}];
     this.setState({
       searchForm: temp,
       pagination: {
@@ -187,7 +187,7 @@ class ConfirmPayment extends React.Component{
   }
 
   //搜索
-  search(result){
+  search = (result) => {
     result.dateFrom = result.dateFrom ? result.dateFrom.format('YYYY-MM-DD') : undefined;
     result.dateTo = result.dateTo ? result.dateTo.format('YYYY-MM-DD') : undefined;
     let corporationOIDs = [];
@@ -210,10 +210,10 @@ class ConfirmPayment extends React.Component{
       this.clearRowSelection();
       this.getList();
     })
-  }
+  };
 
   //清空搜索区域
-  clear(){
+  clear = () => {
     this.setState({searchParams: {
       applicantOID: "",
       businessCode: "",
@@ -222,7 +222,7 @@ class ConfirmPayment extends React.Component{
       startDate: null,
       status: this.state.status
     }})
-  }
+  };
 
   //根据ID得到表单项
   getFormItemFromStateByID(id){
@@ -260,7 +260,7 @@ class ConfirmPayment extends React.Component{
   }
 
   //搜索区域点击事件
-  searchEventHandle(event, value){
+  searchEventHandle = (event, value) => {
     switch(event){
       case 'CHANGE_TYPE': {
         if(value === this.state.nowType)
@@ -282,7 +282,7 @@ class ConfirmPayment extends React.Component{
         break;
       }
     }
-  }
+  };
 
   //点击页码
   onChangePager(page){
@@ -296,24 +296,24 @@ class ConfirmPayment extends React.Component{
   }
 
   //列表选择更改
-  onSelectChange(selectedRowKeys){
+  onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
-  }
+  };
 
   //选择一行
   //选择逻辑：每一项设置selected属性，如果为true则为选中
   //同时维护selectedEntityOIDs列表，记录已选择的OID，并每次分页、选择的时候根据该列表来刷新选择项
-  onSelectRow(record, selected){
+  onSelectRow = (record, selected) => {
     let temp = this.state.selectedEntityOIDs;
     if(selected)
       temp.push(record.expenseReportOID);
     else
       temp.delete(record.expenseReportOID);
     this.setState({selectedEntityOIDs: temp})
-  }
+  };
 
   //全选
-  onSelectAllRow(selected){
+  onSelectAllRow = (selected) => {
     let temp = this.state.selectedEntityOIDs;
     if(selected){
       this.state.data.map(item => {
@@ -325,7 +325,7 @@ class ConfirmPayment extends React.Component{
       })
     }
     this.setState({selectedEntityOIDs: temp})
-  }
+  };
 
   //换页后根据OIDs刷新选择框
   refreshRowSelection(){
@@ -358,7 +358,7 @@ class ConfirmPayment extends React.Component{
   }
 
   //提交
-  confirm(){
+  confirm = () => {
     this.setState({confirmLoading: true});
     httpFetch.post(`${config.baseUrl}/api/reimbursement/batch/pay/${this.state.status === 'prending_pay' ? 'processing' : 'finished'}/confirm`, {
       businessCode: null,
@@ -385,31 +385,31 @@ class ConfirmPayment extends React.Component{
           icon: <Icon type="frown-circle" style={{ color: '#e93652' }} />,
         });
     })
-  }
+  };
 
   render(){
     const { searchForm, columns, data, loading, selectedRowKeys, pagination, selectedEntityOIDs, status, confirmLoading } = this.state;
     const rowSelection = {
       selectedRowKeys,
-      onChange: this.onSelectChange.bind(this),
-      onSelect: this.onSelectRow.bind(this),
-      onSelectAll: this.onSelectAllRow.bind(this)
+      onChange: this.onSelectChange,
+      onSelect: this.onSelectRow,
+      onSelectAll: this.onSelectAllRow
     };
     return (
       <div className="confirm-payment">
-        <Tabs type="card" onChange={this.onChangeTabs.bind(this)}>
+        <Tabs type="card" onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         <SearchArea
           searchForm={searchForm}
-          submitHandle={this.search.bind(this)}
-          clearHandle={this.clear.bind(this)}
-          eventHandle={this.searchEventHandle.bind(this)}/>
+          submitHandle={this.search}
+          clearHandle={this.clear}
+          eventHandle={this.searchEventHandle}/>
         <div className="table-header">
           <div className="table-header-title">{`共${pagination.total}条数据 / 已选${selectedEntityOIDs.length}条`}</div>
           <div className="table-header-buttons">
             { status === 'pay_finished' ? null :
-              <Button type="primary" onClick={this.confirm.bind(this)} disabled={selectedEntityOIDs.length === 0}
+              <Button type="primary" onClick={this.confirm} disabled={selectedEntityOIDs.length === 0}
                       loading={confirmLoading}>确认已付款</Button>
             }
             <Button>导入报盘文件</Button>

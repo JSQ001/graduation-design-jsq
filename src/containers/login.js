@@ -21,14 +21,15 @@ class Login extends React.Component{
     }
   }
 
-  inputUsernameHandler(evt){
+  inputUsernameHandler = (evt) => {
     this.setState({username: evt.target.value});
-  }
-  inputPasswordHandler(evt){
-    this.setState({password: evt.target.value});
-  }
+  };
 
-  login = () =>{
+  inputPasswordHandler = (evt) => {
+    this.setState({password: evt.target.value});
+  };
+
+  login = () => {
     this.setState({loading: true});
     httpFetch.login(this.state.username, this.state.password).then(()=>{
       this.setState({loading: false});
@@ -40,7 +41,7 @@ class Login extends React.Component{
       else
         message.error(this.props.intl.formatMessage({id: 'login.error'})); //呼，服务器出了点问题，请联系管理员或稍后再试:(
     })
-  }
+  };
 
   render(){
     return (
@@ -52,7 +53,7 @@ class Login extends React.Component{
             size="large"
             placeholder={this.props.intl.formatMessage({id: 'login.username'})} //用户名
             prefix={<Icon type="user" />}
-            onChange={this.inputUsernameHandler.bind(this)}
+            onChange={this.inputUsernameHandler}
           />
           <br/>
           <Input
@@ -60,7 +61,7 @@ class Login extends React.Component{
             type="password"
             placeholder={this.props.intl.formatMessage({id: 'login.password'})}  //密码
             prefix={<Icon type="lock" />}
-            onChange={this.inputPasswordHandler.bind(this)}
+            onChange={this.inputPasswordHandler}
           />
           <br/>
           <span className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</span>

@@ -30,7 +30,7 @@ class EditReport extends React.Component {
     };
   }
 
-  onChange = (value) =>{
+  onChange = (value) => {
     console.log(value);
     this.setState({ value });
   }
