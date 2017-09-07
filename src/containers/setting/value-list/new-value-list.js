@@ -78,20 +78,18 @@ class ValueList extends React.Component{
 
   };
 
-  showImport = () => {
+  showImport = (flag) => {
     this.setState({
-      showImportFrame: !this.state.showImportFrame
+      showImportFrame: flag
     })
   };
 
   handleImport = () => {
-    this.setState({
-      showImportFrame: false
-    })
+    this.showImport(false);
   };
 
   handleSaveValue = () =>{
-
+    this.showSlide(false)
   };
 
   renderForm(){
@@ -128,7 +126,7 @@ class ValueList extends React.Component{
 
   renderDropDown(){
     return (
-      <Menu onClick={this.showImport}>
+      <Menu onClick={() => this.showImport(true)}>
         <Menu.Item key="1">值导入</Menu.Item>
       </Menu>
     )
@@ -164,9 +162,10 @@ class ValueList extends React.Component{
                bordered/>
 
         <SlideFrame title="新建值内容" show={showSlideFrame} onClose={() => this.showSlide(false)}>
+          <Button type="primary" onClick={this.handleSaveValue}>保存</Button>
         </SlideFrame>
 
-        <Modal visible={showImportFrame} title="值导入" onCancel={this.showImport} onOk={this.handleImport}>
+        <Modal visible={showImportFrame} title="值导入" onCancel={() => this.showImport(false)} onOk={this.handleImport}>
 
         </Modal>
 

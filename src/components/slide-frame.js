@@ -15,7 +15,7 @@ class SlideFrame extends React.Component{
   show = () => {
     this.setState({
       className: 'slide-frame animated slideInRight',
-      showFlag: false
+      showFlag: true
     })
   };
 
@@ -27,13 +27,13 @@ class SlideFrame extends React.Component{
     setTimeout(()=>{
       this.setState({
         className: 'slide-frame animated hide'
-      })
+      });
       this.props.onClose();
     }, 500)
   };
 
   componentWillReceiveProps(nextProps){
-    nextProps.show !== this.state.showFlag && (nextProps.show ? this.show() : this.close);
+    nextProps.show !== this.state.showFlag && (nextProps.show ? this.show() : this.close());
   }
 
   render(){

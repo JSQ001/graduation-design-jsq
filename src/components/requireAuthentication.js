@@ -34,9 +34,6 @@ function requireAuthentication(Component) {
         this.props.history.replace('/');
         return;
       }
-      httpFetch.getInfo().then(()=>{
-        this.setState({login});
-      });
     }
 
     render() {

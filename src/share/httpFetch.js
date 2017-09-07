@@ -33,10 +33,11 @@ function checkStatus(response, needRefresh, url, params, header, method) {
       }
       else
         console.log("to login");
+    } else {
+      let error = new Error(response.statusText);
+      error.response = response;
+      throw error;
     }
-    let error = new Error(response.statusText);
-    error.response = response;
-    throw error
   }
 }
 
@@ -57,7 +58,6 @@ const httpFetch = {
     }).then(checkStatus).then(response => {
       localStorage.token = response.data.access_token;
       localStorage.refresh_token = response.data.refresh_token;
-    }).then(()=>{
       if(Object.keys(configureStore.store.getState().login.user).length === 0)
         this.getInfo();
     })
