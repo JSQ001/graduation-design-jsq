@@ -420,7 +420,8 @@ class ConfirmPayment extends React.Component{
                rowSelection={rowSelection}
                pagination={pagination}
                loading={loading}
-               bordered/>
+               bordered
+               size="middle"/>
       </div>
     )
   }

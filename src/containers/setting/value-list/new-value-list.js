@@ -5,10 +5,11 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal } from 'antd';
+import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal, Upload } from 'antd';
 const FormItem = Form.Item;
 
 import SlideFrame from 'components/slide-frame'
+import NewValue from 'containers/setting/value-list/new-value'
 
 import 'styles/setting/value-list/new-value-list.scss'
 
@@ -88,10 +89,6 @@ class ValueList extends React.Component{
     this.showImport(false);
   };
 
-  handleSaveValue = () =>{
-    this.showSlide(false)
-  };
-
   renderForm(){
     let length = this.state.form.name.length;
     let validateStatus = length > 15 ? "error" : null;
@@ -109,7 +106,7 @@ class ValueList extends React.Component{
         </Col>
         <Col span={8}>
           <FormItem label="状态" colon={false}>
-            <Switch defaultChecked={true} onChange={this.handleEnabled} checkedChildren="启用" unCheckedChildren="禁用"/>
+            <Switch defaultChecked={this.state.form.enabled} onChange={this.handleEnabled} checkedChildren="启用" unCheckedChildren="禁用"/>
           </FormItem>
         </Col>
         <Col span={24}>
@@ -133,12 +130,12 @@ class ValueList extends React.Component{
   }
 
   render(){
-    const { showSlideFrame, edit, data, columns, pagination, showImportFrame } = this.state;
+    const { showSlideFrame, edit, data, columns, pagination, showImportFrame, form } = this.state;
     return (
       <div className="new-value-list">
         <div className="common-top-area">
           <div className="common-top-area-title">
-            {!edit ? <Icon type="check-circle" className="title-icon" /> : null}
+            {!edit ? <Icon type={form.enabled ? "check-circle" : "minus-circle"} className={form.enabled ? "title-icon" : "title-icon not"} /> : null}
             基本信息
             {!edit ? <span className="title-edit" onClick={this.handleEdit}>编辑</span> : null}
           </div>
@@ -161,12 +158,15 @@ class ValueList extends React.Component{
                pagination={pagination}
                bordered/>
 
-        <SlideFrame title="新建值内容" show={showSlideFrame} onClose={() => this.showSlide(false)}>
-          <Button type="primary" onClick={this.handleSaveValue}>保存</Button>
-        </SlideFrame>
+        <SlideFrame title="新建值内容" show={showSlideFrame} content={NewValue} afterClose={() => this.showSlide(false)} onClose={() => this.showSlide(false)}/>
 
         <Modal visible={showImportFrame} title="值导入" onCancel={() => this.showImport(false)} onOk={this.handleImport}>
-
+          <Upload.Dragger name="files" className="uploader">
+            <p className="ant-upload-drag-icon">
+              <Icon type="inbox" />
+            </p>
+            <p className="ant-upload-text">点击或拖拽文件上传</p>
+          </Upload.Dragger>
         </Modal>
 
       </div>
