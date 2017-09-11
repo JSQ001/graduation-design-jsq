@@ -3,7 +3,6 @@
  */
 import React from 'react'
 import {connect} from 'react-redux';
-import httpFetch from 'share/httpFetch'
 
 function requireAuthentication(Component) {
 
@@ -32,7 +31,6 @@ function requireAuthentication(Component) {
       const login = !!localStorage.token;
       if (!login) {
         this.props.history.replace('/');
-        return;
       }
     }
 

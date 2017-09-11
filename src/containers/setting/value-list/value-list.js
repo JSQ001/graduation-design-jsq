@@ -26,8 +26,8 @@ class ValueList extends React.Component{
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '序号', dataIndex: 'index', width: '15%'},
-        {title: '值列表名称', dataIndex: 'name', width: '70%'},
+        {title: '序号', dataIndex: 'index', width: '8%'},
+        {title: '值列表名称', dataIndex: 'name', width: '77%'},
         {title: '状态', key: 'enabled', width: '15%', render: enabled => <Badge status={enabled ? 'success' : 'error'} text={enabled ? '启用' : '禁用'} />}
       ],
       pagination: {
@@ -111,7 +111,8 @@ class ValueList extends React.Component{
                dataSource={data}
                pagination={pagination}
                loading={loading}
-               bordered/>
+               bordered
+               size="middle"/>
       </div>
     )
   }
