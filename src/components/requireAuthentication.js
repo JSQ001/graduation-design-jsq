@@ -3,6 +3,8 @@
  */
 import React from 'react'
 import {connect} from 'react-redux';
+import httpFetch from 'share/httpFetch'
+import configureStore from 'stores'
 
 function requireAuthentication(Component) {
 
@@ -16,7 +18,7 @@ function requireAuthentication(Component) {
 
     constructor(){
       super();
-      this.state = {login:true}
+      this.state = {login: false}
     }
 
     componentWillMount() {
@@ -31,6 +33,11 @@ function requireAuthentication(Component) {
       const login = !!localStorage.token;
       if (!login) {
         this.props.history.replace('/');
+      } else {
+        if(Object.keys(configureStore.store.getState().login.user).length === 0)
+          httpFetch.getInfo().then(()=>{
+            this.setState({login: true});
+          });
       }
     }
 
@@ -38,7 +45,13 @@ function requireAuthentication(Component) {
       if (this.state.login) {
         return <Component {...this.props}/>
       }
-      return ''
+      return (
+        <div className="base">
+          <div className="cube"/><div className="cube"/><div className="cube"/>
+          <div className="cube"/><div className="cube"/><div className="cube"/>
+          <div className="cube"/><div className="cube"/><div className="cube"/>
+        </div>
+      )
     }
   }
 

@@ -4,7 +4,7 @@ import {Icon} from 'antd'
 import 'styles/components/slide-frame.scss'
 
 /**
- * 侧拉组件，该组件内部组件将自带this.props.close方法关闭侧拉栏
+ * 侧拉组件，该组件内部组件将自带this.props.close(params)方法关闭侧拉栏
  */
 class SlideFrame extends React.Component{
   constructor(props) {
@@ -18,13 +18,14 @@ class SlideFrame extends React.Component{
   /**
    * 组装方法
    * @param content 内部组件
-   * @return {*} 给组件添加this.props.close方法
+   * @return {*} 给组件添加this.props.close(params)方法,params为返回到最外层的值
+   *             同时添加外部传入的props为内部组件可用
    */
   wrapClose = (content) =>{
     const newProps = {
       close : this.close
     };
-    return React.createElement(content, newProps);
+    return React.createElement(content, Object.assign({}, this.props.params, newProps));
   };
 
   show = () => {
@@ -34,7 +35,11 @@ class SlideFrame extends React.Component{
     })
   };
 
-  close = () => {
+  /**
+   * 关闭方法，如果内部有params参数，则传出至afterClose方法
+   * @param params
+   */
+  close = (params) => {
     this.setState({
       className: 'slide-frame animated slideOutRight',
       showFlag: false
@@ -43,7 +48,7 @@ class SlideFrame extends React.Component{
       this.setState({
         className: 'slide-frame animated hide'
       });
-      this.props.afterClose();
+      this.props.afterClose(params);
     }, 500)
   };
 
@@ -77,7 +82,8 @@ SlideFrame.propTypes = {
   hasMask: React.PropTypes.bool,  //是否有遮罩层
   onClose: React.PropTypes.func,  //点击遮罩层或右上方x时触发的事件
   content: React.PropTypes.oneOfType([React.PropTypes.func, React.PropTypes.string]),  //内容component，包裹后的元素添加this.props.close方法进行侧滑关闭
-  afterClose: React.PropTypes.func  //关闭后触发的事件，用于更新外层的show值
+  afterClose: React.PropTypes.func,  //关闭后触发的事件，用于更新外层的show值
+  params: React.PropTypes.object  //外部传入内部组件props
 };
 
 SlideFrame.defaultProps = {
@@ -85,7 +91,8 @@ SlideFrame.defaultProps = {
   okText: '保存',
   cancelText: '取消',
   hasMask: true,
-  afterClose: ()=>{}
+  afterClose: ()=>{},
+  params: {}
 };
 
 export default SlideFrame

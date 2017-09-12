@@ -8,7 +8,24 @@ import 'styles/setting/value-list/new-value.scss'
 class ValueList extends React.Component{
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      item: {
+        allChoice: false,
+        common: false,
+        corporationOIDs: [],
+        customEnumerationOID: "",
+        departmentOIDs: [],
+        enabled: true,
+        keyword: "",
+        messageKey: "",
+        patientia: false,
+        remark: "",
+        returnChoiceUserOIDs: [],
+        userOIDs: [""],
+        userSummaryDTOs: [],
+        value: "",
+      }
+    };
   }
 
   componentWillMount(){
@@ -17,7 +34,8 @@ class ValueList extends React.Component{
 
   handleSave = (e) =>{
     e.preventDefault();
-    console.log(this.props.form.getFieldsValue())
+    let value = this.props.form.getFieldsValue();
+    this.props.close(value);
   };
 
   onCancel = () =>{
@@ -36,8 +54,10 @@ class ValueList extends React.Component{
         <Form onSubmit={this.handleSave}>
           <div className="common-item-title">基本信息</div>
           <FormItem {...formItemLayout} label="状态">
-            {getFieldDecorator('enabled')(
-              <Switch defaultChecked={true} checkedChildren="启用" unCheckedChildren="禁用"/>
+            {getFieldDecorator('enabled', {
+              initialValue: true
+            })(
+              <Switch checkedChildren="启用" unCheckedChildren="禁用"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="值名称">
@@ -49,6 +69,7 @@ class ValueList extends React.Component{
                 max: 100,
                 message: '值名称最多100个字符',
               }],
+              initialValue: ''
             })(
               <Input placeholder="请输入值名称，最多100个字符" />
             )}
@@ -59,6 +80,7 @@ class ValueList extends React.Component{
                 required: true,
                 message: '请输入值编码',
               }],
+              initialValue: ''
             })(
               <Input placeholder="请输入" />
             )}
@@ -69,6 +91,7 @@ class ValueList extends React.Component{
                 max: 200,
                 message: '值名称最多200个字符',
               }],
+              initialValue: ''
             })(
               <Input placeholder="请输入，最多200个字符" />
             )}
