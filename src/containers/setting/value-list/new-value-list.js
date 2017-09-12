@@ -89,6 +89,17 @@ class ValueList extends React.Component{
     this.showImport(false);
   };
 
+  /**
+   * 关闭侧栏的方法，判断是否有内部参数传出
+   * @param params
+   */
+  handleCloseSlide = (params) => {
+    console.log(params);
+    this.setState({
+      showSlideFrame: false
+    })
+  };
+
   renderForm(){
     let length = this.state.form.name.length;
     let validateStatus = length > 15 ? "error" : null;
@@ -158,7 +169,12 @@ class ValueList extends React.Component{
                pagination={pagination}
                bordered/>
 
-        <SlideFrame title="新建值内容" show={showSlideFrame} content={NewValue} afterClose={() => this.showSlide(false)} onClose={() => this.showSlide(false)}/>
+        <SlideFrame title="新建值内容"
+                    show={showSlideFrame}
+                    content={NewValue}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.showSlide(false)}
+                    params={{}}/>
 
         <Modal visible={showImportFrame} title="值导入" onCancel={() => this.showImport(false)} onOk={this.handleImport}>
           <Upload.Dragger name="files" className="uploader">
