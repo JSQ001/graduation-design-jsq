@@ -19,7 +19,7 @@ class ConfirmPayment extends React.Component{
     this.state = {
       searchForm: [
         {
-          type: 'big_radio',
+          type: 'radio',
           id: 'type',
           label: '单据类型',
           options: [{label: '报销单', value: 'INVOICE'}, {label: '借款单', value: 'BORROW'}],
@@ -102,7 +102,7 @@ class ConfirmPayment extends React.Component{
     return (
       this.state.tabs.map(tab => {
         let typeCount = this.state.count[tab.key];
-        return <TabPane tab={`${tab.name}（共${typeCount.expenseReportCount + typeCount.loanApplicationCount}笔）`} key={tab.key}/>
+        return <TabPane tab={`${tab.name}（${typeCount.expenseReportCount + typeCount.loanApplicationCount}）`} key={tab.key}/>
       })
     )
   }
@@ -406,7 +406,7 @@ class ConfirmPayment extends React.Component{
           clearHandle={this.clear}
           eventHandle={this.searchEventHandle}/>
         <div className="table-header">
-          <div className="table-header-title">{`共${pagination.total}条数据 / 已选${selectedEntityOIDs.length}条`}</div>
+          <div className="table-header-title">共 {pagination.total} 条数据 <span>/</span> 已选 {selectedEntityOIDs.length} 条</div>
           <div className="table-header-buttons">
             { status === 'pay_finished' ? null :
               <Button type="primary" onClick={this.confirm} disabled={selectedEntityOIDs.length === 0}
