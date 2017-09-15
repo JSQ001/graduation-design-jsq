@@ -138,7 +138,7 @@ class SearchArea extends React.Component{
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             <a className="toggle-button" onClick={this.toggle}>
-              {this.state.expand ? '收起' : '下拉'} <Icon type={this.state.expand ? 'up' : 'down'} />
+              {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
             </a>
             <Button type="primary" htmlType="submit">搜索</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>

@@ -4,6 +4,7 @@ body {
 }
 
 .base {
+  box-sizing: content-box;
   height: 9em;
   left: 50%;
   margin: -7.5em;
