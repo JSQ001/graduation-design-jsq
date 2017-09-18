@@ -2,6 +2,7 @@
 
 $title-color: rgba(0, 0, 0, 0.65);
 $title-background: #F7F7F7;
+$switch-color: #87D068;
 
 body{
   color: #666;
@@ -17,6 +18,10 @@ body{
     text-align: center;
     margin-right: -1px !important;
   }
+}
+
+.ant-switch-checked{
+  background: $switch-color;
 }
 
 .ant-select-selection--multiple{

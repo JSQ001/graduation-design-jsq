@@ -117,7 +117,7 @@ class ValueList extends React.Component{
         </Col>
         <Col span={8}>
           <FormItem label="状态" colon={false}>
-            <Switch defaultChecked={this.state.form.enabled} onChange={this.handleEnabled} checkedChildren="启用" unCheckedChildren="禁用"/>
+            <Switch defaultChecked={this.state.form.enabled} onChange={this.handleEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
           </FormItem>
         </Col>
         <Col span={24}>
