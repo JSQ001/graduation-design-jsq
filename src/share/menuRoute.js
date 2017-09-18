@@ -15,6 +15,8 @@ import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
 
+import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+
 import configureStore from 'stores';
 
 const menuIndexUrl = '/main/dashboard';
@@ -62,6 +64,16 @@ const editReport = {
   parent:'expense-report'
 };
 
+//预算场景定义
+const budgetScenarios = {
+  key:'budget-scenarios',
+  url:'/main/budget/budget-scenarios',
+  components: BudgetScenarios,
+  parent: 'budget',
+  children: {}
+};
+
+
 //仪表盘
 const dashboard = {
   key:'dashboard',
@@ -81,11 +93,18 @@ const setting = {
   subMenu: [valueList]
 };
 
+//预算
+const budget = {
+  key:'budget',
+  subMenu: [budgetScenarios]
+};
+
 //报销单
 const expenseReport = {
   key: 'expense-report',
   subMenu: [myAccount,editReport]
 };
+
 /**
  * 项目菜单整体路由配置
  * 分为三层: menuItem, subMenuItem, children
@@ -104,7 +123,8 @@ const menu = [
   dashboard,
   setting,
   financialManagement,
-  expenseReport
+  expenseReport,
+  budget
 ];
 
 /**
