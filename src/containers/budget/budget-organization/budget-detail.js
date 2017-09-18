@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Tabs } from 'antd';
 const TabPane = Tabs.TabPane;
 
-import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import BudgetTable from 'containers/budget/budget-organization/budget-table'
 
 class BudgetDetail extends React.Component {
