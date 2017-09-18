@@ -151,19 +151,19 @@ class SearchArea extends React.Component{
         onSubmit={this.handleSearch}
       >
         <Row gutter={40}>{this.getFields()}</Row>
-        {this.props.searchForm.length > 6 ? (
-          <Row>
-            <Col span={24} style={{ textAlign: 'right' }}>
+        <Row>
+          <Col span={24} style={{ textAlign: 'right' }}>
+            {this.props.searchForm.length > 6 ? (
               <a className="toggle-button" onClick={this.toggle}>
                 {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
-              <Button type="primary" htmlType="submit">搜索</Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
-                重置
-              </Button>
-            </Col>
-          </Row>
-        ) : null}
+            ) : null}
+            <Button type="primary" htmlType="submit">搜索</Button>
+            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+              重置
+            </Button>
+          </Col>
+        </Row>
       </Form>
     )
   }
