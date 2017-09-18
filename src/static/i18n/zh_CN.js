@@ -16,6 +16,7 @@ const zh_CN = {
   "menu.expense-report": "报销单",
   "menu.edit-report": "编辑报销单",
   "menu.budget": "预算设置",
+  "menu.budget-organization": "预算组织设置",
   "menu.budget-scenarios": "预算场景定义",
 };
 

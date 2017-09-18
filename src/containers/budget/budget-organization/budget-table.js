@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-class BudgetScenarios extends React.Component {
+class BudgetTable extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -10,7 +10,7 @@ class BudgetScenarios extends React.Component {
   render(){
     return (
       <div>
-        budget
+        表{this.props.id}
       </div>
     )
   }
@@ -21,4 +21,4 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetScenarios));
+export default connect(mapStateToProps)(injectIntl(BudgetTable));

@@ -132,5 +132,15 @@ body{
   text-align: left;
 }
 
+.ant-table-bordered .ant-table-thead > tr > th, .ant-table-bordered .ant-table-tbody > tr > td{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table{
+  table-layout: fixed;
+}
+
 
 
