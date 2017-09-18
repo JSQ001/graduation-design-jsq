@@ -24,10 +24,7 @@ function checkStatus(response, needRefresh, url, params, header, method) {
       if(needRefresh){
         return httpFetch.refreshToken().then(() => {
           return new Promise((resolve) => {
-            if(method === 'POST')
-              httpFetch.post(url, params, header).then((res) => resolve(res));
-            else
-              httpFetch.get(url, params, header).then((res) => resolve(res));
+              httpFetch[method.toLowerCase()](url, params, header).then((res) => resolve(res));
           })
         });
       }
@@ -113,6 +110,30 @@ const httpFetch = {
       mode: 'cors',
       headers: header
     }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
+  },
+
+  put: function(url, params ,header){
+    if(!header)
+      header = {};
+    header.Authorization = "Bearer " + localStorage.token;
+    return axios(url, {
+      url: url,
+      method: 'PUT',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'PUT'))
+  },
+
+  'delete': function(url, params ,header){
+    if(!header)
+      header = {};
+    header.Authorization = "Bearer " + localStorage.token;
+    return axios(url, {
+      url: url,
+      method: 'DELETE',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'DELETE'))
   },
 
   /**
