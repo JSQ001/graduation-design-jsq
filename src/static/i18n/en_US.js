@@ -14,9 +14,7 @@ const en_US = {
   "menu.setting": "Setting",
   "menu.my-account": "My account",
   "menu.expense-report": "Expense report",
-  "menu.edit-report": "Edit report",
-  "menu.budget": "Budget setting",
-  "menu.budget-scenarios": "Budget scenarios"
+  "menu.edit-report": "Edit report"
 };
 
 export default en_US
