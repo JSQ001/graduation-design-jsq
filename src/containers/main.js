@@ -78,7 +78,7 @@ class Main extends React.Component{
     )
   }
 
-  handleChangeLanguage(value){
+  handleChangeLanguage = (value) => {
     let language = {};
     switch(value){
       case 'en':
@@ -95,7 +95,7 @@ class Main extends React.Component{
         break;
     }
     this.props.dispatch(setLanguage(language));
-  }
+  };
 
   render(){
     return (
@@ -111,7 +111,7 @@ class Main extends React.Component{
             </div>
 
             <div className="user-area">
-              <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage.bind(this)} className="language-set">
+              <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
                 <Option value="en">English</Option>
               </Select>
@@ -119,7 +119,7 @@ class Main extends React.Component{
                 {this.props.intl.formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
-                <img src={this.props.user.filePath}/>
+                <img src={this.props.user.filePath ? this.props.user.filePath : '../images/user.jpg'}/>
               </div>
             </div>
             {this.renderBreadcrumb()}

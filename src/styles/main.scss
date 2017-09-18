@@ -63,11 +63,12 @@
       span{
         color: #999999;
       }
+      .ant-breadcrumb-separator{
+        color: #cccccc;
+      }
       .last-breadcrumb{
-        span{
-          font-size: 18px;
-          color: #292929;
-        }
+        font-size: 18px;
+        color: #292929;
         .ant-breadcrumb-separator{
           display: none;
         }

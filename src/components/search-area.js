@@ -20,27 +20,27 @@ class SearchArea extends React.Component{
     };
   }
 
-  toggle() {
+  toggle = () => {
     const { expand } = this.state;
     this.setState({ expand: !expand });
-  }
+  };
 
-  handleSearch (e) {
+  handleSearch = (e) => {
     e.preventDefault();
     this.props.submitHandle(this.props.form.getFieldsValue())
-  }
+  };
 
-  handleReset(){
+  handleReset = () => {
     this.props.form.resetFields();
     this.props.clearHandle();
-  }
+  };
 
-  handleEvent(event, e){
+  handleEvent = (e, event) => {
     this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
-  }
+  };
 
   renderFormItem(item){
-    let handle = item.event ? this.handleEvent.bind(this, item.event) : ()=>{};
+    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
     switch(item.type){
       case 'input':{
         return <Input placeholder="请输入" onChange={handle}/>
@@ -132,16 +132,16 @@ class SearchArea extends React.Component{
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
-        onSubmit={this.handleSearch.bind(this)}
+        onSubmit={this.handleSearch}
       >
         <Row gutter={40}>{this.getFields()}</Row>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
-            <a className="toggle-button" onClick={this.toggle.bind(this)}>
-              {this.state.expand ? '收起' : '下拉'} <Icon type={this.state.expand ? 'up' : 'down'} />
+            <a className="toggle-button" onClick={this.toggle}>
+              {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
             </a>
-            <Button type="primary" htmlType="submit" onClick={this.handleSearch.bind(this)}>搜索</Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleReset.bind(this)}>
+            <Button type="primary" htmlType="submit">搜索</Button>
+            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
               重置
             </Button>
           </Col>
