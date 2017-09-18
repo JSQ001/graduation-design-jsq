@@ -7,6 +7,7 @@ const TabPane = Tabs.TabPane;
 
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
 import BudgetTable from 'containers/budget/budget-organization/budget-table'
+import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
 
 class BudgetDetail extends React.Component {
   constructor(props) {
@@ -15,7 +16,8 @@ class BudgetDetail extends React.Component {
       nowStatus: 'SCENARIOS',
       tabs: [
         {key: 'SCENARIOS', name:'预算场景定义'},
-        {key: 'TABLE', name:'预算表'}
+        {key: 'TABLE', name:'预算表'},
+        {key: 'VERSIONS', name:'预算版本定义'},
       ]
     }
   }
@@ -45,6 +47,9 @@ class BudgetDetail extends React.Component {
         break;
       case 'TABLE':
         content = BudgetTable;
+        break;
+      case 'VERSIONS':
+        content = BudgetVersions;
         break;
     }
     return React.createElement(content, Object.assign({}, this.props.params, {id: this.props.params.id}));
