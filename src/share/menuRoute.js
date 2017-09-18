@@ -18,6 +18,9 @@ import {setCurrentPage} from 'actions/main'
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
+import NewBudgetVersions from 'containers/budget/budget-versions/new-budget-versions'
+import BudgetVersionsDetail from 'containers/budget/budget-versions/budget-versions-detail'
 
 import configureStore from 'stores';
 
@@ -74,10 +77,38 @@ const budgetScenarios = {
   parent: 'budget'
 };
 
+
+//新建预算版本
+const newBudgetVersions = {
+  key:'budget-versions',
+  url:'/main/budget/budget-versions/new-budget-versions/:id',
+  components: NewBudgetVersions,
+  parent: 'budget'
+};
+
+
+//预算版本详情
+const budgetVersionsDetail = {
+  key:'budget-versions-detail',
+  url:'/main/budget/budget-versions/budget-versions-detail/:id',
+  components:BudgetVersionsDetail,
+  parent: 'budget'
+};
+
+//预算版本定义
+const budgetVersions = {
+  key:'budget-versions',
+  url:'/main/budget/budget-versions',
+  components: BudgetVersions,
+  parent: 'budget'
+};
+
+
+
 const budgetDetail = {
   key:'budget-detail',
-  url:'/main/budget/budget-organization/:id',
-  components: BudgetDetail,
+  url:'/main/budget/budget-organiztion/:id',
+  components:BudgetDetail,
   parent: 'budget'
 };
 
@@ -89,7 +120,9 @@ const budgetOrganization = {
   parent: 'budget',
   children: {
     budgetDetail,
-    budgetScenarios
+    budgetScenarios,
+    budgetVersions
+
   }
 };
 
