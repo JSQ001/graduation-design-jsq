@@ -14,7 +14,9 @@ const zh_CN = {
   "menu.setting": "设置",
   "menu.my-account": "我的账本",
   "menu.expense-report": "报销单",
-  "menu.edit-report": "编辑报销单"
+  "menu.edit-report": "编辑报销单",
+  "menu.budget": "预算设置",
+  "menu.budget-scenarios": "预算场景定义",
 };
 
 export default zh_CN
