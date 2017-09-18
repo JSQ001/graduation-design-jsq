@@ -1,4 +1,4 @@
-import React from 'React'
+import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { Button, Table, Modal } from 'antd'
