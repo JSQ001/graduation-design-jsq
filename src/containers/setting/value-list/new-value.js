@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Form, Input, Switch, Button } from 'antd'
+import { Form, Input, Switch, Button, Icon } from 'antd'
 const FormItem = Form.Item;
 
 import 'styles/setting/value-list/new-value.scss'
@@ -57,7 +57,7 @@ class ValueList extends React.Component{
             {getFieldDecorator('enabled', {
               initialValue: true
             })(
-              <Switch checkedChildren="启用" unCheckedChildren="禁用"/>
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="值名称">

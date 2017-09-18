@@ -119,7 +119,7 @@ class Main extends React.Component{
                 {this.props.intl.formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
-                <img src={this.props.user.filePath}/>
+                <img src={this.props.user.filePath ? this.props.user.filePath : '../images/user.png'}/>
               </div>
             </div>
             {this.renderBreadcrumb()}
