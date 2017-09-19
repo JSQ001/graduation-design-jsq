@@ -35,7 +35,7 @@ class NewBudgetStructure extends React.Component{
                 {getFieldDecorator('organizationCode', {
                   initialValue:1,
                 })(
-                  <Input placeholder="请输入最多15个字符"
+                  <Input placeholder="请输入"
                   />)
                 }
               </FormItem>
