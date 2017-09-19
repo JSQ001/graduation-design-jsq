@@ -4,7 +4,7 @@
 import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
+import config from 'config'
 import 'styles/budget/budget-versions/budget-versions-detail.scss'
 
 

@@ -4,6 +4,7 @@
 import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import config from 'config'
 import httpFetch from 'share/httpFetch'
 import {Link,Redirect,browserHistory,History} from 'react-router'
 import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Icon} from 'antd'
@@ -88,7 +89,7 @@ class BudgetVersions extends React.Component {
 
   //修改数据
   putData=(value)=>{
-    return httpFetch.put(`http://rjfin.haasgz.hand-china.com:30496/api/budget/versions`,value).then((response)=>{
+    return httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       this.setState({
         putFlag:true
       })
@@ -98,7 +99,7 @@ class BudgetVersions extends React.Component {
 
   //获得数据
   getList(){
-    return httpFetch.get(`http://rjfin.haasgz.hand-china.com:30496/api/budget/versions/query?page=${this.state.page}&size=${this.state.pageSize}`, ).then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?page=${this.state.page}&size=${this.state.pageSize}`, ).then((response)=>{
       response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
         item.key = item.index;
@@ -117,7 +118,7 @@ class BudgetVersions extends React.Component {
   //获得搜索数据
   searchGetList(){
     return httpFetch.
-    get(`http://rjfin.haasgz.hand-china.com:30496/api/budget/versions/query?
+    get(`${config.budgetUrl}/api/budget/versions/query?
     page=${this.state.page}&size=${this.state.pageSize}&versionCode=${this.state.searchParams.versionCode||''}&versionName=${this.state.searchParams.versionName||''}`, ).
     then((response)=>{
       response.data.map((item, index)=>{
@@ -178,7 +179,7 @@ class BudgetVersions extends React.Component {
   //保存数据
   saverDate(value){
     let path ="/main/budget/versions/budget-versions/budget-versions-detail"
-    return httpFetch.post(`http://rjfin.haasgz.hand-china.com:30496/api/budget/versions`,value).then((response)=>{
+    return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
 
       Locations.state.Data = response.data;
       if(response.status==200){

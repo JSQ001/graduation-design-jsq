@@ -4,6 +4,7 @@
 import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import config from 'config'
 import httpFetch from 'share/httpFetch';
 import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon} from 'antd'
 import 'styles/budget/budget-versions/new-budget-versions.scss'
@@ -29,6 +30,8 @@ class NewBudgetVersions extends React.Component {
   }
 
   componentWillMount(){
+    console.log(this.props.organization.id)
+    console.log(this.props.id)
 
   }
 
@@ -45,7 +48,7 @@ class NewBudgetVersions extends React.Component {
     );
     notification.open({
       message: '一个预算组织下只能有一个‘当前’版本',
-      description: `预算组织代码  code1  下已经有预算版本代码为 ${value} 的当前版本`,
+      description: `预算组织 ${this.props.organization.organizationName}  下已经有预算版本代码为 ${value} 的当前版本`,
       duration:null,
       btn,
       key,
@@ -63,7 +66,7 @@ class NewBudgetVersions extends React.Component {
 
 //查询预算组织代码下是否已经  当前 版本'
   checkoutStatus=(value)=>{
-    return httpFetch.get(`http://rjfin.haasgz.hand-china.com:30496/api/budget/versions/query?organizationId=12345&&status="CURRENT"`, ).then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.id}&&status="CURRENT"`, ).then((response)=>{
       response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
         item.key = item.index;
@@ -85,7 +88,7 @@ class NewBudgetVersions extends React.Component {
 
     let value =this.props.form.getFieldsValue();
   /*  value.organizationId=this.props.organization.organizationId;*/
-    value.organizationId=123;
+
     if (value.status=='CURRENT'){
       this.checkoutStatus(value);
     }
@@ -123,8 +126,6 @@ class NewBudgetVersions extends React.Component {
       }
     }
 
-
-
     callback();
   }
 
@@ -143,6 +144,7 @@ class NewBudgetVersions extends React.Component {
             type=""
             showIcon
           />
+          {this.props.id}
         </div>
 
         <div className="new-budget-versions-from">
@@ -154,11 +156,11 @@ class NewBudgetVersions extends React.Component {
                 <FormItem
                   label="预算组织"
                 >
-                  {getFieldDecorator('organizationId',
+                  {getFieldDecorator('organizationName',
                     {
-                      initialValue:123,
+                      initialValue:this.props.organization.organizationName,
                       rules: [
-
+                        { required: true,}
                       ],
                     })(
                     <Input disabled={true} />
