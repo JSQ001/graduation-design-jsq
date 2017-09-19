@@ -25,7 +25,7 @@ class NewBudgetStructure extends React.Component{
 
     return(
       <div className="new-budget-structure">
-        <div>新建预算表</div>
+        <div className="budget-structure-title">新建预算表</div>
         <Form>
           <Row gutter={24}>
             <Col span={8}>

@@ -24,6 +24,7 @@ const zh_CN = {
   "budget.organizationName": "预算组织名称",
   "budget.organization": "预算组织",
   "budget.structure":"预算表",
+  "menu.new-budget-structure": "新建预算表",
   "budget.structureCode": "预算表代码",
   "budget.structureName": "预算表名称",
   "budget.structureDescription": "预算表描述",
