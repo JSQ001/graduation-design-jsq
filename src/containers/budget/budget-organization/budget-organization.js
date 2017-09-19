@@ -31,7 +31,12 @@ class BudgetOrganization extends React.Component {
         {type: 'select', id: 'setOfBooksId', label: '帐套', options: []},
         {type: 'input', id: 'organizationCode', label: '预算组织代码'},
         {type: 'input', id: 'organizationName', label: '预算组织名称'},
-      ]
+      ],
+      searchParams: {
+        setOfBooksId: 1,
+        organizationCode: '',
+        organizationName: ''
+      }
     };
   }
 
@@ -73,6 +78,15 @@ class BudgetOrganization extends React.Component {
 
   search = (result) => {
     console.log(result)
+    this.setState({
+      searchParams: {
+        setOfBooksId: result.setOfBooksId ? result.setOfBooksId : 1,
+        organizationCode: result.organizationCode ? result.organizationCode : '',
+        organizationName: result.organizationName ? result.organizationName : ''
+      }
+    }, ()=>{
+
+    })
   };
 
   clear = () => {
