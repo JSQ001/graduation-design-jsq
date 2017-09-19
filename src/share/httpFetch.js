@@ -98,9 +98,22 @@ const httpFetch = {
     }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
   },
 
-  tokenPut: function(url, params ,header){
+  tokenPost: function(url, params, header){
     if(!header)
       header = {};
+    header.Authorization = "Bearer " + localStorage.token;
+    return axios(url, {
+      url: url,
+      method: 'GET',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'POST'))
+  },
+
+  tokenPut: function(url, params, header){
+    if(!header)
+      header = {};
+    header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
       method: 'PUT',
@@ -109,11 +122,21 @@ const httpFetch = {
     }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'PUT'))
   },
 
+
+  tokenDelete: function(url, params ,header){
+    if(!header)
+      header = {};
+    return axios(url, {
+      url: url,
+      method: 'DELETE',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'DELETE'))
+  },
+
   post: function(url, params, header){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
-    header['Content-Type'] = "application/json;charset=UTF-8";
     return axios({
       url: url,
       method: 'POST',
@@ -137,7 +160,6 @@ const httpFetch = {
   put: function(url, params ,header){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
       method: 'PUT',
@@ -149,7 +171,6 @@ const httpFetch = {
   'delete': function(url, params ,header){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
       method: 'DELETE',
