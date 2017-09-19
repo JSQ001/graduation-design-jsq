@@ -9,11 +9,12 @@
  */
 /* Populated by react-webpack-redux:reducer */
 import { combineReducers } from 'redux';
-import login from './login'
-import main from './main'
+import login from 'reducers/login'
+import main from 'reducers/main'
+import budget from 'reducers/budget'
 
 const reducers = {
-  login,main
+  login,main,budget
 };
 const combined = combineReducers(reducers);
 module.exports = combined;

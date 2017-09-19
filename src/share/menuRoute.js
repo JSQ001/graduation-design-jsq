@@ -69,19 +69,10 @@ const editReport = {
   parent:'expense-report'
 };
 
-//预算场景定义
-const budgetScenarios = {
-  key:'budget-scenarios',
-  url:'/main/budget/budget-scenarios',
-  components: BudgetScenarios,
-  parent: 'budget'
-};
-
-
 //新建预算版本
 const newBudgetVersions = {
-  key:'budget-versions',
-  url:'/main/budget/budget-versions/new-budget-versions/:id',
+  key:'new-budget-versions',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
   components: NewBudgetVersions,
   parent: 'budget'
 };
@@ -90,24 +81,15 @@ const newBudgetVersions = {
 //预算版本详情
 const budgetVersionsDetail = {
   key:'budget-versions-detail',
-  url:'/main/budget/budget-versions/budget-versions-detail/:id',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
   components:BudgetVersionsDetail,
   parent: 'budget'
 };
 
-//预算版本定义
-const budgetVersions = {
-  key:'budget-versions',
-  url:'/main/budget/budget-versions',
-  components: BudgetVersions,
-  parent: 'budget'
-};
-
-
-
+//预算组织详情
 const budgetDetail = {
   key:'budget-detail',
-  url:'/main/budget/budget-organiztion/:id',
+  url:'/main/budget/budget-organization/budget-detail/:id',
   components:BudgetDetail,
   parent: 'budget'
 };
@@ -120,9 +102,8 @@ const budgetOrganization = {
   parent: 'budget',
   children: {
     budgetDetail,
-    budgetScenarios,
-    budgetVersions
-
+    budgetVersionsDetail,
+    newBudgetVersions
   }
 };
 

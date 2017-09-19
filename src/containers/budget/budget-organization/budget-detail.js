@@ -1,13 +1,19 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import config from 'config'
 
 import { Tabs } from 'antd';
 const TabPane = Tabs.TabPane;
 
+import Loading from 'components/loading'
+
+import { setOrganization } from 'actions/budget'
+
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
 import BudgetTable from 'containers/budget/budget-organization/budget-table'
 import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
+import httpFetch from "share/httpFetch";
 
 class BudgetDetail extends React.Component {
   constructor(props) {
@@ -18,8 +24,20 @@ class BudgetDetail extends React.Component {
         {key: 'SCENARIOS', name:'预算场景定义'},
         {key: 'TABLE', name:'预算表'},
         {key: 'VERSIONS', name:'预算版本定义'},
-      ]
-    }
+      ],
+      loading: true
+    };
+  }
+
+  //设置预算到redux
+  componentWillMount(){
+    if(this.props.organization.id)
+      this.setState({loading: false});
+    else
+      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then(res => {
+        this.props.dispatch(setOrganization(res.data));
+        this.setState({loading: false});
+      })
   }
 
   //渲染Tabs
@@ -52,7 +70,7 @@ class BudgetDetail extends React.Component {
         content = BudgetVersions;
         break;
     }
-    return React.createElement(content, Object.assign({}, this.props.params, {id: this.props.params.id}));
+    return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));
   };
 
   render(){
@@ -61,15 +79,17 @@ class BudgetDetail extends React.Component {
         <Tabs type="card" onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
-        {this.renderContent()}
+        {this.state.loading ? <Loading/> : this.renderContent()}
       </div>
     )
   }
 
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.budget.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetDetail));
