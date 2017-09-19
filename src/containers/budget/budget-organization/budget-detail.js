@@ -36,7 +36,6 @@ class BudgetDetail extends React.Component {
       this.setState({loading: false});
     else
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then(res => {
-        console.log(res.data)
         this.props.dispatch(setOrganization(res.data));
         this.setState({loading: false});
       })
@@ -56,8 +55,6 @@ class BudgetDetail extends React.Component {
       nowStatus: key
     })
   };
-
-
 
   renderContent = () => {
     let content = null;
