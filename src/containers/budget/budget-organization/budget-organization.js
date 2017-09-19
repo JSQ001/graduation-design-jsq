@@ -36,7 +36,7 @@ class BudgetOrganization extends React.Component {
   }
 
   componentWillMount(){
-    // this.getList();
+    this.getList();
   }
 
   //得到值列表数据

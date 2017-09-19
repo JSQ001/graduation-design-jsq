@@ -17,6 +17,8 @@ import {setCurrentPage} from 'actions/main'
 
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
+
+import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
 import NewBudgetVersions from 'containers/budget/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget/budget-organization/budget-versions/budget-versions-detail'

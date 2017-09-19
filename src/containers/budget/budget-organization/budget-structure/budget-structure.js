@@ -83,7 +83,7 @@ class BudgetStructure extends React.Component {
         console.log(item)
         console.log(index)
         item.key = item.id;
-        httpFetch.get(`${config.budgetUrl}/api/budget/organization/`)
+        httpFetch.get(`${config.budgetUrl}/api/budget/organization`)
       })
       this.setState({
         data: response.data,

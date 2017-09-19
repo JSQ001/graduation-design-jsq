@@ -12,7 +12,7 @@ const FormItem = Form.Item;
 const sd = this;
 
 
-class WrappedNewBudgetVersions extends React.Component {
+class NewBudgetVersions extends React.Component {
 
   constructor(props){
     super(props)
@@ -287,7 +287,7 @@ NewBudgetVersions.contextTypes={
   router:React.PropTypes.object
 }
 
-const NewBudgetVersions= Form.create()(WrappedNewBudgetVersions);
+const WrappedNewBudgetVersions= Form.create()(NewBudgetVersions);
 
 function mapStateToProps(state) {
   return {
@@ -295,4 +295,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(NewBudgetVersions));
+export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetVersions));

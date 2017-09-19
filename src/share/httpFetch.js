@@ -69,21 +69,44 @@ const httpFetch = {
   },
 
   getUser: function(){
-    return this.get(`${config.baseUrl}/api/account`,{}).then((response)=>{
+    return this.tokenGet(`${config.baseUrl}/api/account`,{}).then((response)=>{
       configureStore.store.dispatch(setUser(response.data));
     })
   },
 
   getCompany: function(){
-    return this.get(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
+    return this.tokenGet(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
       configureStore.store.dispatch(setCompany(response.data));
     })
   },
 
   getProfile: function(){
-    return this.get(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
+    return this.tokenGet(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
       configureStore.store.dispatch(setProfile(response.data));
     })
+  },
+
+  tokenGet: function(url, params, header){
+    if(!header)
+      header = {};
+    header.Authorization = "Bearer " + localStorage.token;
+    return axios(url, {
+      url: url,
+      method: 'GET',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
+  },
+
+  tokenPut: function(url, params ,header){
+    if(!header)
+      header = {};
+    return axios(url, {
+      url: url,
+      method: 'PUT',
+      mode: 'cors',
+      headers: header
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'PUT'))
   },
 
   post: function(url, params, header){
@@ -103,7 +126,6 @@ const httpFetch = {
   get: function(url, params, header){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
       method: 'GET',

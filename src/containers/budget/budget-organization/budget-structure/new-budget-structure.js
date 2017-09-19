@@ -21,6 +21,8 @@ class NewBudgetStructure extends React.Component{
   }
 
   render(){
+    const { getFieldDecorator } = this.props.form;
+
     return(
       <div className="new-budget-structure">
         <div>新建预算表</div>
@@ -67,4 +69,6 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(NewBudgetStructure));
+const WrappedNewBudgetStructure = Form.create()(NewBudgetStructure);
+
+export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetStructure));
