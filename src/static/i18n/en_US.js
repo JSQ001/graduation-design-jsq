@@ -17,7 +17,14 @@ const en_US = {
   "menu.edit-report": "Edit report",
   "menu.budget": "Budget setting",
   "menu.budget-organization": "Budget organization",
-  "menu.budget-scenarios": "Budget scenarios"
+  "menu.budget-scenarios": "Budget scenarios",
+  "budget.organizationName": "预算组织名称",
+  "budget.structure":"预算表",
+  "budget.structureCode": "预算表代码",
+  "budget.structureName": "预算表名称",
+  "budget.structureDescription": "预算表描述",
+  "search.total": "共搜索到 {total} 条数据",
+  "button.create": "新建",
 };
 
 export default en_US

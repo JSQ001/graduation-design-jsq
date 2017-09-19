@@ -18,6 +18,7 @@ import {setCurrentPage} from 'actions/main'
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
 
 import configureStore from 'stores';
 
@@ -30,6 +31,14 @@ const confirmPayment = {
   components: ConfirmManagement,
   parent: 'financial-management'
 };
+
+//新建预算表
+const newBudgetStructure = {
+  key:'new-budget-structure',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-structure/new-budget-structure',
+  components: NewBudgetStructure,
+  parent: 'budget'
+}
 
 //新建值列表
 const newValueList = {
@@ -90,6 +99,26 @@ const budgetOrganization = {
   children: {
     budgetDetail,
     budgetScenarios
+  }
+};
+
+const budgetDetail = {
+  key:'budget-detail',
+  url:'/main/budget/budget-organization/:id',
+  components: BudgetDetail,
+  parent: 'budget'
+};
+
+//预算组织定义
+const budgetOrganization = {
+  key:'budget-organization',
+  url:'/main/budget/budget-organization',
+  components: BudgetOrganization,
+  parent: 'budget',
+  children: {
+    budgetDetail,
+    budgetScenarios,
+    newBudgetStructure
   }
 };
 

@@ -19,6 +19,14 @@ const zh_CN = {
   "menu.budget-organization": "预算组织设置",
   "menu.budget-scenarios": "预算场景定义",
   "menu.budget-organization": "预算组织定义",
+  "budget.organizationName": "预算组织名称",
+  "budget.structure":"预算表",
+  "budget.structureCode": "预算表代码",
+  "budget.structureName": "预算表名称",
+  "budget.structureDescription": "预算表描述",
+  "search.total": "共搜索到 {total} 条数据",
+  "button.create": "新 建",
+
 };
 
 export default zh_CN
