@@ -19,6 +19,9 @@ import BudgetOrganization from 'containers/budget/budget-organization/budget-org
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
 import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
+import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
+import NewBudgetVersions from 'containers/budget/budget-versions/new-budget-versions'
+import BudgetVersionsDetail from 'containers/budget/budget-versions/budget-versions-detail'
 
 import configureStore from 'stores';
 
@@ -32,6 +35,14 @@ const confirmPayment = {
   parent: 'financial-management'
 };
 
+//新建值列表
+const newValueList = {
+  key:'new-value-list',
+  url:'/main/setting/value-list/new-value-list',
+  components: NewValueList,
+  parent: 'value-list'
+};
+
 //新建预算表
 const newBudgetStructure = {
   key:'new-budget-structure',
@@ -40,12 +51,20 @@ const newBudgetStructure = {
   parent: 'budget'
 }
 
-//新建值列表
-const newValueList = {
-  key:'new-value-list',
-  url:'/main/setting/value-list/new-value-list',
-  components: NewValueList,
-  parent: 'value-list'
+//新建预算版本
+const newBudgetVersions = {
+  key:'new-budget-versions',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
+  components: NewBudgetVersions,
+  parent: 'budget'
+};
+
+//预算版本详情
+const budgetVersionsDetail = {
+  key:'budget-versions-detail',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
+  components:BudgetVersionsDetail,
+  parent: 'budget'
 };
 
 //值列表
@@ -98,26 +117,9 @@ const budgetOrganization = {
   parent: 'budget',
   children: {
     budgetDetail,
-    budgetScenarios
-  }
-};
-
-const budgetDetail = {
-  key:'budget-detail',
-  url:'/main/budget/budget-organization/:id',
-  components: BudgetDetail,
-  parent: 'budget'
-};
-
-//预算组织定义
-const budgetOrganization = {
-  key:'budget-organization',
-  url:'/main/budget/budget-organization',
-  components: BudgetOrganization,
-  parent: 'budget',
-  children: {
-    budgetDetail,
     budgetScenarios,
+    budgetVersionsDetail,
+    newBudgetVersions,
     newBudgetStructure
   }
 };

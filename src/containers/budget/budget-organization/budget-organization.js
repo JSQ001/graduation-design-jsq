@@ -60,8 +60,7 @@ class BudgetOrganization extends React.Component {
   };
 
   handleRowClick = (record) => {
-    console.log(record);
-    console.log(this.state.budgetDetailPage);
+
     this.context.router.push(this.state.budgetDetailPage.url.replace(':id', record.id));
   };
 

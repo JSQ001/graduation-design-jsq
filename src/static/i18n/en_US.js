@@ -19,6 +19,7 @@ const en_US = {
   "menu.budget-organization": "Budget organization",
   "menu.budget-scenarios": "Budget scenarios",
   "budget.organizationName": "预算组织名称",
+  "budget.organization": "预算组织",
   "budget.structure":"预算表",
   "budget.structureCode": "预算表代码",
   "budget.structureName": "预算表名称",
