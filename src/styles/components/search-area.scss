@@ -9,4 +9,16 @@
   .ant-form-item-label label{
     color: #666666;
   }
+  .ant-form-item-label{
+    line-height: 25px;
+  }
+  .ant-radio-group.ant-radio-group-large {
+    white-space: nowrap;
+    width: 100%;
+    .ant-radio-button-wrapper{
+      width: 50%;
+      padding: 0;
+      text-align: center;
+    }
+  }
 }

@@ -64,9 +64,9 @@ class ConfirmPayment extends React.Component{
         {title: '单据类型', dataIndex: 'formName'},
         {title: '报销单号', dataIndex: 'parentBusinessCode'},
         {title: '币种', dataIndex: 'currencyCode'},
-        {title: '总金额', dataIndex: 'baseCurrencyTotalamount'},
+        {title: '总金额', dataIndex: 'baseCurrencyTotalamount', render: this.filterMoney},
         {title: '支付币种', dataIndex: 'currencyCode', key: 'realCurrencyCode'},
-        {title: '待支付金额', dataIndex: 'baseCurrencyRealPaymentAmount'},
+        {title: '待支付金额', dataIndex: 'baseCurrencyRealPaymentAmount', render: this.filterMoney},
         {title: '凭证编号', dataIndex: 'origDocumentSequence'}
       ],
       status: 'prending_pay',   //当前状态
