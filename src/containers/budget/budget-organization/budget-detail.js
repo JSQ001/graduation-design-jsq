@@ -10,9 +10,9 @@ import Loading from 'components/loading'
 
 import { setOrganization } from 'actions/budget'
 
-import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import BudgetTable from 'containers/budget/budget-organization/budget-table'
-import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
+import BudgetVersions from 'containers/budget/budget-organization/budget-versions/budget-versions'
 import httpFetch from "share/httpFetch";
 
 class BudgetDetail extends React.Component {

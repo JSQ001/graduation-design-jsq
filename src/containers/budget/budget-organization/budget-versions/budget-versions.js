@@ -191,7 +191,7 @@ class BudgetVersions extends React.Component {
 
 //跳转到新建页面
   creactHandle=()=>{
-    let path='';
+    let path=`/main/budget/budget-organization/budget-detail/${this.props.id}/budget-versions/new-budget-versions`;
     this.context.router.push(path)
   }
 
@@ -236,8 +236,10 @@ BudgetVersions.contextTypes ={
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization:state.budget.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetVersions));
