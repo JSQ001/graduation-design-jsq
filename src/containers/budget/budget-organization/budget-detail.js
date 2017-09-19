@@ -11,7 +11,7 @@ import Loading from 'components/loading'
 import { setOrganization } from 'actions/budget'
 
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
-import BudgetTable from 'containers/budget/budget-organization/budget-table'
+import BudgetStructure from 'containers/budget/budget-organization/budget-structure/budget-structure'
 import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
 import httpFetch from "share/httpFetch";
 
@@ -22,7 +22,7 @@ class BudgetDetail extends React.Component {
       nowStatus: 'SCENARIOS',
       tabs: [
         {key: 'SCENARIOS', name:'预算场景定义'},
-        {key: 'TABLE', name:'预算表'},
+        {key: 'STRUCTURE', name:'预算表'},
         {key: 'VERSIONS', name:'预算版本定义'},
       ],
       loading: true
@@ -35,6 +35,7 @@ class BudgetDetail extends React.Component {
       this.setState({loading: false});
     else
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then(res => {
+        console.log(res.data)
         this.props.dispatch(setOrganization(res.data));
         this.setState({loading: false});
       })
@@ -63,8 +64,8 @@ class BudgetDetail extends React.Component {
       case 'SCENARIOS':
         content = BudgetScenarios;
         break;
-      case 'TABLE':
-        content = BudgetTable;
+      case 'STRUCTURE':
+        content = BudgetStructure;
         break;
       case 'VERSIONS':
         content = BudgetVersions;

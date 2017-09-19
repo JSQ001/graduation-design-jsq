@@ -16,8 +16,10 @@ import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
 
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
-import NewBudgetOrganization from 'containers/budget/budget-organization/new-budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
+import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
+import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
 import NewBudgetVersions from 'containers/budget/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget/budget-versions/budget-versions-detail'
 
@@ -39,6 +41,30 @@ const newValueList = {
   url:'/main/setting/value-list/new-value-list',
   components: NewValueList,
   parent: 'value-list'
+};
+
+//新建预算表
+const newBudgetStructure = {
+  key:'new-budget-structure',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-structure/new-budget-structure',
+  components: NewBudgetStructure,
+  parent: 'budget'
+}
+
+//新建预算版本
+const newBudgetVersions = {
+  key:'new-budget-versions',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
+  components: NewBudgetVersions,
+  parent: 'budget'
+};
+
+//预算版本详情
+const budgetVersionsDetail = {
+  key:'budget-versions-detail',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
+  components:BudgetVersionsDetail,
+  parent: 'budget'
 };
 
 //值列表
@@ -68,35 +94,19 @@ const editReport = {
   parent:'expense-report'
 };
 
-//新建预算版本
-const newBudgetVersions = {
-  key:'new-budget-versions',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
-  components: NewBudgetVersions,
-  parent: 'budget-organization'
+//预算场景定义
+const budgetScenarios = {
+  key:'budget-scenarios',
+  url:'/main/budget/budget-scenarios',
+  components: BudgetScenarios,
+  parent: 'budget'
 };
 
-//预算版本详情
-const budgetVersionsDetail = {
-  key:'budget-versions-detail',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
-  components:BudgetVersionsDetail,
-  parent: 'budget-organization'
-};
-
-//预算组织详情
 const budgetDetail = {
   key:'budget-detail',
-  url:'/main/budget/budget-organization/budget-detail/:id',
-  components:BudgetDetail,
-  parent: 'budget-organization'
-};
-
-const newBudgetOrganization = {
-  key:'new-budget-organization',
-  url:'/main/budget/budget-organization/new-budget-organization',
-  components: NewBudgetOrganization,
-  parent: 'budget-organization'
+  url:'/main/budget/budget-organization/:id',
+  components: BudgetDetail,
+  parent: 'budget'
 };
 
 //预算组织定义
@@ -107,9 +117,10 @@ const budgetOrganization = {
   parent: 'budget',
   children: {
     budgetDetail,
-    newBudgetOrganization,
+    budgetScenarios,
     budgetVersionsDetail,
-    newBudgetVersions
+    newBudgetVersions,
+    newBudgetStructure
   }
 };
 
