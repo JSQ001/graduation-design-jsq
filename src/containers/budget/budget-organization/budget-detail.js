@@ -10,7 +10,7 @@ import Loading from 'components/loading'
 
 import { setOrganization } from 'actions/budget'
 
-import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
+import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import BudgetStructure from 'containers/budget/budget-organization/budget-structure/budget-structure'
 import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
 import httpFetch from "share/httpFetch";
