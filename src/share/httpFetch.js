@@ -69,114 +69,21 @@ const httpFetch = {
   },
 
   getUser: function(){
-    return this.tokenGet(`${config.baseUrl}/api/account`,{}).then((response)=>{
+    return this.get(`${config.baseUrl}/api/account`,{}).then((response)=>{
       configureStore.store.dispatch(setUser(response.data));
     })
   },
 
   getCompany: function(){
-    return this.tokenGet(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
+    return this.get(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
       configureStore.store.dispatch(setCompany(response.data));
     })
   },
 
   getProfile: function(){
-    return this.tokenGet(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
+    return this.get(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
       configureStore.store.dispatch(setProfile(response.data));
     })
-  },
-
-  tokenGet: function(url, params, header){
-    if(!header)
-      header = {};
-    header.Authorization = "Bearer " + localStorage.token;
-    return axios(url, {
-      url: url,
-      method: 'GET',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
-  },
-
-  tokenPost: function(url, params, header){
-    if(!header)
-      header = {};
-    header.Authorization = "Bearer " + localStorage.token;
-    return axios(url, {
-      url: url,
-      method: 'GET',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'POST'))
-  },
-
-  tokenPut: function(url, params, header){
-    if(!header)
-      header = {};
-    header.Authorization = "Bearer " + localStorage.token;
-    return axios(url, {
-      url: url,
-      method: 'PUT',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'PUT'))
-  },
-
-
-  tokenDelete: function(url, params ,header){
-    if(!header)
-      header = {};
-    return axios(url, {
-      url: url,
-      method: 'DELETE',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'DELETE'))
-  },
-
-  post: function(url, params, header){
-    if(!header)
-      header = {};
-    return axios({
-      url: url,
-      method: 'POST',
-      mode: 'cors',
-      headers: header,
-      data: params
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'POST'))
-  },
-
-  get: function(url, params, header){
-    if(!header)
-      header = {};
-    return axios(url, {
-      url: url,
-      method: 'GET',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'GET'))
-  },
-
-  put: function(url, params ,header){
-    if(!header)
-      header = {};
-    return axios(url, {
-      url: url,
-      method: 'PUT',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'PUT'))
-  },
-
-  'delete': function(url, params ,header){
-    if(!header)
-      header = {};
-    return axios(url, {
-      url: url,
-      method: 'DELETE',
-      mode: 'cors',
-      headers: header
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, 'DELETE'))
   },
 
   /**
@@ -196,10 +103,26 @@ const httpFetch = {
     }).then(checkStatus).then((response)=>{
       localStorage.token = response.data.access_token;
       localStorage.refresh_token = response.data.refresh_token;
-      this.getInfo();
     });
   }
 }
+
+let methodList = ['get','post','put','delete'];
+methodList.map(method => {
+  httpFetch[method] = function(url, params ,header){
+    if(!header)
+      header = {};
+    if(url.indexOf('/api/budget') === -1) //TODO:预算模块暂时不能传token
+      header.Authorization = "Bearer " + localStorage.token;
+    return axios(url, {
+      url: url,
+      method: method.toUpperCase(),
+      mode: 'cors',
+      headers: header,
+      data: params
+    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, method.toUpperCase()))
+  };
+});
 
 
 export default httpFetch

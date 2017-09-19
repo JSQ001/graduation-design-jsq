@@ -203,7 +203,7 @@ class ConfirmPayment extends React.Component{
       status: this.state.status
     };
     this.setState({
-      searchParams:searchParams,
+      searchParams: searchParams,
       loading: true,
       page: 0
     }, ()=>{
