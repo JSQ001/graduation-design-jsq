@@ -17,6 +17,7 @@ const en_US = {
   "menu.edit-report": "Edit report",
   "menu.budget": "Budget setting",
   "menu.budget-organization": "Budget organization",
+  "menu.new-budget-organization": "New budget organization",
   "menu.budget-detail": "Budget detail",
   "menu.budget-scenarios": "Budget scenarios"
 };

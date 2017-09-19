@@ -33,7 +33,7 @@ class ValueList extends React.Component{
       pagination: {
         total: 0
       },
-      valueListPage: menuRoute.getMenuItemByAttr('value-list','key').children.newValueList    //新建值列表的页面项
+      valueListPage: menuRoute.getRouteItem('new-value-list','key')   //新建值列表的页面项
     };
   }
 

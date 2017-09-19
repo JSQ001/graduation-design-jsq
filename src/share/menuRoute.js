@@ -16,9 +16,8 @@ import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
 
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
+import NewBudgetOrganization from 'containers/budget/budget-organization/new-budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
-import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
-import BudgetVersions from 'containers/budget/budget-versions/budget-versions'
 import NewBudgetVersions from 'containers/budget/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget/budget-versions/budget-versions-detail'
 
@@ -74,16 +73,15 @@ const newBudgetVersions = {
   key:'new-budget-versions',
   url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
   components: NewBudgetVersions,
-  parent: 'budget'
+  parent: 'budget-organization'
 };
-
 
 //预算版本详情
 const budgetVersionsDetail = {
   key:'budget-versions-detail',
   url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
   components:BudgetVersionsDetail,
-  parent: 'budget'
+  parent: 'budget-organization'
 };
 
 //预算组织详情
@@ -91,7 +89,14 @@ const budgetDetail = {
   key:'budget-detail',
   url:'/main/budget/budget-organization/budget-detail/:id',
   components:BudgetDetail,
-  parent: 'budget'
+  parent: 'budget-organization'
+};
+
+const newBudgetOrganization = {
+  key:'new-budget-organization',
+  url:'/main/budget/budget-organization/new-budget-organization',
+  components: NewBudgetOrganization,
+  parent: 'budget-organization'
 };
 
 //预算组织定义
@@ -102,6 +107,7 @@ const budgetOrganization = {
   parent: 'budget',
   children: {
     budgetDetail,
+    newBudgetOrganization,
     budgetVersionsDetail,
     newBudgetVersions
   }
