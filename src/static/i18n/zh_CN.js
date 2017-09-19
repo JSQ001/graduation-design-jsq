@@ -16,9 +16,10 @@ const zh_CN = {
   "menu.expense-report": "报销单",
   "menu.edit-report": "编辑报销单",
   "menu.budget": "预算设置",
-  "menu.budget-organization": "预算组织设置",
+  "menu.budget-organization": "预算组织定义",
+  "menu.new-budget-organization": "新建预算组织定义",
   "menu.budget-detail": "预算组织详情",
-  "menu.budget-scenarios": "预算场景定义",
+  "menu.budget-scenarios": "预算场景定义"
 };
 
 export default zh_CN
