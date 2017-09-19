@@ -15,8 +15,9 @@ const en_US = {
   "menu.my-account": "My account",
   "menu.expense-report": "Expense report",
   "menu.edit-report": "Edit report",
-  "menu.budget-organization": "预算组织定义",
-  "search.count": "共搜索到 {count} 条数据"
+  "menu.budget": "Budget setting",
+  "menu.budget-organization": "Budget organization",
+  "menu.budget-scenarios": "Budget scenarios"
 };
 
 export default en_US

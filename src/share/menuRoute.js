@@ -14,21 +14,14 @@ import NewValueList from 'containers/setting/value-list/new-value-list'
 import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 import {setCurrentPage} from 'actions/main'
-import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 
+import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
+import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
 import BudgetScenarios from 'containers/budget/budget-scenarios/budget-scenarios'
 
 import configureStore from 'stores';
 
 const menuIndexUrl = '/main/dashboard';
-
-//预算组织定义
-const budgetOrganization = {
-  key:'budget-organization',
-  url:'/main/budget/budget-organization',
-  components: BudgetOrganization,
-  parent: 'budget'
-}
 
 //确认付款
 const confirmPayment = {
@@ -78,10 +71,27 @@ const budgetScenarios = {
   key:'budget-scenarios',
   url:'/main/budget/budget-scenarios',
   components: BudgetScenarios,
-  parent: 'budget',
-  children: {}
+  parent: 'budget'
 };
 
+const budgetDetail = {
+  key:'budget-detail',
+  url:'/main/budget/budget-organization/:id',
+  components: BudgetDetail,
+  parent: 'budget'
+};
+
+//预算组织定义
+const budgetOrganization = {
+  key:'budget-organization',
+  url:'/main/budget/budget-organization',
+  components: BudgetOrganization,
+  parent: 'budget',
+  children: {
+    budgetDetail,
+    budgetScenarios
+  }
+};
 
 //仪表盘
 const dashboard = {
@@ -105,7 +115,7 @@ const setting = {
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetOrganization, budgetScenarios]
+  subMenu: [budgetOrganization]
 };
 
 //报销单
