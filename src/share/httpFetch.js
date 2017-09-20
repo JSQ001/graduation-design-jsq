@@ -120,7 +120,7 @@ methodList.map(method => {
       mode: 'cors',
       headers: header,
       data: params
-    }).catch(e => e.toString().indexOf('401') > -1 && checkStatus({status: 401}, true, url, params, header, method.toUpperCase()))
+    }).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };
 });
 

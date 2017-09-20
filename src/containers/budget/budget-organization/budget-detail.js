@@ -18,6 +18,7 @@ import BudgetItem from 'containers/budget/budget-organization/budget-item/budget
 import BudgetGroup from 'containers/budget/budget-organization/budget-group/budget-group'
 
 import httpFetch from "share/httpFetch";
+import menuRoute from 'share/menuRoute'
 
 class BudgetDetail extends React.Component {
   constructor(props) {
@@ -32,13 +33,15 @@ class BudgetDetail extends React.Component {
         {key: 'ITEM', name:'预算项目定义'},
         {key: 'GROUP', name:'预算项目组定义'},
       ],
-      loading: true
+      loading: true,
+      budgetDetailPage: menuRoute.getRouteItem('budget-detail','key'),    //组织定义详情的页面项
     };
   }
 
   //设置预算到redux
   componentWillMount(){
     if(this.props.organization.id){
+      this.context.router.replace(this.state.budgetDetailPage.url.replace(':id', this.props.organization.id));
       this.setState({loading: false});
     }
     else
@@ -106,5 +109,9 @@ function mapStateToProps(state) {
     organization: state.budget.organization
   }
 }
+
+BudgetDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 export default connect(mapStateToProps)(injectIntl(BudgetDetail));
