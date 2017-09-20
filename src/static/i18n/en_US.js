@@ -21,6 +21,7 @@ const en_US = {
   "menu.budget-detail": "Budget budget detail",
   "menu.budget-scenarios": "Budget scenarios",
   "menu.new-budget-versions": "New budget versions",
+  "menu.budget-versions-detail":"budget versions detail",
   "budget.organizationName": "Budget organization name",
   "budget.organization": "Budget organization",
   "budget.structure":"Budget structure",

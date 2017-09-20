@@ -21,6 +21,7 @@ const zh_CN = {
   "menu.budget-detail": "预算组织详情",
   "menu.budget-scenarios": "预算场景定义",
   "menu.new-budget-versions": "新建预算版本",
+  "menu.budget-versions-detail":"预算版本详情",
   "budget.organizationName": "预算组织名称",
   "budget.organization": "预算组织",
   "budget.structure":"预算表",
