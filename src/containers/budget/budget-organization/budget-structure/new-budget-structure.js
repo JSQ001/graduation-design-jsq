@@ -8,6 +8,7 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import 'styles/budget/budget-organization/budget-structure/new-budget-structure.scss';
+import menuRoute from 'share/menuRoute'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -39,19 +40,19 @@ class NewBudgetStructure extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(this.state.organization)
-        console.log(values)
-        delete values.organizationName
-        values.organizationId = this.state.organization.id
-        console.log(values)
+        delete values.organizationName;
+        values.organizationId = this.state.organization.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
-          console.log(response)
+          if(response) {
+            message.success("保存成功！");
+            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id));
+          }
         })
-        message.success("保存成功！")
+
       }
     });
 
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -61,7 +62,7 @@ class NewBudgetStructure extends React.Component{
       {id:"month",value:"月度"},
       {id:"quarter",value:"季度"},
       {id:"year",value:'年度'}
-    ]
+    ];
     const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
 
     return(
