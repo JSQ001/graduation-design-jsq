@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge} from 'antd';
+import { Button, Table, Badge, notification  } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -78,12 +78,8 @@ class BudgetStructure extends React.Component {
   handleSearch = (values) =>{
     console.log(values)
     httpFetch.get(`${config.budgetUrl}/api/budget/structures/query`).then((response)=>{
-      console.log(response)
       response.data.map((item,index)=>{
-        console.log(item)
-        console.log(index)
         item.key = item.id;
-        httpFetch.get(`${config.budgetUrl}/api/budget/organization`)
       })
       this.setState({
         data: response.data,
@@ -93,7 +89,13 @@ class BudgetStructure extends React.Component {
   }
 
   handleCreate = () =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization','key').children.newBudgetStructure.url.replace(':id', this.props.id));
+    if(this.props.organization.isEnabled) {
+      this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
+    }else{
+      notification["error"]({
+        description:"请维护当前账套下的预算组织。"
+      })
+    }
   }
 
   render(){
@@ -102,9 +104,9 @@ class BudgetStructure extends React.Component {
       <div className="budget-structure">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'search.total'},{total:`${total}`})}</div>  /*共搜索到*条数据*/
+          <div className="table-header-title">{this.props.intl.formatMessage({id:'search.total'},{total:`${total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'button.create'})}</Button>  /*新 建*/
+            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'button.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
         <Table
@@ -121,8 +123,10 @@ BudgetStructure.contextTypes = {
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.budget.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetStructure));

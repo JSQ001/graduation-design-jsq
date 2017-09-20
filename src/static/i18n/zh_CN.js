@@ -28,11 +28,16 @@ const zh_CN = {
   "budget.organizationName": "预算组织名称",
   "budget.organization": "预算组织",
   "budget.structure":"预算表",
+  "menu.new-budget-structure": "新建预算表",
   "budget.structureCode": "预算表代码",
   "budget.structureName": "预算表名称",
+  "periodStrategy":"编制期段",
   "budget.structureDescription": "预算表描述",
   "search.total": "共搜索到 {total} 条数据",
   "button.create": "新 建",
+  "prompting.input": "请输入",
+  "prompting.select": "请选择",
+  "status": "状态 :  {statusCode}"
 
 };
 

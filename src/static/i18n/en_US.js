@@ -28,6 +28,7 @@ const en_US = {
   "budget.organizationName": "Budget organization name",
   "budget.organization": "Budget organization",
   "budget.structure":"Budget structure",
+  "menu.new-budget-structure": "新建预算表",
   "budget.structureCode": "Budget structure code",
   "budget.structureName": "Budget structure name",
   "budget.structureDescription": "Budget structure description",
