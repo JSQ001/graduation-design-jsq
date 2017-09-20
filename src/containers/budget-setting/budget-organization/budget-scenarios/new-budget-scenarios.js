@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message } from 'antd'
 const FormItem = Form.Item;
+const { TextArea } = Input;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
@@ -12,7 +13,7 @@ class ValueList extends React.Component{
     super(props);
     this.state = {
       isEnabled: true,
-      organizationName: '',
+      organizationName: ''
     };
   }
 
@@ -82,7 +83,7 @@ class ValueList extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>
-            {getFieldDecorator('description', {
+            {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
                 message: '请输入'
@@ -90,6 +91,13 @@ class ValueList extends React.Component{
               initialValue: ''
             })(
               <Input placeholder="请输入" />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="备注">
+            {getFieldDecorator('description', {
+              initialValue: ''
+            })(
+              <TextArea rows={4} placeholder="请输入"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="状态">

@@ -31,7 +31,8 @@ class BudgetScenarios extends React.Component {
       columns: [
         {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
-        {title: '预算场景描述', dataIndex: 'description', key: 'description'},
+        {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName'},
+        {title: '备注', dataIndex: 'description', key: 'description'},
         {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : ''}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
@@ -60,7 +61,7 @@ class BudgetScenarios extends React.Component {
 
   //得到对应单据列表数据
   getList(){
-    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page+1}&organizationId=${this.state.organizationInfo.id}&scenarioCode=${this.state.searchParams.scenariosCode||''}&description=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page+1}&organizationId=${this.state.organizationInfo.id}&scenarioCode=${this.state.searchParams.scenariosCode||''}&scenarioName=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
