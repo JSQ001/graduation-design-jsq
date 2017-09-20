@@ -13,6 +13,9 @@ import { setOrganization } from 'actions/budget'
 import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import BudgetStructure from 'containers/budget/budget-organization/budget-structure/budget-structure'
 import BudgetVersions from 'containers/budget/budget-organization/budget-versions/budget-versions'
+import BudgetType from 'containers/budget/budget-organization/budget-type/budget-type'
+import BudgetItem from 'containers/budget/budget-organization/budget-item/budget-item'
+import BudgetGroup from 'containers/budget/budget-organization/budget-group/budget-group'
 
 import httpFetch from "share/httpFetch";
 
@@ -25,6 +28,9 @@ class BudgetDetail extends React.Component {
         {key: 'SCENARIOS', name:'预算场景定义'},
         {key: 'STRUCTURE', name:'预算表'},
         {key: 'VERSIONS', name:'预算版本定义'},
+        {key: 'TYPE', name:'预算项目类型定义'},
+        {key: 'ITEM', name:'预算项目定义'},
+        {key: 'GROUP', name:'预算项目组定义'},
       ],
       loading: true
     };
@@ -32,8 +38,9 @@ class BudgetDetail extends React.Component {
 
   //设置预算到redux
   componentWillMount(){
-    if(this.props.organization.id)
+    if(this.props.organization.id){
       this.setState({loading: false});
+    }
     else
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then(res => {
         this.props.dispatch(setOrganization(res.data));
@@ -67,6 +74,15 @@ class BudgetDetail extends React.Component {
         break;
       case 'VERSIONS':
         content = BudgetVersions;
+        break;
+      case 'TYPE':
+        content = BudgetType;
+        break;
+      case 'ITEM':
+        content = BudgetItem;
+        break;
+      case 'GROUP':
+        content = BudgetGroup;
         break;
     }
     return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));

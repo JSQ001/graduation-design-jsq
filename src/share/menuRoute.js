@@ -13,18 +13,22 @@ import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
 import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
-import {setCurrentPage} from 'actions/main'
 
 import NewBudgetOrganization from 'containers/budget/budget-organization/new-budget-organization'
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
-
-import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
 import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
 import NewBudgetVersions from 'containers/budget/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget/budget-organization/budget-versions/budget-versions-detail'
 
+import BudgetStrategy from 'containers/budget/budget-strategy/budget-strategy'
+
+import BudgetRule from 'containers/budget/budget-rule/budget-rule'
+
+import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
+
 import configureStore from 'stores';
+import {setCurrentPage} from 'actions/main'
 
 const menuIndexUrl = '/main/dashboard';
 
@@ -70,6 +74,8 @@ const editReport = {
   components:EditReport,
   parent:'expense-report'
 };
+
+//////////////////////预算模块///////////////////////
 
 //新建预算表
 const newBudgetStructure = {
@@ -126,35 +132,69 @@ const budgetOrganization = {
   }
 };
 
-//仪表盘
-const dashboard = {
-  key:'dashboard',
-  url: menuIndexUrl,
-  components: Dashboard
+//预算控制策略定义
+const budgetStrategy = {
+  key:'budget-strategy',
+  url:'/main/budget/budget-strategy',
+  components: BudgetStrategy,
+  parent: 'budget',
+  children: {}
 };
 
-//财务管理
-const financialManagement = {
-  key:'financial-management',
-  subMenu: [confirmPayment]
+//预算控制规则定义
+const budgetRule = {
+  key:'budget-rule',
+  url:'/main/budget/budget-rule',
+  components: BudgetRule,
+  parent: 'budget',
+  children: {}
 };
 
-//设置
-const setting = {
-  key:'setting',
-  subMenu: [valueList]
+//预算日记账类型定义
+const budgetJournal = {
+  key:'budget-journal',
+  url:'/main/budget/budget-journal',
+  components: BudgetJournal,
+  parent: 'budget',
+  children: {}
 };
 
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetOrganization]
+  subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournal],
+  icon: 'tags-o'
+};
+
+//////////////////////预算模块结束///////////////////////
+
+//首页
+const dashboard = {
+  key:'dashboard',
+  url: menuIndexUrl,
+  components: Dashboard,
+  icon: 'home'
+};
+
+//财务管理
+const financialManagement = {
+  key:'financial-management',
+  subMenu: [confirmPayment],
+  icon: 'pay-circle-o'
+};
+
+//设置
+const setting = {
+  key:'setting',
+  subMenu: [valueList],
+  icon: 'setting'
 };
 
 //报销单
 const expenseReport = {
   key: 'expense-report',
-  subMenu: [myAccount,editReport]
+  subMenu: [myAccount,editReport],
+  icon: 'file-text'
 };
 
 /**
