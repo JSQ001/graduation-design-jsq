@@ -10,17 +10,17 @@ import Loading from 'components/loading'
 
 import { setOrganization } from 'actions/budget'
 
-import BudgetScenarios from 'containers/budget/budget-organization/budget-scenarios/budget-scenarios'
-import BudgetStructure from 'containers/budget/budget-organization/budget-structure/budget-structure'
-import BudgetVersions from 'containers/budget/budget-organization/budget-versions/budget-versions'
-import BudgetType from 'containers/budget/budget-organization/budget-type/budget-type'
-import BudgetItem from 'containers/budget/budget-organization/budget-item/budget-item'
-import BudgetGroup from 'containers/budget/budget-organization/budget-group/budget-group'
+import BudgetScenarios from 'containers/budget-setting/budget-organization/budget-scenarios/budget-scenarios'
+import BudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/budget-structure'
+import BudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/budget-versions'
+import BudgetType from 'containers/budget-setting/budget-organization/budget-type/budget-type'
+import BudgetItem from 'containers/budget-setting/budget-organization/budget-item/budget-item'
+import BudgetGroup from 'containers/budget-setting/budget-organization/budget-group/budget-group'
 
 import httpFetch from "share/httpFetch";
 import menuRoute from 'share/menuRoute'
 
-class BudgetDetail extends React.Component {
+class BudgetOrganizationDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,14 +34,14 @@ class BudgetDetail extends React.Component {
         {key: 'GROUP', name:'预算项目组定义'},
       ],
       loading: true,
-      budgetDetailPage: menuRoute.getRouteItem('budget-detail','key'),    //组织定义详情的页面项
+      budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
     };
   }
 
   //设置预算到redux
   componentWillMount(){
     if(this.props.organization.id){
-      this.context.router.replace(this.state.budgetDetailPage.url.replace(':id', this.props.organization.id));
+      this.context.router.replace(this.state.budgetOrganizationDetailPage.url.replace(':id', this.props.organization.id));
       this.setState({loading: false});
     }
     else
@@ -94,7 +94,7 @@ class BudgetDetail extends React.Component {
   render(){
     return (
       <div>
-        <Tabs type="card" onChange={this.onChangeTabs}>
+        <Tabs onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         {this.state.loading ? <Loading/> : this.renderContent()}
@@ -110,8 +110,8 @@ function mapStateToProps(state) {
   }
 }
 
-BudgetDetail.contextTypes = {
+BudgetOrganizationDetail.contextTypes = {
   router: React.PropTypes.object
 };
 
-export default connect(mapStateToProps)(injectIntl(BudgetDetail));
+export default connect(mapStateToProps)(injectIntl(BudgetOrganizationDetail));
