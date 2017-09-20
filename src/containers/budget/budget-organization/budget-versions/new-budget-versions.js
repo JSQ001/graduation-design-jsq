@@ -103,17 +103,14 @@ class NewBudgetVersions extends React.Component {
         'organizationId':this.props.organization.id
       }
 
-      this.saverDate(toleValues);
-
+      this.saveData(toleValues);
     }
-
-
   };
 
   //保存数据
-  saverDate(value){
+  saveData(value){
     let path ="/main/budget/versions/budget-versions/budget-versions-detail"
-    let  Locations={
+    let  locations={
       key: 'budget-versions-detail',
       pathname: `/main/budget/budget-organization/budget-detail/${this.props.organization.id}/budget-versions/budget-versions-detail`,
       state: {
@@ -122,11 +119,11 @@ class NewBudgetVersions extends React.Component {
     }
 
     return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-      Locations.state.Data = response.data;
+      locations.state.Data = response.data;
       if(response.status==200){
         message.success('保存成功', 2);
         setTimeout(() => {
-          this.setState({ newData: response.data }, () => this.context.router.push(Locations))
+          this.setState({ newData: response.data }, () => this.context.router.push(locations))
         },200)
       }
       else {
