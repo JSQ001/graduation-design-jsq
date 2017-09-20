@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Button, Table, Modal } from 'antd'
+import { Button, Table, Modal, Badge } from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
@@ -24,12 +24,11 @@ class BudgetScenarios extends React.Component {
         scenariosDesc: ""
       },
       columns: [
-        {title: '预算组织', dataIndex: 'organizationId'},
+        {title: '预算组织', dataIndex: 'scenarioName'},
         {title: '预算场景代码', dataIndex: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'description'},
-        {title: '备注', dataIndex: ''},
         {title: '默认场景', dataIndex: ''},
-        {title: '状态', dataIndex: ''}
+        {title: '状态', dataIndex: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       data: [],    //列表值
       showSlideFrame: false,
@@ -38,23 +37,21 @@ class BudgetScenarios extends React.Component {
 
   componentWillMount(){
     console.log(this.props.id);
-    this.getList();
+    console.log(this.props.organization);
+    this.getList(this);
+
   }
 
   //得到对应单据列表数据
-  getList(){
+  getList(_this){
     return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=2&page=1&organizationId=${this.props.id}`).then((response)=>{
-      /*response.data.map((item, index)=>{
-        item.index = this.state.page * this.state.pageSize + index + 1;
-        item.key = item.index;
-      });
-      this.setState({
-        data: response.data,
-        loading: false
-      }, ()=>{
-        this.refreshRowSelection()
-      })*/
-
+      if(response.status==200){
+        this.setState({
+          data: response.data
+        })
+      }
+    }).catch((e)=>{
+      console.log(e);
     })
   }
 
@@ -79,11 +76,6 @@ class BudgetScenarios extends React.Component {
       scenariosCode: "",
       scenariosDesc: ""
     }})
-  };
-
-  //新建
-  newScenarios = () => {
-
   };
 
   showSlide = (flag) => {
