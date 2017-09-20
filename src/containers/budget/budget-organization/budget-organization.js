@@ -44,9 +44,14 @@ class BudgetOrganization extends React.Component {
     this.getList();
   }
 
-  //得到值列表数据
+  //得到列表数据
   getList(){
-    return httpFetch.get(`${config.budgetUrl}/api/budget/organizations/query?&page=${this.state.page}&size=${this.state.pageSize}&setOfBooksId=1`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/organizations/query?&page=${this.state.page}&size=${this.state.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    return httpFetch.get(url).then((response)=>{
       response.data.map((item)=>{
         item.key = item.id;
       });
@@ -77,20 +82,26 @@ class BudgetOrganization extends React.Component {
   };
 
   search = (result) => {
-    console.log(result)
     this.setState({
+      page: 0,
       searchParams: {
         setOfBooksId: result.setOfBooksId ? result.setOfBooksId : 1,
         organizationCode: result.organizationCode ? result.organizationCode : '',
         organizationName: result.organizationName ? result.organizationName : ''
       }
     }, ()=>{
-
+      this.getList();
     })
   };
 
   clear = () => {
-
+    this.setState({
+      searchParams: {
+        setOfBooksId: '',
+        organizationCode: '',
+        organizationName: ''
+      }
+    })
   };
 
   searchEventHandle = (event, value) => {

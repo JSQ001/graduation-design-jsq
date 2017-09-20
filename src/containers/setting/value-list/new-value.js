@@ -57,7 +57,7 @@ class ValueList extends React.Component{
             {getFieldDecorator('enabled', {
               initialValue: true
             })(
-              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="值名称">
