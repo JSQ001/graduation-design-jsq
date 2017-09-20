@@ -7,7 +7,7 @@ import config from 'config'
 
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
-import NewValue from 'containers/budget/budget-organization/budget-scenarios/new-value'
+import NewValue from 'containers/budget-setting/budget-organization/budget-scenarios/new-value'
 
 import 'styles/budget/budget-scenarios/budget-scenarios.scss'
 

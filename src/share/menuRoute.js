@@ -14,19 +14,19 @@ import NewValueList from 'containers/setting/value-list/new-value-list'
 import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
-import NewBudgetOrganization from 'containers/budget/budget-organization/new-budget-organization'
-import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
-import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
-import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
-import BudgetStructureDetail from 'containers/budget/budget-organization/budget-structure/budget-structure-detail'
-import NewBudgetVersions from 'containers/budget/budget-organization/budget-versions/new-budget-versions'
-import BudgetVersionsDetail from 'containers/budget/budget-organization/budget-versions/budget-versions-detail'
+import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
+import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
+import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
+import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
+import BudgetStructureDetail from 'containers/budget-setting/budget-organization/budget-structure/budget-structure-detail'
+import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
+import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
 
-import BudgetStrategy from 'containers/budget/budget-strategy/budget-strategy'
+import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 
-import BudgetRule from 'containers/budget/budget-rule/budget-rule'
+import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
-import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
+import BudgetJournalType from 'containers/budget-setting/budget-journal-type/budget-journal-type'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -76,52 +76,52 @@ const editReport = {
   parent:'expense-report'
 };
 
-//////////////////////预算模块///////////////////////
+//////////////////////预算设置模块///////////////////////
 
 //新建预算表
 const newBudgetStructure = {
   key:'new-budget-structure',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-structure/new-budget-structure',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/new-budget-structure',
   components: NewBudgetStructure,
-  parent: 'budget-detail'
+  parent: 'budget-organization-detail'
 };
 
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-structure/budget-structure-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail',
   components: BudgetStructureDetail,
-  parent:'budget-detail'
+  parent:'budget-organization-detail'
 }
 
 //新建预算版本
 const newBudgetVersions = {
   key:'new-budget-versions',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/new-budget-versions',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/new-budget-versions',
   components: NewBudgetVersions,
-  parent: 'budget-detail'
+  parent: 'budget-organization-detail'
 };
 
 //预算版本详情
 const budgetVersionsDetail = {
   key:'budget-versions-detail',
-  url:'/main/budget/budget-organization/budget-detail/:id/budget-versions/budget-versions-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail',
   components:BudgetVersionsDetail,
-  parent: 'budget-detail'
+  parent: 'budget-organization-detail'
 };
 
 //预算组织详情
-const budgetDetail = {
-  key:'budget-detail',
-  url:'/main/budget/budget-organization/budget-detail/:id',
-  components: BudgetDetail,
-  parent: 'budget'
+const budgetOrganizationDetail = {
+  key:'budget-organization-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id',
+  components: BudgetOrganizationDetail,
+  parent: 'budget-setting'
 };
 
 //新建预算组织
 const newBudgetOrganization = {
   key:'new-budget-organization',
-  url:'/main/budget/budget-organization/new-budget-organization',
+  url:'/main/budget-setting/budget-organization/new-budget-organization',
   components: NewBudgetOrganization,
   parent: 'budget-organization'
 };
@@ -129,12 +129,12 @@ const newBudgetOrganization = {
 //预算组织定义
 const budgetOrganization = {
   key:'budget-organization',
-  url:'/main/budget/budget-organization',
+  url:'/main/budget-setting/budget-organization',
   components: BudgetOrganization,
-  parent: 'budget',
+  parent: 'budget-setting',
   children: {
     newBudgetOrganization,
-    budgetDetail,
+    budgetOrganizationDetail,
     budgetVersionsDetail,
     newBudgetVersions,
     newBudgetStructure,
@@ -145,33 +145,33 @@ const budgetOrganization = {
 //预算控制策略定义
 const budgetStrategy = {
   key:'budget-strategy',
-  url:'/main/budget/budget-strategy',
+  url:'/main/budget-setting/budget-strategy',
   components: BudgetStrategy,
-  parent: 'budget',
+  parent: 'budget-setting',
   children: {}
 };
 
 //预算控制规则定义
 const budgetRule = {
   key:'budget-rule',
-  url:'/main/budget/budget-rule',
+  url:'/main/budget-setting/budget-rule',
   components: BudgetRule,
-  parent: 'budget',
+  parent: 'budget-setting',
   children: {}
 };
 
 //预算日记账类型定义
 const budgetJournal = {
-  key:'budget-journal',
-  url:'/main/budget/budget-journal',
-  components: BudgetJournal,
-  parent: 'budget',
+  key:'budget-journal-type',
+  url:'/main/budget-setting/budget-journal-type',
+  components: BudgetJournalType,
+  parent: 'budget-setting',
   children: {}
 };
 
 //预算
-const budget = {
-  key:'budget',
+const budgetSetting = {
+  key:'budget-setting',
   subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournal],
   icon: 'tags-o'
 };
@@ -226,7 +226,7 @@ const menu = [
   setting,
   financialManagement,
   expenseReport,
-  budget
+  budgetSetting
 ];
 
 /**

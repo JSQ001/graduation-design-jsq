@@ -15,16 +15,16 @@ const zh_CN = {
   "menu.my-account": "我的账本",
   "menu.expense-report": "报销单",
   "menu.edit-report": "编辑报销单",
-  "menu.budget": "预算设置",
+  "menu.budget-setting": "预算设置",
   "menu.new-budget-organization": "新建预算组织定义",
   "menu.budget-organization": "预算组织定义",
-  "menu.budget-detail": "预算组织详情",
+  "menu.budget-organization-detail": "预算组织详情",
   "menu.budget-scenarios": "预算场景定义",
   "menu.new-budget-versions": "新建预算版本",
   "menu.budget-versions-detail":"预算版本详情",
   "menu.budget-strategy": "预算控制策略定义",
   "menu.budget-rule": "预算控制规则定义",
-  "menu.budget-journal": "预算日记账类型定义",
+  "menu.budget-journal-type": "预算日记账类型定义",
   "budget.organizationName": "预算组织名称",
   "budget.organization": "预算组织",
   "budget.structure":"预算表",
@@ -37,7 +37,7 @@ const zh_CN = {
   "button.create": "新 建",
   "prompting.input": "请输入",
   "prompting.select": "请选择",
-  "status": "状态 :  {statusCode}"
+  "status": "状态 : {statusCode}"
 
 };
 
