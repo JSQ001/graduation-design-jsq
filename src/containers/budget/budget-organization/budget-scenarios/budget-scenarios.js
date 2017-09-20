@@ -7,8 +7,8 @@ import config from 'config'
 
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
-import NewValue from 'containers/budget/budget-organization/budget-scenarios/new-value'
-import UpdateValue from 'containers/budget/budget-organization/budget-scenarios/update-value'
+import NewValue from 'containers/budget/budget-organization/budget-scenarios/new-budget-scenarios'
+import UpdateValue from 'containers/budget/budget-organization/budget-scenarios/update-budget-scenarios'
 
 import 'styles/budget/budget-scenarios/budget-scenarios.scss'
 
@@ -16,6 +16,9 @@ class BudgetScenarios extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      organizationInfo: {},
+      newParams: {},
+      updateParams: {},
       searchForm: [
         {type: 'input', id: 'scenariosCode', label: '预算场景代码'},
         {type: 'input', id: 'scenariosDesc', label: '预算场景描述'}
@@ -26,10 +29,10 @@ class BudgetScenarios extends React.Component {
       },
       Loading: true,
       columns: [
-        {title: '预算组织', dataIndex: 'scenarioName', key: 'scenarioName'},
+        {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'description', key: 'description'},
-        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag'},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : ''}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
@@ -44,15 +47,20 @@ class BudgetScenarios extends React.Component {
   }
 
   componentWillMount(){
-    console.log(this.props.id);
-    //console.log(this.props.organization);
-    this.getList();
-
+    this.setState({
+      organizationInfo: this.props.organization,
+      newParams: {
+        organizationName: this.props.organization.organizationName
+      }
+    }, () => {
+      console.log(this.state.organizationInfo);
+      this.getList();
+    })
   }
 
   //得到对应单据列表数据
   getList(){
-    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page+1}&organizationId=${this.props.id}&scenarioCode=${this.state.searchParams.scenariosCode||''}&description=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page+1}&organizationId=${this.state.organizationInfo.id}&scenarioCode=${this.state.searchParams.scenariosCode||''}&description=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
@@ -119,33 +127,36 @@ class BudgetScenarios extends React.Component {
     })
   };
 
-  /**
-   * 关闭侧栏的方法，判断是否有内部参数传出
-   * @param params
-   */
   handleCloseSlide = (params) => {
-    console.log(params);
+    if(params) {
+      this.getList();
+    }
     this.setState({
       showSlideFrame: false
     })
   };
   handleCloseUpdateSlide = (params) => {
-    console.log(params);
+    if(params) {
+      this.getList();
+    }
     this.setState({
       showUpdateSlideFrame: false
     })
   };
 
   handleRowClick = (record) => {
+    record.organizationName = this.state.organizationInfo.organizationName;
     console.log(record);
+    this.setState({
+      updateParams: record
+    })
     this.showUpdateSlide(true)
   };
 
   render(){
-    const { searchForm, columns, pagination, Loading, data, showSlideFrame, showUpdateSlideFrame } = this.state;
+    const { searchForm, columns, pagination, Loading, data, showSlideFrame, showUpdateSlideFrame, updateParams, newParams } = this.state;
     return (
       <div className="budget-scenarios">
-        <h3 className="header-title">预算场景定义</h3>
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
@@ -170,13 +181,13 @@ class BudgetScenarios extends React.Component {
                     content={NewValue}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
-                    params={{}}/>
+                    params={newParams}/>
         <SlideFrame title="编辑预算场景"
                     show={showUpdateSlideFrame}
                     content={UpdateValue}
                     afterClose={this.handleCloseUpdateSlide}
                     onClose={() => this.showUpdateSlide(false)}
-                    params={{scenarioName:'123'}}/>
+                    params={updateParams}/>
       </div>
     )
   }
