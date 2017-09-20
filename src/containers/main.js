@@ -43,7 +43,7 @@ class Main extends React.Component{
           item.subMenu ? (
             <SubMenu
               key={item.key}
-              title={<span><Icon type="user" /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
+              title={<span><Icon type={item.icon} /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
                 <Menu.Item key={subItem.key}><Link to={subItem.url}>{this.props.intl.formatMessage({id: `menu.${subItem.key}`})}</Link></Menu.Item>
@@ -53,7 +53,7 @@ class Main extends React.Component{
             <Menu.Item key={item.key}>
               <Link to={item.url}>
                 <span>
-                  <Icon type="file" />
+                  <Icon type={item.icon} />
                   <span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span>
                 </span>
               </Link>
