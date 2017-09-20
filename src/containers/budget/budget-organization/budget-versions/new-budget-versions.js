@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch';
-import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon} from 'antd'
+import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon,message} from 'antd'
 import 'styles/budget/budget-versions/new-budget-versions.scss'
 
 const FormItem = Form.Item;
@@ -20,6 +20,7 @@ class NewBudgetVersions extends React.Component {
     this.state = {
       versionCodeError:false,
       statusError:false,
+      newData:[],
       checkoutCodeData:[
         {versionCode:'Tom'},
         {versionCode:'123'},
@@ -81,7 +82,7 @@ class NewBudgetVersions extends React.Component {
   }
 
 
-  //处理提交数据
+  //检查处理提交数据
   handleSave = (e) =>{
     e.preventDefault();
     console.log(this.props.form.getFieldsValue())
@@ -95,9 +96,46 @@ class NewBudgetVersions extends React.Component {
 
     console.log(this.state.statusError)
     if(!this.state.statusError){
+      const dataValue=value['versionDate']
+      const toleValues={
+        ...value,
+        'versionDate':value['versionDate'].format('YYYY-MM-DD'),
+        'organizationId':this.props.organization.id
+      }
+
+      this.saverDate(toleValues);
 
     }
+
+
   };
+
+  //保存数据
+  saverDate(value){
+    let path ="/main/budget/versions/budget-versions/budget-versions-detail"
+    let  Locations={
+      key: 'budget-versions-detail',
+      pathname: `/main/budget/budget-organization/budget-detail/${this.props.organization.id}/budget-versions/budget-versions-detail`,
+      state: {
+        Data:{}
+      }
+    }
+
+    return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+      Locations.state.Data = response.data;
+      if(response.status==200){
+        message.success('保存成功', 2);
+        setTimeout(() => {
+          this.setState({ newData: response.data }, () => this.context.router.push(Locations))
+        },200)
+      }
+      else {
+        message.error('保存失败');
+      }
+    } );
+  }
+
+
 
 //跳转到详情
 

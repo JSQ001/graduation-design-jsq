@@ -178,13 +178,19 @@ class BudgetVersions extends React.Component {
 
   //保存数据
   saverDate(value){
-    let path ="/main/budget/versions/budget-versions/budget-versions-detail"
+    let Locations={
+      key: 'budget-versions-detail',
+      pathname: '/main/budget/versions/budget-versions/budget-versions-detail',
+      state: {
+        Data:{}
+      }
+    }
     return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-
+     //browserHistory.push(Locations)
       Locations.state.Data = response.data;
       if(response.status==200){
         setTimeout(() => {
-          this.setState({ newData: response.data }, () => browserHistory.push(Locations))
+          this.setState({ newData: response.data }, () =>this.context.router.push(Locations) )
         },0)
       }
     } );
@@ -211,7 +217,7 @@ class BudgetVersions extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{`共${this.state.pagination.total}条数据`}</div>
+          <div className="table-header-title">{`共 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary"  onClick={this.creactHandle}>新建</Button>
           </div>
