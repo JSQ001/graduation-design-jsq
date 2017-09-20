@@ -18,6 +18,7 @@ import NewBudgetOrganization from 'containers/budget/budget-organization/new-bud
 import BudgetOrganization from 'containers/budget/budget-organization/budget-organization'
 import BudgetDetail from 'containers/budget/budget-organization/budget-detail'
 import NewBudgetStructure from 'containers/budget/budget-organization/budget-structure/new-budget-structure'
+import BudgetStructureDetail from 'containers/budget/budget-organization/budget-structure/budget-structure-detail'
 import NewBudgetVersions from 'containers/budget/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget/budget-organization/budget-versions/budget-versions-detail'
 
@@ -85,6 +86,14 @@ const newBudgetStructure = {
   parent: 'budget-detail'
 };
 
+//预算表详情
+const budgetStructureDetail = {
+  key:'budget-structure-detail',
+  url:'/main/budget/budget-organization/budget-detail/:id/budget-structure/budget-structure-detail',
+  components: BudgetStructureDetail,
+  parent:'budget-detail'
+}
+
 //新建预算版本
 const newBudgetVersions = {
   key:'new-budget-versions',
@@ -128,7 +137,8 @@ const budgetOrganization = {
     budgetDetail,
     budgetVersionsDetail,
     newBudgetVersions,
-    newBudgetStructure
+    newBudgetStructure,
+    budgetStructureDetail
   }
 };
 
