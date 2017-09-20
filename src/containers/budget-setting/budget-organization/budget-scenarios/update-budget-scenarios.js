@@ -5,7 +5,7 @@ const FormItem = Form.Item;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import 'styles/budget/budget-scenarios/new-value.scss'
+import 'styles/budget/budget-scenarios/new-budget-scenarios.scss'
 
 class ValueList extends React.Component{
   constructor(props) {
