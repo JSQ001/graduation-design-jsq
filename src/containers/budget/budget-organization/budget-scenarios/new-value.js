@@ -39,9 +39,6 @@ class ValueList extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
-        //this.props.close(values);
-
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           console.log(res);
           if(res.status == 200){
@@ -109,7 +106,7 @@ class ValueList extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator('isEnabled', {
-              initialValue: true
+              initialValue: isEnabled
             })(
               <div>
                 <Switch defaultChecked={true} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>

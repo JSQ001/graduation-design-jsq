@@ -23,13 +23,19 @@ class BudgetScenarios extends React.Component {
         scenariosCode: "",
         scenariosDesc: ""
       },
+      Loading: true,
       columns: [
-        {title: '预算组织', dataIndex: 'scenarioName'},
-        {title: '预算场景代码', dataIndex: 'scenarioCode'},
-        {title: '预算场景描述', dataIndex: 'description'},
-        {title: '默认场景', dataIndex: ''},
-        {title: '状态', dataIndex: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '预算组织', dataIndex: 'scenarioName', key: 'scenarioName'},
+        {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
+        {title: '预算场景描述', dataIndex: 'description', key: 'description'},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag'},
+        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
+      pagination: {
+        total: 0
+      },
+      page: 0,
+      pageSize: 10,
       data: [],    //列表值
       showSlideFrame: false,
     }
@@ -37,17 +43,27 @@ class BudgetScenarios extends React.Component {
 
   componentWillMount(){
     console.log(this.props.id);
-    console.log(this.props.organization);
-    this.getList(this);
+    //console.log(this.props.organization);
+    this.getList();
 
   }
 
   //得到对应单据列表数据
-  getList(_this){
-    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=2&page=1&organizationId=${this.props.id}`).then((response)=>{
+  getList(){
+    return httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page+1}&organizationId=${this.props.id}&scenarioCode=${this.state.searchParams.scenariosCode||''}&description=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
       if(response.status==200){
+        response.data.map((item, index)=>{
+          item.index = this.state.page * this.state.pageSize + index + 1;
+          item.key = item.index;
+        });
         this.setState({
-          data: response.data
+          data: response.data,
+          loading: false,
+          pagination: {
+            total: Number(response.headers['x-total-count']),
+            onChange: this.onChangePager,
+            pageSize: this.state.pageSize
+          }
         })
       }
     }).catch((e)=>{
@@ -55,18 +71,29 @@ class BudgetScenarios extends React.Component {
     })
   }
 
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
+  };
+
   //搜索
   search = (result) => {
     let searchParams = {
-      scenariosCode: "",
-      scenariosDesc: ""
+      scenariosCode: result.scenariosCode,
+      scenariosDesc: result.scenariosDesc
     };
     this.setState({
       searchParams:searchParams,
       loading: true,
       page: 0
     }, ()=>{
-      //
+      this.getList();
     })
   };
 
@@ -96,7 +123,7 @@ class BudgetScenarios extends React.Component {
   };
 
   render(){
-    const { searchForm, columns, data, showSlideFrame } = this.state;
+    const { searchForm, columns, pagination, Loading, data, showSlideFrame } = this.state;
     return (
       <div className="budget-scenarios">
         <h3 className="header-title">预算场景定义</h3>
@@ -106,13 +133,15 @@ class BudgetScenarios extends React.Component {
           clearHandle={this.clear}
           eventHandle={this.searchEventHandle}/>
         <div className="table-header">
-          <div className="table-header-title">共搜索到 0 条数据</div>
+          <div className="table-header-title">{`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={() => this.showSlide(true)}>新 建</Button>
           </div>
         </div>
         <Table columns={columns}
                dataSource={data}
+               pagination={pagination}
+               Loading={Loading}
                bordered
                size="middle"/>
 
