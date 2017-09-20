@@ -15,6 +15,7 @@ import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
+import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
 import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
 import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
 import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
@@ -142,13 +143,23 @@ const budgetOrganization = {
   }
 };
 
+//新建预算控制策略
+const newBudgetStrategy = {
+  key:'new-budget-strategy',
+  url:'/main/budget-setting/budget-strategy/new-budget-strategy',
+  components: NewBudgetStrategy,
+  parent: 'budget-strategy'
+};
+
 //预算控制策略定义
 const budgetStrategy = {
   key:'budget-strategy',
   url:'/main/budget-setting/budget-strategy',
   components: BudgetStrategy,
   parent: 'budget-setting',
-  children: {}
+  children: {
+    newBudgetStrategy
+  }
 };
 
 //预算控制规则定义

@@ -8,7 +8,7 @@ import config from 'config'
 
 import 'styles/budget/budget-scenarios/new-budget-scenarios.scss'
 
-class ValueList extends React.Component{
+class NewBudgetScenarios extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -131,6 +131,6 @@ function mapStateToProps(state) {
   return {}
 }
 
-const WrappedValueList = Form.create()(ValueList);
+const WrappedValueList = Form.create()(NewBudgetScenarios);
 
 export default connect(mapStateToProps)(WrappedValueList);
