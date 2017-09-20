@@ -8,6 +8,7 @@ import config from 'config'
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
 import NewValue from 'containers/budget/budget-organization/budget-scenarios/new-value'
+import UpdateValue from 'containers/budget/budget-organization/budget-scenarios/update-value'
 
 import 'styles/budget/budget-scenarios/budget-scenarios.scss'
 
@@ -38,6 +39,7 @@ class BudgetScenarios extends React.Component {
       pageSize: 10,
       data: [],    //列表值
       showSlideFrame: false,
+      showUpdateSlideFrame: false,
     }
   }
 
@@ -111,6 +113,12 @@ class BudgetScenarios extends React.Component {
     })
   };
 
+  showUpdateSlide = (flag) => {
+    this.setState({
+      showUpdateSlideFrame: flag
+    })
+  };
+
   /**
    * 关闭侧栏的方法，判断是否有内部参数传出
    * @param params
@@ -121,9 +129,20 @@ class BudgetScenarios extends React.Component {
       showSlideFrame: false
     })
   };
+  handleCloseUpdateSlide = (params) => {
+    console.log(params);
+    this.setState({
+      showUpdateSlideFrame: false
+    })
+  };
+
+  handleRowClick = (record) => {
+    console.log(record);
+    this.showUpdateSlide(true)
+  };
 
   render(){
-    const { searchForm, columns, pagination, Loading, data, showSlideFrame } = this.state;
+    const { searchForm, columns, pagination, Loading, data, showSlideFrame, showUpdateSlideFrame } = this.state;
     return (
       <div className="budget-scenarios">
         <h3 className="header-title">预算场景定义</h3>
@@ -142,6 +161,7 @@ class BudgetScenarios extends React.Component {
                dataSource={data}
                pagination={pagination}
                Loading={Loading}
+               onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
 
@@ -151,6 +171,12 @@ class BudgetScenarios extends React.Component {
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
                     params={{}}/>
+        <SlideFrame title="编辑预算场景"
+                    show={showUpdateSlideFrame}
+                    content={UpdateValue}
+                    afterClose={this.handleCloseUpdateSlide}
+                    onClose={() => this.showUpdateSlide(false)}
+                    params={{scenarioName:'123'}}/>
       </div>
     )
   }

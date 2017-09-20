@@ -32,7 +32,7 @@ class ValueList extends React.Component{
   }
 
   componentWillMount(){
-
+    
   }
 
   handleSave = (e) =>{
@@ -78,20 +78,19 @@ class ValueList extends React.Component{
               rules: [{
                 required: true
               }],
-              initialValue: '甄汇预算组织'
+              initialValue: ''
             })(
-              <Input />
+              <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景代码" hasFeedback>
+          <FormItem {...formItemLayout} label="预算场景代码">
             {getFieldDecorator('scenarioCode', {
               rules: [{
-                required: true,
-                message: '请输入'
+                required: true
               }],
               initialValue: ''
             })(
-              <Input placeholder="请输入" />
+              <Input disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>
