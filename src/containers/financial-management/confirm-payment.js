@@ -146,7 +146,8 @@ class ConfirmPayment extends React.Component{
       });
       this.setState({
         data: response.data,
-        loading: false
+        loading: false,
+        current: this.state.page + 1
       }, ()=>{
         this.refreshRowSelection()
       })
