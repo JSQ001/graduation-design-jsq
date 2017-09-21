@@ -11,7 +11,8 @@ body{
 
 #app{
   height: 100vh;
-  width: 100vw;
+  min-width: 1366px;
+  overflow-x: auto;
 }
 
 .ant-tabs-card .ant-tabs-nav{
@@ -163,6 +164,7 @@ table{
   margin-top:16px;
   margin-bottom:2px;
 }
+
 
 
 

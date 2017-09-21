@@ -1,7 +1,11 @@
 .helios-main{
-  width: 100vw;
   height: 100vh;
+  width: auto;
   .helios-sider{
+    z-index: 2;
+    position: fixed;
+    left: 0;
+    top: 0;
     height: 100vh;
     .company-name{
       height: 64px;
@@ -10,7 +14,17 @@
       color: #FFFFFF;
       width: 100%;
       text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
+  }
+  .content-layout{
+    -webkit-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+    -moz-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+    -ms-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+    -o-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
   .helios-header{
     padding: 16px;
@@ -79,8 +93,6 @@
     margin: 8px 16px;
     padding: 27px 20px 0 20px;
     height: calc(100vh - 80px);
-    overflow-y: scroll;
-    width: calc(100vw - 226px);
     background: #fff;
   }
 }
