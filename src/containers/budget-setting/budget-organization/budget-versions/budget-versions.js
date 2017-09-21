@@ -9,10 +9,8 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import {Link,Redirect,browserHistory,History} from 'react-router'
 import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Icon} from 'antd'
-import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 import 'styles/budget/budget-versions/budget-versions.scss'
-import ReactDom, { unstable_batchedUpdates } from 'react-dom';
 const FormItem = Form.Item;
 
 class BudgetVersions extends React.Component {

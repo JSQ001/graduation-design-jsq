@@ -19,10 +19,10 @@ class CompanySelect extends React.Component {
         {title: '公司类型', dataIndex: 'companyType', key: 'companyType',}
         ],
       data:[
-        {companyCode:'code1',companyName:'companyName1',companyType:'type1',isEnabled:'true' },
-        {companyCode:'code2',companyName:'companyName2',companyType:'type2',isEnabled:'true' },
-        {companyCode:'code3',companyName:'companyName3',companyType:'type3',isEnabled:'true' },
-        {companyCode:'code4',companyName:'companyName4',companyType:'type4',isEnabled:'true' },
+        {companyId:123,companyCode:'code1',companyName:'companyName1',companyType:'type1',isEnabled:'true' },
+        {companyId:124,companyCode:'code2',companyName:'companyName2',companyType:'type2',isEnabled:'true' },
+        {companyId:125,companyCode:'code3',companyName:'companyName3',companyType:'type3',isEnabled:'true' },
+        {companyId:126,companyCode:'code4',companyName:'companyName4',companyType:'type4',isEnabled:'true' },
       ],
       searchForm:[
         {type: 'input', id: 'companyCode', label: '公司代码'},
