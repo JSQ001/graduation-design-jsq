@@ -17,10 +17,10 @@ class BudgetOrganization extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '预算组织代码', dataIndex: 'organizationCode', width: '25%'},
-        {title: '预算组织名称', dataIndex: 'organizationName', width: '25%'},
+        {title: '预算组织代码', dataIndex: 'organizationCode', width: '30%'},
+        {title: '预算组织名称', dataIndex: 'organizationName', width: '30%'},
         {title: '账套', dataIndex: 'setOfBooksId', width: '25%'},
-        {title: '状态', dataIndex: 'isEnabled', width: '25%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
