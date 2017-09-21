@@ -1,14 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Button, Table, Modal, Badge } from 'antd'
+import { Button, Table, Badge } from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
-import NewValue from 'containers/budget-setting/budget-organization/budget-scenarios/new-budget-scenarios'
-import UpdateValue from 'containers/budget-setting/budget-organization/budget-scenarios/update-budget-scenarios'
+import NewBudgetScenarios from 'containers/budget-setting/budget-organization/budget-scenarios/new-budget-scenarios'
+import UpdateBudgetScenarios from 'containers/budget-setting/budget-organization/budget-scenarios/update-budget-scenarios'
 
 class BudgetScenarios extends React.Component {
   constructor(props) {
@@ -177,13 +177,13 @@ class BudgetScenarios extends React.Component {
 
         <SlideFrame title="新建预算场景"
                     show={showSlideFrame}
-                    content={NewValue}
+                    content={NewBudgetScenarios}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
                     params={newParams}/>
         <SlideFrame title="编辑预算场景"
                     show={showUpdateSlideFrame}
-                    content={UpdateValue}
+                    content={UpdateBudgetScenarios}
                     afterClose={this.handleCloseUpdateSlide}
                     onClose={() => this.showUpdateSlide(false)}
                     params={updateParams}/>

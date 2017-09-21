@@ -6,9 +6,9 @@ const { TextArea } = Input;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import 'styles/budget/budget-scenarios/new-budget-scenarios.scss'
+import 'styles/budget/budget-organization/budget-scenarios/new-budget-scenarios.scss'
 
-class ValueList extends React.Component{
+class UpdateBudgetScenarios extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -134,6 +134,6 @@ function mapStateToProps(state) {
   return {}
 }
 
-const WrappedValueList = Form.create()(ValueList);
+const WrappedUpdateBudgetScenarios = Form.create()(UpdateBudgetScenarios);
 
-export default connect(mapStateToProps)(WrappedValueList);
+export default connect(mapStateToProps)(WrappedUpdateBudgetScenarios);
