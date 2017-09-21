@@ -15,7 +15,6 @@ import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
-import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
 import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
 import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
 import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
@@ -25,6 +24,8 @@ import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
 
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
+import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
+import BudgetStrategyDetail from 'containers/budget-setting/budget-strategy/budget-strategy-detail'
 
 import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
@@ -163,6 +164,14 @@ const newBudgetStrategy = {
   parent: 'budget-strategy'
 };
 
+//预算控制策略详情
+const budgetStrategyDetail = {
+  key:'budget-strategy-detail',
+  url:'/main/budget-setting/budget-strategy/budget-strategy-detail/:id',
+  components: BudgetStrategyDetail,
+  parent: 'budget-strategy'
+};
+
 //预算控制策略定义
 const budgetStrategy = {
   key:'budget-strategy',
@@ -170,7 +179,7 @@ const budgetStrategy = {
   components: BudgetStrategy,
   parent: 'budget-setting',
   children: {
-    newBudgetStrategy
+    newBudgetStrategy, budgetStrategyDetail
   }
 };
 

@@ -27,15 +27,20 @@ class NewBudgetStrategy extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = '908139656192442369';
-        console.log(values);
-        /*httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
+          console.log(res);
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{
-
-        })*/
+          if(e.response){
+            message.error(`新建失败, 该预算控制策略代码已存在`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
+        })
       }
     });
   };
@@ -105,7 +110,7 @@ function mapStateToProps() {
   return {}
 }
 
-const WrappedValueList = Form.create()(NewBudgetStrategy);
+const WrappedNewBudgetStrategy = Form.create()(NewBudgetStrategy);
 
-export default connect(mapStateToProps)(WrappedValueList);
+export default connect(mapStateToProps)(WrappedNewBudgetStrategy);
 
