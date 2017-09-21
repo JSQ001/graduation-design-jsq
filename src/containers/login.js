@@ -46,6 +46,7 @@ class Login extends React.Component{
   render(){
     return (
       <div className="login">
+        <img src="../images/huilianyi.png" className="bottom-logo"/>
         <div className="login-area">
           <img src="../images/logo-white.png" className="login-logo"/><br/>
           <div className="login-logo-text">{this.props.intl.formatMessage({id: 'helios'})}</div>
@@ -68,7 +69,6 @@ class Login extends React.Component{
           <br/>
           <Button type="primary" shape="circle" icon="arrow-right" size="large" onClick={this.login} loading={this.state.loading}/>
         </div>
-        <img src="../images/huilianyi.png" className="bottom-logo"/>
       </div>
     )
   }

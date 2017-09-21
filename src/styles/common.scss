@@ -3,6 +3,7 @@
 $title-color: rgba(0, 0, 0, 0.65);
 $title-background: #F7F7F7;
 $switch-color: #87D068;
+$default-blue: #108ee9;
 
 body{
   color: #666;
@@ -12,8 +13,12 @@ body{
   height: 100vh;
   width: 100vw;
 }
-.ant-tabs-nav{
+
+.ant-tabs-card .ant-tabs-nav{
   margin-left: 30px;
+}
+
+.ant-tabs-nav{
   .ant-tabs-tab{
     text-align: center;
     margin-right: -1px !important;
@@ -33,6 +38,13 @@ body{
   .ant-select-selection__rendered:after{
     display: none;
   }
+}
+
+.header-title {
+  font-style: normal;
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 24px;
 }
 
 .table-header{
@@ -145,6 +157,11 @@ table{
     display: inline-block;
     text-align: right;
   }
+}
+
+.form-title{
+  margin-top:16px;
+  margin-bottom:2px;
 }
 
 

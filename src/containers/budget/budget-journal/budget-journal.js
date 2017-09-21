@@ -11,7 +11,7 @@ class BudgetJournal extends React.Component {
   render(){
     return (
       <div>
-        预算日记账定义
+        预算日记账
       </div>
     )
   }

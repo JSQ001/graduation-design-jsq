@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-class BudgetGroup extends React.Component {
+class BudgetJournalType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -11,7 +11,7 @@ class BudgetGroup extends React.Component {
   render(){
     return (
       <div>
-        预算项目组定义
+        预算日记账类型定义
       </div>
     )
   }
@@ -22,4 +22,4 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetGroup));
+export default connect(mapStateToProps)(injectIntl(BudgetJournalType));
