@@ -23,7 +23,8 @@ class SlideFrame extends React.Component{
    */
   wrapClose = (content) =>{
     const newProps = {
-      close : this.close
+      close : this.close,
+      params: this.props.params
     };
     return React.createElement(content, Object.assign({}, this.props.params, newProps));
   };
