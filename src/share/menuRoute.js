@@ -22,12 +22,15 @@ import NewBudgetStructure from 'containers/budget-setting/budget-organization/bu
 import BudgetStructureDetail from 'containers/budget-setting/budget-organization/budget-structure/budget-structure-detail'
 import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
+import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
 
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 
 import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
 import BudgetJournalType from 'containers/budget-setting/budget-journal-type/budget-journal-type'
+
+import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -93,7 +96,7 @@ const budgetStructureDetail = {
   url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail',
   components: BudgetStructureDetail,
   parent:'budget-organization-detail'
-}
+};
 
 //新建预算版本
 const newBudgetVersions = {
@@ -108,6 +111,14 @@ const budgetVersionsDetail = {
   key:'budget-versions-detail',
   url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail',
   components:BudgetVersionsDetail,
+  parent: 'budget-organization-detail'
+};
+
+//新建预算项目组
+const newBudgetGroup = {
+  key:'new-budget-group',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/new-budget-group',
+  components: NewBudgetGroup,
   parent: 'budget-organization-detail'
 };
 
@@ -139,7 +150,8 @@ const budgetOrganization = {
     budgetVersionsDetail,
     newBudgetVersions,
     newBudgetStructure,
-    budgetStructureDetail
+    budgetStructureDetail,
+    newBudgetGroup
   }
 };
 
@@ -172,7 +184,7 @@ const budgetRule = {
 };
 
 //预算日记账类型定义
-const budgetJournal = {
+const budgetJournalType = {
   key:'budget-journal-type',
   url:'/main/budget-setting/budget-journal-type',
   components: BudgetJournalType,
@@ -180,14 +192,34 @@ const budgetJournal = {
   children: {}
 };
 
-//预算
+//预算设置
 const budgetSetting = {
   key:'budget-setting',
-  subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournal],
+  subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournalType],
   icon: 'tags-o'
 };
 
-//////////////////////预算模块结束///////////////////////
+//////////////////////预算设置模块结束///////////////////////
+
+//////////////////////预算模块///////////////////////////
+
+//预算日记账
+const budgetJournal = {
+  key:'budget-journal',
+  url:'/main/budget/budget-journal',
+  components: BudgetJournal,
+  parent: 'budget',
+  children: {}
+}
+
+//预算
+const budget = {
+  key:'budget',
+  subMenu: [budgetJournal],
+  icon: 'tags'
+};
+
+//////////////////////预算模块结束///////////////////////////
 
 //首页
 const dashboard = {
@@ -237,7 +269,8 @@ const menu = [
   setting,
   financialManagement,
   expenseReport,
-  budgetSetting
+  budgetSetting,
+  budget
 ];
 
 /**
