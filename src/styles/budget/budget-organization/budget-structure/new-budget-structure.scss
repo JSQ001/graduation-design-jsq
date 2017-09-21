@@ -6,9 +6,12 @@
     letter-spacing:0;
     text-align:left;
   }
-  .budget-structure-form{
+  .budget-structure-header{
     background:#f7f7f7;
-    padding: 10px;
+    padding: 15px;
+    .budget-structure-form{
+      margin-top: -5px;
+    }
   }
 }
 

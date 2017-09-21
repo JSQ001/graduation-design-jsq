@@ -18,7 +18,7 @@ class NewBudgetStructure extends React.Component{
     super(props)
     this.state = {
       loading: true,
-      statusCode: "启用",
+      statusCode: this.props.intl.formatMessage({id:"status.enabled"}),  /*启用*/
       organization:{},
     }
   }
@@ -27,12 +27,12 @@ class NewBudgetStructure extends React.Component{
     typeof this.props.organization.organizationName === "undefined" ?
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then((response) =>{
         this.setState({
-          organization: response.data
+          organization: response.data,
         })
       })
       :
       this.setState({
-        organization: this.props.organization
+        organization: this.props.organization,
       })
   }
 
@@ -40,12 +40,16 @@ class NewBudgetStructure extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        delete values.organizationName;
         values.organizationId = this.state.organization.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
-            message.success("保存成功！");
-            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id));
+            message.success(this.props.intl.formatMessage({id:"prompting.saveSuccess"})); /*保存成功！*/
+            response.data.organizationName = values.organizationName;
+            const location = {
+              pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id),
+              state:response.data,
+            };
+            this.context.router.push(location);
           }
         })
 
@@ -59,17 +63,15 @@ class NewBudgetStructure extends React.Component{
     const { statusCode, organization} = this.state;
 
     const periodStrategy = [
-      {id:"month",value:"月度"},
-      {id:"quarter",value:"季度"},
-      {id:"year",value:'年度'}
+      {id:"month",value: this.props.intl.formatMessage({id:"periodStrategy.month"})},  /*月度*/
+      {id:"quarter",value: this.props.intl.formatMessage({id:"periodStrategy.quarter"})}, /*季度*/
+      {id:"year",value: this.props.intl.formatMessage({id:"periodStrategy.year"})} /*年度*/
     ];
     const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
-
     return(
       <div className="new-budget-structure">
-        <div className="budget-structure-title">新建预算表</div>
-        <div className="budget-structure-form">
-          <Form onSubmit={this.handleSave}>
+        <div className="budget-structure-header">
+          <Form onSubmit={this.handleSave} className="budget-structure-form">
             <Row gutter={24}>
               <Col span={8}>
                 <FormItem
@@ -95,7 +97,7 @@ class NewBudgetStructure extends React.Component{
                       {
                         validator:(item,value,callback)=>{
                           httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?structureCode=${value}`).then((response)=>{
-                            response.data.length>0 ? callback("该预算表代码已存在") : callback()
+                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"validator.organizationCode.exist"})) : callback()
                           })
 
                         }
@@ -163,24 +165,22 @@ class NewBudgetStructure extends React.Component{
                       {
                         validator: (item,value,callback)=>{
                           this.setState({
-                            statusCode: value ? "启用" : "禁用"
+                            statusCode: value ? this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/
+                                                : this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/
                           })
                           callback();
                         }
                       }
                     ],
                   })
-                  (<Switch checkedChildren="启用" unCheckedChildren="禁用"/>)
+                  (<Switch checkedChildren={this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/ }
+                           unCheckedChildren={this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/}/>)
                   }
                 </FormItem>
               </Col>
             </Row>
-
-
-                <Button type="primary" htmlType="submit">保 存</Button>
-
-                <Button style={{ marginLeft: 8 }}> 取 消</Button>
-
+            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"button.save"}) /*保存*/}</Button>
+            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"button.cancle"}) /*取消*/}</Button>
           </Form>
         </div>
       </div>

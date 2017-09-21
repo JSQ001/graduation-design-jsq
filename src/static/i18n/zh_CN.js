@@ -35,10 +35,32 @@ const zh_CN = {
   "budget.structureDescription": "预算表描述",
   "search.total": "共搜索到 {total} 条数据",
   "button.create": "新 建",
+  "button.add": "添 加",
   "prompting.input": "请输入",
   "prompting.select": "请选择",
-  "status": "状态 :  {statusCode}"
-
+  "status": "状态 :  {statusCode}",
+  "menu.budget-structure-detail": "预算表详情",
+  "dimensionCode": "维度代码",
+  "description": "描述",
+  "layoutPosition": "布局位置",
+  "layoutPriority": "布局顺序",
+  "defaultDimValueCode": "默认维值",
+  "prompting.sobOrganization": "请维护当前账套下的预算组织。",
+  "status": "状态",
+  "status.enabled": "启用",
+  "status.disabled": "禁用",
+  "prompting.saveSuccess": "保存成功！",
+  "periodStrategy.month": "月度",
+  "periodStrategy.quarter": "季度",
+  "periodStrategy.year": "年度",
+  "validator.organizationCode.exist": "该预算表代码已存在",
+  "button.save": "保 存",
+  "button.cancle": "取 消",
+  "dimension.distribute": "维度分配",
+  "company.distribute": "公司分配",
+  "structure.validator.periodStrategy": "该预算表已被预算日记账引用，不允许修改编制期段。",
+  "title.basicInformation": "基本信息",
+  "text.edit": "编辑"
 };
 
 export default zh_CN
