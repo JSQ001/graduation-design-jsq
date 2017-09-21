@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
+import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
+
 class BudgetItem extends React.Component {
   constructor(props) {
     super(props);
@@ -10,7 +12,7 @@ class BudgetItem extends React.Component {
 
   render(){
     return (
-      <div>
+      <div className="budget-item">
         预算项目定义
       </div>
     )

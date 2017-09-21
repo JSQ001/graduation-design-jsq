@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import 'styles/budget/budget-organization/budget-structure/new-budget-structure.scss';
+import 'styles/budget-setting/budget-organization/budget-structure/new-budget-structure.scss';
 import menuRoute from 'share/menuRoute'
 
 const FormItem = Form.Item;

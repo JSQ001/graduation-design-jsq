@@ -11,7 +11,7 @@ import config from 'config'
 
 import menuRoute from 'share/menuRoute'
 
-import 'styles/budget/budget-organization/budget-structure/budget-structure.scss';
+import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
 
 class BudgetStructure extends React.Component {
   constructor(props) {

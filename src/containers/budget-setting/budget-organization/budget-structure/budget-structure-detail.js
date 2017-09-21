@@ -9,7 +9,7 @@ import config from 'config'
 
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
-import 'styles/budget/budget-organization/budget-structure/budget-structure-detail.scss';
+import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
