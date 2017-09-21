@@ -10,8 +10,6 @@ import SlideFrame from 'components/slide-frame'
 import NewValue from 'containers/budget-setting/budget-organization/budget-scenarios/new-budget-scenarios'
 import UpdateValue from 'containers/budget-setting/budget-organization/budget-scenarios/update-budget-scenarios'
 
-import 'styles/budget/budget-scenarios/budget-scenarios.scss'
-
 class BudgetScenarios extends React.Component {
   constructor(props) {
     super(props);
