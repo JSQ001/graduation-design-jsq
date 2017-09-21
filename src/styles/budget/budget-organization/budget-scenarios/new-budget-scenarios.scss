@@ -1,16 +1,19 @@
-.slide-frame.animated .slide-content {
-  padding: 0;
-}
-.ant-input-disabled {
-  color: rgba(0,0,0,0.65);
-}
-.ant-form.ant-form-horizontal {
-  margin-top: 30px;
-}
-.new-value {
-  .enabled-type {
-    position: relative;
-    top: 2px;
-    left: 12px;
+.new-budget-scenarios{
+  .slide-frame.animated .slide-content {
+    padding: 0;
   }
+  .ant-input-disabled {
+    color: rgba(0,0,0,0.65);
+  }
+  .ant-form.ant-form-horizontal {
+    margin-top: 30px;
+  }
+  .new-value {
+    .enabled-type {
+      position: relative;
+      top: 2px;
+      left: 12px;
+    }
+  }
+
 }

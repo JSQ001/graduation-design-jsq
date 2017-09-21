@@ -59,7 +59,7 @@ class NewBudgetScenarios extends React.Component{
     };
     return (
 
-      <div className="new-value">
+      <div className="new-budget-scenarios">
         <Alert message="帮助提示" description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。" type="info" showIcon />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="预算组织">
@@ -132,6 +132,6 @@ function mapStateToProps(state) {
   return {}
 }
 
-const WrappedValueList = Form.create()(NewBudgetScenarios);
+const WrappedNewBudgetScenarios = Form.create()(NewBudgetScenarios);
 
-export default connect(mapStateToProps)(WrappedValueList);
+export default connect(mapStateToProps)(WrappedNewBudgetScenarios);
