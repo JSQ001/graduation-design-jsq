@@ -29,12 +29,12 @@ class Main extends React.Component{
   }
 
   componentWillMount(){
-    let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
-    this.setState({
-      selectedKeys: [nowMenuItem.key],
-      openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
-    });
-  }
+  let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
+  this.setState({
+    selectedKeys: [nowMenuItem.key],
+    openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
+  });
+}
 
   renderMenu(){
     return (
