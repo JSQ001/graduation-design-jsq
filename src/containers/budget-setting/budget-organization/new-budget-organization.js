@@ -2,20 +2,49 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col } from 'antd'
+import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
+
+import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
+import config from 'config'
 
 class NewBudgetOrganization extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      budgetOrganization: menuRoute.getRouteItem('budget-organization','key'),    //组织定义的页面项
+      loading: false
+    };
   }
 
   handleSave = (e) => {
     e.preventDefault();
-    let value = this.props.form.getFieldsValue();
-    console.log(value)
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        this.setState({loading: true});
+
+        //后台不稳定，暂时写死
+        values.versionNumber = 1;
+        values.isDeleted = false;
+        values.createdBy = 1;
+        values.lastUpdatedBy = 1;
+
+        httpFetch.post(`${config.budgetUrl}/api/budget/organizations`, values).then((res)=>{
+          this.setState({loading: false});
+          message.success(`组织定义${values.organizationName}新建成功`);
+          this.context.router.replace(this.state.budgetOrganization.url);
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
+        })
+      }
+    });
   };
 
   render(){
@@ -43,7 +72,7 @@ class NewBudgetOrganization extends React.Component {
               initialValue: ''
             })(
               <Select placeholder="请选择帐套">
-                <Option value='HEC_TEST_DATA_002' key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
+                <Option value="1" key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
               </Select>
             )}
           </FormItem>
@@ -78,7 +107,7 @@ class NewBudgetOrganization extends React.Component {
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit">保存</Button></Col>
+              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button></Col>
               <Col span={3}><Button>取消</Button></Col>
             </Row>
           </FormItem>
@@ -92,6 +121,10 @@ class NewBudgetOrganization extends React.Component {
 function mapStateToProps() {
   return {}
 }
+
+NewBudgetOrganization.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const WrappedNewBudgetOrganization = Form.create()(NewBudgetOrganization);
 

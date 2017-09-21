@@ -20,12 +20,12 @@ class BudgetOrganization extends React.Component {
         {title: '预算组织代码', dataIndex: 'organizationCode', width: '25%'},
         {title: '预算组织名称', dataIndex: 'organizationName', width: '25%'},
         {title: '账套', dataIndex: 'setOfBooksId', width: '25%'},
-        {title: '状态', key: 'enabled', width: '25%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '状态', dataIndex: 'isEnabled', width: '25%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
       },
-      budgetDetailPage: menuRoute.getRouteItem('budget-detail','key'),    //组织定义详情的页面项
+      budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
       newBudgetOrganization:  menuRoute.getRouteItem('new-budget-organization','key'),    //新建组织定义的页面项
       searchForm: [
         {type: 'select', id: 'setOfBooksId', label: '帐套', options: []},
@@ -78,7 +78,7 @@ class BudgetOrganization extends React.Component {
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.budgetDetailPage.url.replace(':id', record.id));
+    this.context.router.push(this.state.budgetOrganizationDetailPage.url.replace(':id', record.id));
   };
 
   search = (result) => {
@@ -116,6 +116,7 @@ class BudgetOrganization extends React.Component {
     const { columns, data, loading,  pagination, searchForm } = this.state;
     return (
       <div className="budget-organization">
+        <h3 className="header-title">预算组织定义</h3>
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
