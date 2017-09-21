@@ -4,11 +4,14 @@
 import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload} from 'antd';
+import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload,Select,DatePicker,message} from 'antd';
+import moment from 'moment'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
+import CompanySelect from 'components/selector/company-selector'
 import config from 'config'
 import 'styles/budget/budget-versions/budget-versions-detail.scss'
-
+const FormItem =Form.Item;
 
 class BudgetVersionsDetail extends React.Component {
   constructor(props) {
@@ -43,7 +46,8 @@ class BudgetVersionsDetail extends React.Component {
         enabled: '',
       },
       edit: false,
-      formData: {}
+      formData: {},
+
     }
 
   }
@@ -60,8 +64,16 @@ class BudgetVersionsDetail extends React.Component {
   putData(value){
     return httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       this.setState({
-
+        formData:response.data,
+        edit:false,
       })
+
+      message.success("编辑成功");
+    }).catch((e)=>{
+      if(e.response){
+        console.log(e.response.data);
+        message.success("编辑失败");
+      }
     });
   }
 
@@ -87,29 +99,37 @@ class BudgetVersionsDetail extends React.Component {
     this.state.formData.isEnabled=value
   }
 
-  fff=(status)=>{
-    console.log(status);
-  }
 
-
-  saverHandle=()=>{
+  saveHandle=()=>{
     console.log(this.state.formData);
     let value = this.state.formData;
     this.putData(value)
 
   }
+  versionDateChangeHandle=()=>{
+
+  }
 
   renderPutForm=()=>{
     const fromData =this.props.location.state.Data;
-
     return (
       <Form >
-        <Row gutter={40}>
+        <Row gutter={16}>
+          <Col span={8} style={{ display: 'inline-block'}}>
+            <FormItem
+              label="预算组织"
+              labelCol={{span:24}}
+              wrapperCol={{span:24}}
+            >
+              <Input  disabled={true} defaultValue={this.props.organization.organizationName} />
+            </FormItem>
+          </Col>
+
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem
               label="预算版本代码"
-              labelCol={{span:8}}
-              wrapperCol={{span:16}}
+              labelCol={{span:24}}
+              wrapperCol={{span:24}}
             >
               <Input  disabled={true} defaultValue={fromData.versionCode} />
             </FormItem>
@@ -117,8 +137,8 @@ class BudgetVersionsDetail extends React.Component {
 
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem label="预算版本名称"
-                      labelCol={{span:8}}
-                      wrapperCol={{span:16}}
+                      labelCol={{span:24}}
+                      wrapperCol={{span:24}}
             >
               <Input defaultValue={fromData.versionName} onBlur={this.versionNameChangHandle}/>
 
@@ -128,8 +148,8 @@ class BudgetVersionsDetail extends React.Component {
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem
               label="状态"
-              labelCol={{span:8}}
-              wrapperCol={{span:16}}
+              labelCol={{span:24}}
+              wrapperCol={{span:24}}
             >
 
               <Select
@@ -149,19 +169,32 @@ class BudgetVersionsDetail extends React.Component {
 
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem label="预算版本描述"
-                      labelCol={{span:8}}
-                      wrapperCol={{span:16}}
+                      labelCol={{span:24}}
+                      wrapperCol={{span:24}}
             >
 
-              <Input type="textarea" defaultValue={fromData.description} onBlur={this.descriptionChangHandle} />
+              <Input  defaultValue={fromData.description} onBlur={this.descriptionChangHandle} />
+            </FormItem>
+          </Col>
+
+          <Col span={8} style={{ display: 'inline-block'}}>
+            <FormItem
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24}}
+              label="版本日期"
+            >
+
+              <DatePicker  defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')} onOpenChange={this.versionDateChangeHandle} onChang={this.versionsDataChangHandle}/>
+
             </FormItem>
           </Col>
 
 
+
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem
-              labelCol={{span:8}}
-              wrapperCol={{span:16}}
+              labelCol={{span:24}}
+              wrapperCol={{span:24}}
               label="是否启用"
             >
               <Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
@@ -169,18 +202,13 @@ class BudgetVersionsDetail extends React.Component {
             </FormItem>
           </Col>
 
+
+        </Row>
+
+        <Row gutter={24}>
           <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16}}
-              label="版本日期"
-            >
-
-              <DatePicker  defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')} onOpenChange={this.fff} onChang={this.versionsDataChangHandle}/>
-
-            </FormItem>
+            <Button type="primary" onClick={this.saveHandle}>保 存</Button>
           </Col>
-
         </Row>
 
 
@@ -193,16 +221,16 @@ class BudgetVersionsDetail extends React.Component {
   renderForm=()=>{
     console.log(this.props.Location)
     console.log(this.props.location)
-    const data = this.props.location.state.Data;
+    const data = this.state.formData;
     return(
      this.state.edit? <div>
-        this.renderPutForm();
+       {this.renderPutForm()}
       </div>:
       <div>
         <Row gutter={40} align="top">
           <Col span={8}>
             <div className="form-title">预算组织:</div>
-            <div>{}</div>
+            <div>{this.props.organization.organizationName}</div>
           </Col>
           <Col span={8}>
             <div className="form-title">预算版本代码:</div>
@@ -210,7 +238,7 @@ class BudgetVersionsDetail extends React.Component {
           </Col >
           <Col span={8}>
             <div className="form-title">版本日期:</div>
-            <div>{data.versionDate}</div>
+            <div>{data.versionDate?data.versionDate:"-"}</div>
           </Col>
         </Row>
         <Row gutter={40} align="top">
@@ -224,7 +252,7 @@ class BudgetVersionsDetail extends React.Component {
           </Col>
           <Col span={8}>
             <div className="form-title">预算版本描述:</div>
-            <div>{data.description}</div>
+            <div>{data.description?data.description:'-'}</div>
           </Col>
         </Row>
         <Row gutter={40} align="top">
@@ -244,6 +272,24 @@ class BudgetVersionsDetail extends React.Component {
   handleEdit = () => {
     this.setState({edit: true})
   };
+
+  showImport=(value)=>{
+    this.setState({showImportFrame:value})
+  }
+
+//分配公司确定
+  submitHandle=(value)=>{
+    console.log(value)
+    this.setState({
+      data:value
+    })
+
+    this.showImport(false)
+  }
+
+  CancelHandle=()=>{
+    this.showImport(false)
+  }
 
   render(){
     const {  edit, data, columns, pagination, showImportFrame, form } = this.state;
@@ -272,23 +318,18 @@ class BudgetVersionsDetail extends React.Component {
           <div className="table-header">
             <div className="table-header-title">{`共 ${data.length} 条数据`}</div>
             <div className="table-header-buttons">
-              <Button>分配公司</Button>
+              <Button type="primary" onClick={() => this.showImport(true)}>分配公司</Button>
+              <Button>保 存</Button>
             </div>
           </div>
           <Table columns={columns}
                  dataSource={data}
                  pagination={pagination}
-                 bordered/>
+                 bordered
+                 size="middle"
+          />
 
-
-          <Modal visible={showImportFrame} title="值导入" onCancel={() => this.showImport(false)} onOk={this.handleImport}>
-            <Upload.Dragger name="files" className="uploader">
-              <p className="ant-upload-drag-icon">
-                <Icon type="inbox" />
-              </p>
-              <p className="ant-upload-text">点击或拖拽文件上传</p>
-            </Upload.Dragger>
-          </Modal>
+            <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
 
         </div>
       </div>
@@ -299,8 +340,9 @@ class BudgetVersionsDetail extends React.Component {
 
 
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization:state.budget.organization
+  }
 }
-
 export default connect(mapStateToProps)(injectIntl(BudgetVersionsDetail));

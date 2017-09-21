@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch';
+import menuRoute from 'share/menuRoute'
 import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon,message} from 'antd'
 import 'styles/budget/budget-versions/new-budget-versions.scss'
 
@@ -25,7 +26,8 @@ class NewBudgetVersions extends React.Component {
         {versionCode:'Tom'},
         {versionCode:'123'},
         {versionCode:'pop'}
-      ]
+      ],
+      budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
 
     };
   }
@@ -99,7 +101,7 @@ class NewBudgetVersions extends React.Component {
       const dataValue=value['versionDate']
       const toleValues={
         ...value,
-        'versionDate':value['versionDate'].format('YYYY-MM-DD'),
+        'versionDate': value['versionDate']?value['versionDate'].format('YYYY-MM-DD'):'',
         'organizationId':this.props.organization.id
       }
 
@@ -109,10 +111,10 @@ class NewBudgetVersions extends React.Component {
 
   //保存数据
   saveData(value){
-    let path ="/main/budget/versions/budget-versions/budget-versions-detail"
+    const path = this.state.budgetVersionsDetailDetailPage.url.replace(':id', value.organizationId);
     let  locations={
       key: 'budget-versions-detail',
-      pathname: `/main/budget/budget-organization/budget-detail/${this.props.organization.id}/budget-versions/budget-versions-detail`,
+      pathname:path,
       state: {
         Data:{}
       }
@@ -120,16 +122,17 @@ class NewBudgetVersions extends React.Component {
 
     return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       locations.state.Data = response.data;
-      if(response.status==200){
+
         message.success('保存成功', 2);
         setTimeout(() => {
           this.setState({ newData: response.data }, () => this.context.router.push(locations))
         },200)
+
+    } ).catch(e=>{
+      if(e.response){
+        message.error(e.response.data.message)
       }
-      else {
-        message.error('保存失败');
-      }
-    } );
+    });
   }
 
 
