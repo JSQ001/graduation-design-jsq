@@ -23,6 +23,7 @@ const en_US = {
   "menu.new-budget-versions": "New budget versions",
   "menu.budget-versions-detail":"Budget versions detail",
   "menu.budget-strategy": "Budget strategy",
+  "menu.new-budget-strategy": "New budget strategy",
   "menu.budget-rule": "Budget rule",
   "menu.budget-journal-type": "Budget journal",
   "budget.organizationName": "Budget organization name",
