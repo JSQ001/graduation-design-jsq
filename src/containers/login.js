@@ -11,6 +11,9 @@ import { injectIntl } from 'react-intl';
 
 import 'styles/login.scss'
 
+import huilianyiImg from 'images/huilianyi.png'
+import logoImg from 'images/logo-white.png'
+
 class Login extends React.Component{
   constructor(props){
     super(props);
@@ -46,9 +49,9 @@ class Login extends React.Component{
   render(){
     return (
       <div className="login">
-        <img src="../images/huilianyi.png" className="bottom-logo"/>
+        <img src={huilianyiImg} className="bottom-logo"/>
         <div className="login-area">
-          <img src="../images/logo-white.png" className="login-logo"/><br/>
+          <img src={logoImg} className="login-logo"/><br/>
           <div className="login-logo-text">{this.props.intl.formatMessage({id: 'helios'})}</div>
           <Input
             size="large"

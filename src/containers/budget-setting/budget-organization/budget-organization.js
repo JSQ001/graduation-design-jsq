@@ -60,7 +60,8 @@ class BudgetOrganization extends React.Component {
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
-          onChange: this.onChangePager
+          onChange: this.onChangePager,
+          current: this.state.page + 1
         }
       })
     });
