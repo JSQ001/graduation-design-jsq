@@ -69,7 +69,16 @@ const zh_CN = {
   "company.distribute": "公司分配",
   "structure.validator.periodStrategy": "该预算表已被预算日记账引用，不允许修改编制期段。",
   "title.basicInformation": "基本信息",
-  "text.edit": "编辑"
+  "text.edit": "编辑",
+
+  "budget.itemCode": "预算项目代码",
+  "budget.itemName": "预算项目名称",
+  "budget.itemDescription": "预算项目描述",
+  "budget.itemCodeFrom": "预算项目代码从",
+  "budget.itemCodeTo": "预算项目代码至",
+  "budget.itemType": "预算项目类型",
+  "budget.item.variationAttribute": "变动属性",
+
 
 };
 
