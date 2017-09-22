@@ -26,6 +26,7 @@ import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
 import BudgetStrategyDetail from 'containers/budget-setting/budget-strategy/budget-strategy-detail'
+import NewBudgetStrategyDetail from 'containers/budget-setting/budget-strategy/new-budget-strategy-detail'
 
 import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
@@ -172,6 +173,14 @@ const budgetStrategyDetail = {
   parent: 'budget-strategy'
 };
 
+//新建预算控制策略详情
+const newBudgetStrategyDetail = {
+  key:'new-budget-strategy-detail',
+  url:'/main/budget-setting/budget-strategy/new-budget-strategy-detail',
+  components: NewBudgetStrategyDetail,
+  parent: 'budget-strategy'
+};
+
 //预算控制策略定义
 const budgetStrategy = {
   key:'budget-strategy',
@@ -179,7 +188,7 @@ const budgetStrategy = {
   components: BudgetStrategy,
   parent: 'budget-setting',
   children: {
-    newBudgetStrategy, budgetStrategyDetail
+    newBudgetStrategy, budgetStrategyDetail, newBudgetStrategyDetail
   }
 };
 

@@ -6,7 +6,7 @@ const { TextArea } = Input;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import 'styles/budget/budget-organization/budget-scenarios/new-budget-scenarios.scss'
+import 'styles/budget/budget-organization/budget-scenarios/update-budget-scenarios.scss'
 
 class UpdateBudgetScenarios extends React.Component{
   constructor(props) {
@@ -62,7 +62,7 @@ class UpdateBudgetScenarios extends React.Component{
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
-      <div className="new-value">
+      <div className="update-budget-scenarios">
         <Alert message="帮助提示" description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。" type="info" showIcon />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="预算组织">
@@ -72,7 +72,7 @@ class UpdateBudgetScenarios extends React.Component{
               }],
               initialValue: params.organizationName
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景代码">
@@ -82,7 +82,7 @@ class UpdateBudgetScenarios extends React.Component{
               }],
               initialValue: params.scenarioCode
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>

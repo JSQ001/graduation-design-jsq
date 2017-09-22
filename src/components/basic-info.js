@@ -8,6 +8,7 @@ class BasicInfo extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      params: this.props.infoData,
       isEnabled: true,
       cardShowStyle: {
         display: 'block'
@@ -16,6 +17,18 @@ class BasicInfo extends React.Component{
         display: 'none'
       }
     };
+  }
+
+  componentWillMount() {
+    console.log(this.props.infoList);
+    console.log(this.props.infoData);
+    this.props.infoList.map((item, i) => {
+      if(item.type=='state') {
+        this.setState({
+          isEnabled: this.state.params[item.id]
+        })
+      }
+    })
   }
 
   editInfo = () => {
@@ -32,10 +45,10 @@ class BasicInfo extends React.Component{
   renderGetInfo(item) {
     switch(item.type) {
       case 'input': {
-        return <div>{item.value}</div>;
+        return <div>{this.state.params[item.id]}</div>;
       }
       case 'state': {
-        return <Badge status={item.value ? 'success' : 'error'} text={item.value ? '启用' : '禁用'} />;
+        return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
       }
     }
   }
@@ -43,7 +56,7 @@ class BasicInfo extends React.Component{
     const children = [];
     this.props.infoList.map((item, i)=>{
       children.push(
-        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}}>
+        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}} key={item.id}>
           <div style={{color: '#989898'}}>{item.title}</div>
           {this.renderGetInfo(item)}
         </Col>
@@ -55,12 +68,12 @@ class BasicInfo extends React.Component{
   renderUpdateInfos = (item) => {
     switch(item.type) {
       case 'input': {
-        return <Input placeholder="请输入"/>;
+        return <Input placeholder="请输入" disabled={item.isDisabled || false} className="input-disabled-color"/>;
       }
       case 'state': {
         return (
           <div>
-            <Switch defaultChecked={item.value} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+            <Switch defaultChecked={this.state.params[item.id]} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
             <span className="enabled-type">{ this.state.isEnabled ? '启用' : '禁用' }</span>
           </div>
         );
@@ -73,9 +86,9 @@ class BasicInfo extends React.Component{
     const children = [];
     this.props.infoList.map((item, i)=>{
       children.push(
-        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}}>
+        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}} key={item.id}>
           <FormItem {...formItemLayout} label={item.title} colon={false}>
-            {getFieldDecorator(item.id, {initialValue: item.value})(
+            {getFieldDecorator(item.id, {initialValue: this.state.params[item.id]})(
               this.renderUpdateInfos(item)
             )}
           </FormItem>
@@ -103,9 +116,7 @@ class BasicInfo extends React.Component{
   switchChange = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
-    }), () => {
-      console.log(this.state.isEnabled)
-    })
+    }))
   }
 
   render() {
@@ -136,6 +147,7 @@ class BasicInfo extends React.Component{
 
 BasicInfo.propTypes = {
   infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表
+  infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
 };
 
 const WrappedBasicInfo= Form.create()(BasicInfo);

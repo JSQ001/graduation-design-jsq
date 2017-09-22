@@ -69,7 +69,7 @@ class NewBudgetScenarios extends React.Component{
               }],
               initialValue: organizationName
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景代码" hasFeedback>

@@ -2,11 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 
+import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { Form, Table, Button } from 'antd'
 
 import BasicInfo from 'components/basic-info'
+
+import 'styles/budget/budget-strategy/budget-strategy-detail.scss'
 
 class BudgetStrategyDetail extends React.Component {
   constructor(props) {
@@ -14,10 +17,15 @@ class BudgetStrategyDetail extends React.Component {
     this.state = {
       loading: true,
       infoList: [
-        {type: 'input', id: 'test', title: '预算控制策略代码：', value: 'code01'},
-        {type: 'input', id: 'test', title: '预算控制策略描述：', value: 'description01'},
-        {type: 'state', id: 'test', title: '状态：', value: true}
+        {type: 'input', title: '预算控制策略代码：', id: 'controlStrategyCode', isDisabled: true},
+        {type: 'input', title: '预算控制策略描述：', id: 'controlStrategyName'},
+        {type: 'state', title: '状态：', id: 'isEnabled'}
       ],
+      infoData: {
+        controlStrategyName: 'description01',
+        controlStrategyCode: 'code01',
+        isEnabled: false
+      },
       columns: [
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence"},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
@@ -28,15 +36,32 @@ class BudgetStrategyDetail extends React.Component {
       data: [],
       pageSize: 10,
       page: 0,
+      newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
     };
   }
 
   componentWillMount() {
+    this.getBasicInfo();
     this.getList();
   }
 
+  getBasicInfo() {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.params.id}`).then((response) => {
+      if(response.status==200) {
+        this.setState({
+          infoData: response.data
+        })
+      }
+    }).catch((e) => {
+
+    })
+  }
+
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?
+                  size=${this.state.pageSize}
+                  &page=${this.state.page}
+                  &controlStrategyId=${this.props.params.id}`).then((response) => {
       this.setState({
         data: response.data,
         loading: false
@@ -46,15 +71,20 @@ class BudgetStrategyDetail extends React.Component {
     })
   }
 
+  handleNew = () => {
+    this.context.router.push(this.state.newBudgetStrategyDetail.url);
+  };
+
   render(){
-    const { infoList, columns, data, loading } = this.state;
+    const { infoList, infoData, columns, data, loading } = this.state;
     return (
       <div className="budget-strategy-detail">
-        <BasicInfo infoList={infoList}/>
+        <BasicInfo infoList={infoList}
+                   infoData={infoData}/>
         <div className="table-header">
-          <div className="table-header-title">共 0 条数据</div>
+          <div className="table-header-title"><h5>策略明细</h5> 共搜索到 0 条数据</div>
           <div className="table-header-buttons">
-            <Button type="primary">新 建</Button>
+            <Button type="primary" onClick={this.handleNew}>新 建</Button><span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>
           </div>
         </div>
         <Table columns={columns}
@@ -68,10 +98,13 @@ class BudgetStrategyDetail extends React.Component {
 
 }
 
+BudgetStrategyDetail.contextTypes = {
+  router: React.PropTypes.object
+};
+
 function mapStateToProps() {
   return {}
 }
 
-const WrappedBudgetStrategyDetail = Form.create()(BudgetStrategyDetail);
 
-export default connect(mapStateToProps)(WrappedBudgetStrategyDetail);
+export default connect(mapStateToProps)(injectIntl(BudgetStrategyDetail));
