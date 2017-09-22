@@ -2,7 +2,6 @@
  * Created by zaranengap on 2017/7/4.
  */
 import React from 'react'
-import debounce from 'lodash.debounce';
 import { connect } from 'react-redux'
 import { Tabs, Table, Button, notification, Icon } from 'antd';
 const TabPane = Tabs.TabPane;
@@ -29,32 +28,27 @@ class ConfirmPayment extends React.Component{
         {type: 'date', id: 'dateFrom', label: '日期从'},
         {type: 'date', id: 'dateTo', label: '日期到'},
         {type: 'input', id: 'formID', label: '单号'},
-        {type: 'combobox',
+        {
+          type: 'combobox',
           id: 'user',
           label: '员工',
           placeholder: '请输入姓名／工号',
           options: [],
-          event: 'SEARCH_USER'
+          searchUrl: `${config.baseUrl}/api/search/users`,
+          method: 'get',
+          searchKey: 'keyword',
+          labelKey: 'fullName',
+          valueKey: 'userOID'
         },
         {
           type: 'multiple',
           id: 'legalEntity',
           label: '法人实体',
           options: [],
-          event: 'SEARCH_ENTITY',
-          needSearch: false
-        },
-        {
-          type: 'radio',
-          id: 'dateRange',
-          label: '日期',
-          options: [{label: '全选', value: 'ALL'}, {label: '当月', value: 'MONTH'}, {label: '近三个月', value: '3MONTH'}]
-        },
-        {
-          type: 'checkbox',
-          id: 'checkbox',
-          label: '多选样式',
-          options: [{label: '多选1', value: 'C1'}, {label: '多选2', value: 'C2'}, {label: '多选3', value: 'C3'}]
+          getUrl: `${config.baseUrl}/api/v2/my/company/receipted/invoices?page=0&size=100`,
+          method: 'get',
+          labelKey: 'companyName',
+          valueKey: 'companyReceiptedOID'
         }
       ],
       columns: [
@@ -94,7 +88,6 @@ class ConfirmPayment extends React.Component{
       },
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
-    this.addOptionsToForm = debounce(this.addOptionsToForm, 250);
   }
 
   //渲染Tab头
@@ -225,41 +218,6 @@ class ConfirmPayment extends React.Component{
     }})
   };
 
-  //根据ID得到表单项
-  getFormItemFromStateByID(id){
-    for(let i = 0; i < this.state.searchForm.length; i++){
-      if(this.state.searchForm[i].id === id)
-        return this.state.searchForm[i]
-    }
-  }
-
-  //设置表单项（给下拉选框等需要数据的表单填值）
-  setFormItem(item, callback){
-    let temp = this.state.searchForm;
-    for(let i = 0; i < temp.length; i++){
-      if(temp[i].id === item.id){
-        temp[i] = item;
-        this.setState({searchForm: temp}, ()=>{
-          if(callback)
-            callback()
-        })
-      }
-    }
-  }
-
-  //添加数据值到表单中（下拉选框等）
-  addOptionsToForm(formId, url, labelName, valueName){
-    let result = [];
-    httpFetch.get(url).then(response => {
-      response.data.map(item => {
-        result.push({label: item[labelName], value: item[valueName]})
-      });
-      let formItem = this.getFormItemFromStateByID(formId);
-      formItem.options = result;
-      this.setFormItem(formItem);
-    });
-  }
-
   //搜索区域点击事件
   searchEventHandle = (event, value) => {
     switch(event){
@@ -270,16 +228,6 @@ class ConfirmPayment extends React.Component{
           this.clearRowSelection();
           this.getList();
         });
-        break;
-      }
-      case 'SEARCH_USER': {
-        let url = `${config.baseUrl}/api/search/users?keyword=${value}`;
-        this.addOptionsToForm('user', url, 'fullName', 'userOID');
-        break;
-      }
-      case 'SEARCH_ENTITY': {
-        let url = `${config.baseUrl}/api/v2/my/company/receipted/invoices?page=0&size=100`;
-        this.addOptionsToForm('legalEntity', url, 'companyName', 'companyReceiptedOID');
         break;
       }
     }
