@@ -23,5 +23,7 @@
   "menu.budget-journal-type": "预算日记账类型定义",
   "menu.new-budget-group": "新建预算项目组",
   "menu.budget-group-detail": "预算项目组详情",
-  "menu.new-budget-structure": "新建预算表"
+  "menu.new-budget-structure": "新建预算表",
+  "menu.budget-structure-detail": "预算表详情",
+  "menu.new-budget-item": "新建预算项目"
 }
