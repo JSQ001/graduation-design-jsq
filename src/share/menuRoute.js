@@ -19,10 +19,13 @@ import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-bud
 import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
 import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
 import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
+import NewBudgetItem from 'containers/budget-setting/budget-organization/budget-item/new-budget-item'
+import BudgetItemDetail from 'containers/budget-setting/budget-organization/budget-item/budget-item-detail'
 import BudgetStructureDetail from 'containers/budget-setting/budget-organization/budget-structure/budget-structure-detail'
 import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
+import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 
@@ -122,6 +125,34 @@ const newBudgetGroup = {
   parent: 'budget-organization-detail'
 };
 
+
+//新建预算项目组
+const budgetGroupDetail = {
+  key:'budget-group-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail',
+  components: BudgetGroupDetail,
+  parent: 'budget-organization-detail'
+};
+
+//新建预算项目
+const newBudgetItem = {
+  key: 'new-budget-item',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-item',
+  components: NewBudgetItem,
+  parent: 'budget-organization-detail'
+}
+
+//预算项目详情
+const budgetItemDetail = {
+  key: 'budget-item-detail',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail',
+  components: BudgetItemDetail,
+  parent: 'budget-organization-detail'
+
+}
+
+
+
 //预算组织详情
 const budgetOrganizationDetail = {
   key:'budget-organization-detail',
@@ -151,7 +182,9 @@ const budgetOrganization = {
     newBudgetVersions,
     newBudgetStructure,
     budgetStructureDetail,
-    newBudgetGroup
+    newBudgetGroup,
+    budgetGroupDetail,
+    newBudgetItem
   }
 };
 

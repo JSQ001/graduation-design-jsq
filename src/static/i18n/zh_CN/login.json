@@ -1,0 +1,9 @@
+{
+  "helios": "汇联易",
+  "login.username": "用户名",
+  "login.password": "密码",
+  "login.forget": "找回密码",
+  "login.wrong": "用户名或密码错误，请重新输入:)",
+  "login.error": "哦呼，服务器出了点问题，请联系管理员或稍后再试:(",
+  "main.welcome": "欢迎你，{name}"
+}

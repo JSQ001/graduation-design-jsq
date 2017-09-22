@@ -1,76 +1,55 @@
+
 const zh_CN = {
-  "helios": "汇联易",
-  "login.username": "用户名",
-  "login.password": "密码",
-  "login.forget": "找回密码",
-  "login.wrong": "用户名或密码错误，请重新输入:)",
-  "login.error": "哦呼，服务器出了点问题，请联系管理员或稍后再试:(",
-  "main.welcome": "欢迎你，{name}",
-  "menu.confirm-payment": "确认付款",
-  "menu.new-value-list": "新建值列表",
-  "menu.value-list": "值列表",
-  "menu.dashboard": "仪表盘",
-  "menu.financial-management": "财务管理",
-  "menu.setting": "设置",
-  "menu.my-account": "我的账本",
-  "menu.expense-report": "报销单",
-  "menu.edit-report": "编辑报销单",
-  "menu.budget": "预算设置",
-  "menu.budget-setting": "预算设置",
-  "menu.new-budget-organization": "新建预算组织定义",
-  "menu.budget-organization": "预算组织定义",
-  "menu.budget-detail": "预算组织详情",
-  "menu.budget-organization-detail": "预算组织详情",
-  "menu.budget-scenarios": "预算场景定义",
-  "menu.new-budget-versions": "新建预算版本",
-  "menu.budget-versions-detail":"预算版本详情",
-  "menu.budget-strategy": "预算控制策略定义",
-  "menu.new-budget-strategy": "新建预算控制策略",
-  "menu.budget-rule": "预算控制规则定义",
-  "menu.budget-journal": "预算日记账类型定义",
-  "menu.budget-journal-type": "预算日记账类型定义",
   "budget.organizationName": "预算组织名称",
   "budget.organization": "预算组织",
   "budget.structure":"预算表",
-  "menu.budget": "预算",
-  "menu.budget-journal": "预算日记账",
-  "menu.new-budget-structure": "新建预算表",
-  "menu.new-budget-group": "新建预算项目组",
-
-  "menu.new-budget-structure": "新建预算表",
   "budget.structureCode": "预算表代码",
   "budget.structureName": "预算表名称",
   "periodStrategy":"编制期段",
   "budget.structureDescription": "预算表描述",
-  "search.total": "共搜索到 {total} 条数据",
-  "button.create": "新 建",
-  "prompting.input": "请输入",
-  "prompting.select": "请选择",
-  "status": "状态 :  {statusCode}",
-  "button.add": "添 加",
-  "menu.budget-structure-detail": "预算表详情",
   "dimensionCode": "维度代码",
   "description": "描述",
   "layoutPosition": "布局位置",
   "layoutPriority": "布局顺序",
   "defaultDimValueCode": "默认维值",
   "prompting.sobOrganization": "请维护当前账套下的预算组织。",
-  "status": "状态",
-  "status.enabled": "启用",
-  "status.disabled": "禁用",
   "prompting.saveSuccess": "保存成功！",
   "periodStrategy.month": "月度",
   "periodStrategy.quarter": "季度",
   "periodStrategy.year": "年度",
   "validator.organizationCode.exist": "该预算表代码已存在",
-  "button.save": "保 存",
-  "button.cancle": "取 消",
   "dimension.distribute": "维度分配",
   "company.distribute": "公司分配",
   "structure.validator.periodStrategy": "该预算表已被预算日记账引用，不允许修改编制期段。",
   "title.basicInformation": "基本信息",
-  "text.edit": "编辑"
-
+  "text.edit": "编辑",
+  "budget.itemCode": "预算项目代码",
+  "budget.itemName": "预算项目名称",
+  "budget.itemDescription": "预算项目描述",
+  "budget.itemCodeFrom": "预算项目代码从",
+  "budget.itemCodeTo": "预算项目代码至",
+  "budget.itemType": "预算项目类型",
+  "budget.item.variationAttribute": "变动属性",
 };
 
-export default zh_CN
+import common from 'static/i18n/zh_CN/common.json'
+import menu from 'static/i18n/zh_CN/menu.json'
+import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization.json'
+import login from 'static/i18n/zh_CN/login.json'
+
+const i18nList = [
+  common,  //公用
+  login,  //登录及主界面
+  menu,  //菜单
+  budgetOrganization  //预算组织
+];
+
+let result = {};
+
+i18nList.map(i18n => {
+  result = Object.assign(result, i18n)
+});
+
+console.log(result);
+
+export default result
