@@ -19,7 +19,7 @@ class BudgetGroup extends React.Component {
       columns: [
         {title: '预算组织', dataIndex: 'organizationName', width: '20%'},
         {title: '预算项目组代码', dataIndex: 'groupCode', width: '20%'},
-        {title: '预算项目组描述', dataIndex: 'description', width: '30%'},
+        {title: '预算项目组描述', dataIndex: 'groupName', width: '30%'},
         {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />},
         {title: '操作', key: 'operation', width: '15%', render: () => <a href="#">删除</a>,}
       ],
@@ -34,7 +34,8 @@ class BudgetGroup extends React.Component {
         groupCode: '',
         groupName: ''
       },
-      newBudgetGroupPage: menuRoute.getRouteItem('new-budget-group','key')    //组织定义详情的页面项
+      newBudgetGroupPage: menuRoute.getRouteItem('new-budget-group','key'),    //新建预算组的页面项
+      budgetGroupDetail: menuRoute.getRouteItem('budget-group-detail', 'key')  //预算组详情
     };
   }
 
@@ -49,6 +50,9 @@ class BudgetGroup extends React.Component {
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
     return httpFetch.get(url).then(response => {
+      response.data.map(item => {
+        item.key = item.id
+      });
       this.setState({
         data: response.data,
         loading: false,
@@ -96,8 +100,8 @@ class BudgetGroup extends React.Component {
       })
   };
 
-  handleRowClick = () => {
-
+  handleRowClick = (record) => {
+    this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", record.id));
   };
 
   render(){
