@@ -10,6 +10,8 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
+import 'styles/budget/budget-organization/new-budget-organization.scss'
+
 class NewBudgetOrganization extends React.Component {
   constructor(props) {
     super(props);
@@ -55,7 +57,7 @@ class NewBudgetOrganization extends React.Component {
       wrapperCol: { span: 10, offset: 1 },
     };
     return (
-      <div>
+      <div className="new-budget-organization">
         <Alert
           message="帮助提示"
           description="同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。"

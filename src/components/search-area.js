@@ -188,6 +188,10 @@ SearchArea.propTypes = {
   clearHandle: React.PropTypes.func  //重置事件
 };
 
+SearchArea.defaultProps = {
+  eventHandle: () => {}
+};
+
 const WrappedSearchArea= Form.create()(SearchArea);
 
 export default WrappedSearchArea;
