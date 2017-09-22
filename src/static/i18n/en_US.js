@@ -8,7 +8,7 @@ const en_US = {
 
 import common from 'static/i18n/en_US/common.json'
 import menu from 'static/i18n/en_US/menu.json'
-import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organization.json'
+import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
 import login from 'static/i18n/en_US/login.json'
 
 const i18nList = [

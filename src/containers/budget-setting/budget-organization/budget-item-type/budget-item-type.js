@@ -26,7 +26,7 @@ class BudgetItemType extends React.Component {
         { id:124,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"}*/
       ],
       columns: [
-        {title: '预算组织名称', dataIndex: 'organizationId', key: 'organizationId',},
+        {title: '预算组织名称', dataIndex: 'organizationName', key: 'organizationName',},
         {title: '预算项目类型代码', dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
         {title: '预算项目类型名称', dataIndex: 'itemTypeName', key: 'itemTypeName',},
         {title: '状态',dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
@@ -53,6 +53,11 @@ class BudgetItemType extends React.Component {
       loading:true
 
     };
+  }
+
+
+  componentWillMount(){
+    this.getList()
   }
 
 //获得数据

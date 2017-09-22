@@ -25,9 +25,7 @@ class NewBudgetItemType extends React.Component {
   }
 
   componentWillMount(){
-
     this.setState({
-
     })
   }
 
