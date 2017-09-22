@@ -28,12 +28,11 @@ class BudgetGroup extends React.Component {
       },
       searchForm: [
         {type: 'input', id: 'groupCode', label: '预算项目组代码'},
-        {type: 'input', id: 'description', label: '预算项目组描述'},
+        {type: 'input', id: 'groupName', label: '预算项目组名称'},
       ],
       searchParams: {
-        setOfBooksId: 1,
-        organizationCode: '',
-        organizationName: ''
+        groupCode: '',
+        groupName: ''
       },
       newBudgetGroupPage: menuRoute.getRouteItem('new-budget-group','key')    //组织定义详情的页面项
     };
@@ -44,11 +43,43 @@ class BudgetGroup extends React.Component {
   }
 
   getList(){
-    this.setState({loading: false})
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/groups/query?page=${this.state.page}&size=${this.state.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    return httpFetch.get(url).then(response => {
+      this.setState({
+        data: response.data,
+        loading: false,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+          onChange: this.onChangePager,
+          current: this.state.page + 1
+        }
+      })
+    })
   }
 
-  search = (result) => {
+  clear = () => {
+    this.setState({
+      searchParams: {
+        groupCode: '',
+        groupName: ''
+      }
+    })
+  };
 
+  search = (result) => {
+    this.setState({
+      page: 0,
+      searchParams: {
+        groupCode: result.groupCode ? result.groupCode : '',
+        groupName: result.groupName ? result.groupName : ''
+      }
+    }, ()=>{
+      this.getList();
+    })
   };
 
   handleNew = () => {

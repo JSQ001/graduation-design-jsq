@@ -23,6 +23,7 @@ import BudgetStructureDetail from 'containers/budget-setting/budget-organization
 import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
+import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 
@@ -122,6 +123,14 @@ const newBudgetGroup = {
   parent: 'budget-organization-detail'
 };
 
+//新建预算项目组
+const budgetGroupDetail = {
+  key:'budget-group-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail',
+  components: BudgetGroupDetail,
+  parent: 'budget-organization-detail'
+};
+
 //预算组织详情
 const budgetOrganizationDetail = {
   key:'budget-organization-detail',
@@ -151,7 +160,8 @@ const budgetOrganization = {
     newBudgetVersions,
     newBudgetStructure,
     budgetStructureDetail,
-    newBudgetGroup
+    newBudgetGroup,
+    budgetGroupDetail
   }
 };
 

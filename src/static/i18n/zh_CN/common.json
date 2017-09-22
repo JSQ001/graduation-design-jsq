@@ -1,0 +1,15 @@
+{
+  "common.create": "新建",
+  "common.edit": "编辑",
+  "common.save": "保存",
+  "common.cancel": "取消",
+  "common.ok": "确定",
+  "common.add": "添加",
+  "common.delete": "删除",
+  "common.please.enter": "请输入",
+  "common.please.select": "请选择",
+  "common.enabled": "启用",
+  "common.disabled": "禁用",
+  "common.total": "共 {total} 条数据",
+  "common.status": "状态: {status}"
+}
