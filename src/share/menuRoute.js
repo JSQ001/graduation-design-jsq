@@ -25,6 +25,7 @@ import BudgetStructureDetail from 'containers/budget-setting/budget-organization
 import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
 import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
+import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
 import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
 
@@ -172,8 +173,7 @@ const budgetOrganization = {
     newBudgetStructure,
     budgetStructureDetail,
     newBudgetGroup,
-    newBudgetItem,
-    budgetItemDetail
+    newBudgetItem
   }
 };
 

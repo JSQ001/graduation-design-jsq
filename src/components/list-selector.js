@@ -1,3 +1,6 @@
+/**
+ * Created By ZaraNengap on 2017/09/21
+ */
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
@@ -17,7 +20,7 @@ import SearchArea from 'components/search-area'
  * @params columns  表格列配置
  * @params key  数据主键
  */
-import selectorData from 'static/selectorData'
+import selectorData from 'share/selectorData'
 
 /**
  * 通用表格选择器组件

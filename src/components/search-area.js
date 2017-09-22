@@ -9,19 +9,33 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
-import '../styles/components/search-area.scss'
+import debounce from 'lodash.debounce';
+import httpFetch from 'share/httpFetch'
+
+import 'styles/components/search-area.scss'
 
 /**
  * 搜索区域组件
+ * @params searchForm   渲染表单所需要的配置项，见底端注释
+ * @params submitHandle  点击搜索时的回调
+ * @params clearHandle  点击重置时的回调
+ * @params eventHandle  表单项onChange事件，于searchForm内的event有联动，见底端注释
+ * TODO: 选项render函数、searchUrl和getUrl的method区分，时间段格式，ListSelector格式
  */
 class SearchArea extends React.Component{
 
   constructor(props) {
     super(props);
     this.state = {
-      expand: false
+      expand: false,
+      searchForm: []
     };
+    this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
+
+  componentWillMount(){
+    this.setState({ searchForm: this.props.searchForm })
+  };
 
   //收起下拉
   toggle = () => {
@@ -44,6 +58,32 @@ class SearchArea extends React.Component{
   //区域点击事件，返回事件给父级进行处理
   handleEvent = (e, event) => {
     this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
+  };
+
+  //根据接口返回数据重新设置options
+  setOptionsToFormItem = (item, url, key, handle) => {
+    handle && handle();
+    let params = {};
+    if(key){
+      params[item.searchKey] = key;
+      if(item.method === 'get')
+        url += `?${item.searchKey}=${key}`;
+    }
+    if( (key !== undefined && key !== '') || key === undefined){
+      httpFetch[item.method](url, params).then((res) => {
+        let options = [];
+        res.data.map(data => {
+          options.push({label: data[item.labelKey], value: data[item.valueKey]})
+        });
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === item.id)
+            searchItem.options = options;
+          return searchItem;
+        });
+        this.setState({ searchForm });
+      })
+    }
   };
 
   //渲染搜索表单组件
@@ -95,12 +135,14 @@ class SearchArea extends React.Component{
       //带搜索的选择组件
       case 'combobox':{
         return <Select
-          labelInValue={true}
+          labelInValue
           showSearch
           allowClear
           placeholder={item.placeholder}
-          filterOption={false}
-          onSearch={handle}
+          filterOption={!item.searchUrl}
+          optionFilterProp='children'
+          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
+          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
         >
           {item.options.map((option)=>{
             return <Option value={option.value} key={option.value}>{option.label}</Option>
@@ -113,9 +155,10 @@ class SearchArea extends React.Component{
           mode="multiple"
           labelInValue
           placeholder={item.placeholder}
-          optionFilterProp={item.needSearch ? false :"children"}
-          onFocus={item.needSearch ? ()=>{} : handle}
-          onSearch={item.needSearch ? handle : ()=>{}}
+          filterOption={!item.searchUrl}
+          optionFilterProp='children'
+          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
+          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
         >
           {item.options.map((option)=>{
             return <Option value={option.value} key={option.value}>{option.label}</Option>
@@ -126,11 +169,11 @@ class SearchArea extends React.Component{
   }
 
   getFields(){
-    const count = this.state.expand ? this.props.searchForm.length : 6;
+    const count = this.state.expand ? this.state.searchForm.length : 6;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {};
     const children = [];
-    this.props.searchForm.map((item, i)=>{
+    this.state.searchForm.map((item, i)=>{
       children.push(
         <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           <FormItem {...formItemLayout} label={item.label} colon={false}>
@@ -153,7 +196,7 @@ class SearchArea extends React.Component{
         <Row gutter={40}>{this.getFields()}</Row>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
-            {this.props.searchForm.length > 6 ? (
+            {this.state.searchForm.length > 6 ? (
               <a className="toggle-button" onClick={this.toggle}>
                 {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
@@ -173,12 +216,18 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',    //类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple中的一种
-          id: '',    //表单id，搜索后返回的数据key
-          label: '',    //界面显示名称label
-          options: [{label: '', value: ''} ...],    //如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索选择combobox或multiple,否则一次性传入所有值
-          event: '',    //自定的点击事件ID，将会在eventHandle回调内返回
-          defaultValue: ''    //默认值
+          type: '',    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple中的一种
+          id: '',      //必填，表单id，搜索后返回的数据key
+          label: '',   //必填，界面显示名称label
+          options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
+          defaultValue: ''    //可选，默认值
+          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
+          getUrl: '',       //可选，初始显示的值需要的接口
+          method: '',      //可选，接口所需要的接口类型get/post
+          searchKey: '',  //搜索参数名
+          labelKey: '',  //可选，接口返回的数据内所需要页面options显示名称label的参数名
+          valueKey: ''  //可选，接口返回的数据内所需要options值value的参数名
         }
  */
 SearchArea.propTypes = {
