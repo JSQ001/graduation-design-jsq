@@ -1,4 +1,7 @@
 /**
+ * Created by 13576 on 2017/9/22.
+ */
+/**
  * Created by 13576 on 2017/9/21.
  */
 import React from 'react'
@@ -14,7 +17,7 @@ import menuRoute from 'share/menuRoute'
 import 'styles/budget/buget-item-type/budget-item-type.scss'
 
 
-class NewBudgetItemType extends React.Component {
+class PutBudgetItemType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,33 +30,35 @@ class NewBudgetItemType extends React.Component {
   componentWillMount(){
 
     this.setState({
-
+      params: this.props.params,
+      isEnabled: this.props.params.isEnabled,
+      isPut:false
     })
   }
 
-
-  //新建
-  handleSave= (e) =>{
+//修改
+  handlePut= (e) =>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let toValue={
-          'isEnabled':values.isEnabled,
-          'itemTypeName':values.itemTypeName,
-          'itemTypeCode':values.itemTypeCode
-        }
-        console.log(values);
-        httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
+        let data =this.state.params
+       data.isEnabled = values.isEnabled;
+        data.itemTypeName = values.itemTypeName;
+        console.log(data);
+        httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res)=>{
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{
-          message.error('操作失败');
+
         })
       }
     });
-  }
+  };
+
+
+
 
   onCancel = () =>{
     this.props.close();
@@ -67,7 +72,7 @@ class NewBudgetItemType extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { params, isEnabled,isPut} = this.state;
+    const { params,isPut} = this.state;
     const formItemLayout = {
       labelCol: { span: 24 },
       wrapperCol: { span: 14, offset: 1 },
@@ -76,28 +81,23 @@ class NewBudgetItemType extends React.Component {
 
 
       <div className="new-value">
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={this.handlePut}>
           <FormItem
-             label="状态">
+            label="状态">
             {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
-              initialValue:isEnabled
             })(
               <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <Switch  defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
                 <span className="enabled-type">{ isEnabled ? '启用' : '禁用' }</span>
               </div>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算组织">
             {getFieldDecorator('organizationName', {
-              rules: [{
-
-              }],
               initialValue:this.props.organization.organizationName
 
             })(
-              <Input  disabled/>
+              <Input />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算项目类型代码" hasFeedback>
@@ -105,18 +105,20 @@ class NewBudgetItemType extends React.Component {
               rules: [{
                 required: true
               }],
+              initialValue:params.itemTypeCode
             })(
-              <Input/>
+              <Input disabled={isPut}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算项目类型名字" hasFeedback>
-            {getFieldDecorator('itemTypeName', {
+            {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
                 message: '请输入'
               }],
+              initialValue: params.itemTypeName
             })(
-              <Input placeholder="请输入"  />
+              <Input placeholder="请输入" />
             )}
           </FormItem>
 
@@ -132,15 +134,15 @@ class NewBudgetItemType extends React.Component {
 
 
 /*NewBudgetItemType.propTypes = {
-  isPut:React.PropTypes.bool,
-  text:React.PropTypes.object
-};*/
+ isPut:React.PropTypes.bool,
+ text:React.PropTypes.object
+ };*/
 
 
-const WrappedNewBudgetItemType = Form.create()(NewBudgetItemType);
+const WrappedPutBudgetItemType = Form.create()(PutBudgetItemType);
 function mapStateToProps(state) {
   return {
     organization:state.budget.organization
   }
 }
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetItemType));
+export default connect(mapStateToProps)(injectIntl(WrappedPutBudgetItemType));
