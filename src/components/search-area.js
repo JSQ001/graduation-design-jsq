@@ -12,7 +12,7 @@ const CheckboxGroup = Checkbox.Group;
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
 
-import '../styles/components/search-area.scss'
+import 'styles/components/search-area.scss'
 
 /**
  * 搜索区域组件
@@ -60,6 +60,7 @@ class SearchArea extends React.Component{
     this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
   };
 
+  //根据接口返回数据重新设置options
   setOptionsToFormItem = (item, url, key, handle) => {
     handle && handle();
     let params = {};
@@ -219,9 +220,10 @@ class SearchArea extends React.Component{
           id: '',      //必填，表单id，搜索后返回的数据key
           label: '',   //必填，界面显示名称label
           options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
-          event: '',          //可选，自定的点击事件ID，将会在eventHandle回调内返回
-          defaultValue: ''   //可选，默认值
-          searchUrl: '',    //可选，当类型为combobox和multiple有效，搜索需要的接口，
+          event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
+          defaultValue: ''    //可选，默认值
+          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
+          getUrl: '',       //可选，初始显示的值需要的接口
           method: '',      //可选，接口所需要的接口类型get/post
           searchKey: '',  //搜索参数名
           labelKey: '',  //可选，接口返回的数据内所需要页面options显示名称label的参数名
