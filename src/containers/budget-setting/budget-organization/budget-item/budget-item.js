@@ -61,6 +61,13 @@ class BudgetItem extends React.Component {
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/items/query`).then((response)=>{
       console.log(response)
+      this.setState({
+        loading: false,
+        data: response.data,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+        }
+      })
     })
   }
 
@@ -136,13 +143,8 @@ class BudgetItem extends React.Component {
   }
 
   handleCreate = () =>{
-    if(this.props.organization.isEnabled) {
-      this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
-    }else{
-      notification["error"]({
-        description:this.props.intl.formatMessage({id:""})  /*请维护当前账套下的预算组织*/
-      })
-    }
+
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetItem.url.replace(':id', this.props.id));
   }
 
   render(){
@@ -175,6 +177,9 @@ class BudgetItem extends React.Component {
     )
   }
 
+}
+BudgetItem.contextTypes = {
+  router: React.PropTypes.object
 }
 
 function mapStateToProps() {

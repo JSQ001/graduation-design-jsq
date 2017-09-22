@@ -71,7 +71,7 @@ class NewBudgetStructure extends React.Component{
     return(
       <div className="new-budget-structure">
         <div className="budget-structure-header">
-          <Form onSubmit={this.handleSave} className="budget-structure-form">
+          <Form onSubmit={this.handleSave}>
             <Row gutter={24}>
               <Col span={8}>
                 <FormItem
@@ -156,7 +156,7 @@ class NewBudgetStructure extends React.Component{
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"status"},{statusCode:statusCode})} /* {/!*状态*!/}*/
+                  label={this.props.intl.formatMessage({id:"status.code"},{statusCode:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: true,

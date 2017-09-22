@@ -46,7 +46,7 @@ const zh_CN = {
   "button.create": "新 建",
   "prompting.input": "请输入",
   "prompting.select": "请选择",
-  "status": "状态 :  {statusCode}",
+  "status.code": "状态 :  {statusCode}",
   "button.add": "添 加",
   "menu.budget-structure-detail": "预算表详情",
   "dimensionCode": "维度代码",
@@ -71,6 +71,7 @@ const zh_CN = {
   "title.basicInformation": "基本信息",
   "text.edit": "编辑",
 
+  //预算项目
   "budget.itemCode": "预算项目代码",
   "budget.itemName": "预算项目名称",
   "budget.itemDescription": "预算项目描述",
@@ -78,6 +79,7 @@ const zh_CN = {
   "budget.itemCodeTo": "预算项目代码至",
   "budget.itemType": "预算项目类型",
   "budget.item.variationAttribute": "变动属性",
+  "menu.new-budget-item": '新建预算项目'
 
 
 };
