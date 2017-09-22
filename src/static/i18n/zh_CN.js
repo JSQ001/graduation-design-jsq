@@ -34,7 +34,7 @@ const zh_CN = {
 
 import common from 'static/i18n/zh_CN/common.json'
 import menu from 'static/i18n/zh_CN/menu.json'
-import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization.json'
+import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-organization.json'
 import login from 'static/i18n/zh_CN/login.json'
 
 const i18nList = [
