@@ -109,7 +109,12 @@ class WebpackBaseConfig {
           },
           {
             test: /\.(png|jpg|gif|mp4|ogg|svg|woff|woff2)$/,
-            loader: 'file-loader'
+            loader: 'file-loader',
+            query: {
+              limit: 10000,
+              name: './images/[hash].[ext]',
+              publicPath: this.srcPathAbsolute.split('/')[0] + '/assets/'
+            },
           },
           {
             test: /^.((?!cssmodule).)*\.(sass|scss)$/,

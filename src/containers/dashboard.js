@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Row, Col, Card, Icon } from 'antd';
 import echarts from 'echarts'
-import animals from 'static/animalData'
+import animals from 'share/animalData'
 import 'styles/dashboard.scss'
 
 class Dashboard extends React.Component{
