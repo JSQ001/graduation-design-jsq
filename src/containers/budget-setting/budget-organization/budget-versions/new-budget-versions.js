@@ -278,7 +278,7 @@ class NewBudgetVersions extends React.Component {
                     valuePropName:"defaultValue",
                   }
                 )(
-                  <DatePicker />
+                  <DatePicker  style={{width:315}}/>
                 )}
               </FormItem>
             </Col>
