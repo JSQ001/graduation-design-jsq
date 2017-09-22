@@ -13,6 +13,7 @@ class NewBudgetStrategy extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       isEnabled: true,
     };
   }
@@ -26,10 +27,12 @@ class NewBudgetStrategy extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.organizationId = '908139656192442369';
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
           console.log(res);
           if(res.status == 200){
+            this.setState({loading: false});
             this.props.close(true);
             message.success('操作成功');
           }

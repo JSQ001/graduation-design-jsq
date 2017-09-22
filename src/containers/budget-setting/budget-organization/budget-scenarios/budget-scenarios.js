@@ -25,7 +25,7 @@ class BudgetScenarios extends React.Component {
         scenariosCode: "",
         scenariosDesc: ""
       },
-      Loading: true,
+      loading: true,
       columns: [
         {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
@@ -153,7 +153,7 @@ class BudgetScenarios extends React.Component {
   };
 
   render(){
-    const { searchForm, columns, pagination, Loading, data, showSlideFrame, showUpdateSlideFrame, updateParams, newParams } = this.state;
+    const { searchForm, columns, pagination, loading, data, showSlideFrame, showUpdateSlideFrame, updateParams, newParams } = this.state;
     return (
       <div className="budget-scenarios">
         <SearchArea
@@ -170,7 +170,7 @@ class BudgetScenarios extends React.Component {
         <Table columns={columns}
                dataSource={data}
                pagination={pagination}
-               Loading={Loading}
+               loading={loading}
                onRowClick={this.handleRowClick}
                bordered
                size="middle"/>

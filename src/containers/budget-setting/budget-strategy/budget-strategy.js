@@ -29,7 +29,7 @@ class BudgetStrategy extends React.Component {
       pagination: {
         total: 0
       },
-      Loading: true,
+      loading: true,
       page: 0,
       pageSize: 10,
       newBudgetStrategy:  menuRoute.getRouteItem('new-budget-strategy','key'),    //新建控制策略
@@ -107,7 +107,7 @@ class BudgetStrategy extends React.Component {
   };
 
   render(){
-    const { searchForm, columns, data, pagination, Loading } = this.state;
+    const { searchForm, columns, data, pagination, loading } = this.state;
     return (
       <div className="budget-strategy">
         <SearchArea
@@ -124,7 +124,7 @@ class BudgetStrategy extends React.Component {
         <Table columns={columns}
                dataSource={data}
                pagination={pagination}
-               Loading={Loading}
+               loading={loading}
                onRowClick={this.handleRowClick}
                bordered
                size="middle"/>

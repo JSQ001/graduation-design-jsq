@@ -12,7 +12,7 @@ class BudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      Loading: true,
+      loading: true,
       infoList: [
         {type: 'input', id: 'test', title: '预算控制策略代码：', value: 'code01'},
         {type: 'input', id: 'test', title: '预算控制策略描述：', value: 'description01'},
@@ -39,7 +39,7 @@ class BudgetStrategyDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}`).then((response) => {
       this.setState({
         data: response.data,
-        Loading: false
+        loading: false
       })
     }).catch((e) => {
 
@@ -47,7 +47,7 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   render(){
-    const { infoList, columns, data, Loading } = this.state;
+    const { infoList, columns, data, loading } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}/>
@@ -59,7 +59,7 @@ class BudgetStrategyDetail extends React.Component {
         </div>
         <Table columns={columns}
                dataSource={data}
-               Loading={Loading}
+               loading={loading}
                bordered
                size="middle"/>
       </div>
