@@ -24,17 +24,18 @@ class Main extends React.Component{
     this.state = {
       menu: menuRoute.menu,
       selectedKeys: [],
-      openKeys: []
+      openKeys: [],
+      collapsed: false
     };
   }
 
   componentWillMount(){
-    let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
-    this.setState({
-      selectedKeys: [nowMenuItem.key],
-      openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
-    });
-  }
+  let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
+  this.setState({
+    selectedKeys: [nowMenuItem.key],
+    openKeys: nowMenuItem.parent ? [nowMenuItem.parent] : []
+  });
+}
 
   renderMenu(){
     return (
@@ -97,19 +98,22 @@ class Main extends React.Component{
     this.props.dispatch(setLanguage(language));
   };
 
+  onCollapse = (collapsed) => {
+    this.setState({ collapsed });
+  };
+
   render(){
     return (
       <Layout className="helios-main">
-        <Sider width={202} className="helios-sider">
+        <Sider width={202} className="helios-sider" collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
           <div className="company-name">{this.props.company.name}</div>
           {this.renderMenu()}
         </Sider>
-        <Layout>
+        <Layout style={{ marginLeft: this.state.collapsed ? 64 : 202 }} className="content-layout">
           <Header className="helios-header">
             <div className="icon-logo">
               <img src='../images/logo.png'/>
             </div>
-
             <div className="user-area">
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
