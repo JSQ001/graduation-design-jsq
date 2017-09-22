@@ -49,7 +49,7 @@ class NewBudgetItemType extends React.Component {
             message.success('操作成功');
           }
         }).catch((e)=>{
-          message.error('操作失败');
+          message.error(e.response.data.message);
         })
       }
     });
@@ -69,7 +69,7 @@ class NewBudgetItemType extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const { params, isEnabled,isPut} = this.state;
     const formItemLayout = {
-      labelCol: { span: 24 },
+      labelCol: { span: 24,offset:1 },
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
@@ -77,19 +77,19 @@ class NewBudgetItemType extends React.Component {
 
       <div className="new-value">
         <Form onSubmit={this.handleSave}>
-          <FormItem
-             label="状态">
+          <FormItem {...formItemLayout}
+             label="状态:">
             {getFieldDecorator('isEnabled', {
               valuePropName:"defaultChecked",
               initialValue:isEnabled
             })(
               <div>
                 <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type">{ isEnabled ? '启用' : '禁用' }</span>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? '启用' : '禁用' }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织">
+          <FormItem {...formItemLayout} label="预算组织:">
             {getFieldDecorator('organizationName', {
               rules: [{
 
@@ -100,7 +100,7 @@ class NewBudgetItemType extends React.Component {
               <Input  disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型代码" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型代码:" hasFeedback>
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -109,7 +109,7 @@ class NewBudgetItemType extends React.Component {
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型名字" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型名字:" hasFeedback>
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,

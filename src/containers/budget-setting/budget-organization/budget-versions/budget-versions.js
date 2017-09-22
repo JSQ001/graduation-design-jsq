@@ -17,7 +17,6 @@ class BudgetVersions extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      Loading: true,
       Data: [],
       columns: [
         {title:'预算组织',dataIndex:'organizationId',key:'organizationId',render:(recode)=>{return <div> {this.props.organization.organizationName}</div> } },
@@ -57,6 +56,7 @@ class BudgetVersions extends React.Component {
         versionName:'',
       },
       redirect:true,
+      loading:true,
       newData:{versionCode:''},
       NewBudgetVersionsPage:menuRoute.getRouteItem('new-budget-versions','key')
 
@@ -66,13 +66,6 @@ class BudgetVersions extends React.Component {
   }
 
 
-  //编辑是否启用
-  editEnabledHandle=(recode,text)=>{
-
-    text.isEnabled=!recode;
-    this.putData(text);
-    this.getList();
-  }
 
   //显示新建
   showSlide = (flag) => {
@@ -86,40 +79,9 @@ class BudgetVersions extends React.Component {
     this.getList();
   }
 
-  //修改数据
-  putData=(value)=>{
-    return httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-      this.setState({
-        putFlag:true
-      })
-    });
-  }
-
-
   //获得数据
   getList(){
-    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.id}&page=${this.state.page}&size=${this.state.pageSize}`, ).then((response)=>{
-      response.data.map((item, index)=>{
-        item.index = this.state.page * this.state.pageSize + index + 1;
-        item.key = item.index;
-      });
-      this.setState({
-        data: response.data,
-        loading: false,
-        pagination: {
-          total: Number(response.headers['x-total-count']),
-          onChange: this.onChangePager
-        }
-      })
-    });
-  }
-
-  //获得搜索数据
-  searchGetList(){
-    return httpFetch.
-    get(`${config.budgetUrl}/api/budget/versions/query?
-    organizationId=${this.props.id}page=${this.state.page}&size=${this.state.pageSize}&versionCode=${this.state.searchParams.versionCode||''}&versionName=${this.state.searchParams.versionName||''}`, ).
-    then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.id}&page=${this.state.page}&size=${this.state.pageSize}&versionCode=${this.state.searchParams.versionCode||''}&versionName=${this.state.searchParams.versionName||''}`, ).then((response)=>{
       response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
         item.key = item.index;
@@ -158,7 +120,7 @@ class BudgetVersions extends React.Component {
       loading: true,
       page: 0
     }, ()=>{
-      this.searchGetList();
+      this.getList();
     })
 
   }
@@ -171,11 +133,6 @@ class BudgetVersions extends React.Component {
     }})
   }
 
-  searchEventHandle=()=> {
-
-  }
-
-
 //跳转到新建页面
   createHandle=()=>{
     let path=this.state.NewBudgetVersionsPage.url.replace(':id',this.props.id);
@@ -185,7 +142,7 @@ class BudgetVersions extends React.Component {
 
 
   render(){
-    const {columns,data ,pagination,searchForm,Loading,redirect,BudgetVersionsPage} =this.state
+    const {columns,data ,pagination,searchForm,loading} =this.state
     return (
       <div className="budget-versions">
         <div className="search-from">
@@ -208,7 +165,7 @@ class BudgetVersions extends React.Component {
             columns={columns}
             dataSource={data}
             pagination={pagination}
-            Loading={Loading}
+            Loading={loading}
             bordered
             size="middle"
           />

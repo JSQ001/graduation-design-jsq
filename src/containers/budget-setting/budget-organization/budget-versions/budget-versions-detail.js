@@ -132,7 +132,7 @@ class BudgetVersionsDetail extends React.Component {
     this.getAssignCompanyList();
     return (
       <Form >
-        <Row gutter={16}>
+        <Row gutter={40}>
           <Col span={8} style={{ display: 'inline-block'}}>
             <FormItem
               label="预算组织"
@@ -202,7 +202,7 @@ class BudgetVersionsDetail extends React.Component {
               label="版本日期"
             >
 
-              <DatePicker  defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')} onOpenChange={this.versionDateChangeHandle} onChang={this.versionsDataChangHandle}/>
+              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChang={this.versionsDataChangHandle}/>
 
             </FormItem>
           </Col>
@@ -237,8 +237,6 @@ class BudgetVersionsDetail extends React.Component {
 
 
   renderForm=()=>{
-    console.log(this.props.Location)
-    console.log(this.props.location)
     const data = this.state.formData;
     return(
      this.state.edit? <div>

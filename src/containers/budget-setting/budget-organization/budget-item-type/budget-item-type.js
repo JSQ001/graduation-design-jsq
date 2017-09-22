@@ -21,12 +21,14 @@ class BudgetItemType extends React.Component {
     super(props);
     this.state = {
       Loading: true,
-      Data: [],
+      data: [
+       /* {id:123,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"},
+        { id:124,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"}*/
+      ],
       columns: [
         {title: '预算组织名称', dataIndex: 'organizationId', key: 'organizationId',},
         {title: '预算项目类型代码', dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
         {title: '预算项目类型名称', dataIndex: 'itemTypeName', key: 'itemTypeName',},
-        {title: '预算项目类型描述', dataIndex: 'description', key: 'description',},
         {title: '状态',dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
       ],
       searchForm: [
@@ -53,7 +55,7 @@ class BudgetItemType extends React.Component {
     };
   }
 
-
+//获得数据
   getList(){
     let url = `${config.budgetUrl}/api/budget/itemType/query?size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode||''}&itemTypeName=${this.state.searchParams.itemTypeName||''}`;
     return httpFetch.get(url).then((response)=>{
@@ -61,7 +63,7 @@ class BudgetItemType extends React.Component {
         item.key = item.id;
       });
       this.setState({
-        data: response.data,
+      //  data: response.data,
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
@@ -107,11 +109,6 @@ class BudgetItemType extends React.Component {
     })
   };
 
-  searchEventHandle=()=>{
-
-  }
-
-
   handleCloseSlide = (params) => {
     console.log(params);
     this.setState({
@@ -138,9 +135,9 @@ class BudgetItemType extends React.Component {
     })
   }
 
-  putItemTypeShowSlide=(recode,text)=>{
+  putItemTypeShowSlide=(recode)=>{
     this.setState({
-      updateParams:text,
+      updateParams:recode,
       showSlideFramePut: true
     })
   }
@@ -172,6 +169,7 @@ class BudgetItemType extends React.Component {
             pagination={pagination}
             Loading={loading}
             bordered
+            onRowClick={this.putItemTypeShowSlide}
           />
         </div>
 
@@ -184,7 +182,7 @@ class BudgetItemType extends React.Component {
 
         <SlideFrame title="编辑预算场景"
                     show={showSlideFramePut}
-                    content={WrappedNewBudgetItemType}
+                    content={WrappedPutBudgetItemType}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlidePut(false)}
                     params={updateParams}/>

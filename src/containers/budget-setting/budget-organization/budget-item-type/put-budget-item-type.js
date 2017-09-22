@@ -23,16 +23,15 @@ class PutBudgetItemType extends React.Component {
     this.state = {
       params: {},
       isEnabled: true,
-      isPut:false,
+
     };
   }
 
   componentWillMount(){
-
+    console.log(this.state.params)
     this.setState({
       params: this.props.params,
       isEnabled: this.props.params.isEnabled,
-      isPut:false
     })
   }
 
@@ -72,9 +71,9 @@ class PutBudgetItemType extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { params,isPut} = this.state;
+    const { params,isEnabled} = this.state;
     const formItemLayout = {
-      labelCol: { span: 24 },
+      labelCol: { span: 24,offset: 1  },
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
@@ -88,7 +87,7 @@ class PutBudgetItemType extends React.Component {
             })(
               <div>
                 <Switch  defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type">{ isEnabled ? '启用' : '禁用' }</span>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? '启用' : '禁用' }</span>
               </div>
             )}
           </FormItem>
@@ -97,7 +96,7 @@ class PutBudgetItemType extends React.Component {
               initialValue:this.props.organization.organizationName
 
             })(
-              <Input />
+              <Input disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算项目类型代码" hasFeedback>
@@ -105,9 +104,9 @@ class PutBudgetItemType extends React.Component {
               rules: [{
                 required: true
               }],
-              initialValue:params.itemTypeCode
+              initialValue:this.props.params.itemTypeCode
             })(
-              <Input disabled={isPut}/>
+              <Input disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算项目类型名字" hasFeedback>
@@ -116,7 +115,7 @@ class PutBudgetItemType extends React.Component {
                 required: true,
                 message: '请输入'
               }],
-              initialValue: params.itemTypeName
+              initialValue: this.props.params.itemTypeName
             })(
               <Input placeholder="请输入" />
             )}
