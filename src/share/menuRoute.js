@@ -172,7 +172,8 @@ const budgetOrganization = {
     newBudgetStructure,
     budgetStructureDetail,
     newBudgetGroup,
-    newBudgetItem
+    newBudgetItem,
+    budgetItemDetail
   }
 };
 

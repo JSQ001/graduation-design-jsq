@@ -97,6 +97,7 @@ class NewBudgetStructure extends React.Component{
                       {
                         validator:(item,value,callback)=>{
                           httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?structureCode=${value}`).then((response)=>{
+                            console.log(response)
                             response.data.length>0 ? callback(this.props.intl.formatMessage({id:"validator.organizationCode.exist"})) : callback()
                           })
 

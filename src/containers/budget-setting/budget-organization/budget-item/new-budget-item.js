@@ -59,7 +59,7 @@ class NewBudgetItem extends React.Component{
             message.success(this.props.intl.formatMessage({id:"prompting.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
             const location = {
-              pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemeDetail.url.replace(':id', this.props.params.id),
+              pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemDetail.url.replace(':id', this.props.params.id),
               state:response.data,
             };
             this.context.router.push(location);
@@ -212,6 +212,10 @@ class NewBudgetItem extends React.Component{
       </div>
     )
   }
+}
+
+NewBudgetItem.contextTypes = {
+  router: React.PropTypes.object
 }
 
 function mapStateToProps(state) {

@@ -21,7 +21,7 @@ class BudgetStructure extends React.Component {
       data: [],
       params:{},
       pagination: {
-        current:1,
+        current:0,
         total:0,
         pageSize:10,
         showSizeChanger:true,
@@ -79,37 +79,41 @@ class BudgetStructure extends React.Component {
 
   //获取预算表数据
   getList(){
-    let params = this.state.params;
-    let paramsIsExist = JSON.stringify(this.state.params) === "{}" || ( params.structureCode==""&&params.description=="");
+    let searchParam = this.state.params;
+    let params;
+    console.log(searchParam)
+    let paramsIsExist = JSON.stringify(this.state.params) === "{}" || ( searchParam.structureCode=="" && searchParam.description=="");
     if(paramsIsExist){
-      params = ""
+      params = "";
     }else {
-      if(typeof params.structureCode !=="undefined"){
-        params = "?structureCode="+params.structureCode;
-        if(typeof params.description !=="undefined"){
-          params = params+"&description="+params.description
+      if(typeof searchParam.structureCode !=="undefined" && searchParam.structureCode !== ""){
+        params = "structureCode="+searchParam.structureCode;
+        if(typeof searchParam.description !=="undefined" && searchParam.description !== ""){
+          params = params+"&description="+searchParam.description
         }
       }else {
-        if(typeof params.description !=="undefined"){
-          params = "?description="+params.description
+        if(typeof searchParam.description !=="undefined" && searchParam.description !== ""){
+          params = "description="+searchParam.description
         }
       }
     }
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?page=${this.state.pagination.current}&size=${this.state.pagination.pageSize}`,).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?page=${this.state.pagination.current}&size=${this.state.pagination.pageSize}${paramsIsExist ? "" : `&${params}`}`,).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
       })
-
       this.setState({
         data: response.data,
         pagination: {
           total: Number(response.headers['x-total-count']),
-          //onChange: this.onChangePager
+          current: this.state.pagination.current,
+          pageSize:this.state.pagination.pageSize,
+          showSizeChanger:true,
+          showQuickJumper:true,
         },
         loading: false
       })
     })
-  }
+  };
 
   handleSearch = (values) =>{
     this.setState({

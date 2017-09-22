@@ -17,11 +17,14 @@ class BudgetItem extends React.Component {
     this.state = {
       loading: true,
       data: [],
+      params:{},
       selectedRowKeys: [],
-      pagination:{
-        current: 0,
-        pageSize: 10,
-        total: 0,
+      pagination: {
+        current:0,
+        total:0,
+        pageSize:10,
+        showSizeChanger:true,
+        showQuickJumper:true,
       },
       searchForm: [
         {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'budget.itemCode'}) }, /*预算项目代码*/
@@ -59,8 +62,12 @@ class BudgetItem extends React.Component {
   }
   //获取预算项目数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/query`).then((response)=>{
-      console.log(response)
+    console.log(this.state.params)
+    console.log(this.state.pagination)
+    httpFetch.get(`${config.budgetUrl}/api/budget/items/query?page=${this.state.pagination.current}&size=${this.state.pagination.pageSize}`).then((response)=>{
+      response.data.map((item,index)=>{
+        item.key = item.id;
+      })
       this.setState({
         loading: false,
         data: response.data,
@@ -74,7 +81,6 @@ class BudgetItem extends React.Component {
   handleSearch = (values) =>{
     this.setState({
       params:values,
-
     },()=>{
       this.getList()
     })
@@ -143,12 +149,12 @@ class BudgetItem extends React.Component {
   }
 
   handleCreate = () =>{
-
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetItem.url.replace(':id', this.props.id));
   }
 
   render(){
     const { loading, searchForm ,data, selectedRowKeys, pagination, columns} = this.state;
+
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
