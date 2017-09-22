@@ -27,7 +27,7 @@ const zh_CN = {
   "menu.budget-strategy": "预算控制策略定义",
   "menu.new-budget-strategy": "新建预算控制策略",
   "menu.budget-strategy-detail": "预算控制策略详情",
-  "menu.new-budget-strategy-detail": "新建预算控制策略详情",
+  "menu.new-budget-strategy-detail": "新建策略明细",
   "menu.budget-rule": "预算控制规则定义",
   "menu.budget-journal": "预算日记账类型定义",
   "menu.budget-journal-type": "预算日记账类型定义",

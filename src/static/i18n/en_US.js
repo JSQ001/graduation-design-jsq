@@ -25,7 +25,7 @@ const en_US = {
   "menu.budget-strategy": "Budget strategy",
   "menu.new-budget-strategy": "New budget strategy",
   "menu.budget-strategy-detail": "Budget strategy detail",
-  "menu.new-budget-strategy-detail": "New budget strategy detail",
+  "menu.new-budget-strategy-detail": "New strategy detail",
   "menu.budget-rule": "Budget rule",
   "menu.budget-journal-type": "Budget journal type",
   "menu.budget": "Budget",
