@@ -13,7 +13,7 @@ import { setOrganization } from 'actions/budget'
 import BudgetScenarios from 'containers/budget-setting/budget-organization/budget-scenarios/budget-scenarios'
 import BudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/budget-structure'
 import BudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/budget-versions'
-import BudgetType from 'containers/budget-setting/budget-organization/budget-type/budget-type'
+import BudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/budget-item-type'
 import BudgetItem from 'containers/budget-setting/budget-organization/budget-item/budget-item'
 import BudgetGroup from 'containers/budget-setting/budget-organization/budget-group/budget-group'
 
@@ -79,7 +79,7 @@ class BudgetOrganizationDetail extends React.Component {
         content = BudgetVersions;
         break;
       case 'TYPE':
-        content = BudgetType;
+        content = BudgetItemType;
         break;
       case 'ITEM':
         content = BudgetItem;
