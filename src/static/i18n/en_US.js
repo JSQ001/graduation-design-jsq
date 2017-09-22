@@ -1,49 +1,27 @@
 const en_US = {
-  "helios": "helios",
-  "login.username": "Username",
-  "login.password": "Password",
-  "login.forget": "Find password",
-  "login.wrong": "Wrong username or password, please check and enter again :)",
-  "login.error": "Oops, service error occurs, please try it later :(",
-  "main.welcome": "Welcome，{name}",
-  "menu.confirm-payment": "Confirm payment",
-  "menu.new-value-list": "New value list",
-  "menu.value-list": "Value list",
-  "menu.dashboard": "Dashboard",
-  "menu.financial-management": "Financial management",
-  "menu.setting": "Setting",
-  "menu.my-account": "My account",
-  "menu.expense-report": "Expense report",
-  "menu.edit-report": "Edit report",
-  "menu.budget-setting": "Budget setting",
-  "menu.new-budget-organization": "New budget organization",
-  "menu.budget-organization": "Budget organization",
-  "menu.budget-organization-detail": "Budget organization detail",
-  "menu.budget-scenarios": "Budget scenarios",
-  "menu.new-budget-versions": "New budget versions",
-  "menu.budget-versions-detail":"Budget versions detail",
-  "menu.budget-strategy": "Budget strategy",
-  "menu.new-budget-strategy": "New budget strategy",
-  "menu.budget-strategy-detail": "Budget strategy detail",
-  "menu.new-budget-strategy-detail": "New strategy detail",
-  "menu.budget-rule": "Budget rule",
-  "menu.budget-journal-type": "Budget journal type",
-  "menu.budget": "Budget",
-  "menu.budget-journal": "Budget journal",
-  "menu.new-budget-structure": "New budget structure",
-  "menu.new-budget-group": "New budget group",
-  "budget.organizationName": "Budget organization name",
-  "budget.organization": "Budget organization",
   "budget.structure":"Budget structure",
   "budget.structureCode": "Budget structure code",
   "budget.structureName": "Budget structure name",
   "periodStrategy":"Period strategy",
-  "budget.structureDescription": "Budget structure description",
-  "search.total": "Total {total} data",
-  "button.create": "Create",
-  "prompting.input": "Please enter",
-  "prompting.select": "Please select",
-  "status": "Status : {statusCode}"
+  "budget.structureDescription": "Budget structure description"
 };
 
-export default en_US
+import common from 'static/i18n/en_US/common.json'
+import menu from 'static/i18n/en_US/menu.json'
+import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organization.json'
+import login from 'static/i18n/en_US/login.json'
+
+const i18nList = [
+  common,  //公用
+  login,  //登录及主界面
+  menu,  //菜单
+  budgetOrganization  //预算组织
+];
+
+let result = {};
+
+i18nList.map(i18n => {
+  result = Object.assign(result, i18n)
+});
+
+export default result

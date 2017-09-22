@@ -1,0 +1,15 @@
+{
+  "common.create": "Create",
+  "common.edit": "Edit",
+  "common.save": "Save",
+  "common.cancel": "Cancel",
+  "common.ok": "Ok",
+  "common.add": "Add",
+  "common.delete": "Delete",
+  "common.please.enter": "Please enter",
+  "common.please.select": "Please select",
+  "common.enabled": "Enabled",
+  "common.disabled": "Disabled",
+  "common.total": "Total {total} items",
+  "common.status": "Status: {status}"
+}

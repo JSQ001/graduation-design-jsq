@@ -190,7 +190,7 @@ class BudgetStructureDetail extends React.Component{
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"status"},{statusCode:statusCode})} /* {/!*状态*!/}*/
+                  label={this.props.intl.formatMessage({id:"status.code"},{statusCode:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: structure.isEnabled,
