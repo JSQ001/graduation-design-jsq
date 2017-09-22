@@ -18,6 +18,8 @@ import { injectIntl } from 'react-intl';
 import en from 'static/i18n/en_US'
 import zh from 'static/i18n/zh_CN'
 
+import LogoImg from 'images/logo.png'
+
 class Main extends React.Component{
   constructor(props) {
     super(props);
@@ -112,7 +114,7 @@ class Main extends React.Component{
         <Layout style={{ marginLeft: this.state.collapsed ? 64 : 202 }} className="content-layout">
           <Header className="helios-header">
             <div className="icon-logo">
-              <img src='../images/logo.png'/>
+              <img src={LogoImg}/>
             </div>
             <div className="user-area">
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">

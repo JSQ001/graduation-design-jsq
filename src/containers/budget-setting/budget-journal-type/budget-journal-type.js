@@ -29,7 +29,7 @@ class BudgetJournalType extends React.Component {
       },
       searchForm: [
         {type: 'input', id: 'journalTypeCode', label: '类型代码'},
-        {type: 'input', id: 'journalTypeName', label: '类型名称'},
+        {type: 'input', id: 'journalTypeName', label: '类型名称'}
       ],
       searchParams: {
         journalTypeCode: '',
@@ -76,6 +76,7 @@ class BudgetJournalType extends React.Component {
   };
 
   search = (result) => {
+    console.log(result);
     this.setState({
       page: 0,
       searchParams: {
