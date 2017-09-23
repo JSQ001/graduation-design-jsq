@@ -3,6 +3,8 @@
  */
 import React from 'react';
 import { Router, Route, browserHistory } from 'react-router'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
 
 import Main from 'containers/main'
 import requireAuthentication from 'components/requireAuthentication'
@@ -131,7 +133,7 @@ const newBudgetGroup = {
 //新建预算项目组
 const budgetGroupDetail = {
   key:'budget-group-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail/:groupId',
   components: BudgetGroupDetail,
   parent: 'budget-organization-detail'
 };
@@ -142,7 +144,7 @@ const newBudgetItem = {
   url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-item',
   components: NewBudgetItem,
   parent: 'budget-organization-detail'
-}
+};
 
 //预算项目详情
 const budgetItemDetail = {
@@ -150,8 +152,7 @@ const budgetItemDetail = {
   url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail',
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
-
-}
+};
 
 
 

@@ -21,15 +21,17 @@ class BudgetGroupDetail extends React.Component {
   render(){
     return (
       <div>
-
+        {this.props.params.groupId}
       </div>
     )
   }
 
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.budget.organization
+  }
 }
 
 BudgetGroupDetail.contextTypes = {

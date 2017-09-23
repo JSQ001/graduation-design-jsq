@@ -7,8 +7,6 @@ const zh_CN = {
   "budget.structureName": "预算表名称",
   "periodStrategy":"编制期段",
   "budget.structureDescription": "预算表描述",
-
-  "menu.budget-structure-detail": "预算表详情",
   "dimensionCode": "维度代码",
   "description": "描述",
   "layoutPosition": "布局位置",
@@ -32,7 +30,6 @@ const zh_CN = {
   "budget.itemCodeTo": "预算项目代码至",
   "budget.itemType": "预算项目类型",
   "budget.item.variationAttribute": "变动属性",
-  "menu.new-budget-item": '新建预算项目'
 };
 
 import common from 'static/i18n/zh_CN/common.json'
