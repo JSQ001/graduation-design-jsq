@@ -34,14 +34,14 @@ const zh_CN = {
 
 import common from 'static/i18n/zh_CN/common.json'
 import menu from 'static/i18n/zh_CN/menu.json'
-import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization.json'
+//import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization.json'
 import login from 'static/i18n/zh_CN/login.json'
 
 const i18nList = [
   common,  //公用
   login,  //登录及主界面
   menu,  //菜单
-  budgetOrganization  //预算组织
+ // budgetOrganization  //预算组织
 ];
 
 let result = {};

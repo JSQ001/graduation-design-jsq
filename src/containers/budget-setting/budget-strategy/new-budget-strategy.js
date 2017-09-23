@@ -32,7 +32,6 @@ class NewBudgetStrategy extends React.Component {
           console.log(res);
           if(res.status == 200){
             this.setState({loading: false});
-            this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{

@@ -5,7 +5,8 @@ import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import { Form, Table, Button } from 'antd'
+import { Table, Button, Input } from 'antd'
+const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
 
@@ -30,8 +31,8 @@ class BudgetStrategyDetail extends React.Component {
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence"},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
         {title: "描述", dataIndex: "detailName", key: "detailName"},
-        {title: "消息", dataIndex: "messageCode", key: "messageCode"},
-        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent"}
+        {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
+        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
       ],
       data: [],
       pagination: {
@@ -40,6 +41,7 @@ class BudgetStrategyDetail extends React.Component {
       pageSize: 10,
       page: 0,
       newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
+      strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //新建控制策略详情
     };
   }
 
@@ -59,6 +61,17 @@ class BudgetStrategyDetail extends React.Component {
 
     })
   }
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
+  };
 
   getList() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}`).then((response) => {
@@ -82,7 +95,7 @@ class BudgetStrategyDetail extends React.Component {
 
   handleRowClick = (record) => {
     console.log(record);
-    //this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', record.id));
+    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id));
   };
 
   render(){
@@ -94,7 +107,13 @@ class BudgetStrategyDetail extends React.Component {
         <div className="table-header">
           <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew}>新 建</Button><span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>
+            <Button type="primary" onClick={this.handleNew}>新 建</Button>
+            <span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>
+            <Search
+              placeholder="请输入策略明细描述/代码"
+              style={{ width:200,position:'absolute',right:0,bottom:0 }}
+              onSearch={value => console.log(value)}
+            />
           </div>
         </div>
         <Table columns={columns}

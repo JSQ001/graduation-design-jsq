@@ -41,6 +41,15 @@ class BudgetStrategy extends React.Component {
     this.getList();
   }
 
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      })
+  };
+
   getList() {
     return httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyCode=${this.state.searchParams.strategyCode||''}&controlStrategyName=${this.state.searchParams.strategyDesc||''}`).then((response)=>{
       if(response.status==200){
@@ -56,23 +65,12 @@ class BudgetStrategy extends React.Component {
             onChange: this.onChangePager,
             pageSize: this.state.pageSize
           }
-        },()=>{
-          console.log(Number(response.headers['x-total-count']));
         })
       }
     }).catch((e)=>{
 
     })
   }
-
-  //分页点击
-  onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
-      this.setState({
-        page: page - 1,
-        loading: true
-      })
-  };
 
   //搜索
   search = (result) => {
@@ -113,8 +111,7 @@ class BudgetStrategy extends React.Component {
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
-          clearHandle={this.clear}
-          eventHandle={this.searchEventHandle}/>
+          clearHandle={this.clear}/>
         <div className="table-header">
           <div className="table-header-title">{`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">

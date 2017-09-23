@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Card, Row, Col, Badge, Button, Input, Switch, Icon } from 'antd'
+import { Form, Card, Row, Col, Badge, Button, Input, Switch, Icon, Select } from 'antd'
 const FormItem = Form.Item;
 
 import '../styles/components/basic-info.scss'
@@ -43,13 +43,10 @@ class BasicInfo extends React.Component{
   }
 
   renderGetInfo(item) {
-    switch(item.type) {
-      case 'input': {
-        return <div>{this.state.params[item.id]}</div>;
-      }
-      case 'state': {
-        return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
-      }
+    if (item.type == 'state') {
+      return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
+    } else {
+      return <div>{this.state.params[item.id]}</div>;
     }
   }
   getInfos() {
@@ -70,6 +67,15 @@ class BasicInfo extends React.Component{
       case 'input': {
         return <Input placeholder="请输入" disabled={item.isDisabled || false} className="input-disabled-color"/>;
       }
+      case 'select': {
+        return (
+          <Select>
+            {item.options.map((option)=>{
+              return <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>
+            })}
+          </Select>
+        )
+      }
       case 'state': {
         return (
           <div>
@@ -88,7 +94,13 @@ class BasicInfo extends React.Component{
       children.push(
         <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}} key={item.id}>
           <FormItem {...formItemLayout} label={item.title} colon={false}>
-            {getFieldDecorator(item.id, {initialValue: this.state.params[item.id]})(
+            {getFieldDecorator(item.id, {
+              rules: [{
+                required: item.message ? true : false,
+                message: item.message
+              }],
+              initialValue: this.state.params[item.id]
+            })(
               this.renderUpdateInfos(item)
             )}
           </FormItem>
@@ -126,7 +138,7 @@ class BasicInfo extends React.Component{
       textAlign: 'center',
     };
     return (
-      <div className="basic-name">
+      <div className="basic-info">
         <Card title="基本信息"
               extra={<a onClick={this.editInfo}>编辑</a>}
               style={cardShowStyle}
@@ -149,6 +161,19 @@ BasicInfo.propTypes = {
   infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表
   infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
 };
+
+/**
+ *
+ * infoList参数每一项的格式如下：
+ * {
+      type: '',    //必填，类型为input、select、state中的一种
+      title: '',   //必填，对应标题名称
+      id: '',      //必填，对应字段名称
+      options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+      message:     //可选，如果为必填项则需要填写提示信息
+      isDisabled:  //可选，布尔值，不可编辑时需要填写  isDisabled: true
+    }
+ */
 
 const WrappedBasicInfo= Form.create()(BasicInfo);
 

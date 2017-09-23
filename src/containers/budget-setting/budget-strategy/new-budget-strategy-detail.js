@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import { Form, Input, Row, Col, Select, Button } from 'antd'
+import { Form, Input, Row, Col, Select, Button, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -29,7 +29,12 @@ class NewBudgetStrategyDetail extends React.Component {
             message.success('操作成功');
           }
         }).catch((e)=>{
-
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
         })
       }
     });
