@@ -209,9 +209,9 @@ const budgetStrategyDetail = {
 //新建预算控制策略详情
 const newBudgetStrategyDetail = {
   key:'new-budget-strategy-detail',
-  url:'/main/budget-setting/budget-strategy/new-budget-strategy-detail',
+  url:'/main/budget-setting/budget-strategy/budget-strategy-detail/:id/new-budget-strategy-detail',
   components: NewBudgetStrategyDetail,
-  parent: 'budget-strategy'
+  parent: 'budget-strategy-detail'
 };
 
 //预算控制策略定义

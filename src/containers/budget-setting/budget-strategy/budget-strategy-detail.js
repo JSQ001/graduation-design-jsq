@@ -34,6 +34,9 @@ class BudgetStrategyDetail extends React.Component {
         {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent"}
       ],
       data: [],
+      pagination: {
+        total: 0
+      },
       pageSize: 10,
       page: 0,
       newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
@@ -58,13 +61,15 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?
-                  size=${this.state.pageSize}
-                  &page=${this.state.page}
-                  &controlStrategyId=${this.props.params.id}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}`).then((response) => {
       this.setState({
         data: response.data,
-        loading: false
+        loading: false,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+          onChange: this.onChangePager,
+          pageSize: this.state.pageSize
+        }
       })
     }).catch((e) => {
 
@@ -72,24 +77,31 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategyDetail.url);
+    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id));
+  };
+
+  handleRowClick = (record) => {
+    console.log(record);
+    //this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', record.id));
   };
 
   render(){
-    const { infoList, infoData, columns, data, loading } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}
                    infoData={infoData}/>
         <div className="table-header">
-          <div className="table-header-title"><h5>策略明细</h5> 共搜索到 0 条数据</div>
+          <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>新 建</Button><span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>
           </div>
         </div>
         <Table columns={columns}
                dataSource={data}
+               pagination={pagination}
                loading={loading}
+               onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
       </div>

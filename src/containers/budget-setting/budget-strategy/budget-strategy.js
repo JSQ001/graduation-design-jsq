@@ -42,7 +42,7 @@ class BudgetStrategy extends React.Component {
   }
 
   getList() {
-    return httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page+1}&controlStrategyCode=${this.state.searchParams.strategyCode||''}&controlStrategyName=${this.state.searchParams.strategyDesc||''}`).then((response)=>{
+    return httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyCode=${this.state.searchParams.strategyCode||''}&controlStrategyName=${this.state.searchParams.strategyDesc||''}`).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
@@ -56,6 +56,8 @@ class BudgetStrategy extends React.Component {
             onChange: this.onChangePager,
             pageSize: this.state.pageSize
           }
+        },()=>{
+          console.log(Number(response.headers['x-total-count']));
         })
       }
     }).catch((e)=>{
@@ -69,8 +71,6 @@ class BudgetStrategy extends React.Component {
       this.setState({
         page: page - 1,
         loading: true
-      }, ()=>{
-        this.getList();
       })
   };
 

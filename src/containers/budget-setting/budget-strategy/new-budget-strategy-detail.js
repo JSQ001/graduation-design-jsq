@@ -12,13 +12,17 @@ import 'styles/budget/budget-strategy/new-budget-strategy-detail.scss'
 class NewBudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      controlMethodNotice: '',
+    }
   }
 
   handleSave = (e) =>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.controlStrategyId = this.props.params.id;
+        console.log(values);
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
           console.log(res);
           if(res.status == 200){
@@ -31,13 +35,24 @@ class NewBudgetStrategyDetail extends React.Component {
     });
   };
 
+  handleMethodChange = (value) => {
+    console.log(value);
+    let notice = '';
+    if(value == '禁止') {
+      notice = '如果满足触发条件，当单据提交时，禁止提交';
+    } else if(value=='警告') {
+      notice = '如果满足触发条件，当单据提交时，进行提示';
+    } else {
+      notice = '不做任何控制';
+    }
+    this.setState({
+      controlMethodNotice: notice
+    })
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const {  } = this.state;
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14, offset: 1 },
-    };
+    const { controlMethod, controlMethodNotice } = this.state;
     return (
       <div className="new-budget-strategy-detail">
         <Form onSubmit={this.handleSave}>
@@ -69,16 +84,16 @@ class NewBudgetStrategyDetail extends React.Component {
               </FormItem>
             </Col>
             <Col span={8} style={{ display: 'inline-block'}}>
-              <FormItem label="控制策略">
+              <FormItem label="控制策略" help={controlMethodNotice}>
                 {getFieldDecorator('controlMethod', {
                   rules: [{
                     required: true,
                     message: '请选择'
                   }]})(
-                  <Select placeholder="请选择">
-                    <Option value="error">禁止</Option>
-                    <Option value="warning">警告</Option>
-                    <Option value="pass">通过</Option>
+                  <Select placeholder="请选择" onChange={this.handleMethodChange}>
+                    <Option value="禁止">禁止</Option>
+                    <Option value="警告">警告</Option>
+                    <Option value="通过">通过</Option>
                   </Select>
                 )}
               </FormItem>
@@ -133,8 +148,12 @@ class NewBudgetStrategyDetail extends React.Component {
   }
 }
 
-function mapStateToProps() {
-  return {}
+NewBudgetStrategyDetail.contextTypes={
+  router:React.PropTypes.object
+}
+
+function mapStateToProps(state) {
+  return { }
 }
 
 const WrappedNewBudgetStrategyDetail = Form.create()(NewBudgetStrategyDetail);
