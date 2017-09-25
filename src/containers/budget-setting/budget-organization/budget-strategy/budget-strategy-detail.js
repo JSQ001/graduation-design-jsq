@@ -42,18 +42,21 @@ class BudgetStrategyDetail extends React.Component {
       page: 0,
       keyWords: '',
       newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
-      strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //新建控制策略详情
+      strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //策略明细
+      budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
     };
   }
 
   componentWillMount() {
-    console.log(this.props.params);
-    this.getBasicInfo();
-    this.getList();
+    if(this.props.organization.id && this.props.strategyId){
+      this.context.router.replace(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', this.props.strategyId));
+      this.getBasicInfo();
+      this.getList();
+    }
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.params.strategyId}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId}`).then((response) => {
       if(response.status==200) {
         this.setState({
           infoData: response.data
@@ -76,7 +79,7 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.strategyId}&keyWords=${this.state.keyWords}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}&keyWords=${this.state.keyWords}`).then((response) => {
       this.setState({
         data: response.data,
         loading: false,
@@ -92,11 +95,11 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
+    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId));
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId).replace(':strategyControlId', record.id));
+    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId).replace(':strategyControlId', record.id));
   };
 
   handleSearch= (value) => {
@@ -142,9 +145,11 @@ BudgetStrategyDetail.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.budget.organization,
+    strategyId: state.budget.strategyId
+  }
 }
-
 
 export default connect(mapStateToProps)(injectIntl(BudgetStrategyDetail));
