@@ -23,6 +23,8 @@
   "menu.strategy-control-detail": "Strategy detail",
   "menu.budget-rule": "Budget rule",
   "menu.budget-journal-type": "Budget journal type",
+  "menu.new-budget-journal-type": "New budget journal type",
+  "menu.budget-journal-type-detail": "Budget journal type detail",
   "menu.budget-journal": "Budget journal",
   "menu.new-budget-group": "New budget group",
   "menu.budget-group-detail": "Budget group detail",

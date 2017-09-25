@@ -8,7 +8,7 @@ import SearchArea from 'components/search-area'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import ListSelector from 'components/list-selector'
+import menuRoute from "share/menuRoute";
 
 class BudgetJournalType extends React.Component {
   constructor(props) {
@@ -35,7 +35,8 @@ class BudgetJournalType extends React.Component {
         journalTypeCode: '',
         journalTypeName: ''
       },
-      showSelector: false
+      newBudgetJournalTypePage: menuRoute.getRouteItem('new-budget-journal-type', 'key'),
+      budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail', 'key')
     };
   }
 
@@ -45,7 +46,7 @@ class BudgetJournalType extends React.Component {
 
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}&organisationId=${this.props.organization.id}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -98,26 +99,15 @@ class BudgetJournalType extends React.Component {
   };
 
   handleNew = () => {
-    this.setState({
-      showSelector: true
-    })
+    this.context.router.push(this.state.newBudgetJournalTypePage.url.replace(':id', this.props.organization.id));
   };
 
-  handleCancel = () => {
-    this.setState({
-      showSelector: false
-    })
-  };
-
-  handleOk = (result) => {
-    console.log(result);
-    this.setState({
-      showSelector: false
-    })
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.budgetJournalTypeDetailPage.url.replace(':id', this.props.organization.id).replace(':typeId', record.id));
   };
 
   render(){
-    const { searchForm, pagination, columns, data, loading, showSelector } = this.state;
+    const { searchForm, pagination, columns, data, loading } = this.state;
     return (
       <div>
         <h3 className="header-title">预算日记账类型定义</h3>
@@ -136,18 +126,17 @@ class BudgetJournalType extends React.Component {
                pagination={pagination}
                loading={loading}
                bordered
+               onRowClick={this.handleRowClick}
                size="middle"/>
-
-        <ListSelector visible={showSelector}
-                      onOk={this.handleOk}
-                      onCancel={this.handleCancel}
-                      title="选择人员"
-                      type='user'/>
       </div>
     )
   }
 
 }
+
+BudgetJournalType.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}
