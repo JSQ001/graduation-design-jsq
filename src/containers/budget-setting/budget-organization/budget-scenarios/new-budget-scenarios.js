@@ -13,7 +13,8 @@ class NewBudgetScenarios extends React.Component{
     super(props);
     this.state = {
       isEnabled: true,
-      organizationName: ''
+      organizationName: '',
+      loading: false
     };
   }
 
@@ -27,14 +28,21 @@ class NewBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           console.log(res);
+          this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{
-
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
         })
       }
     });
@@ -69,7 +77,7 @@ class NewBudgetScenarios extends React.Component{
               }],
               initialValue: organizationName
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景代码" hasFeedback>
@@ -119,7 +127,7 @@ class NewBudgetScenarios extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
