@@ -21,19 +21,19 @@ class BudgetStructure extends React.Component {
       data: [],
       params:{},
       pagination: {
-        current:0,
+        current: 0,
         total:0,
         pageSize:10,
         showSizeChanger:true,
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'input', id: 'structureCode', label: this.props.intl.formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
+        {type: 'input', id: 'structureName', label: this.props.intl.formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
         {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.structureDescription'}) }, /*预算表描述*/
       ],
       columns: [
         {          /*预算组织*/
-          title: this.props.intl.formatMessage({id:"budget.organization"}), key: "organizationCode", dataIndex: 'organizationCode'
+          title: this.props.intl.formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
         },
         {          /*预算表代码*/
           title: this.props.intl.formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
@@ -42,18 +42,27 @@ class BudgetStructure extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description'
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
+          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
+          render: (recode)=>{
+            if(recode === "month")
+              return this.props.intl.formatMessage({id:"periodStrategy.month"}) /*月度*/
+            if(recode === "quarter")
+              return this.props.intl.formatMessage({id:"periodStrategy.quarter"}) /*季度*/
+            if(recode === "year")
+              return this.props.intl.formatMessage({id:"periodStrategy.year"}) /*年度*/
+          }
         },
         {           /*状态*/
-          title: this.props.intl.formatMessage({id:"status"}),
+          title: this.props.intl.formatMessage({id:"common.columnStatus"}),
           key: 'status',
+          width: '10%',
           dataIndex: 'isEnabled',
           render: (recode) => {
             if (recode) {
               return (
                 <div>
                   <Badge status="success"/>
-                  { this.props.intl.formatMessage({id:"status.enabled"}) }  {/*启用*/}
+                  { this.props.intl.formatMessage({id:"common.statusEnable"}) }  {/*启用*/}
                 </div>
               );
             } else {
@@ -63,7 +72,7 @@ class BudgetStructure extends React.Component {
                 return (
                   <div>
                     <Badge status="error"/>
-                    { this.props.intl.formatMessage({id:"status.disabled"}) }  {/*禁用*/}
+                    { this.props.intl.formatMessage({id:"common.statusDisable"}) }  {/*禁用*/}
                   </div>
                 );
               }
@@ -81,7 +90,6 @@ class BudgetStructure extends React.Component {
   getList(){
     let searchParam = this.state.params;
     let params;
-    console.log(searchParam)
     let paramsIsExist = JSON.stringify(this.state.params) === "{}" || ( searchParam.structureCode=="" && searchParam.description=="");
     if(paramsIsExist){
       params = "";
@@ -98,8 +106,9 @@ class BudgetStructure extends React.Component {
       }
     }
     httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?page=${this.state.pagination.current}&size=${this.state.pagination.pageSize}${paramsIsExist ? "" : `&${params}`}`,).then((response)=>{
+      console.log(response)
       response.data.map((item,index)=>{
-        item.key = item.id;
+        item.key = item.structureCode;
       })
       this.setState({
         data: response.data,
@@ -130,7 +139,7 @@ class BudgetStructure extends React.Component {
     this.setState({
      // pagination:pagination,
       pagination:{
-        current: pagination.current,
+        current: pagination.current-1,
         pageSize: pagination.pageSize
       }
     }, ()=>{
@@ -147,15 +156,21 @@ class BudgetStructure extends React.Component {
     }
   }
 
+  //点击行，进入该行详情页面
+  handleRowClick = (record, index, event) =>{
+    console.log(record)
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id));
+  }
+
   render(){
     const { searchForm, loading, data, columns, pagination } = this.state;
     return (
       <div className="budget-structure">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'search.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'button.create'})}</Button>  {/*新 建*/}
+            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
         <Table
@@ -164,6 +179,7 @@ class BudgetStructure extends React.Component {
             columns={columns}
             pagination={pagination}
             onChange={this.onChangePager}
+            onRowClick={this.handleRowClick}
             size="middle"
             bordered/>
       </div>

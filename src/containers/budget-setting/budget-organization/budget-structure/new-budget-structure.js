@@ -2,7 +2,7 @@
  *  createc by jsq on 2017/9/19
  */
 import React from 'react';
-import { Button, Form, Select,Input, Col, Row, Switch, message } from 'antd';
+import { Button, Form, Select,Input, Col, Row, Switch, message, Icon} from 'antd';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
@@ -18,7 +18,7 @@ class NewBudgetStructure extends React.Component{
     super(props)
     this.state = {
       loading: true,
-      statusCode: this.props.intl.formatMessage({id:"status.enabled"}),  /*启用*/
+      statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}),  /*启用*/
       organization:{},
     }
   }
@@ -36,6 +36,7 @@ class NewBudgetStructure extends React.Component{
       })
   }
 
+  //新建预算表
   handleSave = (e) =>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -45,7 +46,7 @@ class NewBudgetStructure extends React.Component{
         httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
             console.log(response)
-            message.success(this.props.intl.formatMessage({id:"prompting.saveSuccess"})); /*保存成功！*/
+            message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
             const location = {
               pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id),
@@ -54,10 +55,14 @@ class NewBudgetStructure extends React.Component{
             this.context.router.push(location);
           }
         })
-
       }
     });
+  };
 
+  //点击取消，返回预算组织详情
+  handleCancel = (e) =>{
+    e.preventDefault();
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
 
   render(){
@@ -85,7 +90,7 @@ class NewBudgetStructure extends React.Component{
                       { required:true }
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})} disabled/>)
+                    <Input disabled/>)
                   }
                 </FormItem>
               </Col>
@@ -95,19 +100,19 @@ class NewBudgetStructure extends React.Component{
                   colon={true}>
                   {getFieldDecorator('structureCode', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                       {
                         validator:(item,value,callback)=>{
                           httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?structureCode=${value}`).then((response)=>{
-                            console.log(response)
-                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"validator.organizationCode.exist"})) : callback()
+                            console.log(response)                         /*该预算表已存在*/
+                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.structureCode.exist"})) : callback()
                           })
 
                         }
                       }
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -118,10 +123,10 @@ class NewBudgetStructure extends React.Component{
                   colon={true}>
                   {getFieldDecorator('structureName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -130,14 +135,14 @@ class NewBudgetStructure extends React.Component{
             <Row gutter={24}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"periodStrategy"})}  /*{/!*编制期段*!/}*/
+                  label={this.props.intl.formatMessage({id:"budget.periodStrategy"})}  /*{/!*编制期段*!/}*/
                   colon={true}>
                   {getFieldDecorator('periodStrategy', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},/* {/!*请输入*!/}*/
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},/* {/!*请输入*!/}*/
                     ],
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"prompting.select"})}  /* {/!*请选择*!/}*/>
+                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
                       {options}
                     </Select>)
                   }
@@ -149,17 +154,17 @@ class NewBudgetStructure extends React.Component{
                   colon={true}>
                   {getFieldDecorator('description', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"status.code"},{statusCode:statusCode})} /* {/!*状态*!/}*/
+                  label={this.props.intl.formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: true,
@@ -168,22 +173,21 @@ class NewBudgetStructure extends React.Component{
                       {
                         validator: (item,value,callback)=>{
                           this.setState({
-                            statusCode: value ? this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/
-                                                : this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/
+                            statusCode: value ? this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/
+                                                : this.props.intl.formatMessage({id:"common.statusDisable"}) /*禁用*/
                           })
                           callback();
                         }
                       }
                     ],
                   })
-                  (<Switch checkedChildren={this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/ }
-                           unCheckedChildren={this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/}/>)
+                  (<Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
                   }
                 </FormItem>
               </Col>
             </Row>
-            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"button.save"}) /*保存*/}</Button>
-            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"button.cancle"}) /*取消*/}</Button>
+            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
+            <Button onClick={this.handleCancel} style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
           </Form>
         </div>
       </div>

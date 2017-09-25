@@ -1,0 +1,25 @@
+{
+  "budget.structureName": "预算表名称",
+  "budget.structureCode": "预算表代码",
+  "budget.structureDescription": "预算表描述",
+  "budget.periodStrategy": "编制期段",
+  "periodStrategy.month": "月度",
+  "periodStrategy.quarter": "季度",
+  "periodStrategy.year": "年度",
+  "budget.structureCode.exist": "该预算表已存在",
+  "budget.basicInformation": "基本信息",
+  "budget.edit": "编辑",
+  "structure.dimensionDistribute": "维度分配",
+  "structure.companyDistribute": "公司分配",
+  "structure.dimensionCode": "维度代码",
+  "structure.description": "描述",
+  "structure.layoutPosition": "布局位置",
+  "structure.layoutPriority": "布局顺序",
+  "structure.defaultDimValueName": "默认维值",
+  "structure.opetation": "操作",
+  "structure.validatePeriodStrategy": "该预算表已被预算日记账引用，不允许修改编制期段。",
+  "structure.saveSuccess": "保存成功！",
+  "structure.validateCreate": "请维护当前账套下的预算组织",
+  "structure.searchDimension": "请输入维度名称/代码"
+
+}
