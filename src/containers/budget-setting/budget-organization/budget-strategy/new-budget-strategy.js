@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -13,6 +12,7 @@ class NewBudgetStrategy extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       isEnabled: true,
     };
   }
@@ -26,16 +26,22 @@ class NewBudgetStrategy extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.organizationId = '908139656192442369';
-        console.log(values);
-        /*httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
+          console.log(res);
           if(res.status == 200){
-            this.props.close(true);
+            this.setState({loading: false});
             message.success('操作成功');
           }
         }).catch((e)=>{
-
-        })*/
+          if(e.response){
+            message.error(`新建失败, 该预算控制策略代码已存在`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
+        })
       }
     });
   };
@@ -55,7 +61,7 @@ class NewBudgetStrategy extends React.Component {
     };
     return (
       <div className="new-budget-strategy">
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={this.handleSave} style={{width:'55%',margin:'0 auto'}}>
           <FormItem {...formItemLayout} label="预算控制策略代码" hasFeedback>
             {getFieldDecorator('controlStrategyCode', {
               rules: [{
@@ -89,10 +95,8 @@ class NewBudgetStrategy extends React.Component {
             )}
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
-            <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button></Col>
-              <Col span={3}><Button>取消</Button></Col>
-            </Row>
+              <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>保存</Button>
+              <Button>取消</Button>
           </FormItem>
         </Form>
       </div>
@@ -105,7 +109,7 @@ function mapStateToProps() {
   return {}
 }
 
-const WrappedValueList = Form.create()(NewBudgetStrategy);
+const WrappedNewBudgetStrategy = Form.create()(NewBudgetStrategy);
 
-export default connect(mapStateToProps)(WrappedValueList);
+export default connect(mapStateToProps)(WrappedNewBudgetStrategy);
 

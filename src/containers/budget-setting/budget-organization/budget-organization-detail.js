@@ -11,6 +11,7 @@ import BudgetVersions from 'containers/budget-setting/budget-organization/budget
 import BudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/budget-item-type'
 import BudgetItem from 'containers/budget-setting/budget-organization/budget-item/budget-item'
 import BudgetGroup from 'containers/budget-setting/budget-organization/budget-group/budget-group'
+import BudgetStrategy from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy'
 
 import menuRoute from 'share/menuRoute'
 
@@ -26,6 +27,7 @@ class BudgetOrganizationDetail extends React.Component {
         {key: 'TYPE', name:'预算项目类型定义'},
         {key: 'ITEM', name:'预算项目定义'},
         {key: 'GROUP', name:'预算项目组定义'},
+        {key: 'STRATEGY', name:'预算控制策略定义'},
       ],
       budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
     };
@@ -71,6 +73,9 @@ class BudgetOrganizationDetail extends React.Component {
         break;
       case 'GROUP':
         content = BudgetGroup;
+        break;
+      case 'STRATEGY':
+        content = BudgetStrategy;
         break;
     }
     return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));
