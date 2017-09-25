@@ -23,7 +23,7 @@ class BudgetStrategy extends React.Component {
       columns: [
         {title: '预算控制策略代码', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
         {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName'},
-        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       data: [],    //列表值
       pagination: {
@@ -96,12 +96,11 @@ class BudgetStrategy extends React.Component {
   };
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategy.url);
+    this.context.router.push(this.state.newBudgetStrategy.url.replace(':id', this.props.organization.id));
   };
 
   handleRowClick = (record) => {
-    console.log(record);
-    this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', record.id));
+    this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', record.id));
   };
 
   render(){

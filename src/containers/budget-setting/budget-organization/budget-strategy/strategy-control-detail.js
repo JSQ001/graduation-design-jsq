@@ -6,7 +6,7 @@ const Search = Input.Search
 
 import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame'
-import NewStrategyControlDetail from 'containers/budget-setting/budget-strategy/new-strategy-control-detail'
+import NewStrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-strategy-control-detail'
 import 'styles/budget/budget-strategy/strategy-control-detail.scss'
 
 

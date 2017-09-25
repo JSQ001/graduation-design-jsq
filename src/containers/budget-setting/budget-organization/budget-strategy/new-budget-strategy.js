@@ -61,7 +61,7 @@ class NewBudgetStrategy extends React.Component {
     };
     return (
       <div className="new-budget-strategy">
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={this.handleSave} style={{width:'55%',margin:'0 auto'}}>
           <FormItem {...formItemLayout} label="预算控制策略代码" hasFeedback>
             {getFieldDecorator('controlStrategyCode', {
               rules: [{
@@ -95,10 +95,8 @@ class NewBudgetStrategy extends React.Component {
             )}
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
-            <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button></Col>
-              <Col span={3}><Button>取消</Button></Col>
-            </Row>
+              <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>保存</Button>
+              <Button>取消</Button>
           </FormItem>
         </Form>
       </div>

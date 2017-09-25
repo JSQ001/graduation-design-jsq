@@ -13,7 +13,8 @@ class UpdateBudgetScenarios extends React.Component{
     super(props);
     this.state = {
       params: {},
-      isEnabled: true
+      isEnabled: true,
+      loading: false
     };
   }
 
@@ -28,17 +29,24 @@ class UpdateBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.id = this.state.params.id;
         values.versionNumber = this.state.params.versionNumber;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);
         console.log(values);
         httpFetch.put(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
+          this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{
-
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
         })
       }
     });
@@ -121,7 +129,7 @@ class UpdateBudgetScenarios extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>

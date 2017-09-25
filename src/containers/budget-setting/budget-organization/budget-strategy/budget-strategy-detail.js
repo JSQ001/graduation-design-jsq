@@ -47,12 +47,13 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   componentWillMount() {
+    console.log(this.props.params);
     this.getBasicInfo();
     this.getList();
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.params.id}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.params.strategyId}`).then((response) => {
       if(response.status==200) {
         this.setState({
           infoData: response.data
@@ -75,7 +76,7 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}&keyWords=${this.state.keyWords}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.strategyId}&keyWords=${this.state.keyWords}`).then((response) => {
       this.setState({
         data: response.data,
         loading: false,
@@ -91,12 +92,11 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleRowClick = (record) => {
-    console.log(record);
-    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId).replace(':strategyControlId', record.id));
   };
 
   handleSearch= (value) => {

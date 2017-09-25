@@ -53,7 +53,7 @@ class BasicInfo extends React.Component{
     const children = [];
     this.props.infoList.map((item, i)=>{
       children.push(
-        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}} key={item.id}>
+        <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
           <div style={{color: '#989898'}}>{item.title}</div>
           {this.renderGetInfo(item)}
         </Col>
@@ -133,10 +133,6 @@ class BasicInfo extends React.Component{
 
   render() {
     const { cardShowStyle, formShowStyle } = this.state;
-    const gridStyle = {
-      width: '30%',
-      textAlign: 'center',
-    };
     return (
       <div className="basic-info">
         <Card title="基本信息"
@@ -158,8 +154,8 @@ class BasicInfo extends React.Component{
 }
 
 BasicInfo.propTypes = {
-  infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表
-  infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
+  infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表，数组
+  infoData: React.PropTypes.object.isRequired,  //传入的基础信息值，对象
 };
 
 /**

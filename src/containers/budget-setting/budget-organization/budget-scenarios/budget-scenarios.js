@@ -30,9 +30,9 @@ class BudgetScenarios extends React.Component {
         {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName'},
-        {title: '备注', dataIndex: 'description', key: 'description'},
+        {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? desc : '-'}</span>},
         {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : ''}</span>},
-        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
@@ -145,11 +145,11 @@ class BudgetScenarios extends React.Component {
 
   handleRowClick = (record) => {
     record.organizationName = this.state.organizationInfo.organizationName;
-    console.log(record);
     this.setState({
       updateParams: record
+    }, () => {
+      this.showUpdateSlide(true)
     })
-    this.showUpdateSlide(true)
   };
 
   render(){
