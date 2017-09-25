@@ -6,6 +6,7 @@ import { Router, Route, browserHistory } from 'react-router'
 
 import Main from 'containers/main'
 import requireAuthentication from 'components/requireAuthentication'
+import checkUrlParams from 'components/checkUrlParams'
 
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
@@ -15,7 +16,6 @@ import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
-import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
 import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
 import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
 import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
@@ -27,11 +27,15 @@ import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
 import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
-import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
+import NewBudgetStrategy from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy'
+import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy-detail'
+import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
+import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
 
-import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
+import BudgetRule from 'containers/budget-setting/budget-organization/budget-rule/budget-rule'
 
-import BudgetJournalType from 'containers/budget-setting/budget-journal-type/budget-journal-type'
+import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
+import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 
@@ -152,7 +156,6 @@ const budgetItemDetail = {
 }
 
 
-
 //预算组织详情
 const budgetOrganizationDetail = {
   key:'budget-organization-detail',
@@ -167,6 +170,54 @@ const newBudgetOrganization = {
   url:'/main/budget-setting/budget-organization/new-budget-organization',
   components: NewBudgetOrganization,
   parent: 'budget-organization'
+};
+
+//新建预算控制策略
+const newBudgetStrategy = {
+  key:'new-budget-strategy',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/new-budget-strategy',
+  components: NewBudgetStrategy,
+  parent: 'budget-organization-detail'
+};
+
+//预算控制策略详情
+const budgetStrategyDetail = {
+  key:'budget-strategy-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId',
+  components: BudgetStrategyDetail,
+  parent: 'budget-organization-detail'
+};
+
+//新建预算控制策略详情
+const newBudgetStrategyDetail = {
+  key:'new-budget-strategy-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId/new-budget-strategy-detail',
+  components: NewBudgetStrategyDetail,
+  parent: 'budget-organization-detail'
+};
+
+//预算控制规则详情(策略明细)
+const strategyControlDetail = {
+  key:'strategy-control-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId/strategy-control-detail/:strategyControlId',
+  components: StrategyControlDetail,
+  parent: 'budget-organization-detail'
+};
+
+//新建预算日记账类型
+const newBudgetJournalType = {
+  key:'new-budget-journal-type',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-journal-type/new-budget-journal-type',
+  components: NewBudgetJournalType,
+  parent: 'budget-journal-type'
+};
+
+//预算日记账详情
+const budgetJournalTypeDetail = {
+  key:'budget-journal-type-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-journal-type/budget-journal-type-detail/:typeId',
+  components: BudgetJournalTypeDetail,
+  parent: 'budget-journal-type'
 };
 
 //预算组织定义
@@ -184,51 +235,20 @@ const budgetOrganization = {
     budgetStructureDetail,
     newBudgetGroup,
     budgetGroupDetail,
-    newBudgetItem
+    newBudgetItem,
+    newBudgetStrategy,
+    budgetStrategyDetail,
+    newBudgetStrategyDetail,
+    strategyControlDetail,
+    newBudgetJournalType,
+    budgetJournalTypeDetail
   }
-};
-
-//新建预算控制策略
-const newBudgetStrategy = {
-  key:'new-budget-strategy',
-  url:'/main/budget-setting/budget-strategy/new-budget-strategy',
-  components: NewBudgetStrategy,
-  parent: 'budget-strategy'
-};
-
-//预算控制策略定义
-const budgetStrategy = {
-  key:'budget-strategy',
-  url:'/main/budget-setting/budget-strategy',
-  components: BudgetStrategy,
-  parent: 'budget-setting',
-  children: {
-    newBudgetStrategy
-  }
-};
-
-//预算控制规则定义
-const budgetRule = {
-  key:'budget-rule',
-  url:'/main/budget-setting/budget-rule',
-  components: BudgetRule,
-  parent: 'budget-setting',
-  children: {}
-};
-
-//预算日记账类型定义
-const budgetJournalType = {
-  key:'budget-journal-type',
-  url:'/main/budget-setting/budget-journal-type',
-  components: BudgetJournalType,
-  parent: 'budget-setting',
-  children: {}
 };
 
 //预算设置
 const budgetSetting = {
   key:'budget-setting',
-  subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournalType],
+  subMenu: [budgetOrganization],
   icon: 'tags-o'
 };
 
@@ -327,7 +347,7 @@ const renderSubItem = (subItem) => {
  * @type {DOM}
  */
 const ClientRoute = (
-  <Route path={menuIndexUrl} component={requireAuthentication(Main)}>
+  <Route path={menuIndexUrl} component={checkUrlParams(requireAuthentication(Main))}>
     {menu.map(item =>
       item.subMenu ? item.subMenu.map(subItem =>
         <Route key={subItem.key} path={subItem.url} component={subItem.components}>

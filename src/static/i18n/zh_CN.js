@@ -52,6 +52,4 @@ i18nList.map(i18n => {
   result = Object.assign(result, i18n)
 });
 
-console.log(result);
-
 export default result

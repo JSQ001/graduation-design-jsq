@@ -18,8 +18,8 @@ class BudgetGroup extends React.Component {
       pageSize: 10,
       columns: [
         {title: '预算组织', dataIndex: 'organizationName', width: '20%'},
-        {title: '预算项目组代码', dataIndex: 'groupCode', width: '20%'},
-        {title: '预算项目组描述', dataIndex: 'groupName', width: '30%'},
+        {title: '预算项目组代码', dataIndex: 'itemGroupCode', width: '20%'},
+        {title: '预算项目组描述', dataIndex: 'itemGroupName', width: '30%'},
         {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />},
         {title: '操作', key: 'operation', width: '15%', render: () => <a href="#">删除</a>,}
       ],
@@ -27,8 +27,8 @@ class BudgetGroup extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'input', id: 'groupCode', label: '预算项目组代码'},
-        {type: 'input', id: 'groupName', label: '预算项目组名称'},
+        {type: 'input', id: 'itemGroupCode', label: '预算项目组代码'},
+        {type: 'input', id: 'itemGroupName', label: '预算项目组名称'},
       ],
       searchParams: {
         groupCode: '',
@@ -78,8 +78,8 @@ class BudgetGroup extends React.Component {
     this.setState({
       page: 0,
       searchParams: {
-        groupCode: result.groupCode ? result.groupCode : '',
-        groupName: result.groupName ? result.groupName : ''
+        itemGroupCode: result.itemGroupCode ? result.itemGroupCode : '',
+        itemGroupName: result.itemGroupName ? result.itemGroupName : ''
       }
     }, ()=>{
       this.getList();

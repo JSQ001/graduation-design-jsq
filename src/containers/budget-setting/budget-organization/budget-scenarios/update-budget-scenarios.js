@@ -6,14 +6,15 @@ const { TextArea } = Input;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import 'styles/budget/budget-organization/budget-scenarios/new-budget-scenarios.scss'
+import 'styles/budget/budget-organization/budget-scenarios/update-budget-scenarios.scss'
 
 class UpdateBudgetScenarios extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
       params: {},
-      isEnabled: true
+      isEnabled: true,
+      loading: false
     };
   }
 
@@ -28,17 +29,24 @@ class UpdateBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.id = this.state.params.id;
         values.versionNumber = this.state.params.versionNumber;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);
         console.log(values);
         httpFetch.put(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
+          this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
           }
         }).catch((e)=>{
-
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          } else {
+            console.log(e)
+          }
         })
       }
     });
@@ -62,7 +70,7 @@ class UpdateBudgetScenarios extends React.Component{
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
-      <div className="new-value">
+      <div className="update-budget-scenarios">
         <Alert message="帮助提示" description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。" type="info" showIcon />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="预算组织">
@@ -72,7 +80,7 @@ class UpdateBudgetScenarios extends React.Component{
               }],
               initialValue: params.organizationName
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景代码">
@@ -82,7 +90,7 @@ class UpdateBudgetScenarios extends React.Component{
               }],
               initialValue: params.scenarioCode
             })(
-              <Input disabled/>
+              <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>
@@ -121,7 +129,7 @@ class UpdateBudgetScenarios extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>

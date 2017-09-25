@@ -9,11 +9,11 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
-class NewBudgetGroup extends React.Component {
+class NewBudgetJournalType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      budgetGroupDetail: menuRoute.getRouteItem('budget-group-detail','key'),    //项目组详情的页面项
+      budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail','key'),    //项目组详情的页面项
       loading: false
     };
   }
@@ -23,10 +23,11 @@ class NewBudgetGroup extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
+        values.organisationId = this.props.organization.id;
+        httpFetch.post(`${config.budgetUrl}/api/budget/journal/types`, values).then((res)=>{
           this.setState({loading: false});
-          message.success(`项目组${res.data.groupName}新建成功`);
-          this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", res.data.id));
+          message.success(`项目组${res.data.journalTypeName}新建成功`);
+          this.context.router.replace(this.state.budgetJournalTypeDetailPage.url.replace(":typeId", res.data.id));
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
@@ -43,29 +44,27 @@ class NewBudgetGroup extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <div onSubmit={this.handleSave}>
-        <h3 className="header-title">新建预算项目组</h3>
+        <h3 className="header-title">新建预算日记账类型</h3>
         <div className="common-top-area">
           <Form>
             <Row gutter={40}>
               <Col span={8}>
-                <FormItem label="预算组织">
-                  {getFieldDecorator("organizationName", {
-                    initialValue: this.props.organization.organizationName
-                  })(
-                    <Input disabled />
+                <FormItem label="预算日记账类型代码">
+                  {getFieldDecorator("journalTypeCode")(
+                    <Input />
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="预算项目组代码">
-                  {getFieldDecorator("groupCode")(
+                <FormItem label="业务日记账类型描述">
+                  {getFieldDecorator("journalTypeName")(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="预算项目组描述">
-                  {getFieldDecorator("groupName")(
+                <FormItem label="预算业务类型">
+                  {getFieldDecorator("businessType")(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
@@ -102,10 +101,10 @@ function mapStateToProps(state) {
   }
 }
 
-NewBudgetGroup.contextTypes = {
+NewBudgetJournalType.contextTypes = {
   router: React.PropTypes.object
 };
 
-const WrappedNewBudgetGroup = Form.create()(NewBudgetGroup);
+const WrappedNewBudgetJournalType = Form.create()(NewBudgetJournalType);
 
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetGroup));
+export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetJournalType));
