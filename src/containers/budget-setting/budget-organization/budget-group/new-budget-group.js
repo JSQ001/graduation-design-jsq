@@ -1,10 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
+import { Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
-import { setOrganization } from 'actions/budget'
 
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
@@ -17,16 +16,6 @@ class NewBudgetGroup extends React.Component {
       budgetGroupDetail: menuRoute.getRouteItem('budget-group-detail','key'),    //项目组详情的页面项
       loading: false
     };
-  }
-
-  //设置预算到redux
-  componentWillMount(){
-    if(!this.props.organization.id) {
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then(res => {
-        this.props.dispatch(setOrganization(res.data));
-        this.setState({loading: false});
-      })
-    }
   }
 
   handleSave = (e) => {
