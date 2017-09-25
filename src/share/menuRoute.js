@@ -34,9 +34,10 @@ import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/
 import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
 import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
 
-import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
+import BudgetRule from 'containers/budget-setting/budget-organization/budget-rule/budget-rule'
 
-import BudgetJournalType from 'containers/budget-setting/budget-journal-type/budget-journal-type'
+import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
+import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 
@@ -156,7 +157,6 @@ const budgetItemDetail = {
 };
 
 
-
 //预算组织详情
 const budgetOrganizationDetail = {
   key:'budget-organization-detail',
@@ -205,6 +205,22 @@ const strategyControlDetail = {
   parent: 'budget-organization-detail'
 };
 
+//新建预算日记账类型
+const newBudgetJournalType = {
+  key:'new-budget-journal-type',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-journal-type/new-budget-journal-type',
+  components: NewBudgetJournalType,
+  parent: 'budget-journal-type'
+};
+
+//预算日记账详情
+const budgetJournalTypeDetail = {
+  key:'budget-journal-type-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-journal-type/budget-journal-type-detail/:typeId',
+  components: BudgetJournalTypeDetail,
+  parent: 'budget-journal-type'
+};
+
 //预算组织定义
 const budgetOrganization = {
   key:'budget-organization',
@@ -224,32 +240,16 @@ const budgetOrganization = {
     newBudgetStrategy,
     budgetStrategyDetail,
     newBudgetStrategyDetail,
-    strategyControlDetail
+    strategyControlDetail,
+    newBudgetJournalType,
+    budgetJournalTypeDetail
   }
-};
-
-//预算控制规则定义
-const budgetRule = {
-  key:'budget-rule',
-  url:'/main/budget-setting/budget-rule',
-  components: BudgetRule,
-  parent: 'budget-setting',
-  children: {}
-};
-
-//预算日记账类型定义
-const budgetJournalType = {
-  key:'budget-journal-type',
-  url:'/main/budget-setting/budget-journal-type',
-  components: BudgetJournalType,
-  parent: 'budget-setting',
-  children: {}
 };
 
 //预算设置
 const budgetSetting = {
   key:'budget-setting',
-  subMenu: [budgetOrganization, budgetRule, budgetJournalType],
+  subMenu: [budgetOrganization],
   icon: 'tags-o'
 };
 
