@@ -18,7 +18,6 @@ import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
-import NewBudgetStrategy from 'containers/budget-setting/budget-strategy/new-budget-strategy'
 import BudgetOrganization from 'containers/budget-setting/budget-organization/budget-organization'
 import BudgetOrganizationDetail from 'containers/budget-setting/budget-organization/budget-organization-detail'
 import NewBudgetStructure from 'containers/budget-setting/budget-organization/budget-structure/new-budget-structure'
@@ -30,7 +29,10 @@ import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
 import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
-import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-strategy'
+import NewBudgetStrategy from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy'
+import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy-detail'
+import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
+import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
 
 import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
@@ -171,6 +173,38 @@ const newBudgetOrganization = {
   parent: 'budget-organization'
 };
 
+//新建预算控制策略
+const newBudgetStrategy = {
+  key:'new-budget-strategy',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/new-budget-strategy',
+  components: NewBudgetStrategy,
+  parent: 'budget-organization-detail'
+};
+
+//预算控制策略详情
+const budgetStrategyDetail = {
+  key:'budget-strategy-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId',
+  components: BudgetStrategyDetail,
+  parent: 'budget-organization-detail'
+};
+
+//新建预算控制策略详情
+const newBudgetStrategyDetail = {
+  key:'new-budget-strategy-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId/new-budget-strategy-detail',
+  components: NewBudgetStrategyDetail,
+  parent: 'budget-organization-detail'
+};
+
+//预算控制规则详情(策略明细)
+const strategyControlDetail = {
+  key:'strategy-control-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-strategy/budget-strategy-detail/:strategyId/strategy-control-detail/:strategyControlId',
+  components: StrategyControlDetail,
+  parent: 'budget-organization-detail'
+};
+
 //预算组织定义
 const budgetOrganization = {
   key:'budget-organization',
@@ -186,26 +220,11 @@ const budgetOrganization = {
     budgetStructureDetail,
     newBudgetGroup,
     budgetGroupDetail,
-    newBudgetItem
-  }
-};
-
-//新建预算控制策略
-const newBudgetStrategy = {
-  key:'new-budget-strategy',
-  url:'/main/budget-setting/budget-strategy/new-budget-strategy',
-  components: NewBudgetStrategy,
-  parent: 'budget-strategy'
-};
-
-//预算控制策略定义
-const budgetStrategy = {
-  key:'budget-strategy',
-  url:'/main/budget-setting/budget-strategy',
-  components: BudgetStrategy,
-  parent: 'budget-setting',
-  children: {
-    newBudgetStrategy
+    newBudgetItem,
+    newBudgetStrategy,
+    budgetStrategyDetail,
+    newBudgetStrategyDetail,
+    strategyControlDetail
   }
 };
 
@@ -230,7 +249,7 @@ const budgetJournalType = {
 //预算设置
 const budgetSetting = {
   key:'budget-setting',
-  subMenu: [budgetOrganization, budgetStrategy, budgetRule, budgetJournalType],
+  subMenu: [budgetOrganization, budgetRule, budgetJournalType],
   icon: 'tags-o'
 };
 
