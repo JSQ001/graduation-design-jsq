@@ -18,8 +18,8 @@ class BudgetStrategyDetail extends React.Component {
     this.state = {
       loading: true,
       infoList: [
-        {type: 'input', title: '预算控制策略代码：', id: 'controlStrategyCode', isDisabled: true},
-        {type: 'input', title: '预算控制策略描述：', id: 'controlStrategyName'},
+        {type: 'input', title: '预算控制策略代码：', id: 'controlStrategyCode', message: '请输入', isDisabled: true},
+        {type: 'input', title: '预算控制策略描述：', id: 'controlStrategyName', message: '请输入'},
         {type: 'state', title: '状态：', id: 'isEnabled'}
       ],
       infoData: {
@@ -40,6 +40,7 @@ class BudgetStrategyDetail extends React.Component {
       },
       pageSize: 10,
       page: 0,
+      keyWords: '',
       newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
       strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //新建控制策略详情
     };
@@ -74,7 +75,7 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.params.id}&keyWords=${this.state.keyWords}`).then((response) => {
       this.setState({
         data: response.data,
         loading: false,
@@ -98,6 +99,14 @@ class BudgetStrategyDetail extends React.Component {
     this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id));
   };
 
+  handleSearch= (value) => {
+    this.setState({
+      keyWords: value
+    }, () => {
+      this.getList();
+    })
+  }
+
   render(){
     const { infoList, infoData, columns, data, loading, pagination } = this.state;
     return (
@@ -112,7 +121,7 @@ class BudgetStrategyDetail extends React.Component {
             <Search
               placeholder="请输入策略明细描述/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onSearch={value => console.log(value)}
+              onSearch={this.handleSearch}
             />
           </div>
         </div>
