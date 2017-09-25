@@ -68,7 +68,7 @@ class BudgetItemType extends React.Component {
         item.key = item.id;
       });
       this.setState({
-      //  data: response.data,
+        data: response.data,
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),

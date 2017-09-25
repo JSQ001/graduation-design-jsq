@@ -22,11 +22,8 @@ class NewBudgetVersions extends React.Component {
       versionCodeError:false,
       statusError:false,
       newData:[],
-      checkoutCodeData:[
-        {versionCode:'Tom'},
-        {versionCode:'123'},
-        {versionCode:'pop'}
-      ],
+      checkoutCodeData:[],
+      loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
 
     };
@@ -86,16 +83,13 @@ class NewBudgetVersions extends React.Component {
 
   //检查处理提交数据
   handleSave = (e) =>{
+    this.setState({loading: true});
     e.preventDefault();
-    console.log(this.props.form.getFieldsValue())
-
+    console.log(this.props.form.getFieldsValue());
     let value =this.props.form.getFieldsValue();
-  /*  value.organizationId=this.props.organization.organizationId;*/
-
     if (value.status=='CURRENT'){
       this.checkoutStatus(value);
     }
-
     console.log(this.state.statusError)
     if(!this.state.statusError){
       const dataValue=value['versionDate']
@@ -125,12 +119,14 @@ class NewBudgetVersions extends React.Component {
 
         message.success('保存成功', 2);
         setTimeout(() => {
-          this.setState({ newData: response.data }, () => this.context.router.push(locations))
+          this.setState({ newData: response.data,loading:false }, () => this.context.router.push(locations))
         },200)
 
     } ).catch(e=>{
       if(e.response){
+        this.state.setState({loading:false});
         message.error(e.response.data.message)
+
       }
     });
   }
@@ -306,7 +302,7 @@ class NewBudgetVersions extends React.Component {
           </Row>
 
           <div className="">
-            <Button type="primary" htmlType="submit" >保 存</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading} >保 存</Button>
             <Button onClick={this.CancelHandle}>取 消</Button>
           </div>
 

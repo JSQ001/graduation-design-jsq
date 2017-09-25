@@ -21,12 +21,13 @@ class NewBudgetItemType extends React.Component {
       params: {},
       isEnabled: true,
       isPut:false,
+      loading:false,
+
     };
   }
 
   componentWillMount(){
-    this.setState({
-    })
+
   }
 
 
@@ -35,6 +36,7 @@ class NewBudgetItemType extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({location:true});
         let toValue={
           'isEnabled':values.isEnabled,
           'itemTypeName':values.itemTypeName,
@@ -42,11 +44,12 @@ class NewBudgetItemType extends React.Component {
         }
         console.log(values);
         httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
-          if(res.status == 200){
+          this.setState({loading: false});
             this.props.close(true);
             message.success('操作成功');
-          }
+
         }).catch((e)=>{
+          this.setState({loading: false});
           message.error(e.response.data.message);
         })
       }
@@ -119,7 +122,7 @@ class NewBudgetItemType extends React.Component {
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
