@@ -9,6 +9,7 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 
 import ListSelector from 'components/list-selector'
+import menuRoute from "share/menuRoute";
 
 class BudgetJournalType extends React.Component {
   constructor(props) {
@@ -35,7 +36,8 @@ class BudgetJournalType extends React.Component {
         journalTypeCode: '',
         journalTypeName: ''
       },
-      showSelector: false
+      newBudgetJournalTypePage: menuRoute.getRouteItem('new-budget-journal-type', 'key'),
+      budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail', 'key')
     };
   }
 
@@ -98,26 +100,15 @@ class BudgetJournalType extends React.Component {
   };
 
   handleNew = () => {
-    this.setState({
-      showSelector: true
-    })
+    this.context.router.push(this.state.newBudgetJournalTypePage.url);
   };
 
-  handleCancel = () => {
-    this.setState({
-      showSelector: false
-    })
-  };
-
-  handleOk = (result) => {
-    console.log(result);
-    this.setState({
-      showSelector: false
-    })
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.budgetJournalTypeDetailPage.url.replace(':id', record.id));
   };
 
   render(){
-    const { searchForm, pagination, columns, data, loading, showSelector } = this.state;
+    const { searchForm, pagination, columns, data, loading } = this.state;
     return (
       <div>
         <h3 className="header-title">预算日记账类型定义</h3>
@@ -136,18 +127,17 @@ class BudgetJournalType extends React.Component {
                pagination={pagination}
                loading={loading}
                bordered
+               onRowClick={this.handleRowClick}
                size="middle"/>
-
-        <ListSelector visible={showSelector}
-                      onOk={this.handleOk}
-                      onCancel={this.handleCancel}
-                      title="选择人员"
-                      type='user'/>
       </div>
     )
   }
 
 }
+
+BudgetJournalType.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

@@ -35,6 +35,8 @@ import BudgetStrategy from 'containers/budget-setting/budget-strategy/budget-str
 import BudgetRule from 'containers/budget-setting/budget-rule/budget-rule'
 
 import BudgetJournalType from 'containers/budget-setting/budget-journal-type/budget-journal-type'
+import NewBudgetJournalType from 'containers/budget-setting/budget-journal-type/new-budget-journal-type'
+import BudgetJournalTypeDetail from 'containers/budget-setting/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 
@@ -218,13 +220,27 @@ const budgetRule = {
   children: {}
 };
 
+const newBudgetJournalType = {
+  key:'new-budget-journal-type',
+  url:'/main/budget-setting/budget-journal-type/new-budget-journal-type',
+  components: NewBudgetJournalType,
+  parent: 'budget-journal-type'
+};
+
+const budgetJournalTypeDetail = {
+  key:'budget-journal-type-detail',
+  url:'/main/budget-setting/budget-journal-type/budget-journal-type-detail/:id',
+  components: BudgetJournalTypeDetail,
+  parent: 'budget-journal-type'
+};
+
 //预算日记账类型定义
 const budgetJournalType = {
   key:'budget-journal-type',
   url:'/main/budget-setting/budget-journal-type',
   components: BudgetJournalType,
   parent: 'budget-setting',
-  children: {}
+  children: {newBudgetJournalType, budgetJournalTypeDetail}
 };
 
 //预算设置
