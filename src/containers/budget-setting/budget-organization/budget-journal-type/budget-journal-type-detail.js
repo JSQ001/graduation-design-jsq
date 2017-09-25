@@ -10,7 +10,7 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
-class BudgetJournalTyoeDetail extends React.Component {
+class BudgetJournalTypeDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,7 +30,7 @@ class BudgetJournalTyoeDetail extends React.Component {
   render(){
     return (
       <div>
-        {this.props.params.id}
+        {this.props.params.typeId}
       </div>
     )
   }
@@ -43,4 +43,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetJournalTyoeDetail));
+export default connect(mapStateToProps)(injectIntl(BudgetJournalTypeDetail));

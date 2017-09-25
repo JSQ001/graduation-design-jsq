@@ -8,7 +8,6 @@ import SearchArea from 'components/search-area'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import ListSelector from 'components/list-selector'
 import menuRoute from "share/menuRoute";
 
 class BudgetJournalType extends React.Component {
@@ -47,7 +46,7 @@ class BudgetJournalType extends React.Component {
 
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}&organisationId=${this.props.organization.id}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -100,11 +99,11 @@ class BudgetJournalType extends React.Component {
   };
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetJournalTypePage.url);
+    this.context.router.push(this.state.newBudgetJournalTypePage.url.replace(':id', this.props.organization.id));
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.budgetJournalTypeDetailPage.url.replace(':id', record.id));
+    this.context.router.push(this.state.budgetJournalTypeDetailPage.url.replace(':id', this.props.organization.id).replace(':typeId', record.id));
   };
 
   render(){
