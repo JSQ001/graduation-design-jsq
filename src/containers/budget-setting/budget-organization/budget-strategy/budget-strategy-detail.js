@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import { Table, Button, Input } from 'antd'
+import { Table, Button, Input, Popover, message } from 'antd'
 const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
@@ -18,19 +18,16 @@ class BudgetStrategyDetail extends React.Component {
     this.state = {
       loading: true,
       infoList: [
-        {type: 'input', title: '预算控制策略代码：', id: 'controlStrategyCode', message: '请输入', isDisabled: true},
-        {type: 'input', title: '预算控制策略描述：', id: 'controlStrategyName', message: '请输入'},
-        {type: 'state', title: '状态：', id: 'isEnabled'}
+        {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
+        {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
+        //{type: 'state', id: 'isEnabled', label: '状态：'}
       ],
-      infoData: {
-        controlStrategyName: 'description01',
-        controlStrategyCode: 'code01',
-        isEnabled: false
-      },
+      infoData: {},
+      updateState: false,
       columns: [
-        {title: "序号", dataIndex: "detailSequence", key: "detailSequence"},
+        {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName"},
+        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
         {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
       ],
@@ -102,20 +99,43 @@ class BudgetStrategyDetail extends React.Component {
     this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId).replace(':strategyControlId', record.id));
   };
 
-  handleSearch= (value) => {
+  handleSearch= (e) => {
+    console.log(e.target.value);
     this.setState({
-      keyWords: value
+      page: 0,
+      keyWords: e.target.value
     }, () => {
       this.getList();
     })
   }
+  handleUpdate = (params) => {
+    params.id = this.props.strategyId;
+    params.versionNumber = this.state.infoData.versionNumber;
+    console.log(params);
+    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
+      if(response.status == 200) {
+        message.success('保存成功');
+        this.getBasicInfo();
+        this.setState({ updateState: true })
+      }
+    }).catch((e) => {
+      if(e.response){
+        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({ updateState: false })
+      } else {
+        console.log(e)
+      }
+    })
+  }
 
   render(){
-    const { infoList, infoData, columns, data, loading, pagination } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}
-                   infoData={infoData}/>
+                   infoData={infoData}
+                   updateHandle={this.handleUpdate}
+                   updateState={updateState}/>
         <div className="table-header">
           <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
@@ -124,7 +144,7 @@ class BudgetStrategyDetail extends React.Component {
             <Search
               placeholder="请输入策略明细描述/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onSearch={this.handleSearch}
+              onChange={this.handleSearch}
             />
           </div>
         </div>
@@ -137,8 +157,7 @@ class BudgetStrategyDetail extends React.Component {
                size="middle"/>
       </div>
     )
-  }
-
+    }
 }
 
 BudgetStrategyDetail.contextTypes = {

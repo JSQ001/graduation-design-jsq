@@ -1,7 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { Form, Button, Table, Input } from 'antd'
+import httpFetch from 'share/httpFetch'
+import config from 'config'
+import { Form, Button, Table, Input, message } from 'antd'
 const Search = Input.Search
 
 import BasicInfo from 'components/basic-info'
@@ -15,22 +17,18 @@ class StrategyControlDetail extends React.Component {
     super(props);
     this.state = {
       loading: true,
+      strategyControlId: null,
       infoList: [
-        {type: 'input', title: '序号：', id: 'detailSequence', message: '请输入', isDisabled: true},
-        {type: 'input', title: '规则代码：', id: 'detailCode', message: '请输入', isDisabled: true},
-        {type: 'select', title: '控制策略：', id: 'controlMethod', options: [{label: '禁止', value: '禁止'},{label: '警告', value: '警告'},{label: '通过', value: '通过'}], message: '请输入'},
-        {type: 'input', title: '控制规则描述：', id: 'detailName', message: '请输入'},
-        {type: 'input', title: '消息：', id: 'messageCode'},
-        {type: 'input', title: '事件：', id: 'expWfEvent'},
+        {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
+        {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
+        {type: 'select', label: '控制策略：', id: 'controlMethod', isRequired: true,
+          options: [{label: '禁止', value: '禁止'},{label: '警告', value: '警告'},{label: '通过', value: '通过'}]},
+        {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
+        {type: 'input', label: '消息：', id: 'messageCode'},
+        {type: 'input', label: '事件：', id: 'expWfEvent'},
       ],
-      infoData: {
-        detailSequence: 1,
-        detailCode: 'code01',
-        controlMethod: '通过',
-        detailName: '这是一段描述',
-        messageCode: '这是一段消息',
-        expWfEvent: '这里是事件'
-      },
+      infoData: {},
+      updateState: false,
       columns: [
         {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
         {title: '控制对象', dataIndex: 'object', key: 'object'},
@@ -42,7 +40,52 @@ class StrategyControlDetail extends React.Component {
       ],
       data: [],
       showSlideFrame: false,
+      page: 0,
+      pageSize: 10,
+      pagination: {
+        total: 0
+      },
+      newParams: {},
     }
+  }
+
+  componentWillMount() {
+    this.setState({
+      strategyControlId: this.props.params.strategyControlId,
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+      }
+    },() => {
+      this.getBasicInfo();
+      this.getList();
+    })
+  }
+
+  getBasicInfo() {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((response) => {
+      if(response.status==200) {
+        this.setState({
+          infoData: response.data
+        })
+      }
+    }).catch((e) => {
+
+    })
+  }
+  getList() {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}`).then((response)=>{
+      this.setState({
+        data: response.data,
+        loading: false,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+          onChange: this.onChangePager,
+          pageSize: this.state.pageSize
+        }
+      })
+    }).catch((e)=>{
+
+    })
   }
 
   showSlide = (flag) => {
@@ -60,14 +103,35 @@ class StrategyControlDetail extends React.Component {
     })
   };
 
+  handleUpdate = (params) => {
+    params.id = this.state.strategyControlId;
+    params.versionNumber = this.state.infoData.versionNumber;
+    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
+      if(response.status==200) {
+        message.success('保存成功');
+        this.getBasicInfo();
+        this.setState({ updateState: true })
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({ updateState: false })
+      } else {
+        console.log(e)
+      }
+    })
+  };
+
   render() {
-    const { infoList, infoData, columns, data, showSlideFrame } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, newParams } = this.state;
     return (
       <div className="strategy-control-detail">
         <BasicInfo infoList={infoList}
-                   infoData={infoData}/>
+                   infoData={infoData}
+                   updateHandle={this.handleUpdate}
+                   updateState={updateState}/>
         <div className="table-header">
-          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 0 条数据`}</div>
+          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary"  onClick={() => this.showSlide(true)}>新 建</Button>
             <Search
@@ -79,13 +143,16 @@ class StrategyControlDetail extends React.Component {
         </div>
         <Table columns={columns}
                dataSource={data}
+               pagination={pagination}
+               loading={loading}
                bordered
                size="middle"/>
         <SlideFrame title="新建预算场景"
                     show={showSlideFrame}
                     content={NewStrategyControlDetail}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}/>
+                    onClose={() => this.showSlide(false)}
+                    params={newParams}/>
       </div>
     )
   }
