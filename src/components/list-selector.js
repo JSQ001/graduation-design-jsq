@@ -29,9 +29,10 @@ import selectorData from 'share/selectorData'
  * @params onCancel  点击取消后的方法，同Modal
  * @params afterClose  关闭窗口后的方法，同Modal
  * @params type  选择器类型，配置在selectorData内
- *
+ * @params selectedData  默认选择的值，如果一个页面由多个ListSelector配置，则不同的选择项应该在后续多次选择时传入对应的选择项
  * 现在支持的选择方法：
  * user:  人员选择
+ * budget_structure:  预算表
  */
 class ListSelector extends React.Component {
   constructor(props) {
@@ -134,9 +135,15 @@ class ListSelector extends React.Component {
 
   /**
    * 每次父元素进行setState时调用的操作，判断nextProps内是否有type的变化
+   * 如果selectedData有值则代表有默认值传入需要替换本地已选择数组，
+   * 如果没有值则需要把本地已选择数组置空
    * @param nextProps 下一阶段的props
    */
   componentWillReceiveProps = (nextProps) => {
+    if(nextProps.selectedData && nextProps.selectedData.length > 0)
+      this.setState({ selectedData : nextProps.selectedData });
+    else
+      this.setState({ selectedData : [] });
     if(nextProps.type !== this.state.type)
       this.checkType(nextProps.type);
   };
@@ -224,7 +231,8 @@ ListSelector.propTypes = {
   onOk: React.PropTypes.func,  //点击OK后的回调，当有选择的值时会返回一个数组
   onCancel: React.PropTypes.func,  //点击取消后的回调
   afterClose: React.PropTypes.func,  //关闭后的回调
-  type: React.PropTypes.string  //选择类型
+  type: React.PropTypes.string,  //选择类型
+  selectedData: React.PropTypes.array  //默认选择的值id数组
 };
 
 ListSelector.defaultProps = {
