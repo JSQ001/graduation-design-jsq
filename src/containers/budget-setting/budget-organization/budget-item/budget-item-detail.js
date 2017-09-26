@@ -23,6 +23,7 @@ class BudgetItemDetail extends React.Component{
       loading: true,
       data: [],
       edit: false,
+      visible: false,
       pagination:{
         total:0,
       },
@@ -233,13 +234,14 @@ class BudgetItemDetail extends React.Component{
   //添加公司
   handleAddCompany = ()=>{
     console.log(1)
-    return (
-      <ListSelector visible={true} onCancel={()=>{console.log("close")}} type="company"/>
-    )
+    this.setState({
+      visible: true
+    })
+
   };
 
   render(){
-    const { edit, pagination, columns, data} = this.state;
+    const { edit, pagination, columns, data, visible} = this.state;
     return(
       <div className="budget-item-detail">
         <div className="common-top-area">
@@ -257,7 +259,7 @@ class BudgetItemDetail extends React.Component{
             <Button type="primary" onClick={this.handleAddCompany}>{this.props.intl.formatMessage({id: 'structure.addCompany'})}</Button>  {/*添加公司*/}
             <Button>{this.props.intl.formatMessage({id: 'common.save'})}</Button>
           </div>
-          <ListSelector type='company' visible={true}/>
+          <ListSelector type='company' visible={visible}/>
         </div>
         <Table
           dataSource={data}

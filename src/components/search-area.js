@@ -9,6 +9,8 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
+import ListSelector from 'components/list-selector'
+
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
 
@@ -20,7 +22,7 @@ import 'styles/components/search-area.scss'
  * @params submitHandle  点击搜索时的回调
  * @params clearHandle  点击重置时的回调
  * @params eventHandle  表单项onChange事件，于searchForm内的event有联动，见底端注释
- * TODO: 选项render函数、searchUrl和getUrl的method区分，时间段格式，ListSelector格式
+ * TODO: 选项render函数、searchUrl和getUrl的method区分，时间段格式
  */
 class SearchArea extends React.Component{
 
@@ -28,7 +30,10 @@ class SearchArea extends React.Component{
     super(props);
     this.state = {
       expand: false,
-      searchForm: []
+      searchForm: [],
+      showListSelector: false,
+      listType: '',
+      listSelectedData: []
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -43,10 +48,43 @@ class SearchArea extends React.Component{
     this.setState({ expand: !expand });
   };
 
-  //点击搜索时的事件
+  /**
+   * 搜索区域点击确认时的事件
+   * 返回为form包装形成的格式，
+   * 其中如果type为 combobox、multiple、list时返回的单项格式为
+   * {
+   *   label: '',  //数据显示值，与传入的labelKey挂钩
+   *   key: '',    //数据需要值，与传入的valueKey挂钩
+   *   value: {}   //数据整体值
+   * }
+   * @param e
+   */
   handleSearch = (e) => {
     e.preventDefault();
-    this.props.submitHandle(this.props.form.getFieldsValue())
+    let values = this.props.form.getFieldsValue();
+    console.log(values);
+    for(let id in values){
+      this.props.searchForm.map(item => {
+        if(item.id === id){
+          if(item.type === 'multiple'){
+            values[id].map(value => {
+              value.value = JSON.parse(value.key);
+              value.key = value.value[item.valueKey];
+              delete value.title;
+              return value
+            })
+          }
+          if(item.type === 'combobox'){
+            if(values[id]){
+              values[id].value = JSON.parse(values[id].key);
+              values[id].key = values[id].value[item.valueKey];
+              delete values[id].title;
+            }
+          }
+        }
+      })
+    }
+    this.props.submitHandle(values)
   };
 
   //点击重置的事件，清空值为初始值
@@ -73,7 +111,7 @@ class SearchArea extends React.Component{
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], value: data[item.valueKey]})
+          options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -99,7 +137,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder="请选择" onChange={handle}>
             {item.options.map((option)=>{
-              return <Option value={option.value} key={option.value}>{option.label}</Option>
+              return <Option key={option.value}>{option.label}</Option>
             })}
           </Select>
         )
@@ -145,7 +183,7 @@ class SearchArea extends React.Component{
           onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
         >
           {item.options.map((option)=>{
-            return <Option value={option.value} key={option.value}>{option.label}</Option>
+            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
           })}
         </Select>
       }
@@ -161,8 +199,18 @@ class SearchArea extends React.Component{
           onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
         >
           {item.options.map((option)=>{
-            return <Option value={option.value} key={option.value}>{option.label}</Option>
+            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
           })}
+        </Select>
+      }
+      case 'list':{
+        return <Select
+          mode="multiple"
+          labelInValue
+          placeholder={item.placeholder}
+          onFocus={() => this.handleFocus(item)}
+          dropdownStyle={{ display: 'none' }}
+        >
         </Select>
       }
     }
@@ -175,7 +223,7 @@ class SearchArea extends React.Component{
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
-        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
+        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }} ref="outer">
           <FormItem {...formItemLayout} label={item.label} colon={false}>
             {getFieldDecorator(item.id, {initialValue: item.defaultValue})(
               this.renderFormItem(item)
@@ -187,7 +235,65 @@ class SearchArea extends React.Component{
     return children;
   }
 
+  /**
+   * list控件因为select没有onClick事件，所以用onFocus代替
+   * 每次focus后，用一个隐藏的input来取消聚焦
+   * @param item 需要显示的FormItem
+   */
+  handleFocus = (item) => {
+    this.refs.blur.focus();
+    this.showList(item)
+  };
+
+  /**
+   * 显示ListSelector，如果有已经选择的值则包装为ListSelector需要的默认值格式传入
+   * @param item 需要显示的FormItem
+   */
+  showList = (item) => {
+    let listSelectedData = [];
+    let values = this.props.form.getFieldValue(item.id);
+    if(values && values.length > 0){
+      values.map(value => {
+        listSelectedData.push(value.value)
+      });
+    }
+    this.setState({
+      listType : item.listType,
+      showListSelector: true,
+      listSelectedData
+    })
+  };
+
+  handleListCancel = () => {
+    this.setState({ showListSelector: false })
+  };
+
+  /**
+   * ListSelector确认点击事件，返回的结果包装为form需要的格式
+   * @param result
+   */
+  handleListOk = (result) => {
+    let formItem = {};
+    this.props.searchForm.map(item => {
+      if(item.listType === result.type)
+        formItem = item;
+    });
+    let values = [];
+    result.result.map(item => {
+      values.push({
+        key: item[formItem.valueKey],
+        label: item[formItem.labelKey],
+        value: item
+      })
+    });
+    let value = {};
+    value[formItem.id] = values;
+    this.props.form.setFieldsValue(value);
+    this.setState({ showListSelector: false })
+  };
+
   render(){
+    const { showListSelector, listType, listSelectedData } = this.state;
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
@@ -201,12 +307,16 @@ class SearchArea extends React.Component{
                 {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
             ) : null}
-            <Button type="primary" htmlType="submit">搜索</Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
-              重置
-            </Button>
+            <Button type="primary" htmlType="submit">{this.props.okText}</Button>
+            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
           </Col>
         </Row>
+        <ListSelector visible={showListSelector}
+                      type={listType}
+                      onCancel={this.handleListCancel}
+                      onOk={this.handleListOk}
+                      selectedData={listSelectedData}/>
+        <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
       </Form>
     )
   }
@@ -216,29 +326,34 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple中的一种
-          id: '',      //必填，表单id，搜索后返回的数据key
-          label: '',   //必填，界面显示名称label
+          type: '',        //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list中的一种
+          id: '',          //必填，表单id，搜索后返回的数据key
+          label: '',       //必填，界面显示名称label
+          listType: '',    //可选，当type为list时必填，
           options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
           searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
           getUrl: '',       //可选，初始显示的值需要的接口
           method: '',      //可选，接口所需要的接口类型get/post
-          searchKey: '',  //搜索参数名
-          labelKey: '',  //可选，接口返回的数据内所需要页面options显示名称label的参数名
-          valueKey: ''  //可选，接口返回的数据内所需要options值value的参数名
+          searchKey: '',  //可选，搜索参数名
+          labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
+          valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
         }
  */
 SearchArea.propTypes = {
   searchForm: React.PropTypes.array.isRequired,  //传入的表单列表
   submitHandle: React.PropTypes.func.isRequired,  //搜索事件
   eventHandle: React.PropTypes.func,  //表单项点击事件
-  clearHandle: React.PropTypes.func  //重置事件
+  clearHandle: React.PropTypes.func,  //重置事件
+  okText: React.PropTypes.string,  //左侧ok按钮的文本
+  clearText: React.PropTypes.string,  //右侧重置按钮的文本
 };
 
 SearchArea.defaultProps = {
-  eventHandle: () => {}
+  eventHandle: () => {},
+  okText: '搜 索',
+  clearText: '重 置'
 };
 
 const WrappedSearchArea= Form.create()(SearchArea);

@@ -16,6 +16,7 @@ class BudgetRule extends React.Component {
     )
   }
 
+
 }
 
 function mapStateToProps() {

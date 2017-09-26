@@ -28,7 +28,7 @@ class BudgetGroup extends React.Component {
       },
       searchForm: [
         {type: 'input', id: 'itemGroupCode', label: '预算项目组代码'},
-        {type: 'input', id: 'itemGroupName', label: '预算项目组名称'},
+        {type: 'input', id: 'itemGroupName', label: '预算项目组名称'}
       ],
       searchParams: {
         groupCode: '',
@@ -75,15 +75,16 @@ class BudgetGroup extends React.Component {
   };
 
   search = (result) => {
-    this.setState({
-      page: 0,
-      searchParams: {
-        itemGroupCode: result.itemGroupCode ? result.itemGroupCode : '',
-        itemGroupName: result.itemGroupName ? result.itemGroupName : ''
-      }
-    }, ()=>{
-      this.getList();
-    })
+    console.log(result)
+    // this.setState({
+    //   page: 0,
+    //   searchParams: {
+    //     itemGroupCode: result.itemGroupCode ? result.itemGroupCode : '',
+    //     itemGroupName: result.itemGroupName ? result.itemGroupName : ''
+    //   }
+    // }, ()=>{
+    //   this.getList();
+    // })
   };
 
   handleNew = () => {
