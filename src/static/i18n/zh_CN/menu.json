@@ -24,6 +24,8 @@
   "menu.budget-rule": "预算控制规则定义",
   "menu.budget-journal": "预算日记账类型定义",
   "menu.budget-journal-type": "预算日记账类型定义",
+  "menu.new-budget-journal-type": "新建预算日记账类型",
+  "menu.budget-journal-type-detail": "预算日记账详情",
   "menu.new-budget-group": "新建预算项目组",
   "menu.budget-group-detail": "预算项目组详情",
   "menu.new-budget-structure": "新建预算表",
