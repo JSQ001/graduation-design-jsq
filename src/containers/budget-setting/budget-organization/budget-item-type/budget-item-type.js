@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import {Button,Table,Badge} from 'antd'
+
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
-import {Link,Redirect,browserHistory,History} from 'react-router'
-import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Icon} from 'antd'
+
 
 
 import SlideFrame from 'components/slide-frame'
@@ -20,10 +20,7 @@ class BudgetItemType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [
-       /* {id:123,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"},
-        { id:124,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"}*/
-      ],
+      data: [],
       columns: [
         {title: '预算组织名称', dataIndex: 'organizationName', key: 'organizationName',},
         {title: '预算项目类型代码', dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
@@ -61,7 +58,7 @@ class BudgetItemType extends React.Component {
 
 //获得数据
   getList(){
-    let url = `${config.budgetUrl}/api/budget/itemType/query?size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode||''}&itemTypeName=${this.state.searchParams.itemTypeName||''}`;
+    let url = `${config.budgetUrl}/api/budget/itemType/query?organizationId=${this.props.organization.id}&size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode||''}&itemTypeName=${this.state.searchParams.itemTypeName||''}`;
     return httpFetch.get(url).then((response)=>{
       response.data.map((item)=>{
         item.key = item.id;
@@ -115,7 +112,6 @@ class BudgetItemType extends React.Component {
 
    handleCloseNewSlide = (params) => {
      this.getList();
-    console.log(params);
     this.setState({
       showSlideFrameNew: false
     })
@@ -176,7 +172,7 @@ class BudgetItemType extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{`共${this.state.pagination.total}条数据`}</div>
+          <div className="table-header-title">{`共 ${this.state.pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.newItemTypeShowSlide}>新建</Button>
           </div>
@@ -193,14 +189,14 @@ class BudgetItemType extends React.Component {
           />
         </div>
 
-        <SlideFrame title="新建预算场景"
+        <SlideFrame title="新建预算项目类型"
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
 
-        <SlideFrame title="编辑预算场景"
+        <SlideFrame title="编辑预算项目类型"
                     show={showSlideFramePut}
                     content={WrappedPutBudgetItemType}
                     afterClose={this.handleCloseUpdateSlide}

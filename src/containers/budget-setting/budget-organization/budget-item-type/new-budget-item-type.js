@@ -1,15 +1,14 @@
 /**
  * Created by 13576 on 2017/9/21.
  */
-import React from 'react'
-import { connect } from 'react-redux'
+import React from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd'
+import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd';
 const FormItem = Form.Item;
 
-import config from 'config'
-import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import config from 'config';
+import httpFetch from 'share/httpFetch';
 
 import 'styles/budget/buget-item-type/budget-item-type.scss'
 

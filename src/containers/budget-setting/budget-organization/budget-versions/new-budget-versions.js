@@ -30,8 +30,6 @@ class NewBudgetVersions extends React.Component {
   }
 
   componentWillMount(){
-    console.log(this.props.organization.id)
-    console.log(this.props.id)
 
   }
 
@@ -66,15 +64,9 @@ class NewBudgetVersions extends React.Component {
 
 //查询预算组织代码下是否已经  当前 版本'
   checkoutStatus=(value)=>{
-    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.id}&&status="CURRENT"`, ).then((response)=>{
-      response.data.map((item, index)=>{
-        item.index = this.state.page * this.state.pageSize + index + 1;
-        item.key = item.index;
-      });
-
-      console.log(response.data)
-      if(true){
-        this.openNotification ("code1")
+    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.params.id}&status="CURRENT"`, ).then((response)=>{
+      if(response.data.length>=1){
+        this.openNotification ((response.data)[0].versionCode)
       }
       this.state.statusError =true;
     });
@@ -85,12 +77,10 @@ class NewBudgetVersions extends React.Component {
   handleSave = (e) =>{
     this.setState({loading: true});
     e.preventDefault();
-    console.log(this.props.form.getFieldsValue());
     let value =this.props.form.getFieldsValue();
     if (value.status=='CURRENT'){
       this.checkoutStatus(value);
     }
-    console.log(this.state.statusError)
     if(!this.state.statusError){
       const dataValue=value['versionDate']
       const toleValues={
@@ -105,25 +95,15 @@ class NewBudgetVersions extends React.Component {
 
   //保存数据
   saveData(value){
-    const path = this.state.budgetVersionsDetailDetailPage.url.replace(':id', value.organizationId);
-    let  locations={
-      key: 'budget-versions-detail',
-      pathname:path,
-      state: {
-        Data:{}
-      }
-    }
-
-    return httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-      locations.state.Data = response.data;
-
+      httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+      let  path=this.state.budgetVersionsDetailDetailPage.url.replace(':id',response.data.id);
         message.success('保存成功', 2);
         setTimeout(() => {
-          this.setState({ newData: response.data,loading:false }, () => this.context.router.push(locations))
+          this.setState({loading:false }, () => this.context.router.push(path))
         },200)
 
     } ).catch(e=>{
-      this.state.setState({loading:false});
+      this.setState({loading:false});
       if(e.response){
 
         message.error(`新建失败, ${e.response.data.validationErrors[0].message}`)
@@ -152,8 +132,6 @@ class NewBudgetVersions extends React.Component {
 
   checkVersionCode=(rule, value, callback)=>{
     const checkoutCodeData = this.state.checkoutCodeData;
-
-    console.log(this.state.checkoutCodeData)
     let a;
     for(a in checkoutCodeData) {
       if(value == checkoutCodeData[a].versionCode){
@@ -206,7 +184,6 @@ class NewBudgetVersions extends React.Component {
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
                   label="预算版本代码"
-                  hasFeedback
                 >
                   {getFieldDecorator('versionCode',
                     {
@@ -221,7 +198,6 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8}  style={{ display: 'inline-block'}}>
                 <FormItem label="预算版本名称"
-                          hasFeedback
                 >
                   {getFieldDecorator('versionName', {
 

@@ -58,7 +58,8 @@ class BudgetVersions extends React.Component {
       redirect:true,
       loading:true,
       newData:{versionCode:''},
-      NewBudgetVersionsPage:menuRoute.getRouteItem('new-budget-versions','key')
+      newBudgetVersionsPage:menuRoute.getRouteItem('new-budget-versions','key'),
+      budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
 
 
     };
@@ -81,7 +82,7 @@ class BudgetVersions extends React.Component {
 
   //获得数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.id}&page=${this.state.page}&size=${this.state.pageSize}&versionCode=${this.state.searchParams.versionCode||''}&versionName=${this.state.searchParams.versionName||''}`, ).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.organization.id}&page=${this.state.page}&size=${this.state.pageSize}&versionCode=${this.state.searchParams.versionCode||''}&versionName=${this.state.searchParams.versionName||''}`, ).then((response)=>{
       response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
         item.key = item.index;
@@ -138,7 +139,13 @@ class BudgetVersions extends React.Component {
 
 //跳转到新建页面
   createHandle=()=>{
-    let path=this.state.NewBudgetVersionsPage.url.replace(':id',this.props.id);
+    let path=this.state.newBudgetVersionsPage.url.replace(':id',this.props.id);
+    this.context.router.push(path)
+  }
+
+  //跳转到详情
+  ToDetailHandle=(recode)=>{
+    let path = this.state.budgetVersionsDetailDetailPage.url.replace(':id',recode.id);
     this.context.router.push(path)
   }
 
@@ -171,6 +178,7 @@ class BudgetVersions extends React.Component {
             loading={this.state.loading}
             bordered
             size="middle"
+            onRowClick={this.ToDetailHandle}
           />
         </div>
 
