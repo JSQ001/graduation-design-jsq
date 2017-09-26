@@ -69,7 +69,7 @@ class BudgetVersionsDetail extends React.Component {
       this.setState({loading: false ,data:res.data});
     }).catch((e)=>{
       if(e.response){
-        message.error(`查询失败`);
+        message.error(`查询失败,${e.response.data.validationErrors[0].message}`);
         this.setState({loading: false});
       } else {
         console.log(e)
@@ -92,7 +92,7 @@ class BudgetVersionsDetail extends React.Component {
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
-        message.success("编辑失败");
+        message.success(`编辑失败,${e.response.data.validationErrors[0].message}`);
       }
     });
   }
@@ -304,7 +304,7 @@ class BudgetVersionsDetail extends React.Component {
       message.success(`分配公司成功`);
     }).catch((e)=>{
       if(e.response){
-        message.error(`分配公司失败`);
+        message.error(`分配公司失败,${e.response.data.validationErrors[0].message}`);
       } else {
         console.log(e)
       }

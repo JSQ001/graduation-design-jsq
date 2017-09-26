@@ -20,7 +20,6 @@ class BudgetItemType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      Loading: true,
       data: [
        /* {id:123,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"},
         { id:124,organizationId:1,itemTypeCode:"123",itemTypeName:"qq"}*/
@@ -114,12 +113,22 @@ class BudgetItemType extends React.Component {
     })
   };
 
-  handleCloseSlide = (params) => {
+   handleCloseNewSlide = (params) => {
+     this.getList();
     console.log(params);
     this.setState({
-      showSlideFrame: false
+      showSlideFrameNew: false
     })
   };
+
+  handleCloseUpdateSlide = (params) => {
+      this.getList();
+
+    this.setState({
+      showSlideFramePut: false
+    })
+  };
+
 
   showSlidePut = (flag) => {
     this.setState({
@@ -136,16 +145,22 @@ class BudgetItemType extends React.Component {
   newItemTypeShowSlide=()=>{
     this.setState({
       updateParams:{},
-      showSlideFrameNew: true
+    },()=>{
+      this.showSlideNew(true)
     })
   }
 
   putItemTypeShowSlide=(recode)=>{
     this.setState({
       updateParams:recode,
-      showSlideFramePut: true
+    },()=>{
+      this.showSlidePut(true)
     })
+
   }
+
+
+
 
 
   render(){
@@ -172,7 +187,7 @@ class BudgetItemType extends React.Component {
             columns={columns}
             dataSource={data}
             pagination={pagination}
-            Loading={loading}
+            loading={loading}
             bordered
             onRowClick={this.putItemTypeShowSlide}
           />
@@ -181,14 +196,14 @@ class BudgetItemType extends React.Component {
         <SlideFrame title="新建预算场景"
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
-                    afterClose={this.handleCloseSlide}
+                    afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
 
         <SlideFrame title="编辑预算场景"
                     show={showSlideFramePut}
                     content={WrappedPutBudgetItemType}
-                    afterClose={this.handleCloseSlide}
+                    afterClose={this.handleCloseUpdateSlide}
                     onClose={() => this.showSlidePut(false)}
                     params={updateParams}/>
 

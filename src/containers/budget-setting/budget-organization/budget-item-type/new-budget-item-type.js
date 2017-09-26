@@ -27,7 +27,7 @@ class NewBudgetItemType extends React.Component {
   }
 
   componentWillMount(){
-
+    console.log(this.props.organization)
   }
 
 
@@ -36,21 +36,23 @@ class NewBudgetItemType extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({location:true});
+        this.setState({loading:true});
         let toValue={
           'isEnabled':values.isEnabled,
           'itemTypeName':values.itemTypeName,
-          'itemTypeCode':values.itemTypeCode
+          'itemTypeCode':values.itemTypeCode,
+          'organizationId':this.props.organization.id
         }
-        console.log(values);
+        console.log(toValue);
         httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
           this.setState({loading: false});
             this.props.close(true);
             message.success('操作成功');
-
+          console.log( this.props.id);
         }).catch((e)=>{
           this.setState({loading: false});
-          message.error(e.response.data.message);
+
+          message.error(e.response.data.validationErrors[0].message);
         })
       }
     });
@@ -101,7 +103,7 @@ class NewBudgetItemType extends React.Component {
               <Input  disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型代码:" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型代码:" >
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -110,7 +112,7 @@ class NewBudgetItemType extends React.Component {
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型名字:" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型名字:" >
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,

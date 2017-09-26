@@ -123,9 +123,10 @@ class NewBudgetVersions extends React.Component {
         },200)
 
     } ).catch(e=>{
+      this.state.setState({loading:false});
       if(e.response){
-        this.state.setState({loading:false});
-        message.error(e.response.data.message)
+
+        message.error(`新建失败, ${e.response.data.validationErrors[0].message}`)
 
       }
     });
