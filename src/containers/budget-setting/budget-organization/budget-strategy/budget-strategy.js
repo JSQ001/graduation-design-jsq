@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Button, Table, Modal, Badge } from 'antd'
+import { Button, Table, Badge, Popover } from 'antd'
 
 import SearchArea from 'components/search-area'
 import menuRoute from 'share/menuRoute'
@@ -22,7 +22,7 @@ class BudgetStrategy extends React.Component {
       },
       columns: [
         {title: '预算控制策略代码', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
-        {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName'},
+        {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName', render: desc => <Popover content={desc}>{desc}</Popover>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       data: [],    //列表值

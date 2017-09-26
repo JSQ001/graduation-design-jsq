@@ -1,7 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { Form, Button, Input, Radio, Select, Row, Col, InputNumber, Popover, Icon } from 'antd'
+import httpFetch from 'share/httpFetch'
+import config from 'config'
+import { Form, Button, Input, Radio, Select, Col, InputNumber, Popover, Icon, message } from 'antd'
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -13,8 +15,12 @@ class NewStrategyControlDetail extends React.Component{
     super(props);
     this.state = {
       formulaDisplay: 'block',
-      functionDisplay: 'none',
-      manner: '绝对额',
+      objectValue: '',
+      rangeValue: '',
+      mannerValue: '',
+      operatorValue: '',
+      valueValue: '',
+      periodStrategyValue: '',
     };
   }
 
@@ -22,16 +28,20 @@ class NewStrategyControlDetail extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values);
-        /*httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
-          console.log(res);
+        values.controlStrategyId = this.props.params.strategyControlId
+        httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           if(res.status == 200){
             this.props.close(true);
-            message.success('操作成功');
+            message.success('保存成功');
           }
         }).catch((e)=>{
-
-        })*/
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({ updateState: false })
+          } else {
+            console.log(e)
+          }
+        })
       }
     });
   };
@@ -39,26 +49,43 @@ class NewStrategyControlDetail extends React.Component{
   radioChange = (e) => {
     if(e.target.value=='函数') {
       this.setState({
-        formulaDisplay: 'none',
-        functionDisplay: 'block'
+        formulaDisplay: false,
+        objectValue: '',
+        rangeValue: '',
+        mannerValue: '',
+        operatorValue: '',
+        valueValue: '',
+        periodStrategyValue: '',
       })
     } else {
       this.setState({
-        formulaDisplay: 'block',
-        functionDisplay: 'none'
+        formulaDisplay: true,
+        objectValue: '',
+        rangeValue: '',
+        mannerValue: '',
+        operatorValue: '',
+        valueValue: '',
+        periodStrategyValue: '',
       })
     }
-  }
+  };
 
-  mannerChange = (value) => {
-    this.setState({
-      manner: value
-    })
+  handlePeriodStrategy = (value) => {
+    const opera = {
+      '年度': '全年预算额',
+      '年初至今': '年初至今预算额',
+      '累计季度': '年初至当季度预算额',
+      '滚动季度': '当月至后两个月共3个月合计预算额',
+      '季度': '当季预算额',
+      '季初至今': '季度初至今预算额',
+      '月度': '当月录入预算额'
+    }
+    this.setState({ periodStrategyValue:opera[value] })
   }
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { formulaDisplay, functionDisplay, manner } = this.state;
+    const { formulaDisplay, objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -77,6 +104,159 @@ class NewStrategyControlDetail extends React.Component{
         </div>
       </div>
     );
+    let renderOperator;
+    let renderValue;
+    let renderForm;
+    if (mannerValue == '百分比') {
+      renderValue = (
+        <Col span={6}>
+          <FormItem hasFeedback>
+            {getFieldDecorator('value', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }]})(
+              <InputNumber formatter={value => `${value}%`}
+                           parser={value => value.replace('%', '')}
+                           onChange={(value)=>{this.setState({ valueValue:value })}}/>
+            )}
+          </FormItem>
+        </Col>
+      );
+    } else {
+      renderValue = (
+        <Col span={6}>
+          <FormItem hasFeedback>
+            {getFieldDecorator('value', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }]})(
+              <InputNumber onChange={(value)=>{this.setState({ valueValue:value })}}/>
+            )}
+          </FormItem>
+        </Col>
+      );
+      renderOperator = (
+        <Col span={8} style={{marginRight:'15px'}}>
+          <FormItem hasFeedback>
+            {getFieldDecorator('operator', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]})(
+              <Select placeholder="请选择" onChange={(value)=>{this.setState({ operatorValue:value })}}>
+                <Option value="加">加</Option>
+                <Option value="减">减</Option>
+                <Option value="乘">乘</Option>
+                <Option value="除">除</Option>
+              </Select>
+            )}
+          </FormItem>
+        </Col>
+      );
+    }
+    if (formulaDisplay) {
+      renderForm = (
+        <div>
+          <FormItem {...formItemLayout} label="控制对象" hasFeedback>
+            {getFieldDecorator('object', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }]})(
+              <Select placeholder="请选择" onChange={(value)=>{this.setState({ objectValue: value })}}>
+                <Option value="金额">金额</Option>
+                <Option value="金额进度">金额进度</Option>
+                <Option value="数量">数量</Option>
+                <Option value="数量进度">数量进度</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="比较" hasFeedback>
+            {getFieldDecorator('range', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }]})(
+              <Select placeholder="请选择" onChange={(value)=>{this.setState({ rangeValue: value })}}>
+                <Option value="小于">小于</Option>
+                <Option value="小于等于">小于等于</Option>
+                <Option value="大于">大于</Option>
+                <Option value="大于等于">大于等于</Option>
+                <Option value="等于">等于</Option>
+                <Option value="不等于">不等于</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="方式" >
+            <Col span={8} style={{marginRight:'15px'}}>
+              <FormItem hasFeedback>
+                {getFieldDecorator('manner', {
+                  rules: [{
+                    required: true,
+                    message: '请输入'
+                  }]})(
+                    <Select placeholder="请选择" onChange={(value)=>{this.setState({ mannerValue: value })}}>
+                      <Option value="绝对额">绝对额</Option>
+                      <Option value="百分比">百分比</Option>
+                    </Select>
+                )}
+              </FormItem>
+            </Col>
+            {renderOperator}
+            {renderValue}
+          </FormItem>
+          <FormItem {...formItemLayout} label="控制期段">
+            <Col span={20} style={{marginRight:'20px'}}>
+              <FormItem hasFeedback>
+                {getFieldDecorator('periodStrategy', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]})(
+                    <Select placeholder="请选择" onChange={this.handlePeriodStrategy}>
+                      <Option value="月度">月度</Option>
+                      <Option value="季度">季度</Option>
+                      <Option value="年度">年度</Option>
+                      <Option value="季初至今">季初至今</Option>
+                      <Option value="年初至今">年初至今</Option>
+                      <Option value="滚动季度">滚动季度</Option>
+                      <Option value="累计季度">累计季度</Option>
+                    </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={2}>
+              <Popover content={content} title="预算控制期段">
+                <Icon type="question-circle-o" style={{fontSize:'18px'}}/>
+              </Popover>
+            </Col>
+          </FormItem>
+          <FormItem {...formItemLayout} label="条件">
+            {getFieldDecorator('scenarioName')(
+              <div>{objectValue}{rangeValue}{periodStrategyValue}{mannerValue == '百分比' ? valueValue + '%' : operatorValue + valueValue}</div>
+            )}
+          </FormItem>
+        </div>
+      );
+    } else {
+      renderForm = (
+        <div>
+          <FormItem {...formItemLayout} label="自定义函数" hasFeedback>
+            {getFieldDecorator('function', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }],
+              initialValue: ''
+            })(
+              <TextArea rows={4} placeholder="请输入"/>
+            )}
+          </FormItem>
+        </div>
+      );
+    }
     return (
       <div className="new-strategy-control-detail">
         <Form onSubmit={this.handleSave}>
@@ -93,110 +273,7 @@ class NewStrategyControlDetail extends React.Component{
               </RadioGroup>
             )}
           </FormItem>
-          <div style={{display:formulaDisplay}}>
-            <FormItem {...formItemLayout} label="控制对象" hasFeedback>
-              {getFieldDecorator('object', {
-                rules: [{
-                  required: true,
-                  message: '请输入'
-                }]})(
-                <Select placeholder="请选择">
-                  <Option value="金额">金额</Option>
-                  <Option value="金额进度">金额进度</Option>
-                  <Option value="数量">数量</Option>
-                  <Option value="数量进度">数量进度</Option>
-                </Select>
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="比较" hasFeedback>
-              {getFieldDecorator('range', {
-                rules: [{
-                  required: true,
-                  message: '请输入'
-                }]})(
-                <Select placeholder="请选择">
-                  <Option value="小于">小于</Option>
-                  <Option value="小于等于">小于等于</Option>
-                  <Option value="大于">大于</Option>
-                  <Option value="大于等于">大于等于</Option>
-                  <Option value="等于">等于</Option>
-                  <Option value="不等于">不等于</Option>
-                </Select>
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="方式" hasFeedback>
-              {getFieldDecorator('manner', {
-                rules: [{
-                  required: true,
-                  message: '请输入'
-                }]})(
-                <Row>
-                  <Col span={8} style={{marginRight:'15px'}}>
-                    <Select placeholder="请选择" onChange={this.mannerChange}>
-                      <Option value="绝对额">绝对额</Option>
-                      <Option value="百分比">百分比</Option>
-                    </Select>
-                  </Col>
-                  <Col span={8} style={{marginRight:'15px',display:(manner=='百分比'?'none':'block')}}>
-                    <Select placeholder="请选择">
-                      <Option value="加">加</Option>
-                      <Option value="减">减</Option>
-                      <Option value="乘">乘</Option>
-                      <Option value="除">除</Option>
-                    </Select>
-                  </Col>
-                  <Col span={6}>
-                    <InputNumber formatter={value => `${value}%`}
-                                 parser={value => value.replace('%', '')}/>
-                  </Col>
-                </Row>
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="控制期段" hasFeedback>
-              {getFieldDecorator('periodStrategy', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Row>
-                  <Col span={20} style={{marginRight:'20px'}}>
-                    <Select placeholder="请选择">
-                      <Option value="月度">月度</Option>
-                      <Option value="季度">季度</Option>
-                      <Option value="年度">年度</Option>
-                      <Option value="季度至今">季度至今</Option>
-                      <Option value="年度至今">年度至今</Option>
-                      <Option value="季度滚动">季度滚动</Option>
-                      <Option value="累计季度">累计季度</Option>
-                    </Select>
-                  </Col>
-                  <Col span={2}>
-                    <Popover content={content} title="预算控制期段">
-                      <Icon type="question-circle-o" style={{fontSize:'18px'}}/>
-                    </Popover>
-                  </Col>
-                </Row>
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="条件">
-              {getFieldDecorator('scenarioName')(
-                <div>{manner}</div>
-              )}
-            </FormItem>
-          </div>
-          <div style={{display:functionDisplay}}>
-            <FormItem {...formItemLayout} label="自定义函数" hasFeedback>
-              {getFieldDecorator('function', {
-                rules: [{
-                  required: true,
-                  message: '请输入'
-                }],
-                initialValue: ''
-              })(
-                <TextArea rows={4} placeholder="请输入"/>
-              )}
-            </FormItem>
-          </div>
+          {renderForm}
           <div className="slide-footer">
             <Button type="primary" htmlType="submit">保存</Button>
             <Button>取消</Button>
