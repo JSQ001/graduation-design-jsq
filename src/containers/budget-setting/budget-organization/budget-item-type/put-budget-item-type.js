@@ -23,6 +23,7 @@ class PutBudgetItemType extends React.Component {
     this.state = {
       params: {},
       isEnabled: true,
+      loading:false,
 
     };
   }
@@ -40,17 +41,25 @@ class PutBudgetItemType extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let data =this.state.params
-       data.isEnabled = values.isEnabled;
-        data.itemTypeName = values.itemTypeName;
+        this.setState({loading: true});
+        console.log(values);
+        const data ={
+          'isEnabled':this.state.isEnabled,
+          'itemTypeName':values.itemTypeName,
+          'id':this.state.params.id,
+          'versionNumber':this.state.params.versionNumber,
+        }
         console.log(data);
         httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res)=>{
-          if(res.status == 200){
+
+          this.setState({loading: false});
             this.props.close(true);
             message.success('操作成功');
-          }
-        }).catch((e)=>{
 
+
+        }).catch((e)=>{
+          this.setState({loading: false});
+          message.error(e.response.data.validationErrors[0].message);
         })
       }
     });
@@ -81,7 +90,7 @@ class PutBudgetItemType extends React.Component {
 
       <div className="new-value">
         <Form onSubmit={this.handlePut}>
-          <FormItem
+          <FormItem {...formItemLayout}
             label="状态">
             {getFieldDecorator('isEnabled', {
             })(
@@ -99,7 +108,7 @@ class PutBudgetItemType extends React.Component {
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型代码" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型代码" >
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -109,8 +118,8 @@ class PutBudgetItemType extends React.Component {
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型名字" hasFeedback>
-            {getFieldDecorator('scenarioName', {
+          <FormItem {...formItemLayout} label="预算项目类型名字" >
+            {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
                 message: '请输入'
@@ -122,7 +131,7 @@ class PutBudgetItemType extends React.Component {
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>

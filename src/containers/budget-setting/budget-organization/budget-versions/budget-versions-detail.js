@@ -35,7 +35,7 @@ class BudgetVersionsDetail extends React.Component {
         enabled: '',
       },
       edit: false,
-      formData:this.props.location.state.Data,
+      formData:{},
       loading:true,
       newAssignCompanyDate:[],
       putAssignCompanyDate:[],
@@ -53,8 +53,9 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   componentWillMount(){
+    this.getDetail();
     this.getAssignCompanyList();
-    console.log(this.state.formData.id)
+    console.log(this.state.formData)
   }
 
 
@@ -63,17 +64,24 @@ class BudgetVersionsDetail extends React.Component {
   }
 
 
+  //获得详情数据
+  getDetail(){
+    console.log(this.props)
+    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.id}`, ).then((response)=>{
+      this.setState({
+        formData:response.data
+      })
+    }).catch(e=>{
+    });
+  }
+
+
   //查询分配公司表
   getAssignCompanyList=()=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.state.formData.id}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
+    console.log(this.props);
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.id}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
       this.setState({loading: false ,data:res.data});
     }).catch((e)=>{
-      if(e.response){
-        message.error(`查询失败`);
-        this.setState({loading: false});
-      } else {
-        console.log(e)
-      }
     })
 
   }
@@ -92,7 +100,7 @@ class BudgetVersionsDetail extends React.Component {
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
-        message.success("编辑失败");
+        message.success(`编辑失败,${e.response.data.validationErrors[0].message}`);
       }
     });
   }
@@ -128,8 +136,7 @@ class BudgetVersionsDetail extends React.Component {
 
 
   renderPutForm=()=>{
-    const fromData =this.props.location.state.Data;
-    this.getAssignCompanyList();
+    const fromData =this.state.formData
     return (
       <Form >
         <Row gutter={40}>
@@ -304,7 +311,7 @@ class BudgetVersionsDetail extends React.Component {
       message.success(`分配公司成功`);
     }).catch((e)=>{
       if(e.response){
-        message.error(`分配公司失败`);
+        message.error(`分配公司失败,${e.response.data.validationErrors[0].message}`);
       } else {
         console.log(e)
       }
@@ -314,14 +321,25 @@ class BudgetVersionsDetail extends React.Component {
 
 //分配公司确定
   submitHandle=(value)=>{
-    const data = this.props.location.state.Data;
     const isEnabled = true;
-    value.versionId=data.id;
-    value.isEnabled=isEnabled;
-    console.log(value)
+    let dataValue=[];
+    for(let a=0;a<value.length;a++){
+      const newData ={
+        "companyCode":value[a].companyCode,
+        "companyName":value[a].companyName,
+        "companyId": value[a].companyId,
+        "versionId":this.props.params.id,
+        "isEnabled":isEnabled
+      }
+      dataValue.push(newData)
+      this.state.data.push(newData)
+    }
+
+    console.log(dataValue)
+
     this.setState({
-      data:value,
-      newAssignCompanyDate:value
+
+      newAssignCompanyDate:dataValue
 
     })
 
