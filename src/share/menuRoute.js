@@ -102,7 +102,16 @@ const budgetStructureDetail = {
   key:'budget-structure-detail',
   url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail',
   components: BudgetStructureDetail,
-  parent:'budget-organization-detail'
+  parent:'budget-organization-detail',
+  children: {
+
+  }
+};
+
+//预算表分配公司
+const budgetStructureCompany = {
+  key: 'budget-structure-company',
+  url: '/'
 };
 
 //新建预算版本
@@ -149,7 +158,7 @@ const newBudgetItem = {
 //预算项目详情
 const budgetItemDetail = {
   key: 'budget-item-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:id',
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
 
@@ -236,6 +245,7 @@ const budgetOrganization = {
     newBudgetGroup,
     budgetGroupDetail,
     newBudgetItem,
+    budgetItemDetail,
     newBudgetStrategy,
     budgetStrategyDetail,
     newBudgetStrategyDetail,

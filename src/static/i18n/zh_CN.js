@@ -37,6 +37,7 @@ import menu from 'static/i18n/zh_CN/menu.json'
 import budgetOrganization from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-organization.json'
 import login from 'static/i18n/zh_CN/login.json'
 import budgetStructure from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-structure.json'
+import budgetItem from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-item.json'
 
 const i18nList = [
   common,  //公用
@@ -44,6 +45,8 @@ const i18nList = [
   menu,  //菜单
   budgetOrganization, //预算组织
   budgetStructure,  //预算表
+  budgetItem,  //预算项目
+
 ];
 
 let result = {};

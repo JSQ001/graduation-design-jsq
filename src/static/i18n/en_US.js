@@ -11,6 +11,7 @@ import menu from 'static/i18n/en_US/menu.json'
 import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
 import login from 'static/i18n/en_US/login.json'
 import budgetStructure from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
+import budgetItem from 'static/i18n/en_US/budget-setting/budget-organization/budget-item.json'
 
 const i18nList = [
   common,  //公用
@@ -18,6 +19,8 @@ const i18nList = [
   menu,  //菜单
   budgetOrganization,  //预算组织
   budgetStructure,  //预算表
+  budgetItem,   //预算项目
+
 ];
 
 let result = {};

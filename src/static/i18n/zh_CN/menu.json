@@ -30,5 +30,6 @@
   "menu.budget-group-detail": "预算项目组详情",
   "menu.new-budget-structure": "新建预算表",
   "menu.budget-structure-detail": "预算表详情",
-  "menu.new-budget-item": "新建预算项目"
+  "menu.new-budget-item": "新建预算项目",
+  "menu.budget-item-detail": "预算项目详情"
 }

@@ -30,37 +30,54 @@ class BudgetStructureDetail extends React.Component{
       total:0,
       data:[],
       pagination:{},
-      columns:[
-        {
-          title:this.props.intl.formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'   /*维度代码*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'   /*描述*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'   /*布局位置*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'   /*布局顺序*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'   /*默认维值*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration'   /*操作*/
-        },
-      ],
+      status:"",
+      columns:[],
+      columnGroup:{
+        company:[
+          {                        /*公司代码*/
+            title:this.props.intl.formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode'
+          },
+          {                        /*公司代码*/
+            title:this.props.intl.formatMessage({id:"structure.companyDescription"}), key: "description", dataIndex: 'description'
+          },
+          {                        /*公司类型*/
+            title:this.props.intl.formatMessage({id:"structure.companyType"}), key: "companyType", dataIndex: 'companyType'
+          },
+          {                        /*启用*/
+            title:this.props.intl.formatMessage({id:"structure.enablement"}), key: "enablement", dataIndex: 'enablement',width:'10%'
+          },
+        ],
+        dimension:[
+          {                        /*维度代码*/
+          title:this.props.intl.formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
+           },
+          {                        /*描述*/
+            title:this.props.intl.formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
+          },
+          {                        /*布局位置*/
+            title:this.props.intl.formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
+          },
+          {                        /*布局顺序*/
+            title:this.props.intl.formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
+          },
+          {                        /*默认维值*/
+            title:this.props.intl.formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
+          },
+          {                        /*操作*/
+            title:this.props.intl.formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
+          },]
+      },
       structure:this.props.location.state,
       tabs: [
-        {key: 'distribute-dimension', name: this.props.intl.formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
-        {key: 'distribute-company', name: this.props.intl.formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
+        {key: 'dimension', name: this.props.intl.formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
+        {key: 'company', name: this.props.intl.formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
         ],
       form: {
         name: '',
         enabled: true
       },
     }
-    this.handleSearchDimension = debounce(this.handleSearchDimension,1000)
+    this.queryDimension = debounce(this.queryDimension,1000)
   }
 
   componentWillMount(){
@@ -69,7 +86,7 @@ class BudgetStructureDetail extends React.Component{
     })
   }
 
-
+  //控制是否编辑
   handleEdit = (flag) => {
     this.setState({edit: flag})
   };
@@ -284,19 +301,40 @@ class BudgetStructureDetail extends React.Component{
     this.setState({
       loading: true,
       page: 0,
-      status: key
+      status: key,
+      columns: key === 'company' ? this.state.columnGroup.company : this.state.columnGroup.dimension
     },()=>{
-     // this.getList()
+      key === "company" ? this.queryCompany : this.queryDimension ;
     });
   };
 
-  handleSearchDimension = (e) =>{
-    console.log(e.target.value)
-  //调维度查询接口
+  handleSearchChange = (e) =>{
+    this.state.status === "company" ? this.queryCompany(e.target.value) : this.queryDimension(e.target.value);
   }
+
+  handleCreate = (e) =>{
+    this.state.status ==="company" ? this.distributeCompany : this.distributeDimension
+  }
+
+  分配公司
+  distributeCompany(){
+
+  }
+
+  distributeDimension(){}
+
+  //调用维度查询接口
+  queryDimension(value){
+    console.log(value)
+  }
+
+  queryCompany(value){
+    console.log(value)
+  }
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, edit, form, total, data, columns, pagination} = this.state;
+    const { loading, edit, form, total, data, columns, pagination, status} = this.state;
     return(
       <div className="budget-structure-detail">
         <div className="common-top-area">
@@ -316,10 +354,13 @@ class BudgetStructureDetail extends React.Component{
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添 加*/}
+            <Button type="primary" onClick={this.handleCreate}>{status === 'company'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
+              this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+            {status === "company" ? <Button >{this.props.intl.formatMessage({id:'common.save'})}</Button> : null}
             <Search className="table-header-search"
-                    onChange={this.handleSearchDimension}
-                    placeholder={this.props.intl.formatMessage({id: 'structure.searchDimension'})}/>
+                    onChange={this.handleSearchChange}                                      /* 请输入公司名称/代码*/
+                    placeholder={ status === "company" ? this.props.intl.formatMessage({id:'structure.searchCompany'}) :
+                      this.props.intl.formatMessage({id: 'structure.searchDimension' /*请输入维度名称/代码*/ })}/>
           </div>
         </div>
         <Table

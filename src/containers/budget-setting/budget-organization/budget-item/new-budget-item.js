@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Form, Select,Input, Col, Row, Switch, message } from 'antd';
+import { Button, Form, Select,Input, Col, Row, Switch, message, Icon } from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -22,7 +22,7 @@ class NewBudgetItem extends React.Component{
     this.state = {
       loading: true,
       organization: {},
-      statusCode: this.props.intl.formatMessage({id:"status.enabled"}),  /*启用*/
+      statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}),  /*启用*/
     }
     console.log(this.props)
   }
@@ -47,7 +47,6 @@ class NewBudgetItem extends React.Component{
         values.organizationId = this.state.organization.id;
         console.log(values)
         values.itemTypeId = 1;
-        values.summaryFlag = true
         values.versionNumber = 1.0;
         values.isDeleted = false;
         values.createdBy = 12
@@ -56,8 +55,10 @@ class NewBudgetItem extends React.Component{
         httpFetch.post(`${config.budgetUrl}/api/budget/items`,values).then((response)=>{
           if(response) {
             console.log(response)
-            message.success(this.props.intl.formatMessage({id:"prompting.saveSuccess"})); /*保存成功！*/
+            message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
+            let path = menuRoute.getMenuItemByAttr('budget-organization', 'key').children
+            console.log(path);
             const location = {
               pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemDetail.url.replace(':id', this.props.params.id),
               state:response.data,
@@ -79,6 +80,13 @@ class NewBudgetItem extends React.Component{
       {id:"year",value: this.props.intl.formatMessage({id:"periodStrategy.year"})} /*年度*/
     ];
     const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
+
+    const attribute = [
+      {id:"immobilization",value: this.props.intl.formatMessage({id:"variationAttribute.immobilization"})},  /*固定*/
+      {id:"quarter",value: this.props.intl.formatMessage({id:"variationAttribute.mix"})}, /*混合*/
+      {id:"year",value: this.props.intl.formatMessage({id:"variationAttribute.alteration"})} /*变动*/
+    ];
+    const variationAttribute = attribute.map((item)=><Option key={item.id}>{item.value}</Option>)
     return (
       <div className="new-budget-item">
         <div className="budget-item-form">
@@ -94,7 +102,7 @@ class NewBudgetItem extends React.Component{
                       { required:true }
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})} disabled/>)
+                    <Input disabled/>)
                   }
                 </FormItem>
               </Col>
@@ -104,19 +112,22 @@ class NewBudgetItem extends React.Component{
                   colon={true}>
                   {getFieldDecorator('itemCode', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                       {
                         validator:(item,value,callback)=>{
+                          if(value === "undefined" || value === ""){
+                            callback();
+                            return
+                          }
                           httpFetch.get(`${config.budgetUrl}/api/budget/items/query?itemCode=${value}`).then((response)=>{
                             console.log(response)
-                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"validator.organizationCode.exist"})) : callback()
+                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.itemCodeExist"})) : callback()
                           })
-
                         }
                       }
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -127,10 +138,10 @@ class NewBudgetItem extends React.Component{
                   colon={true}>
                   {getFieldDecorator('itemName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -143,10 +154,10 @@ class NewBudgetItem extends React.Component{
                   colon={true}>
                   {getFieldDecorator('itemTypeName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},/* {/!*请输入*!/}*/
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},/* {/!*请输入*!/}*/
                     ],
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"prompting.select"})}  /* {/!*请选择*!/}*/>
+                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
                       {options}
                     </Select>)
                   }
@@ -158,11 +169,12 @@ class NewBudgetItem extends React.Component{
                   colon={true}>
                   {getFieldDecorator('variationAttribute', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
-                    />)
+                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
+                      {variationAttribute}
+                    </Select>)
                   }
                 </FormItem>
               </Col>
@@ -175,14 +187,14 @@ class NewBudgetItem extends React.Component{
 
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"status.code"},{statusCode:statusCode})} /* {/!*状态*!/}*/
+                  label={this.props.intl.formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: true,
@@ -191,7 +203,7 @@ class NewBudgetItem extends React.Component{
                       {
                         validator: (item,value,callback)=>{
                           this.setState({
-                            statusCode: value ? this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/
+                            statusCode: value ? this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/
                               : this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/
                           })
                           callback();
@@ -199,14 +211,13 @@ class NewBudgetItem extends React.Component{
                       }
                     ],
                   })
-                  (<Switch checkedChildren={this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/ }
-                           unCheckedChildren={this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/}/>)
+                  (<Switch  checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
                   }
                 </FormItem>
               </Col>
             </Row>
-            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"button.save"}) /*保存*/}</Button>
-            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"button.cancle"}) /*取消*/}</Button>
+            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
+            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
           </Form>
         </div>
       </div>
