@@ -33,7 +33,8 @@ class SearchArea extends React.Component{
       searchForm: [],
       showListSelector: false,
       listType: '',
-      listSelectedData: []
+      listSelectedData: [],
+      listExtraParams: {}
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -62,7 +63,6 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
-    console.log(values);
     for(let id in values){
       this.props.searchForm.map(item => {
         if(item.id === id){
@@ -130,12 +130,12 @@ class SearchArea extends React.Component{
     switch(item.type){
       //输入组件
       case 'input':{
-        return <Input placeholder="请输入" onChange={handle}/>
+        return <Input placeholder="请输入" onChange={handle} disabled={item.disabled}/>
       }
       //选择组件
       case 'select':{
         return (
-          <Select placeholder="请选择" onChange={handle}>
+          <Select placeholder="请选择" onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}
@@ -144,12 +144,12 @@ class SearchArea extends React.Component{
       }
       //日期组件
       case 'date':{
-        return <DatePicker format="YYYY-MM-DD" onChange={handle}/>
+        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}/>
       }
       //单选组件
       case 'radio':{
         return  (
-          <RadioGroup onChange={handle}>
+          <RadioGroup onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
               return <Radio value={option.value} key={option.value}>{option.label}</Radio>
             })}
@@ -159,7 +159,7 @@ class SearchArea extends React.Component{
       //单选组件（大）
       case 'big_radio':{
         return (
-          <RadioGroup size="large" onChange={handle}>
+          <RadioGroup size="large" onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
               return <RadioButton value={option.value} key={option.value}>{option.label}</RadioButton>
             })}
@@ -168,7 +168,7 @@ class SearchArea extends React.Component{
       }
       //选择框
       case 'checkbox':{
-        return <CheckboxGroup options={item.options} onChange={handle}/>
+        return <CheckboxGroup options={item.options} onChange={handle} disabled={item.disabled}/>
       }
       //带搜索的选择组件
       case 'combobox':{
@@ -181,6 +181,7 @@ class SearchArea extends React.Component{
           optionFilterProp='children'
           onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
           onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
+          disabled={item.disabled}
         >
           {item.options.map((option)=>{
             return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
@@ -197,6 +198,7 @@ class SearchArea extends React.Component{
           optionFilterProp='children'
           onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
           onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
+          disabled={item.disabled}
         >
           {item.options.map((option)=>{
             return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
@@ -210,6 +212,7 @@ class SearchArea extends React.Component{
           placeholder={item.placeholder}
           onFocus={() => this.handleFocus(item)}
           dropdownStyle={{ display: 'none' }}
+          disabled={item.disabled}
         >
         </Select>
       }
@@ -223,9 +226,15 @@ class SearchArea extends React.Component{
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
-        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }} ref="outer">
+        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           <FormItem {...formItemLayout} label={item.label} colon={false}>
-            {getFieldDecorator(item.id, {initialValue: item.defaultValue})(
+            {getFieldDecorator(item.id, {
+              initialValue: item.defaultValue,
+              rules: [{
+                required: item.isRequired,
+                message: 'Please input your name',
+              }]
+            })(
               this.renderFormItem(item)
             )}
           </FormItem>
@@ -258,6 +267,7 @@ class SearchArea extends React.Component{
       });
     }
     this.setState({
+      listExtraParams: item.listExtraParams,
       listType : item.listType,
       showListSelector: true,
       listSelectedData
@@ -293,7 +303,7 @@ class SearchArea extends React.Component{
   };
 
   render(){
-    const { showListSelector, listType, listSelectedData } = this.state;
+    const { showListSelector, listType, listSelectedData, listExtraParams } = this.state;
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
@@ -315,7 +325,8 @@ class SearchArea extends React.Component{
                       type={listType}
                       onCancel={this.handleListCancel}
                       onOk={this.handleListOk}
-                      selectedData={listSelectedData}/>
+                      selectedData={listSelectedData}
+                      extraParams={listExtraParams}/>
         <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
       </Form>
     )
@@ -326,10 +337,13 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',        //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list中的一种
-          id: '',          //必填，表单id，搜索后返回的数据key
-          label: '',       //必填，界面显示名称label
-          listType: '',    //可选，当type为list时必填，
+          type: '',                    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list中的一种
+          id: '',                     //必填，表单id，搜索后返回的数据key
+          label: '',                 //必填，界面显示名称label
+          listType: '',             //可选，当type为list时必填，listSelector的type类型
+          listExtraParams: '',     //可选，当type为list时有效，listSelector的extraParams
+          disabled: false         //可选，是否可用
+          isRequired: false,     //可选，是否必填
           options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
@@ -339,6 +353,7 @@ class SearchArea extends React.Component{
           searchKey: '',  //可选，搜索参数名
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
+
         }
  */
 SearchArea.propTypes = {
