@@ -186,6 +186,7 @@ class BudgetItemType extends React.Component {
             loading={loading}
             bordered
             onRowClick={this.putItemTypeShowSlide}
+            size="middle"
           />
         </div>
 

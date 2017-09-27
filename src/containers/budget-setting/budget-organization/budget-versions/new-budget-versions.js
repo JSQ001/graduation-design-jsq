@@ -33,54 +33,12 @@ class NewBudgetVersions extends React.Component {
 
   }
 
-  //弹出警告
-  openNotification (value) {
-    const key = `open${Date.now()}`;
-    const btnClick = function () {
-      notification.close(key);
-    };
-    const btn = (
-      <Button type="primary" size="large" onClick={btnClick}>
-        知道了
-      </Button>
-    );
-    notification.open({
-      message: '一个预算组织下只能有一个‘当前’版本',
-      description: `预算组织 ${this.props.organization.organizationName}  下已经有预算版本代码为 ${value} 的当前版本`,
-      duration:null,
-      btn,
-      key,
-      icon:<Icon type="close-circle" style={{ color:'#F04134' }} />,
-      style: {
-        Button:{
-          marginRight:150.
-
-        }
-      },
-
-    });
-  };
-
-
-//查询预算组织代码下是否已经  当前 版本'
-  checkoutStatus=(value)=>{
-    return httpFetch.get(`${config.budgetUrl}/api/budget/versions/query?organizationId=${this.props.params.id}&status="CURRENT"`, ).then((response)=>{
-      if(response.data.length>=1){
-        this.openNotification ((response.data)[0].versionCode)
-      }
-      this.state.statusError =true;
-    });
-  }
-
 
   //检查处理提交数据
   handleSave = (e) =>{
     this.setState({loading: true});
     e.preventDefault();
     let value =this.props.form.getFieldsValue();
-    if (value.status=='CURRENT'){
-      this.checkoutStatus(value);
-    }
     if(!this.state.statusError){
       const dataValue=value['versionDate']
       const toleValues={
@@ -114,33 +72,13 @@ class NewBudgetVersions extends React.Component {
 
 
 
-//跳转到详情
-
-  toBudgetVersionsDetail=()=>{
-
-  }
-
-
-
-
-
   CancelHandle = () =>{
     this.props.form.resetFields;
   };
 
 
 
-  checkVersionCode=(rule, value, callback)=>{
-    const checkoutCodeData = this.state.checkoutCodeData;
-    let a;
-    for(a in checkoutCodeData) {
-      if(value == checkoutCodeData[a].versionCode){
-        callback("该预算版本代码已经存在");
-      }
-    }
 
-    callback();
-  }
 
   render(){
 
@@ -188,7 +126,6 @@ class NewBudgetVersions extends React.Component {
                   {getFieldDecorator('versionCode',
                     {
                       rules: [{ required: true, message: '必填!' },
-                        {validator: this.checkVersionCode}
                       ],
                     })(
                     <Input />
@@ -267,7 +204,7 @@ class NewBudgetVersions extends React.Component {
                     initialValue:true
                   }
                 )(
-                  <Switch checkedChildren="开" unCheckedChildren="关"/>
+                  <Switch  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}/>
                 )}
               </FormItem>
             </Col>

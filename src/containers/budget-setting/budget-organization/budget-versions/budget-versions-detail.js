@@ -5,6 +5,7 @@ import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Form, Table, Button, notification, Icon,Checkbox, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload,Select,DatePicker,message} from 'antd';
+const Option = Select.Option;
 import moment from 'moment'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
@@ -25,15 +26,11 @@ class BudgetVersionsDetail extends React.Component {
           render:(text,recode)=>{return <Checkbox defaultChecked={recode?true:false} onChange={this.isEnabledEditHandle(text,recode)}  />}
 
         }],
-
       pagination: {
         total: 0
       },
       showImportFrame: false,
-      form: {
-        name: '',
-        enabled: '',
-      },
+      optionData:[{value:"NEW",label:"新建"},{value:"CURRENT",label:"当前"},{value:"HISTORY",label:"历史"}],
       edit: false,
       formData:{},
       loading:true,
@@ -47,21 +44,37 @@ class BudgetVersionsDetail extends React.Component {
   }
 
 //编辑启用
-  isEnabledEditHandle=(text,recode)=>{
-    if(text.id){}
+  isEnabledEditHandle(text,recode){
 
   }
+
 
   componentWillMount(){
     this.getDetail();
     this.getAssignCompanyList();
-    console.log(this.state.formData)
   }
 
 
   AssignCompanyHandle=()=>{
 
   }
+
+  //获取Option列表
+/*
+  getOption(values){
+
+    for (let item in values){
+     console.log(value+" " +label)
+    }
+  }
+*/
+
+
+/*<Select placeholder="请选择" onChange={handle}>
+{item.options.map((option)=>{
+  return <Option key={option.value}>{option.label}</Option>
+})}
+</Select>*/
 
 
   //获得详情数据
@@ -135,7 +148,8 @@ class BudgetVersionsDetail extends React.Component {
 
 
   renderPutForm=()=>{
-    const fromData =this.state.formData
+    const fromData=this.state.formData;
+    const optionData =this.state.optionData;
     return (
       <Form >
         <Row gutter={40}>
@@ -180,7 +194,6 @@ class BudgetVersionsDetail extends React.Component {
                 placeholder=""
                 defaultValue={fromData.status}
                 onSelect={this.statusChangHandle}
-                /*onChange={this.handleSelectChange}*/
               >
                 <Select.Option value="NEW">新建</Select.Option>
                 <Select.Option value="CURRENT">当前</Select.Option>
@@ -221,7 +234,7 @@ class BudgetVersionsDetail extends React.Component {
               wrapperCol={{span:24}}
               label="是否启用"
             >
-              <Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
+              <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
 
             </FormItem>
           </Col>
@@ -350,7 +363,7 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   render(){
-    const {  edit, data, columns, pagination, showImportFrame, form } = this.state;
+    const {  edit, data, columns, pagination} = this.state;
     return (
       <div>
         <div className="budget-versions-detail">

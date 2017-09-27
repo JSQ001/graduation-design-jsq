@@ -19,11 +19,11 @@ class BudgetVersions extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {title:'预算组织',dataIndex:'organizationId',key:'organizationId',render:(recode)=>{return <div> {this.props.organization.organizationName}</div> } },
+        {title:'预算组织',dataIndex:'organizationId',key:'organizationId',render:(recode)=>{return <span> {this.props.organization.organizationName}</span> } },
         {title: '预算版本代码', dataIndex: 'versionCode', key: 'versionCode',},
         {title: '预算版本名称', dataIndex: 'versionName', key: 'versionName',},
         {title: '版本日期', dataIndex: 'versionDate', key: 'versionDate',},
-        {title: '预算版本描述', dataIndex: 'description', key: 'description',render:(recode)=>{return <div>{recode?recode:'-'}</div>}},
+        {title: '预算版本描述', dataIndex: 'description', key: 'description',render:(recode)=>{return <span>{recode?recode:'-'}</span>}},
         {title: '版本状态', dataIndex: 'status', key: 'status', render: (recode) => { return <div>{ recode=="NEW"?"新建":(recode="CURRENT"?"当前":"历史")}</div>}},
         {title: '状态',dataIndex: 'isEnabled', key: 'isEnabled',
           render: (recode,text) => {
