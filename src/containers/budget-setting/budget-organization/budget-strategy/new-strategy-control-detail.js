@@ -19,7 +19,15 @@ class NewStrategyControlDetail extends React.Component{
       operatorValue: '',
       valueValue: '',
       periodStrategyValue: '',
+      updateParams: {},
     };
+  }
+
+  componentWillReceiveProps(nextProps){
+    console.log(nextProps.updateParams);
+    this.setState({
+      updateParams: nextProps.updateParams
+    })
   }
 
   handleSave = (e) =>{
@@ -44,6 +52,30 @@ class NewStrategyControlDetail extends React.Component{
     });
   };
 
+  handleUpdate = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        values.id = this.state.updateParams.id;
+        values.controlStrategyDetailId = this.props.params.strategyControlId;
+        console.log(values);
+        /*httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
+          if(res.status == 200){
+            this.props.close(true);
+            message.success('保存成功');
+          }
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({ updateState: false })
+          } else {
+            console.log(e)
+          }
+        })*/
+      }
+    });
+  };
+
   handlePeriodStrategy = (value) => {
     const opera = {
       '年度': '全年预算额',
@@ -59,7 +91,7 @@ class NewStrategyControlDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue } = this.state;
+    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -131,7 +163,7 @@ class NewStrategyControlDetail extends React.Component{
     }
     return (
       <div className="new-strategy-control-detail">
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={updateParams.id ? this.handleUpdate : this.handleSave}>
           <FormItem {...formItemLayout} label="类型" style={{margin:'24px 0'}}>
             {getFieldDecorator('organizationName', { initialValue: '公式' })(
               <RadioGroup>
@@ -143,8 +175,10 @@ class NewStrategyControlDetail extends React.Component{
             {getFieldDecorator('object', {
               rules: [{
                 required: true,
-                message: '请输入'
-              }]})(
+                message: '请选择'
+              }],
+              initialValue: updateParams.object
+            })(
               <Select placeholder="请选择" onChange={(value)=>{this.setState({ objectValue: value })}}>
                 <Option value="金额">金额</Option>
                 <Option value="金额进度">金额进度</Option>
@@ -158,7 +192,9 @@ class NewStrategyControlDetail extends React.Component{
               rules: [{
                 required: true,
                 message: '请输入'
-              }]})(
+              }],
+              initialValue: updateParams.range
+            })(
               <Select placeholder="请选择" onChange={(value)=>{this.setState({ rangeValue: value })}}>
                 <Option value="小于">小于</Option>
                 <Option value="小于等于">小于等于</Option>
@@ -176,7 +212,9 @@ class NewStrategyControlDetail extends React.Component{
                   rules: [{
                     required: true,
                     message: '请输入'
-                  }]})(
+                  }],
+                  initialValue: updateParams.manner
+                })(
                   <Select placeholder="请选择" onChange={(value)=>{this.setState({ mannerValue: value })}}>
                     <Option value="绝对额">绝对额</Option>
                     <Option value="百分比">百分比</Option>
@@ -194,7 +232,9 @@ class NewStrategyControlDetail extends React.Component{
                   rules: [{
                     required: true,
                     message: '请选择'
-                  }]})(
+                  }],
+                  initialValue: updateParams.periodStrategy
+                })(
                   <Select placeholder="请选择" onChange={this.handlePeriodStrategy}>
                     <Option value="月度">月度</Option>
                     <Option value="季度">季度</Option>

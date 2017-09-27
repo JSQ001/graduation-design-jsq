@@ -54,6 +54,7 @@ class StrategyControlDetail extends React.Component {
       strategyControlId: this.props.params.strategyControlId,
       newParams: {
         strategyControlId: this.props.params.strategyControlId,
+        updateParams: {}
       }
     },() => {
       this.getBasicInfo();
@@ -90,7 +91,11 @@ class StrategyControlDetail extends React.Component {
 
   showSlide = (flag) => {
     this.setState({
-      showSlideFrame: flag
+      showSlideFrame: flag,
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+        updateParams: {}
+      }
     })
   };
 
@@ -121,7 +126,7 @@ class StrategyControlDetail extends React.Component {
       }
     })
   };
-  handleSearch= (e) => {
+  handleSearch = (e) => {
     console.log(e.target.value);
     /*this.setState({
       page: 0,
@@ -129,6 +134,15 @@ class StrategyControlDetail extends React.Component {
     }, () => {
       this.getList();
     })*/
+  };
+  handleRowClick = (record) => {
+    this.setState({
+      showSlideFrame: true,
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+        updateParams: record
+      }
+    })
   };
 
   render() {
@@ -154,6 +168,7 @@ class StrategyControlDetail extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
         <SlideFrame title="新建触发条件"
