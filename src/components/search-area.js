@@ -2,7 +2,7 @@
  * Created by zaranengap on 2017/7/5.
  */
 import React from 'react'
-import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select  } from 'antd';
+import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch  } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -213,6 +213,10 @@ class SearchArea extends React.Component{
         >
         </Select>
       }
+      //switch状态切换组件
+      case 'switch':{
+        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle}/>
+      }
     }
   }
 
@@ -326,7 +330,7 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',        //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list中的一种
+          type: '',        //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple、 list、switch中的一种
           id: '',          //必填，表单id，搜索后返回的数据key
           label: '',       //必填，界面显示名称label
           listType: '',    //可选，当type为list时必填，

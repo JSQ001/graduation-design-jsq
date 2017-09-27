@@ -20,7 +20,7 @@ class BudgetStrategyDetail extends React.Component {
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
         {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
-        //{type: 'state', id: 'isEnabled', label: '状态：'}
+        {type: 'switch', id: 'isEnabled', label: '状态：'}
       ],
       infoData: {},
       updateState: false,
@@ -107,7 +107,7 @@ class BudgetStrategyDetail extends React.Component {
     }, () => {
       this.getList();
     })
-  }
+  };
   handleUpdate = (params) => {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
