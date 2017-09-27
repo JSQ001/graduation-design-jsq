@@ -1,0 +1,8 @@
+{
+  "budget.controlRulesFrom": "控制规则从",
+  "budget.controlRulesTo": "控制规则到",
+  "budget.controlRules.priority": "优先级",
+  "budget.controlRuleCode": "控制规则代码",
+  "budget.controlRuleName": "控制规则名称",
+  "budget.controlRule.effectiveDate": "有效日期"
+}

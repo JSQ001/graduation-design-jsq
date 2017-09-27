@@ -31,8 +31,7 @@ import NewBudgetStrategy from 'containers/budget-setting/budget-organization/bud
 import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy-detail'
 import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
 import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
-
-import BudgetRule from 'containers/budget-setting/budget-organization/budget-control-rule/budget-control-rule'
+import NewBudgetControlRule from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules'
 
 import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
@@ -164,13 +163,14 @@ const budgetItemDetail = {
 
 }
 
-/*
 //新建预算控制规则定义
 const newBudgetControlRules = {
   key: 'new-budget-control-rules',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-item',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-control-rules',
+  components: NewBudgetControlRule,
+  parent: 'budget-organization-detail'
 }
-*/
+
 
 
 //预算组织详情
@@ -259,7 +259,8 @@ const budgetOrganization = {
     newBudgetStrategyDetail,
     strategyControlDetail,
     newBudgetJournalType,
-    budgetJournalTypeDetail
+    budgetJournalTypeDetail,
+    newBudgetControlRules
   }
 };
 

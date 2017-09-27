@@ -12,6 +12,8 @@ import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organiza
 import login from 'static/i18n/en_US/login.json'
 import budgetStructure from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
 import budgetItem from 'static/i18n/en_US/budget-setting/budget-organization/budget-item.json'
+import budgetControlRules from 'static/i18n/en_US/budget-setting/budget-organization/budget-control-rules.json'
+
 
 const i18nList = [
   common,  //公用
@@ -20,6 +22,7 @@ const i18nList = [
   budgetOrganization,  //预算组织
   budgetStructure,  //预算表
   budgetItem,   //预算项目
+  budgetControlRules, //预算控制规则
 
 ];
 

@@ -126,7 +126,7 @@ class BudgetItem extends React.Component {
     }, ()=>{
       this.getList();
     })
-  }
+  };
 
   //列表选择更改
   onSelectChange = (selectedRowKeys) => {
@@ -183,6 +183,7 @@ class BudgetItem extends React.Component {
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
+  //新建
   handleCreate = () =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetItem.url.replace(':id', this.props.id));
   };
