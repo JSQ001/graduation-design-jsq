@@ -2,7 +2,7 @@
  * Created by zaranengap on 2017/7/5.
  */
 import React from 'react'
-import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select  } from 'antd';
+import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch  } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -215,6 +215,10 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
         </Select>
+      }
+      //switch状态切换组件
+      case 'switch':{
+        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle}/>
       }
     }
   }

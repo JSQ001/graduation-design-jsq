@@ -30,13 +30,13 @@ class StrategyControlDetail extends React.Component {
       infoData: {},
       updateState: false,
       columns: [
-        {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
+        {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode', render:()=>{return '公式'}},
         {title: '控制对象', dataIndex: 'object', key: 'object'},
         {title: '比较', dataIndex: 'range', key: 'range'},
-        {title: '方式', dataIndex: 'manner', key: 'manner'},
         {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy'},
-        {title: '自定义函数', dataIndex: 'function', key: 'function'},
-        {title: '操作', dataIndex: 'operator', key: 'operator'},
+        {title: '方式', dataIndex: 'manner', key: 'manner'},
+        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value)=>{return value ? value : '-'}},
+        {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner=='百分比' ? value+'%' : value}},
       ],
       data: [],
       showSlideFrame: false,
@@ -54,6 +54,7 @@ class StrategyControlDetail extends React.Component {
       strategyControlId: this.props.params.strategyControlId,
       newParams: {
         strategyControlId: this.props.params.strategyControlId,
+        updateParams: {}
       }
     },() => {
       this.getBasicInfo();
@@ -90,7 +91,11 @@ class StrategyControlDetail extends React.Component {
 
   showSlide = (flag) => {
     this.setState({
-      showSlideFrame: flag
+      showSlideFrame: flag,
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+        updateParams: {}
+      }
     })
   };
 
@@ -121,6 +126,24 @@ class StrategyControlDetail extends React.Component {
       }
     })
   };
+  handleSearch = (e) => {
+    console.log(e.target.value);
+    /*this.setState({
+      page: 0,
+      keyWords: e.target.value
+    }, () => {
+      this.getList();
+    })*/
+  };
+  handleRowClick = (record) => {
+    this.setState({
+      showSlideFrame: true,
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+        updateParams: record
+      }
+    })
+  };
 
   render() {
     const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, newParams } = this.state;
@@ -137,7 +160,7 @@ class StrategyControlDetail extends React.Component {
             <Search
               placeholder="请输入控制对象/控制期段"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onSearch={value => console.log(value)}
+              onChange={this.handleSearch}
             />
           </div>
         </div>
@@ -145,9 +168,10 @@ class StrategyControlDetail extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
-        <SlideFrame title="新建预算场景"
+        <SlideFrame title="新建触发条件"
                     show={showSlideFrame}
                     content={NewStrategyControlDetail}
                     afterClose={this.handleCloseSlide}

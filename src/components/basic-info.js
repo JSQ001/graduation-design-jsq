@@ -33,7 +33,7 @@ class BasicInfo extends React.Component{
   };
 
   componentWillReceiveProps(nextProps){
-    this.setState({ params: nextProps.infoData })
+    this.setState({ params: nextProps.infoData });
     if(nextProps.updateState) {
       this.handelCancel();
     }
@@ -51,7 +51,7 @@ class BasicInfo extends React.Component{
   }
 
   renderGetInfo(item) {
-    if (item.type == 'state') {
+    if (item.type == 'switch') {
       return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
     } else {
       return <div>{this.state.params[item.id]}</div>;
@@ -66,6 +66,7 @@ class BasicInfo extends React.Component{
           {this.renderGetInfo(item)}
         </Col>
       );
+      item.defaultValue = this.state.params[item.id]
     });
     return children;
   }
@@ -98,7 +99,8 @@ class BasicInfo extends React.Component{
         <div style={formShowStyle}>
           <SearchArea searchForm={infoList}
                       submitHandle={this.handleUpdate}
-                      clearHandle={this.handelCancel}/>
+                      clearHandle={this.handelCancel}
+                      okText="保存" clearText="取消"/>
         </div>
       </div>
     )
