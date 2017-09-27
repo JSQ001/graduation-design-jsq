@@ -93,7 +93,8 @@ class BudgetVersions extends React.Component {
         pagination: {
           total: Number(response.headers['x-total-count']),
           onChange: this.onChangePager,
-          pageSize: this.state.pageSize
+          pageSize: this.state.pageSize,
+          current: this.state.page + 1
         }
       })
     }).catch(e=>{
@@ -122,7 +123,8 @@ class BudgetVersions extends React.Component {
     this.setState({
       searchParams:searchParams,
       loading: true,
-      page: 0
+      page: 0,
+      current:1
     }, ()=>{
       this.getList();
     })
