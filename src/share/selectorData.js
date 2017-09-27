@@ -30,6 +30,21 @@ const selectorData = {
       {title: '预算表描述', dataIndex: 'structureName', width: '55%'}
     ],
     key: 'structureCode'
+  },
+  'budget_item_filter':{
+    title: '选择当前项目组中未被添加的项目',
+    searchForm: [
+      {type: 'input', id: 'itemCode', label: '预算项目代码'},
+      {type: 'input', id: 'itemName', label: '预算项目描述'},
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: []},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: []}
+    ],
+    columns: [
+      {title: '预算项目代码', dataIndex: 'itemCode', width: '25%'},
+      {title: '预算项目描述', dataIndex: 'itemName', width: '40%'},
+      {title: '预算项目类型', dataIndex: 'itemTypeName', width: '35%'}
+    ],
+    key: 'id'
   }
 };
 

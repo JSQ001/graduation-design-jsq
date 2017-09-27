@@ -19,6 +19,7 @@ class UpdateBudgetScenarios extends React.Component{
   }
 
   componentWillMount(){
+    console.log(this.props.params);
     this.setState({
       params: this.props.params,
       isEnabled: this.props.params.isEnabled
