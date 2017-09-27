@@ -1,34 +1,42 @@
 import React from 'react'
-import { Form, Card, Row, Col, Badge, Button, Input, Switch, Icon, Select } from 'antd'
-const FormItem = Form.Item;
+import { Form, Card, Row, Col, Badge } from 'antd'
 
-import '../styles/components/basic-info.scss'
+import SearchArea from 'components/search-area'
+import 'styles/components/basic-info.scss'
+
+/**
+ * 基本信息组件
+ * @params infoList   渲染表单所需要的配置项，见底端注释
+ * @params infoData  基本信息数据
+ * @params updateHandle  点击保存时的回调
+ * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
+ */
 
 class BasicInfo extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      params: this.props.infoData,
-      isEnabled: true,
+      infoList: [],
+      params: {},
       cardShowStyle: {
         display: 'block'
       },
       formShowStyle: {
         display: 'none'
-      }
+      },
     };
   }
 
-  componentWillMount() {
-    console.log(this.props.infoList);
-    console.log(this.props.infoData);
-    this.props.infoList.map((item, i) => {
-      if(item.type=='state') {
-        this.setState({
-          isEnabled: this.state.params[item.id]
-        })
-      }
-    })
+  componentWillMount(){
+    this.setState({ infoList: this.props.infoList })
+
+  };
+
+  componentWillReceiveProps(nextProps){
+    this.setState({ params: nextProps.infoData })
+    if(nextProps.updateState) {
+      this.handelCancel();
+    }
   }
 
   editInfo = () => {
@@ -54,7 +62,7 @@ class BasicInfo extends React.Component{
     this.props.infoList.map((item, i)=>{
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
-          <div style={{color: '#989898'}}>{item.title}</div>
+          <div style={{color: '#989898'}}>{item.label}</div>
           {this.renderGetInfo(item)}
         </Col>
       );
@@ -62,56 +70,8 @@ class BasicInfo extends React.Component{
     return children;
   }
 
-  renderUpdateInfos = (item) => {
-    switch(item.type) {
-      case 'input': {
-        return <Input placeholder="请输入" disabled={item.isDisabled || false} className="input-disabled-color"/>;
-      }
-      case 'select': {
-        return (
-          <Select>
-            {item.options.map((option)=>{
-              return <Select.Option value={option.value} key={option.value}>{option.label}</Select.Option>
-            })}
-          </Select>
-        )
-      }
-      case 'state': {
-        return (
-          <div>
-            <Switch defaultChecked={this.state.params[item.id]} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-            <span className="enabled-type">{ this.state.isEnabled ? '启用' : '禁用' }</span>
-          </div>
-        );
-      }
-    }
-  }
-  updateInfos() {
-    const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {};
-    const children = [];
-    this.props.infoList.map((item, i)=>{
-      children.push(
-        <Col span={8} style={{marginBottom: '15px',padding: '0 20px'}} key={item.id}>
-          <FormItem {...formItemLayout} label={item.title} colon={false}>
-            {getFieldDecorator(item.id, {
-              rules: [{
-                required: item.message ? true : false,
-                message: item.message
-              }],
-              initialValue: this.state.params[item.id]
-            })(
-              this.renderUpdateInfos(item)
-            )}
-          </FormItem>
-        </Col>
-      );
-    });
-    return children;
-  }
-
-  handleUpdate() {
-    console.log("更新数据")
+  handleUpdate = (params) => {
+    this.props.updateHandle(params);
   }
 
   handelCancel = () => {
@@ -125,14 +85,8 @@ class BasicInfo extends React.Component{
     })
   }
 
-  switchChange = () => {
-    this.setState((prevState) => ({
-      isEnabled: !prevState.isEnabled
-    }))
-  }
-
   render() {
-    const { cardShowStyle, formShowStyle } = this.state;
+    const { cardShowStyle, formShowStyle, infoList } = this.state;
     return (
       <div className="basic-info">
         <Card title="基本信息"
@@ -141,34 +95,43 @@ class BasicInfo extends React.Component{
               noHovering >
           <Row>{this.getInfos()}</Row>
         </Card>
-        <Form className="ant-advanced-search-form common-top-area"
-              style={formShowStyle}
-              onSubmit={this.handleUpdate}>
-          <Row>{this.updateInfos()}</Row>
-          <Button type="primary" htmlType="submit" style={{margin: '0 15px 0 20px'}}>保存</Button>
-          <Button onClick={this.handelCancel}>取消</Button>
-        </Form>
+        <div style={formShowStyle}>
+          <SearchArea searchForm={infoList}
+                      submitHandle={this.handleUpdate}
+                      clearHandle={this.handelCancel}/>
+        </div>
       </div>
     )
   }
 }
 
 BasicInfo.propTypes = {
-  infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表，数组
-  infoData: React.PropTypes.object.isRequired,  //传入的基础信息值，对象
+  infoList: React.PropTypes.array.isRequired,  //传入的基础信息列表
+  infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
+  updateHandle: React.PropTypes.func.isRequired,  //更新表单事件
+  updateState: React.PropTypes.bool.isRequired,  //更新状态（true／false）
 };
+
 
 /**
  *
- * infoList参数每一项的格式如下：
+ * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-      type: '',    //必填，类型为input、select、state中的一种
-      title: '',   //必填，对应标题名称
-      id: '',      //必填，对应字段名称
-      options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
-      message:     //可选，如果为必填项则需要填写提示信息
-      isDisabled:  //可选，布尔值，不可编辑时需要填写  isDisabled: true
-    }
+          type: '',    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple中的一种
+          id: '',      //必填，表单id，搜索后返回的数据key
+          label: '',   //必填，界面显示名称label
+          isRequired: true    //可选，必须输入时填写
+          disabled: true      //可选，不可编辑时填写
+          options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
+          defaultValue: ''    //可选，默认值
+          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
+          getUrl: '',       //可选，初始显示的值需要的接口
+          method: '',      //可选，接口所需要的接口类型get/post
+          searchKey: '',  //搜索参数名
+          labelKey: '',  //可选，接口返回的数据内所需要页面options显示名称label的参数名
+          valueKey: ''  //可选，接口返回的数据内所需要options值value的参数名
+        }
  */
 
 const WrappedBasicInfo= Form.create()(BasicInfo);

@@ -7,7 +7,7 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 import configureStore from 'stores'
 
-import { setOrganization } from 'actions/budget'
+import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 
 /**
  * 参数检查组件，检查Url内是否含有需要保存在redux内的值，如果存在则根据url内参数进行对应的操作
@@ -44,14 +44,20 @@ function checkUrlParams(Component) {
       //检查预算组织详情id
       let section = path.split('/');
       section.splice(0, 1);
+      let hasChecked = false;
       if(path.indexOf('budget-organization-detail/') > -1 && !this.props.organization.id){
+        hasChecked = true
         httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${section[4]}`).then(res => {
           configureStore.store.dispatch(setOrganization(res.data));
           this.setState({check: true});
         })
-      } else {
+      }
+      if(path.indexOf('budget-strategy-detail/') > -1 && !this.props.strategyId){
+        hasChecked = true;
+        configureStore.store.dispatch(setOrganizationStrategyId(section[7]));
         this.setState({check: true});
       }
+      !hasChecked && this.setState({check: true});
     }
 
     render() {
@@ -70,7 +76,8 @@ function checkUrlParams(Component) {
 
   function mapStateToProps(state) {
     return {
-      organization: state.budget.organization
+      organization: state.budget.organization,
+      strategyId: state.budget.strategyId
     };
   }
 

@@ -108,9 +108,8 @@ class BudgetControlRules extends React.Component {
   };
 
   //新建
-  handleCreate = (e) =>{
-    e.preventDefault();
-    console.log(menuRoute.getMenuItemByAttr('budget-organization', 'key').newBudgetControlRules)
+  handleCreate = () =>{
+    console.log(menuRoute.getMenuItemByAttr('budget-organization', 'key'))
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetControlRules.url.replace(':id', this.props.id));
   };
 

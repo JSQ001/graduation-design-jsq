@@ -31,7 +31,7 @@ import NewBudgetStrategy from 'containers/budget-setting/budget-organization/bud
 import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy-detail'
 import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
 import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
-import NewBudgetControlRule from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules'
+import NewBudgetControlRules from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules'
 
 import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
@@ -167,7 +167,7 @@ const budgetItemDetail = {
 const newBudgetControlRules = {
   key: 'new-budget-control-rules',
   url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-control-rules',
-  components: NewBudgetControlRule,
+  components: NewBudgetControlRules,
   parent: 'budget-organization-detail'
 }
 
@@ -260,7 +260,7 @@ const budgetOrganization = {
     strategyControlDetail,
     newBudgetJournalType,
     budgetJournalTypeDetail,
-    newBudgetControlRules
+    newBudgetControlRules,
   }
 };
 
