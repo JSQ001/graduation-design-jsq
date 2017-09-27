@@ -83,8 +83,8 @@ class ListSelector extends React.Component {
   //得到数据
   getList(){
     let selectorItem = this.state.selectorItem;
-    let searchParams = this.state.searchParams;
-    let url = `${selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let searchParams = Object.assign(this.state.searchParams,this.props.extraParams);
+    let url = `${this.props.url ? this.props.url : selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
@@ -232,11 +232,14 @@ ListSelector.propTypes = {
   onCancel: React.PropTypes.func,  //点击取消后的回调
   afterClose: React.PropTypes.func,  //关闭后的回调
   type: React.PropTypes.string,  //选择类型
-  selectedData: React.PropTypes.array  //默认选择的值id数组
+  selectedData: React.PropTypes.array,  //默认选择的值id数组
+  extraParams: React.PropTypes.object,  //搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
+  url: React.PropTypes.string  //组件查询的url，如果存在普通配置没法实现的url可单独传入，例如参数在url中间动态变换时
 };
 
 ListSelector.defaultProps = {
-  afterClose: () => {}
+  afterClose: () => {},
+  extraParams: {}
 };
 
 function mapStateToProps() {
