@@ -1,15 +1,14 @@
 /**
  * Created by 13576 on 2017/9/21.
  */
-import React from 'react'
-import { connect } from 'react-redux'
+import React from 'react';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd'
+import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd';
 const FormItem = Form.Item;
 
-import config from 'config'
-import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import config from 'config';
+import httpFetch from 'share/httpFetch';
 
 import 'styles/budget/buget-item-type/budget-item-type.scss'
 
@@ -21,14 +20,13 @@ class NewBudgetItemType extends React.Component {
       params: {},
       isEnabled: true,
       isPut:false,
+      loading:false,
+
     };
   }
 
   componentWillMount(){
-
-    this.setState({
-
-    })
+    console.log(this.props.organization)
   }
 
 
@@ -37,19 +35,23 @@ class NewBudgetItemType extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading:true});
         let toValue={
           'isEnabled':values.isEnabled,
           'itemTypeName':values.itemTypeName,
-          'itemTypeCode':values.itemTypeCode
+          'itemTypeCode':values.itemTypeCode,
+          'organizationId':this.props.organization.id
         }
-        console.log(values);
+        console.log(toValue);
         httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
-          if(res.status == 200){
+          this.setState({loading: false});
             this.props.close(true);
             message.success('操作成功');
-          }
+          console.log( this.props.id);
         }).catch((e)=>{
-          message.error(e.response.data.message);
+          this.setState({loading: false});
+
+          message.error(e.response.data.validationErrors[0].message);
         })
       }
     });
@@ -100,7 +102,7 @@ class NewBudgetItemType extends React.Component {
               <Input  disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型代码:" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型代码:" >
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -109,7 +111,7 @@ class NewBudgetItemType extends React.Component {
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型名字:" hasFeedback>
+          <FormItem {...formItemLayout} label="预算项目类型名字:" >
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
@@ -121,7 +123,7 @@ class NewBudgetItemType extends React.Component {
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
+            <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
