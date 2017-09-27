@@ -100,7 +100,7 @@ class BudgetVersionsDetail extends React.Component {
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
-        message.success(`编辑失败,${e.response.data.validationErrors[0].message}`);
+        message.error(`编辑失败,${e.response.data.validationErrors[0].message}`);
       }
     });
   }
@@ -114,8 +114,8 @@ class BudgetVersionsDetail extends React.Component {
     this.state.formData.status=value;
   }
 
-  versionsDataChangHandle=(date)=>{
-    console.log(date);
+  versionsDataChangHandle=( moment, dateString)=>{
+    this.state.formData.versionDate = dateString;
   }
 
   descriptionChangHandle=(event)=>{
@@ -128,7 +128,6 @@ class BudgetVersionsDetail extends React.Component {
 
 
   saveHandle=()=>{
-    console.log(this.state.formData);
     let value = this.state.formData;
     this.putData(value)
 
@@ -209,7 +208,7 @@ class BudgetVersionsDetail extends React.Component {
               label="版本日期"
             >
 
-              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChang={this.versionsDataChangHandle}/>
+              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChange={this.versionsDataChangHandle}/>
 
             </FormItem>
           </Col>
