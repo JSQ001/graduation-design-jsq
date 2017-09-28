@@ -7,15 +7,19 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import ListSelector from 'components/list-selector'
+import BasicInfo from 'components/basic-info'
 
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
+import selectorData from 'share/selectorData'
+
 class BudgetGroupDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      updateState: false,
       loading: true,
       saving: false,
       groupData: {},
@@ -25,6 +29,12 @@ class BudgetGroupDetail extends React.Component {
         {title: "预算项目类型", dataIndex: "itemTypeName", width: '20%'},
         {title: '操作', key: 'operation', width: '20%', render: () => <a href="#">删除</a>,}
       ],
+      infoList: [
+        {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', isDisabled: true},
+        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入'},
+        {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入'},
+        {type: 'switch', label: '状态：', id: 'isEnabled'}
+      ],
       data: [],
       pagination: {
         total: 0
@@ -33,25 +43,52 @@ class BudgetGroupDetail extends React.Component {
       pageSize: 10,
       showListSelector: false,
       newData: [],
-      extraParams: {
-
-      },
+      extraParams: {},
       selectedData: [],
       rowSelection: {
         selectedRowKeys: [],
         onChange: this.onSelectChange,
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
-      }
-    };
+      },
+      selectorItem: {}
+    }
+    ;
   }
 
   componentWillMount(){
     httpFetch.get(`${config.budgetUrl}/api/budget/groups/${this.props.params.groupId}`).then(response => {
+      response.data.organizationName = this.props.organization.organizationName;
       this.setState({ groupData: response.data});
     });
     this.getList();
+
+    let selectorItem = selectorData['budget_item_filter'];
+    selectorItem.url = `${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/fiter`;
+    httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`).then(response => {
+      let result = [];
+      response.data.map((item) => {
+        result.push({
+          label: item.itemCode,
+          value: item.itemCode
+        })
+      });
+      selectorItem.searchForm[3].options = result;
+      selectorItem.searchForm[4].options = result;
+      this.setState({ selectorItem })
+    });
   }
+
+  updateHandleInfo = (params) => {
+    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign(this.state.groupData, params)).then(response => {
+      message.success('修改成功');
+      response.data.organizationName = this.props.organization.organizationName;
+      this.setState({
+        groupData: response.data,
+        updateState: true
+      });
+    });
+  };
 
   onChangePager = (page) => {
     if(page - 1 !== this.state.page)
@@ -148,9 +185,13 @@ class BudgetGroupDetail extends React.Component {
   };
 
   render(){
-    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData } = this.state;
+    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData, infoList, groupData, updateState, selectorItem } = this.state;
     return (
       <div>
+        <BasicInfo infoList={infoList}
+                   infoData={groupData}
+                   updateHandle={this.updateHandleInfo}
+                   updateState={updateState}/>
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
@@ -170,7 +211,7 @@ class BudgetGroupDetail extends React.Component {
                       onCancel={this.handleCancel}
                       type='budget_item_filter'
                       extraParams={extraParams}
-                      url={`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/fiter`}/>
+                      selectorItem={selectorItem}/>
       </div>
     )
   }

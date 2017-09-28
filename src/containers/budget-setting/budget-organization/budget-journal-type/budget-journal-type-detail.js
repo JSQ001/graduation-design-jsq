@@ -5,26 +5,25 @@ import { injectIntl } from 'react-intl';
 import { Tabs, Button, Row, Col, message, Badge, Table } from 'antd';
 const TabPane = Tabs.TabPane;
 
-import BasicInfo from 'components/basic-info'
-
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 import ListSelector from 'components/list-selector'
+import BasicInfo from 'components/basic-info'
 
 class BudgetJournalTypeDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editing: false,
+      updateState: false,
       saving: false,
       loading: true,
       infoList: [
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', isDisabled: true},
         {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
         {type: 'select', label: '预算业务类型', id: 'businessType', message: '请选择', options:[]},
-        // {type: 'state', label: '状态：', id: 'isEnabled'}
+        {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       tabs: [
         {key: 'STRUCTURE', name:'预算表'},
@@ -172,18 +171,23 @@ class BudgetJournalTypeDetail extends React.Component {
   };
 
   updateHandleInfo = (params) => {
-    console.log(params);
-    this.setState({ editing: true});
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
+      message.success('修改成功');
+      this.setState({
+        typeData: response.data,
+        updateState: true
+      });
+    });
   };
 
   render(){
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, editing} = this.state;
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
                    infoData={typeData}
                    updateHandle={this.updateHandleInfo}
-                   updateState={editing}/>
+                   updateState={updateState}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>
