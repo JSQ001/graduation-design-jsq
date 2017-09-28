@@ -33,7 +33,7 @@ import selectorData from 'share/selectorData'
  * @params extraParams  搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
  * @params selectorItem  组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
  *
- * type与selectorItem不可共存，如果两者都有，selectorItem
+ * type与selectorItem不可共存，如果两者都有，selectorItem起作用
  *
  * 现在支持的选择方法：
  * user:  人员选择
