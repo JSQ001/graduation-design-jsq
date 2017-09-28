@@ -2,6 +2,7 @@ import React from 'react'
 import { Form, Card, Row, Col, Badge } from 'antd'
 
 import SearchArea from 'components/search-area'
+import moment from 'moment'
 import 'styles/components/basic-info.scss'
 
 /**
@@ -54,6 +55,9 @@ class BasicInfo extends React.Component{
         </Col>
       );
       item.defaultValue = this.state.params[item.id];
+      if(item.type == 'date') {
+        item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
+      }
     });
     return children;
   }
