@@ -45,12 +45,6 @@ class BudgetGroupDetail extends React.Component {
       newData: [],
       extraParams: {},
       selectedData: [],
-      rowSelection: {
-        selectedRowKeys: [],
-        onChange: this.onSelectChange,
-        onSelect: this.onSelectItem,
-        onSelectAll: this.onSelectAll
-      },
       selectorItem: {}
     }
     ;
@@ -73,8 +67,8 @@ class BudgetGroupDetail extends React.Component {
           value: item.itemCode
         })
       });
+      selectorItem.searchForm[2].options = result;
       selectorItem.searchForm[3].options = result;
-      selectorItem.searchForm[4].options = result;
       this.setState({ selectorItem })
     });
   }

@@ -68,7 +68,8 @@ class BudgetItemType extends React.Component {
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
-          onChange: this.onChangePager
+          onChange: this.onChangePager,
+          current: this.state.page + 1
         }
       })
     });
@@ -104,7 +105,8 @@ class BudgetItemType extends React.Component {
     this.setState({
       searchParams:searchParams,
       loading: true,
-      page: 0
+      page: 0,
+      current:1
     }, ()=>{
       this.getList();
     })
@@ -186,6 +188,7 @@ class BudgetItemType extends React.Component {
             loading={loading}
             bordered
             onRowClick={this.putItemTypeShowSlide}
+            size="middle"
           />
         </div>
 

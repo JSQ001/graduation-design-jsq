@@ -30,8 +30,8 @@ import NewBudgetStrategy from 'containers/budget-setting/budget-organization/bud
 import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy-detail'
 import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
 import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
-
-import BudgetRule from 'containers/budget-setting/budget-organization/budget-rule/budget-rule'
+import NewBudgetControlRules from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules'
+import BudgetControlRulesDetail from 'containers/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail'
 
 import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
@@ -99,9 +99,18 @@ const newBudgetStructure = {
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:id',
   components: BudgetStructureDetail,
-  parent:'budget-organization-detail'
+  parent:'budget-organization-detail',
+  children: {
+
+  }
+};
+
+//预算表分配公司
+const budgetStructureCompany = {
+  key: 'budget-structure-company',
+  url: '/'
 };
 
 //新建预算版本
@@ -115,7 +124,7 @@ const newBudgetVersions = {
 //预算版本详情
 const budgetVersionsDetail = {
   key:'budget-versions-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail/:versionId',
   components:BudgetVersionsDetail,
   parent: 'budget-organization-detail'
 };
@@ -132,7 +141,7 @@ const newBudgetGroup = {
 //新建预算项目组
 const budgetGroupDetail = {
   key:'budget-group-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail/:groupId',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail',
   components: BudgetGroupDetail,
   parent: 'budget-organization-detail'
 };
@@ -148,11 +157,27 @@ const newBudgetItem = {
 //预算项目详情
 const budgetItemDetail = {
   key: 'budget-item-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:id',
   components: BudgetItemDetail,
+  parent: 'budget-organization-detail'
+
+};
+
+//新建预算控制规则定义
+const newBudgetControlRules = {
+  key: 'new-budget-control-rules',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/new-budget-control-rules',
+  components: NewBudgetControlRules,
   parent: 'budget-organization-detail'
 };
 
+//预算控制规则详情
+const budgetControlRulesDetail = {
+  key: 'budget-control-rules-detail',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:id',
+  components: BudgetControlRulesDetail,
+  parent: 'budget-organization-detail'
+};
 
 //预算组织详情
 const budgetOrganizationDetail = {
@@ -234,12 +259,16 @@ const budgetOrganization = {
     newBudgetGroup,
     budgetGroupDetail,
     newBudgetItem,
+    budgetItemDetail,
     newBudgetStrategy,
     budgetStrategyDetail,
     newBudgetStrategyDetail,
     strategyControlDetail,
     newBudgetJournalType,
-    budgetJournalTypeDetail
+    budgetJournalTypeDetail,
+    newBudgetControlRules,
+    budgetControlRulesDetail,
+
   }
 };
 

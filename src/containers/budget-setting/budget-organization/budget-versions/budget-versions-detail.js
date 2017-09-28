@@ -5,6 +5,7 @@ import React from 'React'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Form, Table, Button, notification, Icon,Checkbox, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload,Select,DatePicker,message} from 'antd';
+const Option = Select.Option;
 import moment from 'moment'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
@@ -25,15 +26,11 @@ class BudgetVersionsDetail extends React.Component {
           render:(text,recode)=>{return <Checkbox defaultChecked={recode?true:false} onChange={this.isEnabledEditHandle(text,recode)}  />}
 
         }],
-
       pagination: {
         total: 0
       },
       showImportFrame: false,
-      form: {
-        name: '',
-        enabled: '',
-      },
+      optionData:[{value:"NEW",label:"新建"},{value:"CURRENT",label:"当前"},{value:"HISTORY",label:"历史"}],
       edit: false,
       formData:{},
       loading:true,
@@ -47,15 +44,14 @@ class BudgetVersionsDetail extends React.Component {
   }
 
 //编辑启用
-  isEnabledEditHandle=(text,recode)=>{
-    if(text.id){}
+  isEnabledEditHandle(text,recode){
 
   }
+
 
   componentWillMount(){
     this.getDetail();
     this.getAssignCompanyList();
-    console.log(this.state.formData)
   }
 
 
@@ -63,11 +59,28 @@ class BudgetVersionsDetail extends React.Component {
 
   }
 
+  //获取Option列表
+  /*
+   getOption(values){
+
+   for (let item in values){
+   console.log(value+" " +label)
+   }
+   }
+   */
+
+
+  /*<Select placeholder="请选择" onChange={handle}>
+   {item.options.map((option)=>{
+   return <Option key={option.value}>{option.label}</Option>
+   })}
+   </Select>*/
+
 
   //获得详情数据
   getDetail(){
     console.log(this.props)
-    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.id}`, ).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
       this.setState({
         formData:response.data
       })
@@ -79,7 +92,7 @@ class BudgetVersionsDetail extends React.Component {
   //查询分配公司表
   getAssignCompanyList=()=>{
     console.log(this.props);
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.id}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
       this.setState({loading: false ,data:res.data});
     }).catch((e)=>{
     })
@@ -100,7 +113,7 @@ class BudgetVersionsDetail extends React.Component {
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
-        message.success(`编辑失败,${e.response.data.validationErrors[0].message}`);
+        message.error(`编辑失败,${e.response.data.validationErrors[0].message}`);
       }
     });
   }
@@ -114,8 +127,8 @@ class BudgetVersionsDetail extends React.Component {
     this.state.formData.status=value;
   }
 
-  versionsDataChangHandle=(date)=>{
-    console.log(date);
+  versionsDataChangHandle=( moment, dateString)=>{
+    this.state.formData.versionDate = dateString;
   }
 
   descriptionChangHandle=(event)=>{
@@ -128,7 +141,6 @@ class BudgetVersionsDetail extends React.Component {
 
 
   saveHandle=()=>{
-    console.log(this.state.formData);
     let value = this.state.formData;
     this.putData(value)
 
@@ -136,7 +148,8 @@ class BudgetVersionsDetail extends React.Component {
 
 
   renderPutForm=()=>{
-    const fromData =this.state.formData
+    const fromData=this.state.formData;
+    const optionData =this.state.optionData;
     return (
       <Form >
         <Row gutter={40}>
@@ -181,7 +194,6 @@ class BudgetVersionsDetail extends React.Component {
                 placeholder=""
                 defaultValue={fromData.status}
                 onSelect={this.statusChangHandle}
-                /*onChange={this.handleSelectChange}*/
               >
                 <Select.Option value="NEW">新建</Select.Option>
                 <Select.Option value="CURRENT">当前</Select.Option>
@@ -209,7 +221,7 @@ class BudgetVersionsDetail extends React.Component {
               label="版本日期"
             >
 
-              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChang={this.versionsDataChangHandle}/>
+              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChange={this.versionsDataChangHandle}/>
 
             </FormItem>
           </Col>
@@ -222,7 +234,7 @@ class BudgetVersionsDetail extends React.Component {
               wrapperCol={{span:24}}
               label="是否启用"
             >
-              <Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
+              <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
 
             </FormItem>
           </Col>
@@ -246,48 +258,48 @@ class BudgetVersionsDetail extends React.Component {
   renderForm=()=>{
     const data = this.state.formData;
     return(
-     this.state.edit? <div>
-       {this.renderPutForm()}
+      this.state.edit? <div>
+        {this.renderPutForm()}
       </div>:
-      <div>
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">预算组织:</div>
-            <div>{this.props.organization.organizationName}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本代码:</div>
-            <div>{data.versionCode}</div>
-          </Col >
-          <Col span={8}>
-            <div className="form-title">版本日期:</div>
-            <div>{data.versionDate?data.versionDate:"-"}</div>
-          </Col>
-        </Row>
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">版本状态:</div>
-            <div>{ data.status=="NEW"?"新建":(data.status="CURRENT"?"当前":"历史")}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本名称:</div>
-            <div>{data.versionName}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本描述:</div>
-            <div>{data.description?data.description:'-'}</div>
-          </Col>
-        </Row>
-        <Row gutter={40} align="top">
-          <Col span={8}>
+        <div>
+          <Row gutter={40} align="top">
+            <Col span={8}>
+              <div className="form-title">预算组织:</div>
+              <div>{this.props.organization.organizationName}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本代码:</div>
+              <div>{data.versionCode}</div>
+            </Col >
+            <Col span={8}>
+              <div className="form-title">版本日期:</div>
+              <div>{data.versionDate?data.versionDate:"-"}</div>
+            </Col>
+          </Row>
+          <Row gutter={40} align="top">
+            <Col span={8}>
+              <div className="form-title">版本状态:</div>
+              <div>{ data.status=="NEW"?"新建":(data.status="CURRENT"?"当前":"历史")}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本名称:</div>
+              <div>{data.versionName}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本描述:</div>
+              <div>{data.description?data.description:'-'}</div>
+            </Col>
+          </Row>
+          <Row gutter={40} align="top">
+            <Col span={8}>
 
-            <div className="form-title">状态:</div>
-            <div> <Badge status={data.isEnabled?'success':'error'}/>{data.isEnabled?'启用':'禁用'}</div>
-          </Col>
+              <div className="form-title">状态:</div>
+              <div> <Badge status={data.isEnabled?'success':'error'}/>{data.isEnabled?'启用':'禁用'}</div>
+            </Col>
 
-        </Row>
+          </Row>
 
-    </div>
+        </div>
     )
 
   }
@@ -351,7 +363,7 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   render(){
-    const {  edit, data, columns, pagination, showImportFrame, form } = this.state;
+    const {  edit, data, columns, pagination} = this.state;
     return (
       <div>
         <div className="budget-versions-detail">
@@ -388,7 +400,7 @@ class BudgetVersionsDetail extends React.Component {
                  size="middle"
           />
 
-            <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
+          <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
 
         </div>
       </div>
