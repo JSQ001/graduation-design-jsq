@@ -5,25 +5,25 @@ import { injectIntl } from 'react-intl';
 import { Tabs, Button, Row, Col, message, Badge, Table } from 'antd';
 const TabPane = Tabs.TabPane;
 
-import BasicInfo from 'components/basic-info'
-
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 import ListSelector from 'components/list-selector'
+import BasicInfo from 'components/basic-info'
 
 class BudgetJournalTypeDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      updateState: false,
       saving: false,
-      loading: false,
+      loading: true,
       infoList: [
-        {type: 'input', title: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', isDisabled: true},
-        {type: 'input', title: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
-        {type: 'select', title: '预算业务类型', id: 'businessType', message: '请选择', options:[]},
-        {type: 'state', title: '状态：', id: 'isEnabled'}
+        {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', isDisabled: true},
+        {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
+        {type: 'select', label: '预算业务类型', id: 'businessType', message: '请选择', options:[]},
+        {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       tabs: [
         {key: 'STRUCTURE', name:'预算表'},
@@ -38,6 +38,7 @@ class BudgetJournalTypeDetail extends React.Component {
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/query`,
           type: 'budget_structure',
+          extraParams: {organizationId: this.props.organization.id},
           columns: [
             {title: "预算表", dataIndex: "structureName", width: '25%'},
             {title: "预算表代码", dataIndex: "structureCode", width: '35%'},
@@ -116,7 +117,8 @@ class BudgetJournalTypeDetail extends React.Component {
           loading: false,
           pagination: {
             total: Number(response.headers['x-total-count']),
-            onChange: this.onChangePager
+            onChange: this.onChangePager,
+            current: this.state.page + 1
           }
         })
       })
@@ -168,11 +170,24 @@ class BudgetJournalTypeDetail extends React.Component {
     })
   };
 
+  updateHandleInfo = (params) => {
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
+      message.success('修改成功');
+      this.setState({
+        typeData: response.data,
+        updateState: true
+      });
+    });
+  };
+
   render(){
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData} = this.state;
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState} = this.state;
     return (
       <div>
-        <BasicInfo infoList={infoList} infoData={typeData}/>
+        <BasicInfo infoList={infoList}
+                   infoData={typeData}
+                   updateHandle={this.updateHandleInfo}
+                   updateState={updateState}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>
@@ -184,7 +199,7 @@ class BudgetJournalTypeDetail extends React.Component {
           </div>
         </div>
         <Table columns={tabsData[nowStatus].columns}
-               dataSource={data.concat(newData)}
+               dataSource={newData.concat(data)}
                pagination={pagination}
                loading={loading}
                bordered
@@ -192,7 +207,8 @@ class BudgetJournalTypeDetail extends React.Component {
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}
-                      type={tabsData[nowStatus].type}/>
+                      type={tabsData[nowStatus].type}
+                      extraParams={tabsData[nowStatus].extraParams ? tabsData[nowStatus].extraParams : {}}/>
       </div>
     )
   }

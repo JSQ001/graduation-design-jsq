@@ -52,7 +52,6 @@ class BudgetScenarios extends React.Component {
         organizationName: this.props.organization.organizationName
       }
     }, () => {
-      console.log(this.state.organizationInfo);
       this.getList();
     })
   }

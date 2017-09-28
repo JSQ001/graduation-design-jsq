@@ -33,7 +33,7 @@ class BasicInfo extends React.Component{
   };
 
   componentWillReceiveProps(nextProps){
-    this.setState({ params: nextProps.infoData })
+    this.setState({ params: nextProps.infoData });
     if(nextProps.updateState) {
       this.handelCancel();
     }
@@ -51,7 +51,7 @@ class BasicInfo extends React.Component{
   }
 
   renderGetInfo(item) {
-    if (item.type == 'state') {
+    if (item.type == 'switch') {
       return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
     } else {
       return <div>{this.state.params[item.id]}</div>;
@@ -66,6 +66,7 @@ class BasicInfo extends React.Component{
           {this.renderGetInfo(item)}
         </Col>
       );
+      item.defaultValue = this.state.params[item.id]
     });
     return children;
   }
@@ -98,7 +99,8 @@ class BasicInfo extends React.Component{
         <div style={formShowStyle}>
           <SearchArea searchForm={infoList}
                       submitHandle={this.handleUpdate}
-                      clearHandle={this.handelCancel}/>
+                      clearHandle={this.handelCancel}
+                      okText="保存" clearText="取消"/>
         </div>
       </div>
     )
@@ -111,28 +113,6 @@ BasicInfo.propTypes = {
   updateHandle: React.PropTypes.func.isRequired,  //更新表单事件
   updateState: React.PropTypes.bool.isRequired,  //更新状态（true／false）
 };
-
-
-/**
- *
- * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
- * {
-          type: '',    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple中的一种
-          id: '',      //必填，表单id，搜索后返回的数据key
-          label: '',   //必填，界面显示名称label
-          isRequired: true    //可选，必须输入时填写
-          disabled: true      //可选，不可编辑时填写
-          options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
-          event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
-          defaultValue: ''    //可选，默认值
-          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
-          getUrl: '',       //可选，初始显示的值需要的接口
-          method: '',      //可选，接口所需要的接口类型get/post
-          searchKey: '',  //搜索参数名
-          labelKey: '',  //可选，接口返回的数据内所需要页面options显示名称label的参数名
-          valueKey: ''  //可选，接口返回的数据内所需要options值value的参数名
-        }
- */
 
 const WrappedBasicInfo= Form.create()(BasicInfo);
 

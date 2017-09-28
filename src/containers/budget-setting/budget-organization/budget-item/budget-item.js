@@ -40,12 +40,15 @@ class BudgetItem extends React.Component {
           label: this.props.intl.formatMessage({id: 'budget.itemCodeTo'}), /*预算项目代码至*/
           options: itemCode
         },
-        {type: 'select', id: 'itemTypeName',
+        {type: 'list', id: 'itemTypeName',
+          listType: 'itemType',
+          labelKey: 'itemTypeName',
+          valueKey: 'itemTypeOID',
           label: this.props.intl.formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
-          options: [],
-          onClick: this.handleSelectItemType,
+          listExtraParams:{organizationId: this.props.id}
         },
       ],
+
       columns: [
         {          /*预算组织*/
           title: this.props.intl.formatMessage({id:"budget.organization"}), key: "organizationCode", dataIndex: 'organizationCode'

@@ -22,10 +22,11 @@ class NewBudgetGroup extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.organizationId =  this.props.organization.id;
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
           this.setState({loading: false});
-          message.success(`项目组${res.data.groupName}新建成功`);
+          message.success(`项目组${res.data.itemGroupName}新建成功`);
           this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", res.data.id));
         }).catch((e)=>{
           if(e.response){
@@ -58,14 +59,14 @@ class NewBudgetGroup extends React.Component {
               </Col>
               <Col span={8}>
                 <FormItem label="预算项目组代码">
-                  {getFieldDecorator("groupCode")(
+                  {getFieldDecorator("itemGroupCode")(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem label="预算项目组描述">
-                  {getFieldDecorator("groupName")(
+                  {getFieldDecorator("itemGroupName")(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>

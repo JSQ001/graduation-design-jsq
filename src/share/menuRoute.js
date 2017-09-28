@@ -6,7 +6,6 @@ import { Router, Route, browserHistory } from 'react-router'
 
 import Main from 'containers/main'
 import requireAuthentication from 'components/requireAuthentication'
-import checkUrlParams from 'components/checkUrlParams'
 
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
@@ -375,7 +374,7 @@ const renderSubItem = (subItem) => {
  * @type {DOM}
  */
 const ClientRoute = (
-  <Route path={menuIndexUrl} component={checkUrlParams(requireAuthentication(Main))}>
+  <Route path={menuIndexUrl} component={requireAuthentication(Main)}>
     {menu.map(item =>
       item.subMenu ? item.subMenu.map(subItem =>
         <Route key={subItem.key} path={subItem.url} component={subItem.components}>
