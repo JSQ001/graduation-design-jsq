@@ -4,6 +4,7 @@ import { injectIntl } from 'react-intl'
 
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
+import debounce from 'lodash.debounce'
 import config from 'config'
 import { Table, Button, Input, Popover, message } from 'antd'
 const Search = Input.Search;
@@ -42,6 +43,7 @@ class BudgetStrategyDetail extends React.Component {
       strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //策略明细
       budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
     };
+    this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillMount() {
@@ -99,11 +101,14 @@ class BudgetStrategyDetail extends React.Component {
     this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId).replace(':strategyControlId', record.id));
   };
 
-  handleSearch= (e) => {
-    console.log(e.target.value);
+  handleSearch= (value) => {
+    console.log(value);
     this.setState({
       page: 0,
-      keyWords: e.target.value
+      keyWords: value,
+      pagination: {
+        current: 1
+      }
     }, () => {
       this.getList();
     })
@@ -111,7 +116,6 @@ class BudgetStrategyDetail extends React.Component {
   handleUpdate = (params) => {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
-    console.log(params);
     httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
       if(response.status == 200) {
         message.success('保存成功');
@@ -144,7 +148,7 @@ class BudgetStrategyDetail extends React.Component {
             <Search
               placeholder="请输入策略明细描述/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onChange={this.handleSearch}
+              onChange={(e) => this.handleSearch(e.target.value)}
             />
           </div>
         </div>

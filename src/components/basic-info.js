@@ -29,7 +29,6 @@ class BasicInfo extends React.Component{
 
   componentWillMount(){
     this.setState({ infoList: this.props.infoList })
-
   };
 
   componentWillReceiveProps(nextProps){
