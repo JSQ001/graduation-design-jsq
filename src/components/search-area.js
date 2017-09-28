@@ -218,7 +218,7 @@ class SearchArea extends React.Component{
       }
       //switch状态切换组件
       case 'switch':{
-        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle}/>
+        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle} disabled={item.disabled}/>
       }
     }
   }
@@ -236,7 +236,7 @@ class SearchArea extends React.Component{
               initialValue: item.defaultValue,
               rules: [{
                 required: item.isRequired,
-                message: 'Please input your name',
+                message: `${item.label}不可为空`,
               }]
             })(
               this.renderFormItem(item)
@@ -303,7 +303,8 @@ class SearchArea extends React.Component{
     let value = {};
     value[formItem.id] = values;
     this.props.form.setFieldsValue(value);
-    this.setState({ showListSelector: false })
+    this.setState({ showListSelector: false });
+    formItem.handle && formItem.handle();
   };
 
   render(){

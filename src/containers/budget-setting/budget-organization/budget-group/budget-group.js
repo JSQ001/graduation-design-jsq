@@ -45,7 +45,7 @@ class BudgetGroup extends React.Component {
 
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/groups/query?page=${this.state.page}&size=${this.state.pageSize}`;
+    let url = `${config.budgetUrl}/api/budget/groups/query?page=${this.state.page}&size=${this.state.pageSize}&organizationId=${this.props.organization.id}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -137,7 +137,7 @@ BudgetGroup.contextTypes = {
 };
 
 function mapStateToProps(state) {
-  return {}
+
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetGroup));
