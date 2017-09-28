@@ -48,11 +48,7 @@ class NewBudgetStructure extends React.Component{
             console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
-            const location = {
-              pathname: menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id),
-              state:response.data,
-            };
-            this.context.router.push(location);
+            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id).replace(':id',response.data.id));
           }
         })
       }

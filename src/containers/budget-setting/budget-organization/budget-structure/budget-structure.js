@@ -19,17 +19,21 @@ class BudgetStructure extends React.Component {
     this.state = {
       loading: true,
       data: [],
-      params:{},
+      searchParams: {
+        structureCode: "",
+        structureName: ""
+      },
       pagination: {
-        current: 0,
+        current: 1,
+        page: 1,
         total:0,
         pageSize:10,
         showSizeChanger:true,
         showQuickJumper:true,
       },
       searchForm: [
+        {type: 'input', id: 'structureCode', label: this.props.intl.formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
         {type: 'input', id: 'structureName', label: this.props.intl.formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
-        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.structureDescription'}) }, /*预算表描述*/
       ],
       columns: [
         {          /*预算组织*/
@@ -88,24 +92,7 @@ class BudgetStructure extends React.Component {
 
   //获取预算表数据
   getList(){
-    let searchParam = this.state.params;
-    let params;
-    let paramsIsExist = JSON.stringify(this.state.params) === "{}" || ( searchParam.structureCode=="" && searchParam.description=="");
-    if(paramsIsExist){
-      params = "";
-    }else {
-      if(typeof searchParam.structureCode !=="undefined" && searchParam.structureCode !== ""){
-        params = "structureCode="+searchParam.structureCode;
-        if(typeof searchParam.description !=="undefined" && searchParam.description !== ""){
-          params = params+"&description="+searchParam.description
-        }
-      }else {
-        if(typeof searchParam.description !=="undefined" && searchParam.description !== ""){
-          params = "description="+searchParam.description
-        }
-      }
-    }
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?page=${this.state.pagination.current}&size=${this.state.pagination.pageSize}${paramsIsExist ? "" : `&${params}`}`,).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&structureCode=${this.state.searchParams.structureCode||''}&structureName=${this.state.searchParams.structureName||''}`).then((response)=>{
       console.log(response)
       response.data.map((item,index)=>{
         item.key = item.structureCode;
@@ -115,6 +102,7 @@ class BudgetStructure extends React.Component {
         pagination: {
           total: Number(response.headers['x-total-count']),
           current: this.state.pagination.current,
+          page: this.state.pagination.page,
           pageSize:this.state.pagination.pageSize,
           showSizeChanger:true,
           showQuickJumper:true,
@@ -125,21 +113,27 @@ class BudgetStructure extends React.Component {
   };
 
   handleSearch = (values) =>{
+    console.log(values)
+    let searchParams = {
+      structureName: values.structureName,
+      structureCode: values.structureCode
+    };
     this.setState({
-      params:values,
-
-    },()=>{
-      this.getList()
+      searchParams:searchParams,
+      loading: true,
+      page: 1
+    }, ()=>{
+      this.getList();
     })
   };
 
-
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
+    console.log(pagination)
     this.setState({
-     // pagination:pagination,
       pagination:{
-        current: pagination.current-1,
+        current: pagination.current,
+        page: pagination.current-1,
         pageSize: pagination.pageSize
       }
     }, ()=>{

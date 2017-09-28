@@ -81,7 +81,7 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {

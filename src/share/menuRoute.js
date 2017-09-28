@@ -32,6 +32,7 @@ import BudgetStrategyDetail from 'containers/budget-setting/budget-organization/
 import NewBudgetStrategyDetail from 'containers/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail'
 import StrategyControlDetail from 'containers/budget-setting/budget-organization/budget-strategy/strategy-control-detail'
 import NewBudgetControlRules from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules'
+import BudgetControlRulesDetail from 'containers/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail'
 
 import NewBudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/new-budget-journal-type'
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
@@ -99,7 +100,7 @@ const newBudgetStructure = {
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:id',
   components: BudgetStructureDetail,
   parent:'budget-organization-detail',
   children: {
@@ -152,7 +153,7 @@ const newBudgetItem = {
   url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-item',
   components: NewBudgetItem,
   parent: 'budget-organization-detail'
-}
+};
 
 //预算项目详情
 const budgetItemDetail = {
@@ -161,17 +162,23 @@ const budgetItemDetail = {
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
 
-}
+};
 
 //新建预算控制规则定义
 const newBudgetControlRules = {
   key: 'new-budget-control-rules',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/new-budget-control-rules',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/new-budget-control-rules',
   components: NewBudgetControlRules,
   parent: 'budget-organization-detail'
-}
+};
 
-
+//预算控制规则详情
+const budgetControlRulesDetail = {
+  key: 'budget-control-rules-detail',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:id',
+  components: BudgetControlRulesDetail,
+  parent: 'budget-organization-detail'
+};
 
 //预算组织详情
 const budgetOrganizationDetail = {
@@ -261,6 +268,8 @@ const budgetOrganization = {
     newBudgetJournalType,
     budgetJournalTypeDetail,
     newBudgetControlRules,
+    budgetControlRulesDetail,
+
   }
 };
 

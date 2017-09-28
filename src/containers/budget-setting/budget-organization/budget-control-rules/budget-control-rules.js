@@ -1,3 +1,6 @@
+/**
+ * created by jsq on 2017/9/26
+ */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
@@ -74,23 +77,27 @@ class BudgetControlRules extends React.Component {
 
   //获取控制规则数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query`).then((response)=>{
-      console.log(response)
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}`).then((response)=>{
+      if(response.status === 200){
+        response.data.map((item)=>{
+          item.key = item.id;
+        })
 
-      this.setState({
-        loading: false,
-        data: response.data,
-        pagination: {
-          page: this.state.pagination.page,
-          current: this.state.pagination.current,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-          total: Number(response.headers['x-total-count']),
-        }
-      },()=>{
-        //this.refreshRowSelection()
-      })
+        this.setState({
+          loading: false,
+          data: response.data,
+          pagination: {
+            page: this.state.pagination.page,
+            current: this.state.pagination.current,
+            pageSize:this.state.pagination.pageSize,
+            showSizeChanger:true,
+            showQuickJumper:true,
+            total: Number(response.headers['x-total-count']),
+          }
+        },()=>{
+          //this.refreshRowSelection()
+        })
+      }
     })
   }
 
@@ -109,10 +116,14 @@ class BudgetControlRules extends React.Component {
 
   //新建
   handleCreate = () =>{
-    console.log(menuRoute.getMenuItemByAttr('budget-organization', 'key'))
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetControlRules.url.replace(':id', this.props.id));
   };
 
+//点击行，进入该行详情页面
+  handleRowClick = (record, index, event) =>{
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
+    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+  }
 
   render(){
     const { searchForm, loading, columns, pagination, data} = this.state;
@@ -130,7 +141,7 @@ class BudgetControlRules extends React.Component {
           dataSource={data}
           columns={columns}
           //rowSelection={rowSelection}
-          //onRowClick={this.handleRowClick}
+          onRowClick={this.handleRowClick}
           pagination={pagination}
           onChange={this.onChangePager}
           size="middle"
@@ -138,8 +149,9 @@ class BudgetControlRules extends React.Component {
       </div>
     )
   }
-
-
+}
+BudgetControlRules.contextTypes = {
+  router: React.PropTypes.object
 }
 
 function mapStateToProps() {

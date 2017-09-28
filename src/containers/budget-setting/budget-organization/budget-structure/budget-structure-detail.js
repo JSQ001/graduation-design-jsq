@@ -8,10 +8,12 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import debounce from 'lodash.debounce';
 
-
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
+import SlideFrame from "components/slide-frame";
+import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
+import ListSelector from 'components/list-selector'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -25,7 +27,12 @@ class BudgetStructureDetail extends React.Component{
     super(props);
     this.state = {
       loading: true,
+      buttonLoading: false,
+      companyListSelector: false,
       edit:false,
+      structure:{},
+      buttonLoading: false,
+      showSlideFrame: false,
       statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/,
       total:0,
       data:[],
@@ -67,7 +74,6 @@ class BudgetStructureDetail extends React.Component{
             title:this.props.intl.formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
           },]
       },
-      structure:this.props.location.state,
       tabs: [
         {key: 'dimension', name: this.props.intl.formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
         {key: 'company', name: this.props.intl.formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
@@ -81,8 +87,15 @@ class BudgetStructureDetail extends React.Component{
   }
 
   componentWillMount(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.id}`).then((response)=>{
-      console.log(response)
+    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.id[1]}`).then((response)=>{
+      if(response.status === 200){
+        this.setState({
+          structure: response.data
+        })
+      }})
+    this.setState({
+      buttonLoading: false,
+      columns : this.state.columnGroup.dimension
     })
   }
 
@@ -94,9 +107,11 @@ class BudgetStructureDetail extends React.Component{
   //详情页面修改刚新建的预算表
   handleSave = (e) => {
     e.preventDefault();
+    this.setState({
+      buttonLoading: true
+    })
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        // delete values.organizationName
         values.id = this.state.structure.id;
         values.versionNumber = this.state.structure.versionNumber;
         values.organizationId = this.state.structure.organizationId;
@@ -104,6 +119,9 @@ class BudgetStructureDetail extends React.Component{
         httpFetch.put(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
+            this.setState({
+              buttonLoading: false
+            })
             this.handleEdit(false)
           }
         })
@@ -113,7 +131,7 @@ class BudgetStructureDetail extends React.Component{
 
   renderForm(){
     const { getFieldDecorator } = this.props.form;
-    const { structure, edit, statusCode } = this.state;
+    const { structure, edit, statusCode, buttonLoading } = this.state;
     const periodStrategy = [
       {id:"month",value: this.props.intl.formatMessage({id:"periodStrategy.month"})},  /*月度*/
       {id:"quarter",value: this.props.intl.formatMessage({id:"periodStrategy.quarter"})}, /*季度*/
@@ -185,6 +203,9 @@ class BudgetStructureDetail extends React.Component{
                         validator:(item,value,callback)=>{
                           httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${structure.id}`).then((response)=>{
                             if(response.data.length>0){
+                              this.setState({
+                                buttonLoading: true
+                              });
                               callback()
                             }
                             callback()
@@ -243,7 +264,7 @@ class BudgetStructureDetail extends React.Component{
                 </FormItem>
               </Col>
             </Row>
-            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
+            <Button type="primary" htmlType="submit" loading={buttonLoading} >{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
             <Button onClick={()=>this.handleEdit(false)} style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
           </Form>
         </div>
@@ -252,30 +273,30 @@ class BudgetStructureDetail extends React.Component{
         <Row gutter={40} align="top">
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"budget.organization"}) /*预算组织*/}:</div>
-            <div>{/*{structure.organizationName}*/}111</div>
+            <div>{structure.organizationName}</div>
           </Col>
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureCode"}) /*预算表代码*/}:</div>
-            <div>SS{/*{structure.structureCode}*/}</div>
+            <div>{structure.structureCode}</div>
           </Col >
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureName"}) /*预算表名称*/}:</div>
-            <div>{/*{structure.structureName}*/}111</div>
+            <div>{structure.structureName}</div>
           </Col>
         </Row>
         <br/>
         <Row gutter={40} align="top">
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"budget.periodStrategy"})}:</div>
-            <div>{/*{ structure.periodStrategy=="month"?"月度":(structure.periodStrategy="quarter"?"季度":"年度")}*/}11</div>
+            <div>{ structure.periodStrategy=="month"?"月度":(structure.periodStrategy="quarter"?"季度":"年度")}</div>
           </Col>
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureDescription"}) /*预算表描述*/}:</div>
-            <div className="structure-detail-description">qwqw{/*{structure.description}*/}</div>
+            <div className="structure-detail-description">{structure.description}</div>
           </Col>
           <Col span={8}>
             <div className="form-title">{this.props.intl.formatMessage({id:"common.columnStatus"}) /*状态*/}:</div>
-            <div>  {/*structure.isEnabled*/}
+            <div>  {structure.isEnabled}
               <Badge status={true ? 'success' : 'error'}/>
                 {true ?
                   this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/ :
@@ -310,17 +331,24 @@ class BudgetStructureDetail extends React.Component{
 
   handleSearchChange = (e) =>{
     this.state.status === "company" ? this.queryCompany(e.target.value) : this.queryDimension(e.target.value);
-  }
+  };
 
   handleCreate = (e) =>{
-    this.state.status ==="company" ? this.distributeCompany : this.distributeDimension
-  }
+    this.state.status ==="company" ? this.showListSelector(true) : this.showSlide(true)
+  };
 
-  分配公司
+  showListSelector = (flag) =>{
+    this.setState({
+      companyListSelector: flag
+    })
+  };
+
+  //分配公司
   distributeCompany(){
 
   }
 
+  //维度分配
   distributeDimension(){}
 
   //调用维度查询接口
@@ -332,9 +360,24 @@ class BudgetStructureDetail extends React.Component{
     console.log(value)
   }
 
+  showSlide = (flag) => {
+    this.setState({
+      showSlideFrame: flag
+    })
+  };
+
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.getList();
+    }
+    this.setState({
+      showSlideFrame: false
+    })
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, edit, form, total, data, columns, pagination, status} = this.state;
+    const { loading, edit, form, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
         <div className="common-top-area">
@@ -369,6 +412,15 @@ class BudgetStructureDetail extends React.Component{
             pagination={pagination}
             size="middle"
             bordered/>
+
+        <SlideFrame title="新建维度"
+                    show={showSlideFrame}
+                    content={NewDimension}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.showSlide(false)}/>
+
+        <ListSelector type="company"
+                        visible={companyListSelector}/>
       </div>
     )
   }

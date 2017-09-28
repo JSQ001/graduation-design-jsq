@@ -1,8 +1,20 @@
 {
-  "budget.controlRulesFrom": "控制规则从",
-  "budget.controlRulesTo": "控制规则到",
+  "budget.controlRulesFrom": "业务规则从",
+  "budget.controlRulesTo": "业务规则到",
   "budget.controlRules.priority": "优先级",
-  "budget.controlRuleCode": "控制规则代码",
-  "budget.controlRuleName": "控制规则名称",
-  "budget.controlRule.effectiveDate": "有效日期"
+  "budget.controlRuleCode": "业务规则代码",
+  "budget.controlRuleName": "业务规则名称",
+  "budget.controlRule.effectiveDate": "有效日期",
+  "budget.controlRuleExist": "该业务规则已存在",
+  "budget.controlRule.startDate": "起始",
+  "budget.controlRule.endDate": "结束",
+  "budget.ruleParameterType": "规则参数类型",
+  "budget.ruleParameter": "规则参数",
+  "budget.filtrateMethod": "取值方式",
+  "budget.summaryOrDetail": "取值范围",
+  "budget.parameterLowerLimit": "下限值",
+  "budget.parameterUpperLimit": "上限值",
+  "budget.invalidDate": "失效日期",
+  "budget.createRulesDetail": "新建规则明细"
+
 }
