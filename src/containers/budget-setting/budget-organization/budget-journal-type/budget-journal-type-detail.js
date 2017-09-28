@@ -2,13 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Tabs, Button, Row, Col, message, Badge, Table } from 'antd';
+import { Tabs, Button, Row, Col, message, Badge, Table, Popconfirm } from 'antd';
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
+import selectorData from 'share/selectorData'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
@@ -37,19 +38,23 @@ class BudgetJournalTypeDetail extends React.Component {
         STRUCTURE:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/query`,
-          type: 'budget_structure',
+          selectorItem: selectorData['budget_structure'],
           extraParams: {organizationId: this.props.organization.id},
           columns: [
             {title: "预算表", dataIndex: "structureName", width: '25%'},
             {title: "预算表代码", dataIndex: "structureCode", width: '35%'},
             {title: "默认", dataIndex: "isDefault", width: '20%', render: isDefault => <Badge status={isDefault ? 'success' : 'error'} text={isDefault ? '默认' : '禁用'}/>},
-            {title: '操作', key: 'operation', width: '20%', render: () => <a href="#">删除</a>,}
+            {title: '操作', key: 'operation', width: '20%', render: (text, record) => ( record.new ? '' :
+              <Popconfirm onConfirm={(e) => this.deleteStructure(e, record)} title={`你确认要删除预算表 ${record.structureName} 吗？`}>
+                <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>删除</a>
+              </Popconfirm>
+            ),}
           ]
         },
         ITEM:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/items/query`,
-          type: 'budget_item',
+          selectorItem: selectorData['budget_item'],
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
@@ -86,6 +91,23 @@ class BudgetJournalTypeDetail extends React.Component {
       this.setState({ typeData: response.data});
     });
     this.getList(this.state.nowStatus);
+    if(this.props.organization.id){
+      httpFetch.get(`${config.budgetUrl}/api/budget/structures/queryAllStructure?organizationId=${this.props.organization.id}`).then(response => {
+        let tabsData = this.state.tabsData;
+        let options = [];
+        if(response.data.length && response.data.length > 0){
+          response.data.map(item => {
+            options.push({
+              value: item.structureCode,
+              label: item.structureCode
+            })
+          })
+        }
+        tabsData['STRUCTURE'].selectorItem.searchForm[2].options = options;
+        tabsData['STRUCTURE'].selectorItem.searchForm[3].options = options;
+        this.setState({ tabsData })
+      })
+    }
   }
 
   //渲染Tabs
@@ -140,6 +162,12 @@ class BudgetJournalTypeDetail extends React.Component {
   };
 
   handleAdd = (result) => {
+    if(result.result.length > 0){
+      result.result.map(item => {
+        item.new = true;
+        return item;
+      })
+    }
     this.setState({
       newData: result.result,
       showListSelector: false })
@@ -149,10 +177,21 @@ class BudgetJournalTypeDetail extends React.Component {
     this.setState({ showListSelector: false })
   };
 
+  deleteStructure = (e, record) => {
+    httpFetch.delete(`${config.budgetUrl}/api/budget/journal/type/assign/structures/${record.id}`).then(response => {
+      message.success(`${record.structureName}删除成功`);
+      this.getList();
+    })
+  };
+
   handleSave = () => {
     const { tabsData, nowStatus, newData } = this.state;
     let paramList = [];
     newData.map(item => {
+      if(nowStatus === 'STRUCTURE'){
+        item.structureId = item.id;
+        delete item.id;
+      }
       item.journalTypeId = this.props.params.typeId;
       paramList.push(item);
     });
@@ -207,7 +246,7 @@ class BudgetJournalTypeDetail extends React.Component {
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}
-                      type={tabsData[nowStatus].type}
+                      selectorItem={tabsData[nowStatus].selectorItem}
                       extraParams={tabsData[nowStatus].extraParams ? tabsData[nowStatus].extraParams : {}}/>
       </div>
     )

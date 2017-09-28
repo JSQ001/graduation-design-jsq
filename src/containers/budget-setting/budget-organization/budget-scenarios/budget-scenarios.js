@@ -58,7 +58,7 @@ class BudgetScenarios extends React.Component {
 
   //得到对应单据列表数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}&scenarioCode=%${this.state.searchParams.scenariosCode||''}%&scenarioName=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
+    this.state.organizationInfo.id && httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}&scenarioCode=%${this.state.searchParams.scenariosCode||''}%&scenarioName=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
