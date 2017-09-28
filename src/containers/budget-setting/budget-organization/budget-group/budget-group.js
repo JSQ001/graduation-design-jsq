@@ -137,7 +137,7 @@ BudgetGroup.contextTypes = {
 };
 
 function mapStateToProps(state) {
-
+  return {}
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetGroup));

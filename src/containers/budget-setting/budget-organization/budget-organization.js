@@ -2,11 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
-import { Table, Badge, Button } from 'antd';
+import { Table, Badge, Button, Popover, message, Popconfirm } from 'antd';
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
+import UpdateBudgetOrganization from 'containers/budget-setting/budget-organization/update-budget-organization'
 import SearchArea from 'components/search-area'
+import SlideFrame from 'components/slide-frame'
 
 class BudgetOrganization extends React.Component {
   constructor(props) {
@@ -17,10 +19,18 @@ class BudgetOrganization extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '预算组织代码', dataIndex: 'organizationCode', width: '30%'},
-        {title: '预算组织名称', dataIndex: 'organizationName', width: '30%'},
-        {title: '账套', dataIndex: 'setOfBooksId', width: '25%'},
-        {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '预算组织代码', dataIndex: 'organizationCode', width: '20%'},
+        {title: '预算组织名称', dataIndex: 'organizationName', width: '30%', render: organizationName => <Popover content={organizationName}>{organizationName}</Popover>},
+        {title: '账套', dataIndex: 'setOfBooksId', width: '20%'},
+        {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />},
+        {title: '操作', key: 'operation', width: '15%', render: (text, record) => (
+          <span>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <span className="ant-divider" />
+            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={`你确认要删除预算组织 ${record.organizationName} 吗？`}>
+              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>删除</a>
+            </Popconfirm>
+          </span>)},
       ],
       pagination: {
         total: 0
@@ -36,13 +46,31 @@ class BudgetOrganization extends React.Component {
         setOfBooksId: 1,
         organizationCode: '',
         organizationName: ''
-      }
+      },
+      nowOrganization: {},
+      showSlideFrame: false
     };
   }
 
   componentWillMount(){
     this.getList();
   }
+
+  editItem = (e, record) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.setState({
+      nowOrganization: record,
+      showSlideFrame: true
+    })
+  };
+
+  deleteItem = (e, record) => {
+    httpFetch.delete(`${config.budgetUrl}/api/budget/organizations/${record.id}`).then(response => {
+      message.success(`${record.organizationName}删除成功`);
+      this.getList();
+    })
+  };
 
   //得到列表数据
   getList(){
@@ -113,8 +141,13 @@ class BudgetOrganization extends React.Component {
     this.context.router.push(this.state.newBudgetOrganization.url);
   };
 
+  handleCloseSlide = (success) => {
+    success && this.getList();
+    this.setState({showSlideFrame : false});
+  };
+
   render(){
-    const { columns, data, loading,  pagination, searchForm } = this.state;
+    const { columns, data, loading,  pagination, searchForm, nowOrganization, showSlideFrame } = this.state;
     return (
       <div className="budget-organization">
         <h3 className="header-title">预算组织定义</h3>
@@ -137,6 +170,12 @@ class BudgetOrganization extends React.Component {
                bordered
                onRowClick={this.handleRowClick}
                size="middle"/>
+        <SlideFrame title="编辑预算组织"
+                    show={showSlideFrame}
+                    content={UpdateBudgetOrganization}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.setState({showSlideFrame : false})}
+                    params={nowOrganization}/>
       </div>
     )
   }
