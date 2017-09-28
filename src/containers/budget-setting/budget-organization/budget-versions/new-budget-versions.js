@@ -25,7 +25,6 @@ class NewBudgetVersions extends React.Component {
       checkoutCodeData:[],
       loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
-
     };
   }
 
@@ -73,7 +72,7 @@ class NewBudgetVersions extends React.Component {
 
 
   CancelHandle = () =>{
-    this.props.form.resetFields;
+
   };
 
 
@@ -95,7 +94,6 @@ class NewBudgetVersions extends React.Component {
             type=""
             showIcon
           />
-          {this.props.id}
         </div>
 
         <div className="new-budget-versions-from">
@@ -123,11 +121,9 @@ class NewBudgetVersions extends React.Component {
                 <FormItem
                   label="预算版本代码"
                 >
-                  {getFieldDecorator('versionCode',
-                    {
-                      rules: [{ required: true, message: '必填!' },
-                      ],
-                    })(
+                  {getFieldDecorator('versionCode', {
+                      rules: [{ required: true, message: '必填!' },]
+                  })(
                     <Input />
                   )}
                 </FormItem>
@@ -137,7 +133,6 @@ class NewBudgetVersions extends React.Component {
                 <FormItem label="预算版本名称"
                 >
                   {getFieldDecorator('versionName', {
-
                     rules: [{ required: true, message: '预算版本名称必填!' }],
                   })(<Input />)}
 

@@ -1,22 +1,22 @@
 import React from 'react'
-import { Form, Card, Row, Col, Badge } from 'antd'
+      import { Form, Card, Row, Col, Badge } from 'antd'
 
-import SearchArea from 'components/search-area'
-import 'styles/components/basic-info.scss'
+      import SearchArea from 'components/search-area'
+      import 'styles/components/basic-info.scss'
 
-/**
- * 基本信息组件
- * @params infoList   渲染表单所需要的配置项，见底端注释
- * @params infoData  基本信息数据
- * @params updateHandle  点击保存时的回调
- * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
- */
+      /**
+       * 基本信息组件
+       * @params infoList   渲染表单所需要的配置项，见底端注释
+       * @params infoData  基本信息数据
+       * @params updateHandle  点击保存时的回调
+       * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
+       */
 
-class BasicInfo extends React.Component{
-  constructor(props) {
-    super(props);
-    this.state = {
-      infoList: [],
+      class BasicInfo extends React.Component{
+      constructor(props) {
+        super(props);
+        this.state = {
+          infoList: [],
       params: {},
       cardShowStyle: {
         display: 'block'

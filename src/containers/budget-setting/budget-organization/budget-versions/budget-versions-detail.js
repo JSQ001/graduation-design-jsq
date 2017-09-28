@@ -6,17 +6,23 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Form, Table, Button, notification, Icon,Checkbox, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload,Select,DatePicker,message} from 'antd';
 const Option = Select.Option;
+const FormItem =Form.Item;
 import moment from 'moment'
+
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import CompanySelect from 'components/selector/company-selector'
+import ListSelector from 'components/list-selector'
+import BasicInfo from 'components/basic-info'
+
 import 'styles/budget/budget-versions/budget-versions-detail.scss'
-const FormItem =Form.Item;
+
 
 class BudgetVersionsDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      updateState: false,
       data: [],
       columns: [{
         title: '公司代码', dataIndex: 'companyCode', key: 'companyCode',},
@@ -26,6 +32,25 @@ class BudgetVersionsDetail extends React.Component {
           render:(text,recode)=>{return <Checkbox defaultChecked={recode?true:false} onChange={this.isEnabledEditHandle(text,recode)}  />}
 
         }],
+      infoDate:[],
+      infoList: [
+        {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true},
+        {type: 'input', label: '预算版本代码', id: 'versionCode', message: '请输入', disabled: true},
+        {type: 'input', label: '预算版本名称', id: 'versionName', message: '请输入'},
+        {type:'select',label: '状态' ,id:'status',
+          options:
+            [
+              {value:'NEW',label:'新建'},
+              {value:'CURRENT',label:'当前'},
+              {value:'HISTORY',label:'历史'}
+
+            ]
+
+        },
+        {type:'date',label:'预算版本日期',id:'versionDate'},
+        {type: 'input', label: '预算版本描述', id: 'description', message: '请输入'},
+        {type: 'switch', label: '是否启用', id: 'isEnabled'}
+      ],
       pagination: {
         total: 0
       },
@@ -50,8 +75,15 @@ class BudgetVersionsDetail extends React.Component {
 
 
   componentWillMount(){
-    this.getDetail();
+    console.log(this.props)
+
+    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
+      response.data.organizationName = this.props.organization.organizationName;
+      let date =response.data.versionDate;
+      this.setState({ formData:response.data,infoDate: response.data});
+    }).catch(e=>{});
     this.getAssignCompanyList();
+    console.log(this.state.infoDate)
   }
 
 
@@ -59,30 +91,21 @@ class BudgetVersionsDetail extends React.Component {
 
   }
 
-  //获取Option列表
-  /*
-   getOption(values){
-
-   for (let item in values){
-   console.log(value+" " +label)
-   }
-   }
-   */
-
-
-  /*<Select placeholder="请选择" onChange={handle}>
-   {item.options.map((option)=>{
-   return <Option key={option.value}>{option.label}</Option>
-   })}
-   </Select>*/
-
-
   //获得详情数据
   getDetail(){
     console.log(this.props)
+    let data ={}
     httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
+      data = response.data;
+      const dataValue={
+        ...data,
+        'organizationName':this.prototype.organization.organizationName,
+        'versionDate':data.versionDate?data.versionDate.format('YYYY-MM-DD'):''
+      }
+
       this.setState({
-        formData:response.data
+        formData:response.data,
+        infoDate:dataValue
       })
     }).catch(e=>{
     });
@@ -103,10 +126,12 @@ class BudgetVersionsDetail extends React.Component {
 
   //修改预算版本
   putData(value){
-    return httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+   httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+      response.data.infoDate.organizationName=this.props.organization.organizationName;
       this.setState({
         formData:response.data,
-        edit:false,
+        infoDate:response.data,
+        updateState: true,
       })
 
       message.success("编辑成功");
@@ -118,191 +143,6 @@ class BudgetVersionsDetail extends React.Component {
     });
   }
 
-  versionNameChangHandle=(event)=>{
-    let Name =event.target.value;
-    this.state.formData.versionName =Name;
-  }
-
-  statusChangHandle=(value)=>{
-    this.state.formData.status=value;
-  }
-
-  versionsDataChangHandle=( moment, dateString)=>{
-    this.state.formData.versionDate = dateString;
-  }
-
-  descriptionChangHandle=(event)=>{
-    this.state.formData.description=event.target.value;
-  }
-
-  isEnabledChangHandle=(value)=>{
-    this.state.formData.isEnabled=value
-  }
-
-
-  saveHandle=()=>{
-    let value = this.state.formData;
-    this.putData(value)
-
-  }
-
-
-  renderPutForm=()=>{
-    const fromData=this.state.formData;
-    const optionData =this.state.optionData;
-    return (
-      <Form >
-        <Row gutter={40}>
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              label="预算组织"
-              labelCol={{span:24}}
-              wrapperCol={{span:24}}
-            >
-              <Input  disabled={true} defaultValue={this.props.organization.organizationName} />
-            </FormItem>
-          </Col>
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              label="预算版本代码"
-              labelCol={{span:24}}
-              wrapperCol={{span:24}}
-            >
-              <Input  disabled={true} defaultValue={fromData.versionCode} />
-            </FormItem>
-          </Col>
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem label="预算版本名称"
-                      labelCol={{span:24}}
-                      wrapperCol={{span:24}}
-            >
-              <Input defaultValue={fromData.versionName} onBlur={this.versionNameChangHandle}/>
-
-            </FormItem>
-          </Col>
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              label="状态"
-              labelCol={{span:24}}
-              wrapperCol={{span:24}}
-            >
-
-              <Select
-                placeholder=""
-                defaultValue={fromData.status}
-                onSelect={this.statusChangHandle}
-              >
-                <Select.Option value="NEW">新建</Select.Option>
-                <Select.Option value="CURRENT">当前</Select.Option>
-                <Select.Option value="HISTORY">历史</Select.Option>
-              </Select >
-
-            </FormItem>
-          </Col>
-
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem label="预算版本描述"
-                      labelCol={{span:24}}
-                      wrapperCol={{span:24}}
-            >
-
-              <Input  defaultValue={fromData.description} onBlur={this.descriptionChangHandle} />
-            </FormItem>
-          </Col>
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24}}
-              label="版本日期"
-            >
-
-              <DatePicker  style={{width:315}} defaultValue={moment( fromData.versionDate, 'YYYY-MM-DD')}  onChange={this.versionsDataChangHandle}/>
-
-            </FormItem>
-          </Col>
-
-
-
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <FormItem
-              labelCol={{span:24}}
-              wrapperCol={{span:24}}
-              label="是否启用"
-            >
-              <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} defaultChecked={fromData.isEnabled} onChange={this.isEnabledChangHandle}/>
-
-            </FormItem>
-          </Col>
-
-
-        </Row>
-
-        <Row gutter={24}>
-          <Col span={8} style={{ display: 'inline-block'}}>
-            <Button type="primary" onClick={this.saveHandle}>保 存</Button>
-          </Col>
-        </Row>
-
-
-      </Form>
-
-    );
-  }
-
-
-  renderForm=()=>{
-    const data = this.state.formData;
-    return(
-      this.state.edit? <div>
-        {this.renderPutForm()}
-      </div>:
-        <div>
-          <Row gutter={40} align="top">
-            <Col span={8}>
-              <div className="form-title">预算组织:</div>
-              <div>{this.props.organization.organizationName}</div>
-            </Col>
-            <Col span={8}>
-              <div className="form-title">预算版本代码:</div>
-              <div>{data.versionCode}</div>
-            </Col >
-            <Col span={8}>
-              <div className="form-title">版本日期:</div>
-              <div>{data.versionDate?data.versionDate:"-"}</div>
-            </Col>
-          </Row>
-          <Row gutter={40} align="top">
-            <Col span={8}>
-              <div className="form-title">版本状态:</div>
-              <div>{ data.status=="NEW"?"新建":(data.status="CURRENT"?"当前":"历史")}</div>
-            </Col>
-            <Col span={8}>
-              <div className="form-title">预算版本名称:</div>
-              <div>{data.versionName}</div>
-            </Col>
-            <Col span={8}>
-              <div className="form-title">预算版本描述:</div>
-              <div>{data.description?data.description:'-'}</div>
-            </Col>
-          </Row>
-          <Row gutter={40} align="top">
-            <Col span={8}>
-
-              <div className="form-title">状态:</div>
-              <div> <Badge status={data.isEnabled?'success':'error'}/>{data.isEnabled?'启用':'禁用'}</div>
-            </Col>
-
-          </Row>
-
-        </div>
-    )
-
-  }
 
   handleEdit = () => {
     this.setState({edit: true})
@@ -313,7 +153,7 @@ class BudgetVersionsDetail extends React.Component {
   }
 
 
-  versionDateChangeHandle=()=>{
+  infoDateChangeHandle=()=>{
     this.versionAssignCompany(this.state.newAssignCompanyDate);
   }
 
@@ -362,8 +202,22 @@ class BudgetVersionsDetail extends React.Component {
     this.showImport(false)
   }
 
+  updateHandleInfo=(value)=>{
+    console.log(value);
+    const valueData={
+      ...this.state.infoDate,
+      'versionDate':value.versionDate,
+      'status':value.status,
+      'description':value.description,
+      'isEnabled':value.isEnabled
+    }
+    console.log(valueData)
+    this.putData(valueData)
+
+  }
+
   render(){
-    const {  edit, data, columns, pagination} = this.state;
+    const {  edit, data, columns, pagination,formData,infoDate,infoList,updateState} = this.state;
     return (
       <div>
         <div className="budget-versions-detail">
@@ -376,21 +230,17 @@ class BudgetVersionsDetail extends React.Component {
             />
           </div>
 
-          <div className="common-top-area">
-            <div className="common-top-area-title">
-              基本信息
-              {!edit ? <span className="title-edit" onClick={this.handleEdit}>编辑</span> : null}
-            </div>
-            <div className="common-top-area-content form-title-area">
-              {this.renderForm()}
-            </div>
-          </div>
+          {console.log(infoDate)}
+          <BasicInfo infoList={infoList}
+                     infoData={infoDate}
+                     updateHandle={this.updateHandleInfo}
+                     updateState={updateState}/>
 
           <div className="table-header">
             <div className="table-header-title">{`共 ${data.length} 条数据`}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={() => this.showImport(true)}>分配公司</Button>
-              <Button onClick={this.versionDateChangeHandle}>保 存</Button>
+              <Button onClick={this.infoDateChangeHandle}>保 存</Button>
             </div>
           </div>
           <Table columns={columns}
