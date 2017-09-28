@@ -10,7 +10,6 @@ import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import SelectorData from 'share/selectorData.js'
 
 const itemCode = [];
 class BudgetItem extends React.Component {

@@ -57,7 +57,7 @@ const selectorData = {
   },
   'itemType': {
     title: "预算项目类型",
-    url: `${config.baseUrl}/api/budget/itemType/query`,
+    url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
       {type: 'input', id: 'itemTypeCode', label: '预算项目类型代码'},
       {type: 'input', id: 'itemTypeName', label: '预算项目类型代码'},
@@ -66,7 +66,7 @@ const selectorData = {
       {title: '预算项目类型代码', dataIndex: 'itemTypeCode'},
       {title: '预算项目类型名称', dataIndex: 'itemTypeName'},
     ],
-    key: 'itemTypeOID'
+    key: 'id'
   },
   'budget_item_filter':{
     title: '选择当前项目组中未被添加的项目',
