@@ -82,7 +82,7 @@ class PutBudgetItemType extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const { params,isEnabled} = this.state;
     const formItemLayout = {
-      labelCol: { span: 24,offset: 1  },
+      labelCol: { span: 6,offset: 1  },
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
