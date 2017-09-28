@@ -12,7 +12,7 @@ import BudgetItemType from 'containers/budget-setting/budget-organization/budget
 import BudgetItem from 'containers/budget-setting/budget-organization/budget-item/budget-item'
 import BudgetGroup from 'containers/budget-setting/budget-organization/budget-group/budget-group'
 import BudgetStrategy from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy'
-import BudgetRule from 'containers/budget-setting/budget-organization/budget-rule/budget-rule'
+import BudgetControlRules from 'containers/budget-setting/budget-organization/budget-control-rules/budget-control-rules'
 import BudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type'
 
 import menuRoute from 'share/menuRoute'
@@ -83,7 +83,7 @@ class BudgetOrganizationDetail extends React.Component {
         content = BudgetStrategy;
         break;
       case 'RULE':
-        content = BudgetRule;
+        content = BudgetControlRules;
         break;
       case 'JOURNAL_TYPE':
         content = BudgetJournalType;

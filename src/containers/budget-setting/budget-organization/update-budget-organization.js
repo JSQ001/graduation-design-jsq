@@ -12,24 +12,27 @@ import config from 'config'
 
 import 'styles/budget/budget-organization/new-budget-organization.scss'
 
-class NewBudgetOrganization extends React.Component {
+class UpdateBudgetOrganization extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      budgetOrganization: menuRoute.getRouteItem('budget-organization','key'),    //组织定义的页面项
       loading: false
     };
   }
+
+  onCancel = () => {
+    this.props.close();
+  };
 
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/organizations`, values).then((res)=>{
+        httpFetch.put(`${config.budgetUrl}/api/budget/organizations`, Object.assign(this.props.params, values)).then((res)=>{
           this.setState({loading: false});
-          message.success(`组织定义${values.organizationName}新建成功`);
-          this.context.router.replace(this.state.budgetOrganization.url);
+          message.success(`组织定义${values.organizationName}保存成功`);
+          this.props.close(true);
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
@@ -64,9 +67,9 @@ class NewBudgetOrganization extends React.Component {
                 required: true,
                 message: '请选择帐套'
               }],
-              initialValue: ''
+              initialValue: this.props.params.setOfBooksId
             })(
-              <Select placeholder="请选择帐套">
+              <Select placeholder="请选择帐套" disabled>
                 <Option value="1" key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
               </Select>
             )}
@@ -77,9 +80,9 @@ class NewBudgetOrganization extends React.Component {
                 required: true,
                 message: '请输入预算组织代码',
               }],
-              initialValue: ''
+              initialValue: this.props.params.organizationCode
             })(
-              <Input placeholder="请输入预算组织代码" />
+              <Input placeholder="请输入预算组织代码" disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预算组织名称">
@@ -88,24 +91,22 @@ class NewBudgetOrganization extends React.Component {
                 required: true,
                 message: '请输入预算组织名称',
               }],
-              initialValue: ''
+              initialValue: this.props.params.organizationName
             })(
               <Input placeholder="请输入预算组织名称" />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator('isEnabled', {
-              initialValue: true
+              initialValue: this.props.params.isEnabled
             })(
-              <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
-          <FormItem wrapperCol={{ offset: 7 }}>
-            <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button></Col>
-              <Col span={3}><Button>取消</Button></Col>
-            </Row>
-          </FormItem>
+          <div className="slide-footer">
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
+            <Button onClick={this.onCancel}>取消</Button>
+          </div>
         </Form>
       </div>
     )
@@ -116,11 +117,6 @@ class NewBudgetOrganization extends React.Component {
 function mapStateToProps() {
   return {}
 }
+const WrappedUpdateBudgetOrganization = Form.create()(UpdateBudgetOrganization);
 
-NewBudgetOrganization.contextTypes = {
-  router: React.PropTypes.object
-};
-
-const WrappedNewBudgetOrganization = Form.create()(NewBudgetOrganization);
-
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetOrganization));
+export default connect(mapStateToProps)(injectIntl(WrappedUpdateBudgetOrganization));

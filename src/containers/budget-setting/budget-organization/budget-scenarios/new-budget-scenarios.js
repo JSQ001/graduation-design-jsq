@@ -29,6 +29,7 @@ class NewBudgetScenarios extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
+        values.organizationId = this.props.params.organizationId
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
@@ -37,11 +38,11 @@ class NewBudgetScenarios extends React.Component{
             message.success('操作成功');
           }
         }).catch((e)=>{
-          if(e.response){
+          this.setState({loading: false});
+          if(e.response.data.validationErrors){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
           } else {
-            console.log(e)
+            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
         })
       }
@@ -80,7 +81,7 @@ class NewBudgetScenarios extends React.Component{
               <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景代码" hasFeedback>
+          <FormItem {...formItemLayout} label="预算场景代码">
             {getFieldDecorator('scenarioCode', {
               rules: [{
                 required: true,
@@ -91,7 +92,7 @@ class NewBudgetScenarios extends React.Component{
               <Input placeholder="请输入" />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>
+          <FormItem {...formItemLayout} label="预算场景描述">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,

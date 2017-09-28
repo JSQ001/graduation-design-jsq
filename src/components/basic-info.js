@@ -18,18 +18,12 @@ import React from 'react'
         this.state = {
           infoList: [],
       params: {},
-      cardShowStyle: {
-        display: 'block'
-      },
-      formShowStyle: {
-        display: 'none'
-      },
+      cardShow: true,
     };
   }
 
   componentWillMount(){
     this.setState({ infoList: this.props.infoList })
-
   };
 
   componentWillReceiveProps(nextProps){
@@ -40,14 +34,7 @@ import React from 'react'
   }
 
   editInfo = () => {
-    this.setState({
-      cardShowStyle: {
-        display: 'none'
-      },
-      formShowStyle: {
-        display: 'block'
-      }
-    })
+    this.setState({ cardShow: false })
   }
 
   renderGetInfo(item) {
@@ -59,14 +46,14 @@ import React from 'react'
   }
   getInfos() {
     const children = [];
-    this.props.infoList.map((item, i)=>{
+    this.props.infoList.map((item)=>{
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
           <div style={{color: '#989898'}}>{item.label}</div>
           {this.renderGetInfo(item)}
         </Col>
       );
-      item.defaultValue = this.state.params[item.id]
+      item.defaultValue = this.state.params[item.id];
     });
     return children;
   }
@@ -76,32 +63,31 @@ import React from 'react'
   }
 
   handelCancel = () => {
-    this.setState({
-      cardShowStyle: {
-        display: 'block'
-      },
-      formShowStyle: {
-        display: 'none'
-      }
-    })
+    this.setState({ cardShow: true })
   }
 
   render() {
-    const { cardShowStyle, formShowStyle, infoList } = this.state;
-    return (
-      <div className="basic-info">
+    const { cardShow, infoList } = this.state;
+    let domRender;
+    if(cardShow) {
+      domRender = (
         <Card title="基本信息"
               extra={<a onClick={this.editInfo}>编辑</a>}
-              style={cardShowStyle}
               noHovering >
           <Row>{this.getInfos()}</Row>
         </Card>
-        <div style={formShowStyle}>
-          <SearchArea searchForm={infoList}
-                      submitHandle={this.handleUpdate}
-                      clearHandle={this.handelCancel}
-                      okText="保存" clearText="取消"/>
-        </div>
+      )
+    } else {
+      domRender = (
+        <SearchArea searchForm={infoList}
+                    submitHandle={this.handleUpdate}
+                    clearHandle={this.handelCancel}
+                    okText="保存" clearText="取消"/>
+      )
+    }
+    return (
+      <div className="basic-info">
+        {domRender}
       </div>
     )
   }

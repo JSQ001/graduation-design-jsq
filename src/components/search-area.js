@@ -63,6 +63,7 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
+    console.log(values);
     for(let id in values){
       this.props.searchForm.map(item => {
         if(item.id === id){
@@ -274,6 +275,7 @@ class SearchArea extends React.Component{
       listExtraParams: item.listExtraParams,
       listType : item.listType,
       showListSelector: true,
+
       listSelectedData
     })
   };
@@ -308,7 +310,7 @@ class SearchArea extends React.Component{
   };
 
   render(){
-    const { showListSelector, listType, listSelectedData, listExtraParams } = this.state;
+    const { showListSelector, listType, listSelectedData, listExtraParams, selectorItem } = this.state;
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
@@ -331,7 +333,8 @@ class SearchArea extends React.Component{
                       onCancel={this.handleListCancel}
                       onOk={this.handleListOk}
                       selectedData={listSelectedData}
-                      extraParams={listExtraParams}/>
+                      extraParams={listExtraParams}
+                      selectorItem={selectorItem}/>
         <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
       </Form>
     )
