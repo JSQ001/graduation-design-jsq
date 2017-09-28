@@ -13,12 +13,12 @@ class BudgetStrategy extends React.Component {
     super(props);
     this.state = {
       searchForm: [
-        {type: 'input', id: 'strategyCode', label: '预算控制策略代码'},
-        {type: 'input', id: 'strategyDesc', label: '预算控制策略描述'}
+        {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码'},
+        {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述'}
       ],
       searchParams: {
-        strategyCode: "",
-        strategyDesc: ""
+        controlStrategyCode: "",
+        controlStrategyName: ""
       },
       columns: [
         {title: '预算控制策略代码', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
@@ -53,7 +53,12 @@ class BudgetStrategy extends React.Component {
   };
 
   getList() {
-    return httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyCode=${this.state.searchParams.strategyCode||''}&controlStrategyName=${this.state.searchParams.strategyDesc||''}`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    return httpFetch.get(url).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
@@ -77,8 +82,8 @@ class BudgetStrategy extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-      strategyCode: result.strategyCode,
-      strategyDesc: result.strategyDesc
+      controlStrategyCode: result.controlStrategyCode,
+      controlStrategyName: result.controlStrategyName
     };
     this.setState({
       searchParams:searchParams,
@@ -95,8 +100,8 @@ class BudgetStrategy extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({searchParams: {
-      strategyCode: "",
-      strategyDesc: ""
+      controlStrategyCode: "",
+      controlStrategyName: ""
     }})
   };
 
