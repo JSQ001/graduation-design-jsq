@@ -43,6 +43,10 @@ class SearchArea extends React.Component{
     this.setState({ searchForm: this.props.searchForm })
   };
 
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({ searchForm: nextProps.searchForm })
+  };
+
   //收起下拉
   toggle = () => {
     const { expand } = this.state;
