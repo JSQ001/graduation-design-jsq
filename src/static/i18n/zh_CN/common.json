@@ -11,5 +11,8 @@
   "common.enabled": "启用",
   "common.disabled": "禁用",
   "common.total": "共 {total} 条数据",
-  "common.status": "状态: {status}"
+  "common.status": "状态: {status}",
+  "common.columnStatus": "状态",
+  "common.statusEnable": "启用",
+  "common.statusDisable": "禁用"
 }

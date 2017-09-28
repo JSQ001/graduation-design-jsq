@@ -47,6 +47,8 @@ class BudgetStrategy extends React.Component {
       this.setState({
         page: page - 1,
         loading: true
+      }, ()=>{
+        this.getList();
       })
   };
 
@@ -81,7 +83,10 @@ class BudgetStrategy extends React.Component {
     this.setState({
       searchParams:searchParams,
       loading: true,
-      page: 0
+      page: 0,
+      pagination: {
+        current: 1
+      }
     }, ()=>{
       this.getList();
     })

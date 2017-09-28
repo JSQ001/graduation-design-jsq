@@ -31,7 +31,7 @@ class BudgetScenarios extends React.Component {
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName'},
         {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? desc : '-'}</span>},
-        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : ''}</span>},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
@@ -49,7 +49,8 @@ class BudgetScenarios extends React.Component {
     this.setState({
       organizationInfo: this.props.organization,
       newParams: {
-        organizationName: this.props.organization.organizationName
+        organizationName: this.props.organization.organizationName,
+        organizationId: this.props.organization.id
       }
     }, () => {
       this.getList();
@@ -99,7 +100,10 @@ class BudgetScenarios extends React.Component {
     this.setState({
       searchParams:searchParams,
       loading: true,
-      page: 0
+      page: 0,
+      pagination: {
+        current: 1
+      }
     }, ()=>{
       this.getList();
     })
@@ -144,6 +148,7 @@ class BudgetScenarios extends React.Component {
 
   handleRowClick = (record) => {
     record.organizationName = this.state.organizationInfo.organizationName;
+    console.log(record);
     this.setState({
       updateParams: record
     }, () => {

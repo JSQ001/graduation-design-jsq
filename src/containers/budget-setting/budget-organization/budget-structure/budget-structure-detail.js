@@ -6,83 +6,132 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import debounce from 'lodash.debounce';
 
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
+import SlideFrame from "components/slide-frame";
+import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
+import ListSelector from 'components/list-selector'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
+const Search = Input.Search;
 
 
 class BudgetStructureDetail extends React.Component{
+
   constructor(props){
     super(props);
     this.state = {
       loading: true,
+      buttonLoading: false,
+      companyListSelector: false,
       edit:false,
-      statusCode: this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/,
+      structure:{},
+      buttonLoading: false,
+      showSlideFrame: false,
+      statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/,
       total:0,
       data:[],
       pagination:{},
-      columns:[
-        {
-          title:this.props.intl.formatMessage({id:"dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'   /*维度代码*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"description"}), key: "description", dataIndex: 'description'   /*描述*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'   /*布局位置*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'   /*布局顺序*/
-        },
-        {
-          title:this.props.intl.formatMessage({id:"defaultDimValueCode"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'   /*默认维值*/
-        },
-        {
-          title:"操作", key: "opration", dataIndex: 'opration'   /*操作*/
-        },
-      ],
-      structure:this.props.location.state,
+      status:"",
+      columns:[],
+      columnGroup:{
+        company:[
+          {                        /*公司代码*/
+            title:this.props.intl.formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode'
+          },
+          {                        /*公司代码*/
+            title:this.props.intl.formatMessage({id:"structure.companyDescription"}), key: "description", dataIndex: 'description'
+          },
+          {                        /*公司类型*/
+            title:this.props.intl.formatMessage({id:"structure.companyType"}), key: "companyType", dataIndex: 'companyType'
+          },
+          {                        /*启用*/
+            title:this.props.intl.formatMessage({id:"structure.enablement"}), key: "enablement", dataIndex: 'enablement',width:'10%'
+          },
+        ],
+        dimension:[
+          {                        /*维度代码*/
+          title:this.props.intl.formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
+           },
+          {                        /*描述*/
+            title:this.props.intl.formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
+          },
+          {                        /*布局位置*/
+            title:this.props.intl.formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
+          },
+          {                        /*布局顺序*/
+            title:this.props.intl.formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
+          },
+          {                        /*默认维值*/
+            title:this.props.intl.formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
+          },
+          {                        /*操作*/
+            title:this.props.intl.formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
+          },]
+      },
       tabs: [
-        {key: 'distribute-dimension', name: this.props.intl.formatMessage({id:"dimension.distribute"})}, /*维度分配*/
-        {key: 'distribute-company', name: this.props.intl.formatMessage({id:"company.distribute"})}  /*公司分配*/
+        {key: 'dimension', name: this.props.intl.formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
+        {key: 'company', name: this.props.intl.formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
         ],
       form: {
         name: '',
         enabled: true
       },
     }
+    this.queryDimension = debounce(this.queryDimension,1000)
   }
 
-  handleEdit = () => {
-    this.setState({edit: true})
+  componentWillMount(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.id[1]}`).then((response)=>{
+      if(response.status === 200){
+        this.setState({
+          structure: response.data
+        })
+      }})
+    this.setState({
+      buttonLoading: false,
+      columns : this.state.columnGroup.dimension
+    })
+  }
+
+  //控制是否编辑
+  handleEdit = (flag) => {
+    this.setState({edit: flag})
   };
 
   //详情页面修改刚新建的预算表
   handleSave = (e) => {
     e.preventDefault();
+    this.setState({
+      buttonLoading: true
+    })
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        // delete values.organizationName;
         values.id = this.state.structure.id;
+        values.versionNumber = this.state.structure.versionNumber;
         values.organizationId = this.state.structure.organizationId;
+        console.log(values)
         httpFetch.put(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
-            message.success(this.props.intl.formatMessage({id:"prompting.saveSuccess"})); /*保存成功！*/
+            message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
+            this.setState({
+              buttonLoading: false
+            })
+            this.handleEdit(false)
           }
         })
-
       }
     });
   }
 
   renderForm(){
     const { getFieldDecorator } = this.props.form;
-    const { structure, edit, statusCode } = this.state;
+    const { structure, edit, statusCode, buttonLoading } = this.state;
     const periodStrategy = [
       {id:"month",value: this.props.intl.formatMessage({id:"periodStrategy.month"})},  /*月度*/
       {id:"quarter",value: this.props.intl.formatMessage({id:"periodStrategy.quarter"})}, /*季度*/
@@ -101,7 +150,7 @@ class BudgetStructureDetail extends React.Component{
                   {getFieldDecorator('organizationName', {
                     initialValue: structure.organizationName,
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})} disabled/>)
+                    <Input disabled/>)
                   }
                 </FormItem>
               </Col>
@@ -124,7 +173,7 @@ class BudgetStructureDetail extends React.Component{
                   {getFieldDecorator('structureName', {
                     initialValue: structure.structureName,
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                       {
                         validator:(item,value,callback)=>{
                           if(value==="")
@@ -134,7 +183,7 @@ class BudgetStructureDetail extends React.Component{
                       }
                     ],
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -143,17 +192,20 @@ class BudgetStructureDetail extends React.Component{
             <Row gutter={24}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"periodStrategy"})}  /*{/!*编制期段*!/}*/
+                  label={this.props.intl.formatMessage({id:"budget.periodStrategy"})}  /*{/!*编制期段*!/}*/
                   colon={true}>
                   {getFieldDecorator('periodStrategy', {
                     initialValue:structure.periodStrategy,
                     rules:[
-                      {required:true,message: this.props.intl.formatMessage({id:"structure.validator.periodStrategy"})}, /*该预算表已被预算日记账引用，不允许修改编制期段。*/
+                      {required:true,message: this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})}, /*该预算表已被预算日记账引用，不允许修改编制期段。*/
                       {
                         //编制预算表如果被预算日记账引用，则不允许修改编制期段。
                         validator:(item,value,callback)=>{
                           httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${structure.id}`).then((response)=>{
                             if(response.data.length>0){
+                              this.setState({
+                                buttonLoading: true
+                              });
                               callback()
                             }
                             callback()
@@ -162,7 +214,7 @@ class BudgetStructureDetail extends React.Component{
                       }
                     ],
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"prompting.select"})}  /* {/!*请选择*!/}*/>
+                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
                       {options}
                     </Select>)
                   }
@@ -175,7 +227,7 @@ class BudgetStructureDetail extends React.Component{
                   {getFieldDecorator('description', {
                     initialValue:structure.description,
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"prompting.input"})},
+                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
                       {validator:(item,value,callback)=>{
                         if(value==="")
                           callback();
@@ -183,14 +235,14 @@ class BudgetStructureDetail extends React.Component{
                       }}
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"prompting.input"})}
+                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"status.code"},{statusCode:statusCode})} /* {/!*状态*!/}*/
+                  label={this.props.intl.formatMessage({id:"common.status"},{status:statusCode}) /* 状态*/}
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: structure.isEnabled,
@@ -199,54 +251,58 @@ class BudgetStructureDetail extends React.Component{
                       {
                         validator: (item,value,callback)=>{
                           this.setState({
-                            statusCode: value ? this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/
-                              : this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/
+                            statusCode: value ? this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/
+                              : this.props.intl.formatMessage({id:"common.statusDisable"}) /*禁用*/
                           })
                           callback();
                         }
                       }
                     ],
                   })
-                  (<Switch checkedChildren={this.props.intl.formatMessage({id:"status.enabled"}) /*启用*/ }
-                           unCheckedChildren={this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/}/>)
+                  (<Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
                   }
                 </FormItem>
               </Col>
             </Row>
-            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"button.save"}) /*保存*/}</Button>
-            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"button.cancle"}) /*取消*/}</Button>
-
+            <Button type="primary" htmlType="submit" loading={buttonLoading} >{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
+            <Button onClick={()=>this.handleEdit(false)} style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
           </Form>
         </div>
         :
-        <div>
+        <div className="structure-detail-div">
         <Row gutter={40} align="top">
           <Col span={8}>
-            <div className="form-title">预算组织:</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"budget.organization"}) /*预算组织*/}:</div>
             <div>{structure.organizationName}</div>
           </Col>
           <Col span={8}>
-            <div className="form-title">预算表代码:</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureCode"}) /*预算表代码*/}:</div>
             <div>{structure.structureCode}</div>
           </Col >
           <Col span={8}>
-            <div className="form-title">预算表名称:</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureName"}) /*预算表名称*/}:</div>
             <div>{structure.structureName}</div>
           </Col>
         </Row>
         <br/>
         <Row gutter={40} align="top">
           <Col span={8}>
-            <div className="form-title">编制期段:</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"budget.periodStrategy"})}:</div>
             <div>{ structure.periodStrategy=="month"?"月度":(structure.periodStrategy="quarter"?"季度":"年度")}</div>
           </Col>
           <Col span={8}>
-            <div className="form-title">预算表描述:</div>
-            <div>{structure.description}</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureDescription"}) /*预算表描述*/}:</div>
+            <div className="structure-detail-description">{structure.description}</div>
           </Col>
           <Col span={8}>
-            <div className="form-title">状态:</div>
-            <div> <Badge status={structure.isEnabled?'success':'error'}/>{structure.isEnabled?'启用':'禁用'}</div>
+            <div className="form-title">{this.props.intl.formatMessage({id:"common.columnStatus"}) /*状态*/}:</div>
+            <div>  {structure.isEnabled}
+              <Badge status={true ? 'success' : 'error'}/>
+                {true ?
+                  this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/ :
+                  this.props.intl.formatMessage({id:"common.statusDisable"}) /*禁用*/
+                }
+              </div>
           </Col>
         </Row>
       </div>
@@ -266,20 +322,68 @@ class BudgetStructureDetail extends React.Component{
     this.setState({
       loading: true,
       page: 0,
-      status: key
+      status: key,
+      columns: key === 'company' ? this.state.columnGroup.company : this.state.columnGroup.dimension
     },()=>{
-     // this.getList()
+      key === "company" ? this.queryCompany : this.queryDimension ;
     });
   };
+
+  handleSearchChange = (e) =>{
+    this.state.status === "company" ? this.queryCompany(e.target.value) : this.queryDimension(e.target.value);
+  };
+
+  handleCreate = (e) =>{
+    this.state.status ==="company" ? this.showListSelector(true) : this.showSlide(true)
+  };
+
+  showListSelector = (flag) =>{
+    this.setState({
+      companyListSelector: flag
+    })
+  };
+
+  //分配公司
+  distributeCompany(){
+
+  }
+
+  //维度分配
+  distributeDimension(){}
+
+  //调用维度查询接口
+  queryDimension(value){
+    console.log(value)
+  }
+
+  queryCompany(value){
+    console.log(value)
+  }
+
+  showSlide = (flag) => {
+    this.setState({
+      showSlideFrame: flag
+    })
+  };
+
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.getList();
+    }
+    this.setState({
+      showSlideFrame: false
+    })
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, edit, form, total, data, columns, pagination} = this.state;
+    const { loading, edit, form, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
         <div className="common-top-area">
           <div className="common-top-area-title">
-            {this.props.intl.formatMessage({id:"title.basicInformation"}) /*基本信息*/}
-            {!edit ? <span className="title-edit" onClick={this.handleEdit}>{this.props.intl.formatMessage({id:"text.edit"}) /*编辑*/}</span> : null}
+            {this.props.intl.formatMessage({id:"budget.basicInformation"}) /*基本信息*/}
+            {!edit ? <span className="title-edit" onClick={()=>this.handleEdit(true)}>{this.props.intl.formatMessage({id:"budget.edit"}) /*编辑*/}</span> : null}
           </div>
           <div className="common-top-area-content form-title-area ">
             {this.renderForm()}
@@ -291,9 +395,15 @@ class BudgetStructureDetail extends React.Component{
           </Tabs>
         </div>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'search.total'},{total:`${total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'button.add'})}</Button>  {/*添 加*/}
+            <Button type="primary" onClick={this.handleCreate}>{status === 'company'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
+              this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+            {status === "company" ? <Button >{this.props.intl.formatMessage({id:'common.save'})}</Button> : null}
+            <Search className="table-header-search"
+                    onChange={this.handleSearchChange}                                      /* 请输入公司名称/代码*/
+                    placeholder={ status === "company" ? this.props.intl.formatMessage({id:'structure.searchCompany'}) :
+                      this.props.intl.formatMessage({id: 'structure.searchDimension' /*请输入维度名称/代码*/ })}/>
           </div>
         </div>
         <Table
@@ -302,6 +412,15 @@ class BudgetStructureDetail extends React.Component{
             pagination={pagination}
             size="middle"
             bordered/>
+
+        <SlideFrame title="新建维度"
+                    show={showSlideFrame}
+                    content={NewDimension}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.showSlide(false)}/>
+
+        <ListSelector type="company"
+                        visible={companyListSelector}/>
       </div>
     )
   }

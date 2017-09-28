@@ -45,12 +45,6 @@ class BudgetGroupDetail extends React.Component {
       newData: [],
       extraParams: {},
       selectedData: [],
-      rowSelection: {
-        selectedRowKeys: [],
-        onChange: this.onSelectChange,
-        onSelect: this.onSelectItem,
-        onSelectAll: this.onSelectAll
-      },
       selectorItem: {}
     }
     ;

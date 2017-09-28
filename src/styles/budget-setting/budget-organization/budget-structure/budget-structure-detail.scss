@@ -6,11 +6,16 @@
         font-family:PingFangSC-Regular;
         font-size:12px;
         color:#049dbc;
-        margin-left: 587px;
+        margin-left: 15px;
       }
     }
     .structure-detail-form{
       margin-top: -30px;
+    }
+    .structure-detail-div {
+      .structure-detail-description {
+
+      }
     }
   }
   .structure-detail-distribution{
@@ -18,5 +23,12 @@
   }
   .table-header{
     margin-top: -10px;
+    .table-header-buttons{
+      .table-header-search{
+        width: 240px;
+        position: absolute;
+        right:0;
+      }
+    }
   }
 }
