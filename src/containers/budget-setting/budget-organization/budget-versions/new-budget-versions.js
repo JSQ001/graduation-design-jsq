@@ -53,12 +53,12 @@ class NewBudgetVersions extends React.Component {
 
   //保存数据
   saveData(value){
-      httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-      let  path=this.state.budgetVersionsDetailDetailPage.url.replace(':id',response.data.id);
-        message.success('保存成功', 2);
-        setTimeout(() => {
-          this.setState({loading:false }, () => this.context.router.push(path))
-        },200)
+    httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+      let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
+      message.success('保存成功', 2);
+      setTimeout(() => {
+        this.setState({loading:false }, () => this.context.router.push(path))
+      },200)
 
     } ).catch(e=>{
       this.setState({loading:false});
@@ -163,65 +163,65 @@ class NewBudgetVersions extends React.Component {
                     </Select>
                   )}
                 </FormItem>
-            </Col>
+              </Col>
 
 
-            <Col span={8}  style={{ display: 'inline-block'}}>
-              <FormItem label="预算版本描述"
+              <Col span={8}  style={{ display: 'inline-block'}}>
+                <FormItem label="预算版本描述"
 
-              >
-                {getFieldDecorator('description',{
+                >
+                  {getFieldDecorator('description',{
 
-                })(<Input />)}
-              </FormItem>
-            </Col>
-
-
-
-            <Col span={8} style={{ display: 'inline-block'}}>
-              <FormItem
-
-                label="版本日期"
-              >
-                {getFieldDecorator('versionDate',
-                  {
-                    valuePropName:"defaultValue",
-                  }
-                )(
-                  <DatePicker  style={{width:315}}/>
-                )}
-              </FormItem>
-            </Col>
+                  })(<Input />)}
+                </FormItem>
+              </Col>
 
 
-            <Col span={8}  style={{ display: 'inline-block'}}>
-              <FormItem
 
-                label="是否启用"
-              >
-                {getFieldDecorator('isEnabled', {
-                    valuePropName:"checked",
-                    initialValue:true
-                  }
-                )(
-                  <Switch  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}/>
-                )}
-              </FormItem>
-            </Col>
+              <Col span={8} style={{ display: 'inline-block'}}>
+                <FormItem
 
-
-          </Row>
-          <Row  gutter={40}>
-
-          </Row>
-
-          <div className="">
-            <Button type="primary" htmlType="submit" loading={this.state.loading} >保 存</Button>
-            <Button onClick={this.CancelHandle}>取 消</Button>
-          </div>
+                  label="版本日期"
+                >
+                  {getFieldDecorator('versionDate',
+                    {
+                      valuePropName:"defaultValue",
+                    }
+                  )(
+                    <DatePicker  style={{width:315}}/>
+                  )}
+                </FormItem>
+              </Col>
 
 
-        </Form>
+              <Col span={8}  style={{ display: 'inline-block'}}>
+                <FormItem
+
+                  label="是否启用"
+                >
+                  {getFieldDecorator('isEnabled', {
+                      valuePropName:"checked",
+                      initialValue:true
+                    }
+                  )(
+                    <Switch  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}/>
+                  )}
+                </FormItem>
+              </Col>
+
+
+            </Row>
+            <Row  gutter={40}>
+
+            </Row>
+
+            <div className="">
+              <Button type="primary" htmlType="submit" loading={this.state.loading} >保 存</Button>
+              <Button onClick={this.CancelHandle}>取 消</Button>
+            </div>
+
+
+          </Form>
         </div>
 
 

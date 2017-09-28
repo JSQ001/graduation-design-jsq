@@ -147,8 +147,8 @@ class BudgetVersions extends React.Component {
 
   //跳转到详情
   ToDetailHandle=(recode)=>{
-    let path = this.state.budgetVersionsDetailDetailPage.url.replace(':id',recode.id);
-    this.context.router.push(path)
+    let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", recode.id)
+    this.context.router.replace(path)
   }
 
 

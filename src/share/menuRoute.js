@@ -115,7 +115,7 @@ const newBudgetVersions = {
 //预算版本详情
 const budgetVersionsDetail = {
   key:'budget-versions-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail/:versionId',
   components:BudgetVersionsDetail,
   parent: 'budget-organization-detail'
 };

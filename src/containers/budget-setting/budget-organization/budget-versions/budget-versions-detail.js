@@ -60,27 +60,27 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   //获取Option列表
-/*
-  getOption(values){
+  /*
+   getOption(values){
 
-    for (let item in values){
-     console.log(value+" " +label)
-    }
-  }
-*/
+   for (let item in values){
+   console.log(value+" " +label)
+   }
+   }
+   */
 
 
-/*<Select placeholder="请选择" onChange={handle}>
-{item.options.map((option)=>{
-  return <Option key={option.value}>{option.label}</Option>
-})}
-</Select>*/
+  /*<Select placeholder="请选择" onChange={handle}>
+   {item.options.map((option)=>{
+   return <Option key={option.value}>{option.label}</Option>
+   })}
+   </Select>*/
 
 
   //获得详情数据
   getDetail(){
     console.log(this.props)
-    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.id}`, ).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
       this.setState({
         formData:response.data
       })
@@ -92,7 +92,7 @@ class BudgetVersionsDetail extends React.Component {
   //查询分配公司表
   getAssignCompanyList=()=>{
     console.log(this.props);
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.id}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
       this.setState({loading: false ,data:res.data});
     }).catch((e)=>{
     })
@@ -258,48 +258,48 @@ class BudgetVersionsDetail extends React.Component {
   renderForm=()=>{
     const data = this.state.formData;
     return(
-     this.state.edit? <div>
-       {this.renderPutForm()}
+      this.state.edit? <div>
+        {this.renderPutForm()}
       </div>:
-      <div>
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">预算组织:</div>
-            <div>{this.props.organization.organizationName}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本代码:</div>
-            <div>{data.versionCode}</div>
-          </Col >
-          <Col span={8}>
-            <div className="form-title">版本日期:</div>
-            <div>{data.versionDate?data.versionDate:"-"}</div>
-          </Col>
-        </Row>
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">版本状态:</div>
-            <div>{ data.status=="NEW"?"新建":(data.status="CURRENT"?"当前":"历史")}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本名称:</div>
-            <div>{data.versionName}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">预算版本描述:</div>
-            <div>{data.description?data.description:'-'}</div>
-          </Col>
-        </Row>
-        <Row gutter={40} align="top">
-          <Col span={8}>
+        <div>
+          <Row gutter={40} align="top">
+            <Col span={8}>
+              <div className="form-title">预算组织:</div>
+              <div>{this.props.organization.organizationName}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本代码:</div>
+              <div>{data.versionCode}</div>
+            </Col >
+            <Col span={8}>
+              <div className="form-title">版本日期:</div>
+              <div>{data.versionDate?data.versionDate:"-"}</div>
+            </Col>
+          </Row>
+          <Row gutter={40} align="top">
+            <Col span={8}>
+              <div className="form-title">版本状态:</div>
+              <div>{ data.status=="NEW"?"新建":(data.status="CURRENT"?"当前":"历史")}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本名称:</div>
+              <div>{data.versionName}</div>
+            </Col>
+            <Col span={8}>
+              <div className="form-title">预算版本描述:</div>
+              <div>{data.description?data.description:'-'}</div>
+            </Col>
+          </Row>
+          <Row gutter={40} align="top">
+            <Col span={8}>
 
-            <div className="form-title">状态:</div>
-            <div> <Badge status={data.isEnabled?'success':'error'}/>{data.isEnabled?'启用':'禁用'}</div>
-          </Col>
+              <div className="form-title">状态:</div>
+              <div> <Badge status={data.isEnabled?'success':'error'}/>{data.isEnabled?'启用':'禁用'}</div>
+            </Col>
 
-        </Row>
+          </Row>
 
-    </div>
+        </div>
     )
 
   }
@@ -400,7 +400,7 @@ class BudgetVersionsDetail extends React.Component {
                  size="middle"
           />
 
-            <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
+          <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
 
         </div>
       </div>
