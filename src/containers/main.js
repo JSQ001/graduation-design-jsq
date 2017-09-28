@@ -65,6 +65,7 @@ class Main extends React.Component{
         this.context.router.replace(sections.join('/').replace(string, value));
       else
         this.context.router.replace(menuRoute.getRouteItem(backKey, 'key').url);
+      this.setState({check: true});
     } else {
         actions(sections[index])
     }
