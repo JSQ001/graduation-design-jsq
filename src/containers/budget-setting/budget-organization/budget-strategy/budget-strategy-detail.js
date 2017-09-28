@@ -21,7 +21,7 @@ class BudgetStrategyDetail extends React.Component {
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
         {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
-        {type: 'switch', id: 'isEnabled', label: '状态：'}
+        {type: 'switch', id: 'isEnabled', label: '状态'}
       ],
       infoData: {},
       updateState: false,
@@ -66,17 +66,6 @@ class BudgetStrategyDetail extends React.Component {
     })
   }
 
-  //分页点击
-  onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
-      this.setState({
-        page: page - 1,
-        loading: true
-      }, ()=>{
-        this.getList();
-      })
-  };
-
   getList() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}&keyWords=${this.state.keyWords}`).then((response) => {
       this.setState({
@@ -92,6 +81,17 @@ class BudgetStrategyDetail extends React.Component {
 
     })
   }
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
+  };
 
   handleNew = () => {
     this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId));
