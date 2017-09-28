@@ -11,5 +11,8 @@
   "common.enabled": "Enabled",
   "common.disabled": "Disabled",
   "common.total": "Total {total} items",
-  "common.status": "Status: {status}"
+  "common.status": "Status: {status}",
+  "common.columnStatus": "状态",
+  "common.statusEnable": "启用",
+  "common.statusDisable": "禁用"
 }
