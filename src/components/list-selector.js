@@ -30,6 +30,11 @@ import selectorData from 'share/selectorData'
  * @params afterClose  关闭窗口后的方法，同Modal
  * @params type  选择器类型，配置在selectorData内
  * @params selectedData  默认选择的值，如果一个页面由多个ListSelector配置，则不同的选择项应该在后续多次选择时传入对应的选择项
+ * @params extraParams  搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
+ * @params selectorItem  组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
+ *
+ * type与selectorItem不可共存，如果两者都有，selectorItem
+ *
  * 现在支持的选择方法：
  * user:  人员选择
  * budget_structure:  预算表
@@ -84,7 +89,7 @@ class ListSelector extends React.Component {
   getList(){
     let selectorItem = this.state.selectorItem;
     let searchParams = Object.assign(this.state.searchParams,this.props.extraParams);
-    let url = `${this.props.url ? this.props.url : selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let url = `${selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
@@ -123,15 +128,19 @@ class ListSelector extends React.Component {
   checkType(type){
     let selectorItem = selectorData[type];
     if(selectorItem){
-      let searchParams = {};
-      selectorItem.searchForm.map(form => {
-        searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;  //遍历searchForm，取id组装成searhParams
-      });
-      this.setState({ selectorItem, searchParams }, () => {
-        this.getList();
-      })
+      this.checkSelectorItem(selectorItem)
     }
   };
+
+  checkSelectorItem(selectorItem){
+    let searchParams = {};
+    selectorItem.searchForm.map(form => {
+      searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;  //遍历searchForm，取id组装成searhParams
+    });
+    this.setState({ selectorItem, searchParams }, () => {
+      this.getList();
+    })
+  }
 
   /**
    * 每次父元素进行setState时调用的操作，判断nextProps内是否有type的变化
@@ -144,8 +153,10 @@ class ListSelector extends React.Component {
       this.setState({ selectedData : nextProps.selectedData });
     else
       this.setState({ selectedData : [] });
-    if(nextProps.type !== this.state.type)
+    if(nextProps.type !== this.state.type && !nextProps.selectorItem)
       this.checkType(nextProps.type);
+    else if(nextProps.selectorItem)
+      this.checkSelectorItem(nextProps.selectorItem)
   };
 
   handleOk = () => {
@@ -234,7 +245,7 @@ ListSelector.propTypes = {
   type: React.PropTypes.string,  //选择类型
   selectedData: React.PropTypes.array,  //默认选择的值id数组
   extraParams: React.PropTypes.object,  //搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
-  url: React.PropTypes.string  //组件查询的url，如果存在普通配置没法实现的url可单独传入，例如参数在url中间动态变换时
+  selectorItem: React.PropTypes.object  //组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
 };
 
 ListSelector.defaultProps = {
