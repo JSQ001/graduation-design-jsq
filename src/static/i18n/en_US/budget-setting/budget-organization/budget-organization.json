@@ -1,4 +1,8 @@
 {
-  "budget.organizationName": "Budget organization name",
-  "budget.organization": "Budget organization"
+  "budget.organization.name": "Organization name",
+  "budget.organization": "Budget organization",
+  "budget.organization.code": "Organization Code",
+  "budget.set.of.books": "Set of books",
+  "budget.are.you.sure.to.delete.organization": "Are you sure to delete {organizationName} ?",
+  "budget.edit.organization": "Edit organization"
 }

@@ -37,12 +37,6 @@ class BudgetOrganizationDetail extends React.Component {
     };
   }
 
-  //跳转设置
-  // componentWillMount(){
-  //   if(this.props.organization.id)
-  //     this.context.router.replace(this.state.budgetOrganizationDetailPage.url.replace(':id', this.props.organization.id));
-  // }
-
   //渲染Tabs
   renderTabs(){
     return (
