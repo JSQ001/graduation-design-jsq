@@ -16,7 +16,7 @@ const selectorData = {
     ],
     key: 'userOID'
   },
-  'budget_structure': {
+  'budget_journal_structure': {
     title: '选择预算表',
     url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructure`,
     searchForm: [
@@ -30,6 +30,21 @@ const selectorData = {
       {title: '预算表描述', dataIndex: 'structureName', width: '55%'}
     ],
     key: 'structureCode'
+  },
+  'budget_journal_item': {
+    title: '选择预算项目',
+    url: `${config.budgetUrl}/api/budget/journal/type/assign/items/queryItem`,
+    searchForm: [
+      {type: 'input', id: 'itemCode', label: '预算项目代码'},
+      {type: 'input', id: 'itemName', label: '预算项目描述'},
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: []},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: []}
+    ],
+    columns: [
+      {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
+      {title: '预算项目描述', dataIndex: 'itemName', width: '55%'}
+    ],
+    key: 'itemCode'
   },
   'company': {
     title: '添加公司',
