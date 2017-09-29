@@ -21,8 +21,7 @@ class NewBudgetStrategyDetail extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.controlStrategyId = this.props.params.id;
-        console.log(values);
+        values.controlStrategyId = this.props.params.strategyId;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
           console.log(res);
           if(res.status == 200){
