@@ -18,33 +18,51 @@ class NewBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      organization: this.props.params.organization
+      ruleDetail: {},
     }
   }
 
-  handleSave = (e) =>{
-    e.preventDefault();
+  componentWillReceiveProps(nextprops){
+    console.log(nextprops.params)
+    this.setState({
+      ruleDetail: nextprops.params,
+    })
+  }
+
+  handleSubmit = (e)=>{
+    console.log(123)
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading: true});
-        values.controlRuleId = this.props.params.id;
-        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
-          console.log(res);
-          this.setState({loading: false});
-          if(res.status == 200){
-            this.props.close(true);
-            message.success('操作成功');
-          }
-        }).catch((e)=>{
-          if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
-          }
-        })
+        console.log(values)
+        this.state.operator.controlRuleId ? this.handleSave : this.handleUpdate
       }
     });
+  };
+
+  handleSave = () =>{
+    this.setState({loading: true});
+    values.controlRuleId = this.props.params.id;
+    httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
+      console.log(res);
+      this.setState({loading: false});
+      if(res.status == 200){
+        this.props.close(true);
+        message.success('操作成功');
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      } else {
+        console.log(e)
+      }
+    })
+  };
+
+  handleUpdate = () =>{
+    httpFetch.put(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=> {
+      console.log(res);
+    })
   };
 
   onCancel = () =>{
@@ -60,7 +78,7 @@ class NewBudgetRulesDetail extends React.Component{
     };
     return(
       <div className="new-budget-control-rules-detail">
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}>
             {getFieldDecorator('ruleParameterType', {
               rules: [{

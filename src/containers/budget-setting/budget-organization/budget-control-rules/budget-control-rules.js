@@ -155,7 +155,7 @@ class BudgetControlRules extends React.Component {
 //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
   }
 
   render(){

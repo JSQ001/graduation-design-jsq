@@ -12,7 +12,9 @@
   "common.disabled": "禁用",
   "common.total": "共 {total} 条数据",
   "common.status": "状态: {status}",
-  "common.columnStatus": "状态",
-  "common.statusEnable": "启用",
-  "common.statusDisable": "禁用"
+  "common.column.status": "状态",
+  "common.status.enable": "启用",
+  "common.status.disable": "禁用",
+  "common.operation": "操作",
+  "common.delete.success": "{name} 删除成功"
 }

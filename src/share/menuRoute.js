@@ -11,7 +11,6 @@ import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
-import EditReport from 'containers/expense-report/edit-report'
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
@@ -78,14 +77,6 @@ const myAccount = {
   parent:'expense-report'
 };
 
-//编辑报销单
-const editReport = {
-  key: 'edit-report',
-  url:'/main/expense-report/edit-report',
-  components:EditReport,
-  parent:'expense-report'
-};
-
 //////////////////////预算设置模块///////////////////////
 
 //新建预算表
@@ -141,7 +132,7 @@ const newBudgetGroup = {
 //新建预算项目组
 const budgetGroupDetail = {
   key:'budget-group-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-group/budget-group-detail/:groupId',
   components: BudgetGroupDetail,
   parent: 'budget-organization-detail'
 };
@@ -326,7 +317,7 @@ const setting = {
 //报销单
 const expenseReport = {
   key: 'expense-report',
-  subMenu: [myAccount,editReport],
+  subMenu: [myAccount],
   icon: 'file-text'
 };
 

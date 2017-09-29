@@ -30,9 +30,10 @@ class BudgetControlRulesDetail extends React.Component{
       controlRule: {},
       startValue: null,
       endValue: null,
+      slideFrameTitle: "",
       strategyGroup:[],
       showSlideFrame: false,
-      createParams: {},
+      params: {},
       pagination: {
         current:0,
         page: 1,
@@ -44,10 +45,10 @@ class BudgetControlRulesDetail extends React.Component{
       infoList: [
         {type: 'input', id: 'controlRuleCode', label: this.props.intl.formatMessage({id: 'budget.controlRuleCode'})+" :" /*业务规则代码*/},
         {type: 'input', id: 'controlRuleName', label: this.props.intl.formatMessage({id: 'budget.controlRuleName'})+" :" /*业务规则名称*/},
-        {type: 'input', id: 'controlStrategy', label: "控制策略 :"},
-        {type: 'input', id: 'startDate', label: this.props.intl.formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
-        {type: 'input', id: 'endDate'},
-        {type: 'input', id: 'controlRuleName', label: this.props.intl.formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
+        {type: 'input', id: 'strategyGroupName', label: "控制策略 :"},
+        {type: 'date', id: 'startDate', label: this.props.intl.formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
+        {type: 'date', id: 'endDate', label: " "},
+        {type: 'input', id: 'priority', label: this.props.intl.formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
       ],
       columns: [
         {          /*规则参数类型*/
@@ -83,24 +84,24 @@ class BudgetControlRulesDetail extends React.Component{
     let tf = function(i){
       return (i < 10 ? '0' :'') + i
     };
-     let timeFormat = (date)=>{
-       return format.replace(/yyyy|MM|dd/g, function (a) {
-          switch (a) {
-         case 'yyyy':
-           return tf(date.getFullYear());
-           break;
-         case 'MM':
-           return tf(date.getMonth() + 1);
-           break;
-         case 'dd':
-           return tf(date.getDate());
-           break;
-       };
-     })};
+    let timeFormat = (date)=>{
+      return format.replace(/yyyy|MM|dd/g, function (a) {
+        switch (a) {
+          case 'yyyy':
+            return tf(date.getFullYear());
+            break;
+          case 'MM':
+            return tf(date.getMonth() + 1);
+            break;
+          case 'dd':
+            return tf(date.getDate());
+            break;
+        };
+      })};
 
-     if(endDate === "undefined" || endDate === null){
-       return timeFormat(new Date(startDate))+" ~ --";
-     }
+    if(endDate === "undefined" || endDate === null){
+      return timeFormat(new Date(startDate))+" ~ --";
+    }
     return timeFormat(new Date(startDate)) + " ~ " + timeFormat(new Date(endDate));
   }
 
@@ -174,16 +175,23 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
-  //控制是否编辑
-  handleEdit = (flag) => {
-    this.setState({edit: flag})
+  //新建规则明细,左侧划出
+  showSlide = (flag, title,params) => {
+    this.setState({
+      showSlideFrame: flag,
+      slideFrameTitle: title,
+      params: params
+    })
   };
 
-  //新建规则明细,左侧划出
-  showSlide = (flag) => {
-    this.setState({
-      showSlideFrame: flag
-    })
+  handleCreate = () =>{
+    let title =  this.props.intl.formatMessage({id: 'budget.createRulesDetail'});
+    this.showSlide(true,title,{});
+  };
+
+  handleEdit = (record) =>{
+    let title = this.props.intl.formatMessage({id: 'budget.editRulesDetail'});
+    this.showSlide(true,title,record);
   };
 
   handleCloseSlide = (params) => {
@@ -195,9 +203,13 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
+  handleUpdate = (value)=>{
+    console.log(value)
+  };
+
   //获取规则明细
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}`).then((response)=>{
       console.log(response)
       if(response.status === 200){
         this.setState({
@@ -210,25 +222,34 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   render(){
-    const { loading, data, infoList, pagination, columns, showSlideFrame, createParams,controlRule } = this.state;
+    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrame, params, controlRule } = this.state;
     return(
       <div className="budget-control-rules-detail">
         <BasicInfo
-            infoList={infoList}
-            infoData={controlRule} updateHandle="" updateState=""/>
+          infoList={infoList}
+          infoData={controlRule}
+          updateHandle={this.handleUpdate}
+          updateState={true}sssss/>
+        <div className="table-header">
+          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-buttons">
+            <Button onClick={this.handleCreate} type="primary" >{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+          </div>
+        </div>
         <Table
           dataSource={data}
           columns={columns}
+          onRowClick={this.handleEdit}
           pagination={pagination}
           size="middle"
           bordered/>
 
-        <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
+        <SlideFrame title= {slideFrameTitle}
                     show={showSlideFrame}
                     content={NewBudgetRulesDetail}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
-                    params={createParams}/>
+                    params={params}/>
       </div>
     )
   }
