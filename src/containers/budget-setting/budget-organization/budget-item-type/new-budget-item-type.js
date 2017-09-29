@@ -45,6 +45,7 @@ class NewBudgetItemType extends React.Component {
         console.log(toValue);
         httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
           this.setState({loading: false});
+          this.props.form.resetFields();
             this.props.close(true);
             message.success('操作成功');
           console.log( this.props.id);

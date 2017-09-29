@@ -18,12 +18,12 @@ class BudgetScenarios extends React.Component {
       newParams: {},
       updateParams: {},
       searchForm: [
-        {type: 'input', id: 'scenariosCode', label: '预算场景代码'},
-        {type: 'input', id: 'scenariosDesc', label: '预算场景描述'}
+        {type: 'input', id: 'scenarioCode', label: '预算场景代码'},
+        {type: 'input', id: 'scenarioName', label: '预算场景描述'}
       ],
       searchParams: {
-        scenariosCode: "",
-        scenariosDesc: ""
+        scenarioCode: "",
+        scenarioName: ""
       },
       loading: true,
       columns: [
@@ -59,7 +59,12 @@ class BudgetScenarios extends React.Component {
 
   //得到对应单据列表数据
   getList(){
-    this.state.organizationInfo.id && httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}&scenarioCode=%${this.state.searchParams.scenariosCode||''}%&scenarioName=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    this.state.organizationInfo.id && httpFetch.get(url).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
@@ -94,8 +99,8 @@ class BudgetScenarios extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-      scenariosCode: result.scenariosCode,
-      scenariosDesc: result.scenariosDesc
+      scenarioCode: result.scenarioCode,
+      scenarioName: result.scenarioName
     };
     this.setState({
       searchParams:searchParams,
@@ -112,8 +117,8 @@ class BudgetScenarios extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({searchParams: {
-      scenariosCode: "",
-      scenariosDesc: ""
+      scenarioCode: "",
+      scenarioName: ""
     }})
   };
 

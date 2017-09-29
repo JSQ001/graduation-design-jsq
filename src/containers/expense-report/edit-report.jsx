@@ -108,7 +108,7 @@ class EditReport extends React.Component {
 }
 
 function mapStateToProps(state) {
-    return {}
-  }
+  return {}
+}
 
-  export default EditReport;
+export default EditReport;
