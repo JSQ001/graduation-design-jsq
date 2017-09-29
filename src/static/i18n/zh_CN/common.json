@@ -14,5 +14,7 @@
   "common.status": "状态: {status}",
   "common.columnStatus": "状态",
   "common.statusEnable": "启用",
-  "common.statusDisable": "禁用"
+  "common.statusDisable": "禁用",
+  "common.operate.success":"操作成功",
+  "common.operate.error":"操作失败"
 }

@@ -94,7 +94,8 @@ class EditReport extends React.Component {
             &&
             <Button type="primary" onClick={() => message.success('Processing complete!')}>Done</Button>
           }
-          {
+
+
             this.state.current > 0
             &&
             <Button  style={{ marginLeft: 8 }} onClick={() => this.prev()}>

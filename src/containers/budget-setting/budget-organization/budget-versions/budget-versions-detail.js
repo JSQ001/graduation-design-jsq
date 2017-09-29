@@ -34,28 +34,28 @@ class BudgetVersionsDetail extends React.Component {
         }],
       infoDate:[],
       infoList: [
-        {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true},
-        {type: 'input', label: '预算版本代码', id: 'versionCode', message: '请输入', disabled: true},
-        {type: 'input', label: '预算版本名称', id: 'versionName', message: '请输入'},
-        {type:'select',label: '状态' ,id:'status',
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'organizationName', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'versionCode', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionName"}), id: 'versionName', message:this.props.intl.formatMessage({id:"common.please.enter"})},
+        {type:'select',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status',
           options:
             [
-              {value:'NEW',label:'新建'},
-              {value:'CURRENT',label:'当前'},
-              {value:'HISTORY',label:'历史'}
+              {value:'NEW',label:this.props.intl.formatMessage({id:"budget.new"})},
+              {value:'CURRENT',label:this.props.intl.formatMessage({id:"budget.current"})},
+              {value:'HISTORY',label:this.props.intl.formatMessage({id:"budget.history"})}
 
             ]
 
         },
-        {type:'date',label:'预算版本日期',id:'versionDate'},
-        {type: 'input', label: '预算版本描述', id: 'description', message: '请输入'},
-        {type: 'switch', label: '是否启用', id: 'isEnabled'}
+        {type:'date',label:this.props.intl.formatMessage({id:"budget.versionDate"}),id:'versionDate'},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.description"}), id: 'description', message:this.props.intl.formatMessage({id:"common.please.enter"})},
+        {type: 'switch', label:this.props.intl.formatMessage({id:"budget.isEnabled"}), id: 'isEnabled'}
       ],
       pagination: {
         total: 0
       },
       showImportFrame: false,
-      optionData:[{value:"NEW",label:"新建"},{value:"CURRENT",label:"当前"},{value:"HISTORY",label:"历史"}],
+      optionData:[{value:"NEW",label:this.props.intl.formatMessage({id:"budget.new"})},{value:"CURRENT",label:this.props.intl.formatMessage({id:"budget.current"})},{value:"HISTORY",label:this.props.intl.formatMessage({id:"budget.history"})}],
       edit: false,
       formData:{},
       loading:true,
@@ -124,24 +124,7 @@ class BudgetVersionsDetail extends React.Component {
 
 
 
-  //修改预算版本
-  putData(value){
-   httpFetch.put(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
-      response.data.infoDate.organizationName=this.props.organization.organizationName;
-      this.setState({
-        formData:response.data,
-        infoDate:response.data,
-        updateState: true,
-      })
 
-      message.success("编辑成功");
-    }).catch((e)=>{
-      if(e.response){
-        console.log(e.response.data);
-        message.error(`编辑失败,${e.response.data.validationErrors[0].message}`);
-      }
-    });
-  }
 
 
   handleEdit = () => {
@@ -160,10 +143,10 @@ class BudgetVersionsDetail extends React.Component {
   //保存新建分配公司
   versionAssignCompany=(values)=>{
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
-      message.success(`分配公司成功`);
+      message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
     }).catch((e)=>{
       if(e.response){
-        message.error(`分配公司失败,${e.response.data.validationErrors[0].message}`);
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.error"})},${e.response.data.validationErrors[0].message}`);
       } else {
         console.log(e)
       }
@@ -202,17 +185,35 @@ class BudgetVersionsDetail extends React.Component {
     this.showImport(false)
   }
 
+  //修改预算版本
   updateHandleInfo=(value)=>{
     console.log(value);
-    const valueData={
+     let valueDate = value.versionDate?value.versionDate.format('YYYY-MM-DD'):'';
+    const infoData={
       ...this.state.infoDate,
-      'versionDate':value.versionDate,
+      'versionDate':valueDate,
       'status':value.status,
       'description':value.description,
       'isEnabled':value.isEnabled
     }
-    console.log(valueData)
-    this.putData(valueData)
+    httpFetch.put(`${config.budgetUrl}/api/budget/versions`,infoData).then((response)=>{
+     const data = response.data;
+     const valueData={
+       ...data,
+       'organizationName':this.props.organization.organizationName
+     }
+     console.log(valueData)
+      this.setState({
+        infoDate:valueData,
+        updateState: true,
+      })
+      message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+    }).catch((e)=>{
+      if(e.response){
+        console.log(e.response.data);
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.error"})},${e.response.data.validationErrors[0].message}`);
+      }
+    });
 
   }
 
@@ -237,10 +238,10 @@ class BudgetVersionsDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{`共 ${data.length} 条数据`}</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:"common.total"}).replace('{total}',this.state.pagination.total)}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={() => this.showImport(true)}>分配公司</Button>
-              <Button onClick={this.infoDateChangeHandle}>保 存</Button>
+              <Button onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
             </div>
           </div>
           <Table columns={columns}

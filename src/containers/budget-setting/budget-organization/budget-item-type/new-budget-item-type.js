@@ -47,12 +47,12 @@ class NewBudgetItemType extends React.Component {
           this.setState({loading: false});
           this.props.form.resetFields();
             this.props.close(true);
-            message.success('操作成功');
+            message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
           console.log( this.props.id);
         }).catch((e)=>{
           this.setState({loading: false});
 
-          message.error(e.response.data.validationErrors[0].message);
+          message.error(this.props.intl.formatMessage({id:"common.operate.error"})+","+e.response.data.validationErrors[0].message);
         })
       }
     });
@@ -81,18 +81,18 @@ class NewBudgetItemType extends React.Component {
       <div className="new-value">
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout}
-             label="状态:">
+             label={this.props.intl.formatMessage({id:"budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
               valuePropName:"defaultChecked",
               initialValue:isEnabled
             })(
               <div>
                 <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? '启用' : '禁用' }</span>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? this.props.intl.formatMessage({id:"common.enabled"}) :this.props.intl.formatMessage({id:"common.disabled"}) }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织:">
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.organization"})}>
             {getFieldDecorator('organizationName', {
               rules: [{
 
@@ -103,7 +103,7 @@ class NewBudgetItemType extends React.Component {
               <Input  disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型代码:" >
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeCode"})} >
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -112,20 +112,20 @@ class NewBudgetItemType extends React.Component {
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算项目类型名字:" >
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeName"})} >
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
-                message: '请输入'
+                message: this.props.intl.formatMessage({id:"common.please.enter"})
               }],
             })(
-              <Input placeholder="请输入"  />
+              <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}  />
             )}
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
+            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
           </div>
         </Form>
       </div>

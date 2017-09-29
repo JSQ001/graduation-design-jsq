@@ -22,14 +22,14 @@ class BudgetItemType extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {title: '预算组织名称', dataIndex: 'organizationName', key: 'organizationName',},
-        {title: '预算项目类型代码', dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
-        {title: '预算项目类型名称', dataIndex: 'itemTypeName', key: 'itemTypeName',},
-        {title: '状态',dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
+        {title: this.props.intl.formatMessage({id:"budget.organizationName"}), dataIndex: 'organizationName', key: 'organizationName',},
+        {title: this.props.intl.formatMessage({id:"budget.itemTypeCode"}), dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
+        {title: this.props.intl.formatMessage({id:"budget.itemTypeName"}), dataIndex: 'itemTypeName', key: 'itemTypeName',},
+        {title: this.props.intl.formatMessage({id:"budget.isEnabled"}),dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
       ],
       searchForm: [
-        {type: 'input', id: 'itemTypeCode', label: '预算项目类型代码'},
-        {type: 'input', id: 'itemTypeName', label: '预算项目类型名称'},
+        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id:"budget.itemTypeCode"})},
+        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id:"budget.itemTypeName"})},
       ],
       pageSize: 10,
       page:0,
@@ -174,9 +174,9 @@ class BudgetItemType extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{`共 ${this.state.pagination.total} 条数据`}</div>
+          <div className="table-header-title">{this.props.intl.formatMessage({id:"common.total"}).replace('{total}',this.state.pagination.total)}</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.newItemTypeShowSlide}>新建</Button>
+            <Button type="primary" onClick={this.newItemTypeShowSlide}>{this.props.intl.formatMessage({id:"common.create"}) }</Button>
           </div>
         </div>
 
@@ -192,14 +192,14 @@ class BudgetItemType extends React.Component {
           />
         </div>
 
-        <SlideFrame title="新建预算项目类型"
+        <SlideFrame title{this.props.intl.formatMessage({id:"budget.newItemType"})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
 
-        <SlideFrame title="编辑预算项目类型"
+        <SlideFrame title={this.props.intl.formatMessage({id:"budget.editItemType"})}
                     show={showSlideFramePut}
                     content={WrappedPutBudgetItemType}
                     afterClose={this.handleCloseUpdateSlide}

@@ -54,7 +54,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value){
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
-      message.success('保存成功', 2);
+      message.success(this.props.intl.formatMessage({id:"common.operate.success"}), 2);
       setTimeout(() => {
         this.setState({loading:false }, () => this.context.router.push(path))
       },200)
@@ -63,7 +63,7 @@ class NewBudgetVersions extends React.Component {
       this.setState({loading:false});
       if(e.response){
 
-        message.error(`新建失败, ${e.response.data.validationErrors[0].message}`)
+        message.error(this.props.intl.formatMessage({id:"common.operate.error"}),` ${e.response.data.validationErrors[0].message}`)
 
       }
     });
@@ -103,7 +103,7 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
-                  label="预算组织"
+                  label={this.props.intl.formatMessage({id:"budget.organization"})}
                 >
                   {getFieldDecorator('organizationName',
                     {
@@ -119,10 +119,10 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
-                  label="预算版本代码"
+                  label={this.props.intl.formatMessage({id:"budget.versionCode"})}
                 >
                   {getFieldDecorator('versionCode', {
-                      rules: [{ required: true, message: '必填!' },]
+                      rules: [{ required: true, message: this.props.intl.formatMessage({id:"common.please.enter"}) },]
                   })(
                     <Input />
                   )}
@@ -130,10 +130,10 @@ class NewBudgetVersions extends React.Component {
               </Col>
 
               <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label="预算版本名称"
+                <FormItem label={this.props.intl.formatMessage({id:"budget.versionName"})}
                 >
                   {getFieldDecorator('versionName', {
-                    rules: [{ required: true, message: '预算版本名称必填!' }],
+                    rules: [{ required: true, message: this.props.intl.formatMessage({id:"common.please.enter"}) }],
                   })(<Input />)}
 
                 </FormItem>
@@ -141,12 +141,12 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
-                  label="状态"
+                  label={this.props.intl.formatMessage({id:"budget.status"})}
 
                 >
                   {getFieldDecorator('status', {
                     initialValue:"NEW",
-                    rules: [{ required: true, message: '状态' }],
+                    rules: [{ required: true, }],
                   })(
                     <Select
                       placeholder=""
@@ -162,7 +162,7 @@ class NewBudgetVersions extends React.Component {
 
 
               <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label="预算版本描述"
+                <FormItem label={this.props.intl.formatMessage({id:"budget.description"})}
 
                 >
                   {getFieldDecorator('description',{
@@ -176,7 +176,7 @@ class NewBudgetVersions extends React.Component {
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
 
-                  label="版本日期"
+                  label={this.props.intl.formatMessage({id:"budget.versionDate"})}
                 >
                   {getFieldDecorator('versionDate',
                     {
@@ -191,8 +191,7 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8}  style={{ display: 'inline-block'}}>
                 <FormItem
-
-                  label="是否启用"
+                  label={this.props.intl.formatMessage({id:"budget.isEnabled"})}
                 >
                   {getFieldDecorator('isEnabled', {
                       valuePropName:"checked",
@@ -211,8 +210,8 @@ class NewBudgetVersions extends React.Component {
             </Row>
 
             <div className="">
-              <Button type="primary" htmlType="submit" loading={this.state.loading} >保 存</Button>
-              <Button onClick={this.CancelHandle}>取 消</Button>
+              <Button type="primary" htmlType="submit" loading={this.state.loading} >{this.props.intl.formatMessage({id:"common.save"})}</Button>
+              <Button onClick={this.CancelHandle}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
             </div>
 
 
