@@ -31,7 +31,7 @@ class UpdateBudgetOrganization extends React.Component {
         this.setState({loading: true});
         httpFetch.put(`${config.budgetUrl}/api/budget/organizations`, Object.assign(this.props.params, values)).then((res)=>{
           this.setState({loading: false});
-          message.success(`组织定义${values.organizationName}保存成功`);
+          message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: values.organizationName}));  //保存成功
           this.props.close(true);
         }).catch((e)=>{
           if(e.response){
@@ -46,6 +46,7 @@ class UpdateBudgetOrganization extends React.Component {
   };
 
   render(){
+    const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
     const formItemLayout = {
@@ -55,48 +56,46 @@ class UpdateBudgetOrganization extends React.Component {
     return (
       <div className="new-budget-organization">
         <Alert
-          message="帮助提示"
-          description="同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。"
+          message={formatMessage({id: 'common.help'})/*提示信息*/}
+          description={formatMessage({id: 'budget.new.info'})/*同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。*/}
           type="info"
           showIcon
         />
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout} label="帐套">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.set.of.books'})/* 账套 */}>
             {getFieldDecorator('setOfBooksId', {
               rules: [{
-                required: true,
-                message: '请选择帐套'
+                required: true
               }],
               initialValue: this.props.params.setOfBooksId
             })(
-              <Select placeholder="请选择帐套" disabled>
+              <Select disabled>
                 <Option value="1" key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织代码">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.code'})/* 预算组织代码 */}>
             {getFieldDecorator('organizationCode', {
               rules: [{
-                required: true,
-                message: '请输入预算组织代码',
+                required: true
               }],
               initialValue: this.props.params.organizationCode
             })(
-              <Input placeholder="请输入预算组织代码" disabled/>
+              <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织名称">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.name'})/* 预算组织名称 */}>
             {getFieldDecorator('organizationName', {
               rules: [{
                 required: true,
-                message: '请输入预算组织名称',
+                message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
               initialValue: this.props.params.organizationName
             })(
-              <Input placeholder="请输入预算组织名称" />
+              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="状态">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
               initialValue: this.props.params.isEnabled
             })(
@@ -104,8 +103,8 @@ class UpdateBudgetOrganization extends React.Component {
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
+            <Button onClick={this.onCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
           </div>
         </Form>
       </div>
