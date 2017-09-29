@@ -219,6 +219,7 @@ class BudgetVersionsDetail extends React.Component {
 
   render(){
     const {  edit, data, columns, pagination,formData,infoDate,infoList,updateState} = this.state;
+
     return (
       <div>
         <div className="budget-versions-detail">
@@ -238,7 +239,7 @@ class BudgetVersionsDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:"common.total"}).replace('{total}',this.state.pagination.total)}</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={() => this.showImport(true)}>分配公司</Button>
               <Button onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
@@ -251,7 +252,13 @@ class BudgetVersionsDetail extends React.Component {
                  size="middle"
           />
 
-          <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>
+          <ListSelector visible={this.state.showImportFrame}
+                        onOk={this.submitHandle}
+                        onCancel={this.CancelHandle}
+                        type='company'
+                    />
+
+       {/*   <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>*/}
 
         </div>
       </div>

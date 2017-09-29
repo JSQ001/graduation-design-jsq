@@ -163,6 +163,7 @@ class BudgetItemType extends React.Component {
 
   render(){
     const {columns,data ,pagination,searchForm,showSlideFramePut,showSlideFrameNew,loading,updateParams,isPut} =this.state
+    const total = pagination.total
     return(
       <div className="versionsDefine">
         <div className="searchFrom">
@@ -174,7 +175,7 @@ class BudgetItemType extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:"common.total"}).replace('{total}',this.state.pagination.total)}</div>
+          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.newItemTypeShowSlide}>{this.props.intl.formatMessage({id:"common.create"}) }</Button>
           </div>
@@ -192,7 +193,7 @@ class BudgetItemType extends React.Component {
           />
         </div>
 
-        <SlideFrame title{this.props.intl.formatMessage({id:"budget.newItemType"})}
+        <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
                     afterClose={this.handleCloseNewSlide}
