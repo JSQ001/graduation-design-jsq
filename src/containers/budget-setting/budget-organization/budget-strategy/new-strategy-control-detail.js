@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import { Form, Button, Input, Radio, Select, Col, InputNumber, Popover, Icon, message } from 'antd'
+import { Form, Button, Radio, Select, Col, InputNumber, Popover, Icon, message } from 'antd'
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -20,27 +20,54 @@ class NewStrategyControlDetail extends React.Component{
       valueValue: '',
       periodStrategyValue: '',
       updateParams: {},
+      loading: false
     };
   }
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.updateParams);
-    this.setState({
-      updateParams: nextProps.updateParams
-    })
+    if(nextProps.params.updateParams.id){ //更新
+      console.log('update in');
+      this.setState({
+        updateParams: nextProps.params.updateParams,
+        objectValue: nextProps.params.updateParams.object,
+        rangeValue: nextProps.params.updateParams.range,
+        mannerValue: nextProps.params.updateParams.manner,
+        operatorValue: nextProps.params.updateParams.operator,
+        valueValue: nextProps.params.updateParams.value,
+        periodStrategyValue: this.handlePeriodStrategy(nextProps.params.updateParams.periodStrategy)
+      })
+    }
   }
+
+  onCancel = () =>{
+    this.setState({
+      updateParams: {},
+      objectValue: '',
+      rangeValue: '',
+      mannerValue: '',
+      operatorValue: '',
+      valueValue: '',
+      periodStrategyValue: ''
+    },()=>{
+      console.log(this.state.updateParams.id);
+      this.props.close();
+    })
+  };
 
   handleSave = (e) =>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.controlStrategyDetailId = this.props.params.strategyControlId;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
+          this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
             message.success('保存成功');
           }
         }).catch((e)=>{
+          this.setState({loading: false});
           if(e.response){
             message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
             this.setState({ updateState: false })
@@ -58,8 +85,9 @@ class NewStrategyControlDetail extends React.Component{
       if (!err) {
         values.id = this.state.updateParams.id;
         values.controlStrategyDetailId = this.props.params.strategyControlId;
+        values.versionNumber = this.state.updateParams.versionNumber;
         console.log(values);
-        /*httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
+        httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           if(res.status == 200){
             this.props.close(true);
             message.success('保存成功');
@@ -71,13 +99,13 @@ class NewStrategyControlDetail extends React.Component{
           } else {
             console.log(e)
           }
-        })*/
+        })
       }
     });
   };
 
   handlePeriodStrategy = (value) => {
-    const opera = {
+    const config = {
       '年度': '全年预算额',
       '年初至今': '年初至今预算额',
       '累计季度': '年初至当季度预算额',
@@ -86,12 +114,13 @@ class NewStrategyControlDetail extends React.Component{
       '季初至今': '季度初至今预算额',
       '月度': '当月录入预算额'
     }
-    this.setState({ periodStrategyValue:opera[value] })
+    this.setState({ periodStrategyValue:config[value] })
+    return config[value];
   }
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams } = this.state;
+    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams, loading } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -115,12 +144,14 @@ class NewStrategyControlDetail extends React.Component{
     if (mannerValue == '百分比') {
       renderValue = (
         <Col span={6}>
-          <FormItem hasFeedback>
+          <FormItem>
             {getFieldDecorator('value', {
               rules: [{
                 required: true,
                 message: '请输入'
-              }]})(
+              }],
+              initialValue: updateParams.value
+            })(
               <InputNumber formatter={value => `${value}%`}
                            parser={value => value.replace('%', '')}
                            onChange={(value)=>{this.setState({ valueValue:value })}}/>
@@ -131,12 +162,14 @@ class NewStrategyControlDetail extends React.Component{
     } else {
       renderValue = (
         <Col span={6}>
-          <FormItem hasFeedback>
+          <FormItem>
             {getFieldDecorator('value', {
               rules: [{
                 required: true,
                 message: '请输入'
-              }]})(
+              }],
+              initialValue: updateParams.value
+            })(
               <InputNumber onChange={(value)=>{this.setState({ valueValue:value })}}/>
             )}
           </FormItem>
@@ -144,12 +177,14 @@ class NewStrategyControlDetail extends React.Component{
       );
       renderOperator = (
         <Col span={8} style={{marginRight:'15px'}}>
-          <FormItem hasFeedback>
+          <FormItem>
             {getFieldDecorator('operator', {
               rules: [{
                 required: true,
                 message: '请选择'
-              }]})(
+              }],
+              initialValue: updateParams.operator
+            })(
               <Select placeholder="请选择" onChange={(value)=>{this.setState({ operatorValue:value })}}>
                 <Option value="加">加</Option>
                 <Option value="减">减</Option>
@@ -171,7 +206,7 @@ class NewStrategyControlDetail extends React.Component{
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="控制对象" hasFeedback>
+          <FormItem {...formItemLayout} label="控制对象">
             {getFieldDecorator('object', {
               rules: [{
                 required: true,
@@ -187,11 +222,11 @@ class NewStrategyControlDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="比较" hasFeedback>
+          <FormItem {...formItemLayout} label="比较">
             {getFieldDecorator('range', {
               rules: [{
                 required: true,
-                message: '请输入'
+                message: '请选择'
               }],
               initialValue: updateParams.range
             })(
@@ -205,13 +240,13 @@ class NewStrategyControlDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="方式" >
+          <FormItem {...formItemLayout} label="方式">
             <Col span={8} style={{marginRight:'15px'}}>
-              <FormItem hasFeedback>
+              <FormItem>
                 {getFieldDecorator('manner', {
                   rules: [{
                     required: true,
-                    message: '请输入'
+                    message: '请选择'
                   }],
                   initialValue: updateParams.manner
                 })(
@@ -227,7 +262,7 @@ class NewStrategyControlDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="控制期段">
             <Col span={20} style={{marginRight:'20px'}}>
-              <FormItem hasFeedback>
+              <FormItem>
                 {getFieldDecorator('periodStrategy', {
                   rules: [{
                     required: true,
@@ -248,8 +283,8 @@ class NewStrategyControlDetail extends React.Component{
               </FormItem>
             </Col>
             <Col span={2}>
-              <Popover content={content} title="预算控制期段">
-                <Icon type="question-circle-o" style={{fontSize:'18px'}}/>
+              <Popover placement="topLeft" content={content} title="预算控制期段">
+                <Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle'}}/>
               </Popover>
             </Col>
           </FormItem>
@@ -259,8 +294,8 @@ class NewStrategyControlDetail extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit">保存</Button>
-            <Button>取消</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
+            <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
       </div>

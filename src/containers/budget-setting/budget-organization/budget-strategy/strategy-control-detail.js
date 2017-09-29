@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
+import debounce from 'lodash.debounce'
 import { Form, Button, Table, Input, message } from 'antd'
 const Search = Input.Search
 
@@ -46,7 +47,9 @@ class StrategyControlDetail extends React.Component {
         total: 0
       },
       newParams: {},
-    }
+      keyWords: '',
+    };
+    this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillMount() {
@@ -74,7 +77,7 @@ class StrategyControlDetail extends React.Component {
     })
   }
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}&keyWords=${this.state.keyWords}`).then((response)=>{
       this.setState({
         data: response.data,
         loading: false,
@@ -89,6 +92,17 @@ class StrategyControlDetail extends React.Component {
     })
   }
 
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
+  };
+
   showSlide = (flag) => {
     this.setState({
       showSlideFrame: flag,
@@ -96,6 +110,11 @@ class StrategyControlDetail extends React.Component {
         strategyControlId: this.props.params.strategyControlId,
         updateParams: {}
       }
+    })
+  };
+  showUpdateSlide = (flag) => {
+    this.setState({
+      showSlideFrame: flag
     })
   };
 
@@ -126,22 +145,33 @@ class StrategyControlDetail extends React.Component {
       }
     })
   };
-  handleSearch = (e) => {
-    console.log(e.target.value);
-    /*this.setState({
+  handleSearch = (value) => {
+    console.log(value);
+    this.setState({
       page: 0,
-      keyWords: e.target.value
+      keyWords: value,
+      pagination: {
+        current: 1
+      }
     }, () => {
       this.getList();
-    })*/
+    })
   };
   handleRowClick = (record) => {
-    this.setState({
+    /*this.setState({
       showSlideFrame: true,
       newParams: {
         strategyControlId: this.props.params.strategyControlId,
         updateParams: record
       }
+    })*/
+    this.setState({
+      newParams: {
+        strategyControlId: this.props.params.strategyControlId,
+        updateParams: record
+      }
+    }, () => {
+      this.showUpdateSlide(true)
     })
   };
 
@@ -160,7 +190,7 @@ class StrategyControlDetail extends React.Component {
             <Search
               placeholder="请输入控制对象/控制期段"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onChange={this.handleSearch}
+              onChange={(e) => this.handleSearch(e.target.value)}
             />
           </div>
         </div>

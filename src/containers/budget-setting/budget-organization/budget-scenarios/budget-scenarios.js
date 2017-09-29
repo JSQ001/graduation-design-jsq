@@ -18,12 +18,12 @@ class BudgetScenarios extends React.Component {
       newParams: {},
       updateParams: {},
       searchForm: [
-        {type: 'input', id: 'scenariosCode', label: '预算场景代码'},
-        {type: 'input', id: 'scenariosDesc', label: '预算场景描述'}
+        {type: 'input', id: 'scenarioCode', label: '预算场景代码'},
+        {type: 'input', id: 'scenarioName', label: '预算场景描述'}
       ],
       searchParams: {
-        scenariosCode: "",
-        scenariosDesc: ""
+        scenarioCode: "",
+        scenarioName: ""
       },
       loading: true,
       columns: [
@@ -31,7 +31,7 @@ class BudgetScenarios extends React.Component {
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName'},
         {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? desc : '-'}</span>},
-        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : ''}</span>},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
@@ -49,7 +49,8 @@ class BudgetScenarios extends React.Component {
     this.setState({
       organizationInfo: this.props.organization,
       newParams: {
-        organizationName: this.props.organization.organizationName
+        organizationName: this.props.organization.organizationName,
+        organizationId: this.props.organization.id
       }
     }, () => {
       this.getList();
@@ -58,7 +59,12 @@ class BudgetScenarios extends React.Component {
 
   //得到对应单据列表数据
   getList(){
-    this.state.organizationInfo.id && httpFetch.get(`${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}&scenarioCode=%${this.state.searchParams.scenariosCode||''}%&scenarioName=${this.state.searchParams.scenariosDesc||''}`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    this.state.organizationInfo.id && httpFetch.get(url).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
           item.index = this.state.page * this.state.pageSize + index + 1;
@@ -93,13 +99,16 @@ class BudgetScenarios extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-      scenariosCode: result.scenariosCode,
-      scenariosDesc: result.scenariosDesc
+      scenarioCode: result.scenarioCode,
+      scenarioName: result.scenarioName
     };
     this.setState({
       searchParams:searchParams,
       loading: true,
-      page: 0
+      page: 0,
+      pagination: {
+        current: 1
+      }
     }, ()=>{
       this.getList();
     })
@@ -108,8 +117,8 @@ class BudgetScenarios extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({searchParams: {
-      scenariosCode: "",
-      scenariosDesc: ""
+      scenarioCode: "",
+      scenarioName: ""
     }})
   };
 
@@ -144,6 +153,7 @@ class BudgetScenarios extends React.Component {
 
   handleRowClick = (record) => {
     record.organizationName = this.state.organizationInfo.organizationName;
+    console.log(record);
     this.setState({
       updateParams: record
     }, () => {

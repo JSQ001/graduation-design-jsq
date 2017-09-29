@@ -26,6 +26,14 @@ class UpdateBudgetScenarios extends React.Component{
     })
   }
 
+  componentWillReceiveProps(nextProps){
+    console.log(nextProps.params);
+    this.setState({
+      params: nextProps.params,
+      isEnabled: nextProps.params.isEnabled
+    })
+  }
+
   handleSave = (e) =>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -34,19 +42,18 @@ class UpdateBudgetScenarios extends React.Component{
         values.id = this.state.params.id;
         values.versionNumber = this.state.params.versionNumber;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);
-        console.log(values);
         httpFetch.put(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
-            message.success('操作成功');
+            message.success('保存成功');
           }
         }).catch((e)=>{
-          if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
+          this.setState({loading: false});
+          if(e.response.data.validationErrors){
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
           } else {
-            console.log(e)
+            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
         })
       }
@@ -65,7 +72,7 @@ class UpdateBudgetScenarios extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { params, isEnabled } = this.state;
+    const { params, isEnabled, loading } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -94,7 +101,7 @@ class UpdateBudgetScenarios extends React.Component{
               <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述" hasFeedback>
+          <FormItem {...formItemLayout} label="预算场景描述">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
@@ -130,7 +137,7 @@ class UpdateBudgetScenarios extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
