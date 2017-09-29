@@ -218,7 +218,7 @@ class ListSelector extends React.Component {
     const { data, pagination, loading, selectorItem, selectedData, rowSelection } = this.state;
     const { searchForm, columns, title } = selectorItem;
     return (
-      <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk}>
+      <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
         <SearchArea searchForm={searchForm}
                     submitHandle={this.search}
                     clearHandle={this.clear}/>
