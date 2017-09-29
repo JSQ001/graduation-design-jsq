@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Table, Form, Select, Button, Row, Col, message } from 'antd'
+import { Table, Form, Select, Button, Row, Col, message, Popconfirm } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -26,13 +26,16 @@ class BudgetGroupDetail extends React.Component {
       columns: [
         {title: "预算项目代码", dataIndex: "itemCode", width: '25%'},
         {title: "预算项目描述", dataIndex: "itemName", width: '35%'},
-        {title: "预算项目类型", dataIndex: "itemTypeName", width: '20%'},
-        {title: '操作', key: 'operation', width: '20%', render: () => <a href="#">删除</a>,}
+        {title: "预算项目类型", dataIndex: "itemTypeName", width: '25%'},
+        {title: '操作', key: 'operation', width: '15%', render: (text, record) => (
+          <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={`你确定要删除 ${record.itemName} 吗`}>
+            <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>删除</a>
+          </Popconfirm>)}
       ],
       infoList: [
-        {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', isDisabled: true},
-        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入'},
-        {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入'},
+        {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true, isRequired: true},
+        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', isRequired: true},
+        {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入', isRequired: true},
         {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       data: [],
@@ -43,9 +46,15 @@ class BudgetGroupDetail extends React.Component {
       pageSize: 10,
       showListSelector: false,
       newData: [],
-      extraParams: {},
+      extraParams: {organizationId: this.props.organization.id},
       selectedData: [],
-      selectorItem: {}
+      selectorItem: {},
+      rowSelection: {
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
+        onSelect: this.onSelectItem,
+        onSelectAll: this.onSelectAll
+      }
     }
     ;
   }
@@ -56,7 +65,6 @@ class BudgetGroupDetail extends React.Component {
       this.setState({ groupData: response.data});
     });
     this.getList();
-
     let selectorItem = selectorData['budget_item_filter'];
     selectorItem.url = `${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/fiter`;
     httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`).then(response => {
@@ -161,17 +169,52 @@ class BudgetGroupDetail extends React.Component {
     })
   };
 
+  deleteItem = (text, record) => {
+    this.setState({loading: true}, () => {
+      httpFetch.delete(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/${record.id}`).then(response => {
+        message.success('删除成功');
+        this.getList();
+      })
+    })
+  };
+
   handleBatchDelete = () => {
-    console.log(this.state.selectedData);
+    let paramList = [];
+    this.state.selectedData.map(item => {
+      paramList.push(item.id);
+    });
+    this.setState({loading: true}, () => {
+      httpFetch.delete(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/batch`, paramList).then(response => {
+        message.success('删除成功');
+        this.getList();
+      })
+    })
   };
 
   handleNew = () => {
-    this.setState({ showListSelector: true })
+    this.setState({ showListSelector: true, saving: true })
   };
 
   handleAdd = (result) => {
-    console.log(result)
-    this.setState({ showListSelector: false })
+    this.setState({ showListSelector: false });
+    if(result.result.length > 0){
+      result.result.map(item => {
+        item.itemGroupId = this.props.params.groupId;
+        item.itemId = item.id;
+        delete item.id;
+      });
+      httpFetch.post(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/batch`, result.result).then(response => {
+        message.success('添加成功');
+        this.setState({
+          page: 0,
+          saving: false
+        }, () => {
+          this.getList();
+        })
+      });
+    } else {
+      this.setState({saving: false})
+    }
   };
 
   handleCancel = () => {
