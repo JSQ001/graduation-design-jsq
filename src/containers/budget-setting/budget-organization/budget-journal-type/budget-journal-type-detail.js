@@ -38,7 +38,7 @@ class BudgetJournalTypeDetail extends React.Component {
         STRUCTURE:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/query`,
-          selectorItem: selectorData['budget_structure'],
+          selectorItem: selectorData['budget_journal_structure'],
           extraParams: {organizationId: this.props.organization.id},
           columns: [
             {title: "预算表", dataIndex: "structureName", width: '30%'},
@@ -50,7 +50,8 @@ class BudgetJournalTypeDetail extends React.Component {
         ITEM:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/items/query`,
-          selectorItem: selectorData['budget_item'],
+          selectorItem: selectorData['budget_journal_item'],
+          extraParams: {organizationId: this.props.organization.id},
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
@@ -121,6 +122,22 @@ class BudgetJournalTypeDetail extends React.Component {
         }
         tabsData['STRUCTURE'].selectorItem.searchForm[2].options = options;
         tabsData['STRUCTURE'].selectorItem.searchForm[3].options = options;
+        this.setState({ tabsData })
+      });
+
+      httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`).then(response => {
+        let tabsData = this.state.tabsData;
+        let options = [];
+        if(response.data.length && response.data.length > 0){
+          response.data.map(item => {
+            options.push({
+              value: item.itemCode,
+              label: item.itemCode
+            })
+          })
+        }
+        tabsData['ITEM'].selectorItem.searchForm[2].options = options;
+        tabsData['ITEM'].selectorItem.searchForm[3].options = options;
         this.setState({ tabsData })
       })
     }
@@ -199,6 +216,10 @@ class BudgetJournalTypeDetail extends React.Component {
     newData.map(item => {
       if(nowStatus === 'STRUCTURE'){
         item.structureId = item.id;
+        delete item.id;
+      }
+      if(nowStatus === 'ITEM'){
+        item.bgtItemId = item.id;
         delete item.id;
       }
       item.journalTypeId = this.props.params.typeId;
