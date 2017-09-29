@@ -19,6 +19,8 @@ class NewBudgetRulesDetail extends React.Component{
     super(props);
     this.state = {
       ruleDetail: {},
+      isEnabled: true,
+      loading: false
     }
   }
 
@@ -30,18 +32,19 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   handleSubmit = (e)=>{
-    console.log(123)
+    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values)
-        this.state.operator.controlRuleId ? this.handleSave : this.handleUpdate
+        console.log(this.state.ruleDetail)
+        typeof this.state.ruleDetail.id === 'undefined' ? this.handleSave(values) : this.handleUpdate(values)
       }
     });
   };
 
-  handleSave = () =>{
+  handleSave = (values) =>{
     this.setState({loading: true});
-    values.controlRuleId = this.props.params.id;
+    values.controlRuleId = this.props.params.controlRuleId;
     httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
       console.log(res);
       this.setState({loading: false});
@@ -59,9 +62,21 @@ class NewBudgetRulesDetail extends React.Component{
     })
   };
 
-  handleUpdate = () =>{
+  handleUpdate = (values) =>{
+    values.controlRuleId = this.state.ruleDetail.controlRuleId;
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=> {
       console.log(res);
+      if(res.status === 200){
+        message.success('操作成功');
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      }
+      else {
+        console.log(e)
+      }
     })
   };
 
@@ -71,7 +86,7 @@ class NewBudgetRulesDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, organizationName } = this.state;
+    const { isEnabled, loading } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -139,7 +154,7 @@ class NewBudgetRulesDetail extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>

@@ -76,35 +76,6 @@ class BudgetControlRulesDetail extends React.Component{
     }
   }
 
-  //时间转化
-  handleTimeTransmutation (startDate,endDate){
-    let format = 'yyyy-MM-dd';
-    let start = new Date(startDate);
-    let end = new Date(endDate);
-    let tf = function(i){
-      return (i < 10 ? '0' :'') + i
-    };
-    let timeFormat = (date)=>{
-      return format.replace(/yyyy|MM|dd/g, function (a) {
-        switch (a) {
-          case 'yyyy':
-            return tf(date.getFullYear());
-            break;
-          case 'MM':
-            return tf(date.getMonth() + 1);
-            break;
-          case 'dd':
-            return tf(date.getDate());
-            break;
-        };
-      })};
-
-    if(endDate === "undefined" || endDate === null){
-      return timeFormat(new Date(startDate))+" ~ --";
-    }
-    return timeFormat(new Date(startDate)) + " ~ " + timeFormat(new Date(endDate));
-  }
-
   componentWillMount(){
     this.getList();
     //根据路径上的预算规则id查出完整数据
@@ -186,7 +157,7 @@ class BudgetControlRulesDetail extends React.Component{
 
   handleCreate = () =>{
     let title =  this.props.intl.formatMessage({id: 'budget.createRulesDetail'});
-    this.showSlide(true,title,{});
+    this.showSlide(true,title,{controlRuleId: this.props.params.ruleId});
   };
 
   handleEdit = (record) =>{
