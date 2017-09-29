@@ -77,7 +77,9 @@ class StrategyControlDetail extends React.Component {
     })
   }
   getList() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}&keyWords=${this.state.keyWords}`).then((response)=>{
+    let url = `${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}`;
+    url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
+    httpFetch.get(url).then((response)=>{
       this.setState({
         data: response.data,
         loading: false,
