@@ -83,6 +83,8 @@ class NewBudgetControlRules extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.organizationId = this.props.organization.id
+        console.log(values)
         this.state.strategyGroup.map((item)=>{
           if(item.key === values.controlStrategy){
             values.strategyGroupId = item.id;

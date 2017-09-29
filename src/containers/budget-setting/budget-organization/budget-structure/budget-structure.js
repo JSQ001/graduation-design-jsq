@@ -42,8 +42,8 @@ class BudgetStructure extends React.Component {
         {          /*预算表代码*/
           title: this.props.intl.formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
         },
-        {          /*预算表描述*/
-          title: this.props.intl.formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description'
+        {          /*预算表名称*/
+          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
@@ -55,6 +55,9 @@ class BudgetStructure extends React.Component {
             if(recode === "year")
               return this.props.intl.formatMessage({id:"periodStrategy.year"}) /*年度*/
           }
+        },
+        {           /*预算表描述*/
+          title: this.props.intl.formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description'
         },
         {           /*状态*/
           title: this.props.intl.formatMessage({id:"common.columnStatus"}),
@@ -92,7 +95,12 @@ class BudgetStructure extends React.Component {
 
   //获取预算表数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&structureCode=${this.state.searchParams.structureCode||''}&structureName=${this.state.searchParams.structureName||''}`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    httpFetch.get(url).then((response)=>{
       console.log(response)
       response.data.map((item,index)=>{
         item.key = item.structureCode;
@@ -152,9 +160,8 @@ class BudgetStructure extends React.Component {
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    console.log(record)
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id));
-  }
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+  };
 
   render(){
     const { searchForm, loading, data, columns, pagination } = this.state;

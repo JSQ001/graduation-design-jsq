@@ -42,7 +42,7 @@ class BudgetItem extends React.Component {
         {type: 'list', id: 'itemTypeName',
           listType: 'itemType',
           labelKey: 'itemTypeName',
-          valueKey: 'itemTypeOID',
+          valueKey: 'id',
           label: this.props.intl.formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id}
         },

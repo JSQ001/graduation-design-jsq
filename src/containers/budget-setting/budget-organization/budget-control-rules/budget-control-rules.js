@@ -13,14 +13,19 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 
 
-const controlRules = [];
-
+let controlRules = [];
+let priority = [];
 class BudgetControlRules extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
       data: [],
+      searchParams: {
+        controlRuleCodeFrom: "",
+        controlRuleCodeTo: "",
+        priority: "",
+      },
       pagination: {
         current:0,
         page:0,
@@ -43,7 +48,7 @@ class BudgetControlRules extends React.Component {
                                                                                             /*优先级*/
         { type: 'select', id: 'priority',
           label: this.props.intl.formatMessage({id: 'budget.controlRules.priority'}),
-          options:[]
+          options: priority
         }
       ],
       columns: [
@@ -73,16 +78,30 @@ class BudgetControlRules extends React.Component {
 
   handleSearch = (values) =>{
     console.log(values)
+    let searchParams = {
+      controlRuleCodeFrom:''
+    };
+    this.getList()
   };
 
   //获取控制规则数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&controlRuleCodeFrom=${this.state.searchParams.controlRuleCodeFrom ||''}&controlRuleCodeTo=${this.state.searchParams.controlRuleCodeTo||''}&priority=${this.state.searchParams.priority||''}`).then((response)=>{
       if(response.status === 200){
+        console.log(response);
         response.data.map((item)=>{
           item.key = item.id;
-        })
-
+          let control = {
+            label: item.controlRuleName,
+            value: item.controlRuleCode
+          };
+          let pop = {
+            label: item.priority,
+            value: item.priority
+          };
+          controlRules.push(control);
+          priority.push(pop);
+        });
         this.setState({
           loading: false,
           data: response.data,

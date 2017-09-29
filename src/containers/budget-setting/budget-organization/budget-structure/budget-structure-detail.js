@@ -14,14 +14,16 @@ import 'styles/budget-setting/budget-organization/budget-structure/budget-struct
 import SlideFrame from "components/slide-frame";
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
 import ListSelector from 'components/list-selector'
+import BasicInfo from 'components/basic-info'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
 
-
+const periodStrategy = [];
 class BudgetStructureDetail extends React.Component{
+
 
   constructor(props){
     super(props);
@@ -39,6 +41,14 @@ class BudgetStructureDetail extends React.Component{
       pagination:{},
       status:"",
       columns:[],
+      infoList: [
+        {type: 'input', id: 'organizationName', label: this.props.intl.formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
+        {type: 'input', id: 'structureCode', label: this.props.intl.formatMessage({id: 'budget.structureCode'})+" :" /*预算表代码*/},
+        {type: 'input', id: 'structureName', label: this.props.intl.formatMessage({id: 'budget.structureName'}) +" :"/*预算表名称*/},
+        {type: 'select',options: periodStrategy , id: 'periodStrategy', label: this.props.intl.formatMessage({id: 'budget.periodStrategy'}) +" :"/*编制期段*/},
+        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.structureDescription'}) +" :"/*预算表描述*/},
+        {type: 'switch', id: 'isEnabled', label: this.props.intl.formatMessage({id: 'common.columnStatus'}) +" :"/*状态*/},
+      ],
       columnGroup:{
         company:[
           {                        /*公司代码*/
@@ -86,17 +96,20 @@ class BudgetStructureDetail extends React.Component{
     this.queryDimension = debounce(this.queryDimension,1000)
   }
 
+
   componentWillMount(){
+    //获取某预算表某行的数据
     httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.id[1]}`).then((response)=>{
       if(response.status === 200){
         this.setState({
           structure: response.data
         })
-      }})
+      }});
     this.setState({
       buttonLoading: false,
       columns : this.state.columnGroup.dimension
-    })
+    });
+    pr
   }
 
   //控制是否编辑
@@ -104,8 +117,8 @@ class BudgetStructureDetail extends React.Component{
     this.setState({edit: flag})
   };
 
-  //详情页面修改刚新建的预算表
-  handleSave = (e) => {
+  //保存所做的修改
+  handleUpdate = (e) => {
     e.preventDefault();
     this.setState({
       buttonLoading: true
@@ -127,187 +140,11 @@ class BudgetStructureDetail extends React.Component{
         })
       }
     });
-  }
+  };
 
-  renderForm(){
-    const { getFieldDecorator } = this.props.form;
-    const { structure, edit, statusCode, buttonLoading } = this.state;
-    const periodStrategy = [
-      {id:"month",value: this.props.intl.formatMessage({id:"periodStrategy.month"})},  /*月度*/
-      {id:"quarter",value: this.props.intl.formatMessage({id:"periodStrategy.quarter"})}, /*季度*/
-      {id:"year",value: this.props.intl.formatMessage({id:"periodStrategy.year"})} /*年度*/
-    ];
-    const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
-    return(
-      edit ?
-        <div className="structure-detail-form">
-          <Form onSubmit={this.handleSave}>
-            <Row gutter={24}>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.organization"})}  /*{/!*预算组织*!/}*/
-                  colon={true}>
-                  {getFieldDecorator('organizationName', {
-                    initialValue: structure.organizationName,
-                  })(
-                    <Input disabled/>)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.structureCode"})} /* {/!*预算表代码*!/}*/
-                  colon={true}
-                  required={true}>
-                  {getFieldDecorator('structureCode', {
-                    initialValue: structure.structureCode,
-                  })(
-                    <Input disabled/>)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.structureName"})} /* {/!*预算表名称*!/}*/
-                  colon={true}>
-                  {getFieldDecorator('structureName', {
-                    initialValue: structure.structureName,
-                    rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
-                      {
-                        validator:(item,value,callback)=>{
-                          if(value==="")
-                            callback();
-                          callback();
-                        }
-                      }
-                    ],
-                  })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
-                    />)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row gutter={24}>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.periodStrategy"})}  /*{/!*编制期段*!/}*/
-                  colon={true}>
-                  {getFieldDecorator('periodStrategy', {
-                    initialValue:structure.periodStrategy,
-                    rules:[
-                      {required:true,message: this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})}, /*该预算表已被预算日记账引用，不允许修改编制期段。*/
-                      {
-                        //编制预算表如果被预算日记账引用，则不允许修改编制期段。
-                        validator:(item,value,callback)=>{
-                          httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${structure.id}`).then((response)=>{
-                            if(response.data.length>0){
-                              this.setState({
-                                buttonLoading: true
-                              });
-                              callback()
-                            }
-                            callback()
-                          })
-                        }
-                      }
-                    ],
-                  })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
-                      {options}
-                    </Select>)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.structureDescription"})} /* {/!*预算表描述*!/}*/
-                  colon={true}>
-                  {getFieldDecorator('description', {
-                    initialValue:structure.description,
-                    rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
-                      {validator:(item,value,callback)=>{
-                        if(value==="")
-                          callback();
-                        callback();
-                      }}
-                    ]
-                  })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
-                    />)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label={this.props.intl.formatMessage({id:"common.status"},{status:statusCode}) /* 状态*/}
-                  colon={false}>
-                  {getFieldDecorator("isEnabled", {
-                    initialValue: structure.isEnabled,
-                    valuePropName: 'checked',
-                    rules:[
-                      {
-                        validator: (item,value,callback)=>{
-                          this.setState({
-                            statusCode: value ? this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/
-                              : this.props.intl.formatMessage({id:"common.statusDisable"}) /*禁用*/
-                          })
-                          callback();
-                        }
-                      }
-                    ],
-                  })
-                  (<Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Button type="primary" htmlType="submit" loading={buttonLoading} >{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
-            <Button onClick={()=>this.handleEdit(false)} style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
-          </Form>
-        </div>
-        :
-        <div className="structure-detail-div">
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"budget.organization"}) /*预算组织*/}:</div>
-            <div>{structure.organizationName}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureCode"}) /*预算表代码*/}:</div>
-            <div>{structure.structureCode}</div>
-          </Col >
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureName"}) /*预算表名称*/}:</div>
-            <div>{structure.structureName}</div>
-          </Col>
-        </Row>
-        <br/>
-        <Row gutter={40} align="top">
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"budget.periodStrategy"})}:</div>
-            <div>{ structure.periodStrategy=="month"?"月度":(structure.periodStrategy="quarter"?"季度":"年度")}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"budget.structureDescription"}) /*预算表描述*/}:</div>
-            <div className="structure-detail-description">{structure.description}</div>
-          </Col>
-          <Col span={8}>
-            <div className="form-title">{this.props.intl.formatMessage({id:"common.columnStatus"}) /*状态*/}:</div>
-            <div>  {structure.isEnabled}
-              <Badge status={true ? 'success' : 'error'}/>
-                {true ?
-                  this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/ :
-                  this.props.intl.formatMessage({id:"common.statusDisable"}) /*禁用*/
-                }
-              </div>
-          </Col>
-        </Row>
-      </div>
-    )
-  }
+  handleUpdateState = () =>{
+    return
+  };
 
   renderTabs(){
     return (
@@ -377,18 +214,14 @@ class BudgetStructureDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, edit, form, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
+    const { infoList, structure, loading, edit, form, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
-        <div className="common-top-area">
-          <div className="common-top-area-title">
-            {this.props.intl.formatMessage({id:"budget.basicInformation"}) /*基本信息*/}
-            {!edit ? <span className="title-edit" onClick={()=>this.handleEdit(true)}>{this.props.intl.formatMessage({id:"budget.edit"}) /*编辑*/}</span> : null}
-          </div>
-          <div className="common-top-area-content form-title-area ">
-            {this.renderForm()}
-          </div>
-        </div>
+        <BasicInfo
+            infoList={infoList}
+            infoData={structure}
+            updateHandle={this.handleUpdate}
+            updateState={true}/>
         <div className="structure-detail-distribution">
           <Tabs onChange={this.onChangeTabs}>
             {this.renderTabs()}
