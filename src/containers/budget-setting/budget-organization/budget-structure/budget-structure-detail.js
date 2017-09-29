@@ -21,20 +21,22 @@ const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
 
-const periodStrategy = [];
+let periodStrategy = [
+  {label:"月度",value: "month"},  /*月度*/
+  {label:"季度",value: "quarter"}, /*季度*/
+  {label:"年度",value: "year"} /*年度*/
+];
 class BudgetStructureDetail extends React.Component{
-
 
   constructor(props){
     super(props);
     this.state = {
       loading: true,
-      buttonLoading: false,
       companyListSelector: false,
       edit:false,
       structure:{},
-      buttonLoading: false,
       showSlideFrame: false,
+      showSlideFrameUpdate: false,
       statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/,
       total:0,
       data:[],
@@ -95,22 +97,16 @@ class BudgetStructureDetail extends React.Component{
     }
     this.queryDimension = debounce(this.queryDimension,1000)
   }
-
-
   componentWillMount(){
     //获取某预算表某行的数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.id[1]}`).then((response)=>{
-      if(response.status === 200){
-        this.setState({
-          structure: response.data
-        })
-      }});
-    this.setState({
-      buttonLoading: false,
-      columns : this.state.columnGroup.dimension
-    });
-    pr
+    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
+      this.setState({
+        columns: this.state.columnGroup.dimension,
+        structure: response.status === 200 ? response.data : null
+      });
+    })
   }
+
 
   //控制是否编辑
   handleEdit = (flag) => {
@@ -118,28 +114,24 @@ class BudgetStructureDetail extends React.Component{
   };
 
   //保存所做的修改
-  handleUpdate = (e) => {
-    e.preventDefault();
-    this.setState({
-      buttonLoading: true
-    })
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        values.id = this.state.structure.id;
-        values.versionNumber = this.state.structure.versionNumber;
-        values.organizationId = this.state.structure.organizationId;
-        console.log(values)
-        httpFetch.put(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
-          if(response) {
-            message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-            this.setState({
-              buttonLoading: false
-            })
-            this.handleEdit(false)
-          }
-        })
+  handleUpdate = (value) => {
+    //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${this.state.structure.id}`).then((response)=>{
+      if(response.status === 200){
+        if(response.data.length>0 && this.state.structure.periodStrategy !== value.periodStrategy){
+          message.error("保存失败，该预算表已被日志记账类型引用，不允许修改编制期段！")
+        }
       }
     });
+    value.id = this.state.structure.id;
+    value.versionNumber = this.state.structure.versionNumber;
+    value.organizationId = this.state.structure.organizationId;
+    httpFetch.put(`${config.budgetUrl}/api/budget/structures`,value).then((response)=>{
+      if(response) {
+        message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
+        this.handleEdit(false)
+      }
+    })
   };
 
   handleUpdateState = () =>{
@@ -214,7 +206,7 @@ class BudgetStructureDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { infoList, structure, loading, edit, form, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
+    const { infoList, structure, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
         <BasicInfo
@@ -251,6 +243,11 @@ class BudgetStructureDetail extends React.Component{
                     content={NewDimension}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}/>
+        <SlideFrame title="编辑维度"
+                    show={showSlideFrameUpdate}
+                    content={NewDimension}
+                    afterClose={this.handleCloseSlideUpdae}
+                    onClose={() => this.showSlideUpdate(false)}/>
 
         <ListSelector type="company"
                         visible={companyListSelector}/>

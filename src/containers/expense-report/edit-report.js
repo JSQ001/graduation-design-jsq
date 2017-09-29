@@ -34,7 +34,6 @@ class EditReport extends React.Component {
     console.log(value);
     this.setState({ value });
   }
-
   // const treenodes = ()=>{}
 
   renderSingleTree(){

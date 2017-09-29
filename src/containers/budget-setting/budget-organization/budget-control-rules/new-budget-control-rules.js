@@ -114,7 +114,7 @@ class NewBudgetControlRules extends React.Component{
             <Row gutter={60}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.controlRuleCode"}) /*控制规则代码*/}
+                  label={this.props.intl.formatMessage({id:"budget.controlRuleCode"}) /*业务规则代码*/}
                   colon={true}>
                   {getFieldDecorator('controlRuleCode', {
                     rules:[

@@ -40,7 +40,7 @@ class BudgetItem extends React.Component {
           options: itemCode
         },
         {type: 'list', id: 'itemTypeName',
-          listType: 'itemType',
+          listType: 'item_type',
           labelKey: 'itemTypeName',
           valueKey: 'id',
           label: this.props.intl.formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
@@ -198,7 +198,7 @@ class BudgetItem extends React.Component {
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-    budgetItemDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+    budgetItemDetail.url.replace(':id', this.props.id).replace(':itemId', record.id));
   };
 
   render(){

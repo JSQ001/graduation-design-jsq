@@ -25,7 +25,7 @@ class BudgetStructure extends React.Component {
       },
       pagination: {
         current: 1,
-        page: 1,
+        page: 0,
         total:0,
         pageSize:10,
         showSizeChanger:true,
@@ -121,7 +121,6 @@ class BudgetStructure extends React.Component {
   };
 
   handleSearch = (values) =>{
-    console.log(values)
     let searchParams = {
       structureName: values.structureName,
       structureCode: values.structureCode
@@ -160,7 +159,7 @@ class BudgetStructure extends React.Component {
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':structureId', record.id));
   };
 
   render(){

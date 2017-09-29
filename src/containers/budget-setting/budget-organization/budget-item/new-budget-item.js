@@ -9,7 +9,7 @@ import { Button, Form, Select,Input, Col, Row, Switch, message, Icon } from 'ant
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-
+import ListSelector from 'components/list-selector.js'
 
 import "styles/budget-setting/budget-organization/budget-item/new-budget-item.scss"
 
@@ -22,9 +22,10 @@ class NewBudgetItem extends React.Component{
     this.state = {
       loading: true,
       organization: {},
+      showItemType: false ,
+      listSelectedData:[],
       statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}),  /*启用*/
-    }
-    console.log(this.props)
+    };
   }
   componentWillMount(){
     typeof this.props.organization.organizationName === "undefined" ?
@@ -45,39 +46,60 @@ class NewBudgetItem extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.state.organization.id;
-        console.log(values)
-        values.itemTypeId = 1;
-        values.versionNumber = 1.0;
-        values.isDeleted = false;
-        values.createdBy = 12
-        values.createdDate = '2017-09-22T11:07:16+08:00'
-        values.lastUpdatedBy = 1;
+        values.itemTypeId = values.itemTypeName[0].key;
         httpFetch.post(`${config.budgetUrl}/api/budget/items`,values).then((response)=>{
           if(response) {
-            console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
-            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemDetail.url.replace(':id', this.props.params.id).replace(':id',response.data.id));
+            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemDetail.url.replace(':id', this.props.params.id).replace(':itemId',response.data.id));
           }
         })
-
       }
     });
+  };
 
-  }
+  handleFocus = () => {
+    this.refs.blur.focus();
+    this.showList(true)
+  };
+
+  showList = (flag) => {
+    let listSelectedData = [];
+    let values = this.props.form.getFieldValue("itemTypeName");
+    if (values && values.length > 0) {
+      values.map(value => {
+        listSelectedData.push(value.value)
+      });
+    }
+    this.setState({
+      showItemType: flag,
+      listSelectedData
+    })
+  };
+
+  handleListOk = (result) => {
+    console.log(result)
+    let values = [];
+    result.result.map(item => {
+      values.push({
+        key: item.id,
+        label: item.itemTypeName,
+        value: item,
+      })
+    });
+    let value = {};
+    value["itemTypeName"] = values;
+    this.props.form.setFieldsValue(value);
+    this.showList(false)
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { organization, statusCode} = this.state;
-    const periodStrategy = [
-      {id:"month",value: this.props.intl.formatMessage({id:"periodStrategy.month"})},  /*月度*/
-      {id:"quarter",value: this.props.intl.formatMessage({id:"periodStrategy.quarter"})}, /*季度*/
-      {id:"year",value: this.props.intl.formatMessage({id:"periodStrategy.year"})} /*年度*/
-    ];
-    const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
+    const { organization, statusCode, showItemType , listSelectedData} = this.state;
 
     const attribute = [
       {id:"immobilization",value: this.props.intl.formatMessage({id:"variationAttribute.immobilization"})},  /*固定*/
-      {id:"quarter",value: this.props.intl.formatMessage({id:"variationAttribute.mix"})}, /*混合*/
+      {id:"mix",value: this.props.intl.formatMessage({id:"variationAttribute.mix"})}, /*混合*/
       {id:"year",value: this.props.intl.formatMessage({id:"variationAttribute.alteration"})} /*变动*/
     ];
     const variationAttribute = attribute.map((item)=><Option key={item.id}>{item.value}</Option>)
@@ -92,9 +114,6 @@ class NewBudgetItem extends React.Component{
                   colon={true}>
                   {getFieldDecorator('organizationName', {
                     initialValue: organization.organizationName,
-                    rules:[
-                      { required:true }
-                    ]
                   })(
                     <Input disabled/>)
                   }
@@ -113,7 +132,7 @@ class NewBudgetItem extends React.Component{
                             callback();
                             return
                           }
-                          httpFetch.get(`${config.budgetUrl}/api/budget/items/query?itemCode=${value}`).then((response)=>{
+                          httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.params.id}&itemCode=${value}`).then((response)=>{
                             console.log(response)
                             response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.itemCodeExist"})) : callback()
                           })
@@ -152,9 +171,10 @@ class NewBudgetItem extends React.Component{
                       {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},/* {/!*请输入*!/}*/
                     ],
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
-                      {options}
-                    </Select>)
+                    <Select
+                        labelInValue
+                        onFocus={this.handleFocus}
+                        placeholder={this.props.intl.formatMessage({id:"common.please.select"})} />) /*请输入*/
                   }
                 </FormItem>
               </Col>
@@ -213,8 +233,16 @@ class NewBudgetItem extends React.Component{
             </Row>
             <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
             <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
+            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </Form>
         </div>
+        <ListSelector
+          visible={showItemType}
+          type="item_type"
+          onCancel={()=>this.showList(false)}
+          onOk={this.handleListOk}
+          selectedData={listSelectedData}
+          extraParams={{organizationId: this.props.params.id}}/>
       </div>
     )
   }

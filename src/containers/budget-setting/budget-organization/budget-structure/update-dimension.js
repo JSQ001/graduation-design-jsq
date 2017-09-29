@@ -184,12 +184,12 @@ class NewDimension extends React.Component{
           </div>
         </Form>
         <ListSelector
-            visible={showSelectDimension}
-            type="select_dimension"
-            onCancel={()=>this.showList(false)}
-            onOk={this.handleListOk}
-            selectedData={listSelectedData}
-            extraParams={listExtraParams}/>
+          visible={showSelectDimension}
+          type="select_dimension"
+          onCancel={()=>this.showList(false)}
+          onOk={this.handleListOk}
+          selectedData={listSelectedData}
+          extraParams={listExtraParams}/>
       </div>
     )
   }

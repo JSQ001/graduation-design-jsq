@@ -99,7 +99,7 @@ const newBudgetStructure = {
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:id',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:structureId',
   components: BudgetStructureDetail,
   parent:'budget-organization-detail',
   children: {
@@ -157,7 +157,7 @@ const newBudgetItem = {
 //预算项目详情
 const budgetItemDetail = {
   key: 'budget-item-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:itemId',
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
 
@@ -174,7 +174,7 @@ const newBudgetControlRules = {
 //预算控制规则详情
 const budgetControlRulesDetail = {
   key: 'budget-control-rules-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:ruleId',
   components: BudgetControlRulesDetail,
   parent: 'budget-organization-detail'
 };
