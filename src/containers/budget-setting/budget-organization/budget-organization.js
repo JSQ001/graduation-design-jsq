@@ -13,31 +13,32 @@ import SlideFrame from 'components/slide-frame'
 class BudgetOrganization extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
       page: 0,
       pageSize: 10,
       columns: [
-        {title: this.props.intl.formatMessage({id:"budget.organization.code"}), dataIndex: 'organizationCode', width: '20%'},  //预算组织代码
-        {title: this.props.intl.formatMessage({id:"budget.organization.name"}), dataIndex: 'organizationName', width: '30%',   //预算组织名称
+        {title: formatMessage({id:"budget.organization.code"}), dataIndex: 'organizationCode', width: '20%'},  //预算组织代码
+        {title: formatMessage({id:"budget.organization.name"}), dataIndex: 'organizationName', width: '30%',   //预算组织名称
           render: organizationName => (
             <Popover content={organizationName}>
               {organizationName}
             </Popover>)
         },
-        {title: this.props.intl.formatMessage({id:"budget.set.of.books"}), dataIndex: 'setOfBooksId', width: '20%'},  //账套
-        {title: this.props.intl.formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
+        {title: formatMessage({id:"budget.set.of.books"}), dataIndex: 'setOfBooksId', width: '20%'},  //账套
+        {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
-                   text={isEnabled ? this.props.intl.formatMessage({id: "common.status.enable"}) : this.props.intl.formatMessage({id: "common.status.disable"})} />
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )}, //状态
-        {title: this.props.intl.formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})}</a>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
             <span className="ant-divider" />
-            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={this.props.intl.formatMessage({id:"budget.are.you.sure.to.delete.organization"}, {organizationName: record.organizationName})}>{/* 你确定要删除organizationName吗 */}
-              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{this.props.intl.formatMessage({id: "common.delete"})}</a>
+            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.organization"}, {organizationName: record.organizationName})}>{/* 你确定要删除organizationName吗 */}
+              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
             </Popconfirm>
           </span>)},  //操作
       ],
@@ -47,9 +48,9 @@ class BudgetOrganization extends React.Component {
       budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
       newBudgetOrganization:  menuRoute.getRouteItem('new-budget-organization','key'),    //新建组织定义的页面项
       searchForm: [
-        {type: 'select', id: 'setOfBooksId', label: this.props.intl.formatMessage({id:"budget.set.of.books"}), options: []}, //账套
-        {type: 'input', id: 'organizationCode', label: this.props.intl.formatMessage({id:"budget.organization.code"})},  //预算组织代码
-        {type: 'input', id: 'organizationName', label: this.props.intl.formatMessage({id:"budget.organization.name"})},  //预算组织名称
+        {type: 'select', id: 'setOfBooksId', label: formatMessage({id:"budget.set.of.books"}), options: []}, //账套
+        {type: 'input', id: 'organizationCode', label: formatMessage({id:"budget.organization.code"})},  //预算组织代码
+        {type: 'input', id: 'organizationName', label: formatMessage({id:"budget.organization.name"})},  //预算组织名称
       ],
       searchParams: {
         setOfBooksId: 1,
@@ -156,10 +157,11 @@ class BudgetOrganization extends React.Component {
   };
 
   render(){
+    const { formatMessage } = this.props.intl;
     const { columns, data, loading,  pagination, searchForm, nowOrganization, showSlideFrame } = this.state;
     return (
       <div className="budget-organization">
-        <h3 className="header-title">{this.props.intl.formatMessage({id:"menu.budget-organization"})}</h3> {/* 预算组织定义 */}
+        <h3 className="header-title">{formatMessage({id:"menu.budget-organization"})}</h3> {/* 预算组织定义 */}
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
@@ -167,9 +169,9 @@ class BudgetOrganization extends React.Component {
           eventHandle={this.searchEventHandle}/>
 
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew}>{this.props.intl.formatMessage({id:"common.create"})}</Button> {/* 新建 */}
+            <Button type="primary" onClick={this.handleNew}>{formatMessage({id:"common.create"})}</Button> {/* 新建 */}
           </div>
         </div>
         <Table columns={columns}
@@ -180,7 +182,7 @@ class BudgetOrganization extends React.Component {
                onRowClick={this.handleRowClick}
                size="middle"/>
         {/* 编辑预算组织 */}
-        <SlideFrame title={this.props.intl.formatMessage({id:"budget.edit.organization"})}
+        <SlideFrame title={formatMessage({id:"budget.edit.organization"})}
                     show={showSlideFrame}
                     content={UpdateBudgetOrganization}
                     afterClose={this.handleCloseSlide}
