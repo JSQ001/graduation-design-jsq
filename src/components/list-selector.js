@@ -223,7 +223,11 @@ class ListSelector extends React.Component {
                     submitHandle={this.search}
                     clearHandle={this.clear}/>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据 <span>/</span> 已选 {selectedData.length} 条</div>
+          <div className="table-header-title">
+            {this.props.intl.formatMessage({id: "common.total"}, {total: pagination.total})}{/* 共 total 条数据 */}
+            &nbsp;<span>/</span>&nbsp;
+            {this.props.intl.formatMessage({id: "common.total.selected"}, {total: selectedData.length === 0 ? '0' : selectedData.length})}{/* 已选 total 条 */}
+          </div>
         </div>
         <Table columns={columns}
                dataSource={data}
