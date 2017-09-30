@@ -46,7 +46,7 @@ class BudgetJournalType extends React.Component {
 
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}&organisationId=${this.props.organization.id}`;
+    let url = `${config.budgetUrl}/api/budget/journal/types/query?&page=${this.state.page}&size=${this.state.pageSize}&organizationId=${this.props.organization.id}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
