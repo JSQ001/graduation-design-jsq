@@ -219,14 +219,14 @@ class BudgetVersionsDetail extends React.Component {
 
   render(){
     const {  edit, data, columns, pagination,formData,infoDate,infoList,updateState} = this.state;
-
+    const { formatMessage } = this.props.intl;
     return (
       <div>
         <div className="budget-versions-detail">
           <div className="common-help">
             <Alert
-              message="帮助提示"
-              description="一个预算组织下的版本代码不可重复，一个预算组织下只能有一个当前版本，一个预算组织下允许多个预算版本同时生效。"
+              message={formatMessage({id: 'common.help'})}
+              description={formatMessage({id:'budget.newVersion.info'})}
               type=""
               showIcon
             />

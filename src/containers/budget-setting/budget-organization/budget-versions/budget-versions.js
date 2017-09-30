@@ -30,7 +30,7 @@ class BudgetVersions extends React.Component {
             return (
               <div >
                   <Badge status={ recode?"success":"error"}/>
-                  {recode? this.props.intl.formatMessage({id:"budget.statusEnable"}): this.props.intl.formatMessage({id:"budget.statusDisable"})}
+                  {recode? this.props.intl.formatMessage({id:"common.status.enable"}): this.props.intl.formatMessage({id:"common.status.disable"})}
               </div>
             );}
         },

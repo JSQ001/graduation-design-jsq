@@ -2,6 +2,8 @@
  * Created by zaranengap on 2017/7/5.
  */
 import React from 'react'
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch  } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -135,12 +137,12 @@ class SearchArea extends React.Component{
     switch(item.type){
       //输入组件
       case 'input':{
-        return <Input placeholder="请输入" onChange={handle} disabled={item.disabled}/>
+        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
       }
       //选择组件
       case 'select':{
         return (
-          <Select placeholder="请选择" onChange={handle} disabled={item.disabled}>
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}
@@ -241,7 +243,7 @@ class SearchArea extends React.Component{
               initialValue: item.defaultValue,
               rules: [{
                 required: item.isRequired,
-                message: `${item.label}不可为空`,
+                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
               }]
             })(
               this.renderFormItem(item)
@@ -325,7 +327,7 @@ class SearchArea extends React.Component{
           <Col span={24} style={{ textAlign: 'right' }}>
             {this.state.searchForm.length > 6 ? (
               <a className="toggle-button" onClick={this.toggle}>
-                {this.state.expand ? '收起' : '更多'} <Icon type={this.state.expand ? 'up' : 'down'} />
+                {this.state.expand ? this.props.intl.formatMessage({id: "common.fold"}) : this.props.intl.formatMessage({id: "common.more"})} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
             ) : null}
             <Button type="primary" htmlType="submit">{this.props.okText}</Button>
@@ -373,16 +375,16 @@ SearchArea.propTypes = {
   submitHandle: React.PropTypes.func.isRequired,  //搜索事件
   eventHandle: React.PropTypes.func,  //表单项点击事件
   clearHandle: React.PropTypes.func,  //重置事件
-  okText: React.PropTypes.string,  //左侧ok按钮的文本
-  clearText: React.PropTypes.string,  //右侧重置按钮的文本
+  okText:  React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //左侧ok按钮的文本
+  clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
 };
 
 SearchArea.defaultProps = {
   eventHandle: () => {},
-  okText: '搜 索',
-  clearText: '重 置'
+  okText: <FormattedMessage id='common.search'/>,  //搜索
+  clearText: <FormattedMessage id='common.clear'/>  //重置
 };
 
-const WrappedSearchArea= Form.create()(SearchArea);
+const WrappedSearchArea= Form.create()(injectIntl(SearchArea));
 
 export default WrappedSearchArea;

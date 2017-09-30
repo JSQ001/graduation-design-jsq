@@ -89,8 +89,8 @@ class NewBudgetVersions extends React.Component {
 
         <div className="new-budget-versions-help">
           <Alert
-            message="帮助提示"
-            description="一个预算组织下的版本代码不可重复，一个预算组织下只能有一个当前版本，一个预算组织下允许多个预算版本同时生效。"
+            message={this.props.intl.formatMessage({id:"common.help"})}
+            description={this.props.intl.formatMessage({id:"budget.newVersion.info"})}
             type=""
             showIcon
           />

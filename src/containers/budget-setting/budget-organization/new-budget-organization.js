@@ -28,7 +28,7 @@ class NewBudgetOrganization extends React.Component {
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/organizations`, values).then((res)=>{
           this.setState({loading: false});
-          message.success(`组织定义${values.organizationName}新建成功`);
+          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
           this.context.router.replace(this.state.budgetOrganization.url);
         }).catch((e)=>{
           if(e.response){
@@ -43,6 +43,7 @@ class NewBudgetOrganization extends React.Component {
   };
 
   render(){
+    const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
     const formItemLayout = {
@@ -52,58 +53,57 @@ class NewBudgetOrganization extends React.Component {
     return (
       <div className="new-budget-organization">
         <Alert
-          message="帮助提示"
-          description="同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。"
+          message={formatMessage({id: 'common.help'})/*提示信息*/}
+          description={formatMessage({id: 'budget.new.info'})/*同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。*/}
           type="info"
           showIcon
         />
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout} label="帐套">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.set.of.books'})/* 账套 */}>
             {getFieldDecorator('setOfBooksId', {
               rules: [{
                 required: true,
-                message: '请选择帐套'
-              }],
-              initialValue: ''
+                message: formatMessage({id: 'common.please.select'})  //请选择
+              }]
             })(
-              <Select placeholder="请选择帐套">
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}>
                 <Option value="1" key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织代码">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.code'})/* 预算组织代码 */}>
             {getFieldDecorator('organizationCode', {
               rules: [{
                 required: true,
-                message: '请输入预算组织代码',
+                message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
               initialValue: ''
             })(
-              <Input placeholder="请输入预算组织代码" />
+              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算组织名称">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.name'})/* 预算组织名称 */}>
             {getFieldDecorator('organizationName', {
               rules: [{
                 required: true,
-                message: '请输入预算组织名称',
+                message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
               initialValue: ''
             })(
-              <Input placeholder="请输入预算组织名称" />
+              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="状态">
+          <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: true
+              initialValue: this.props.params.isEnabled
             })(
-              <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button></Col>
-              <Col span={3}><Button>取消</Button></Col>
+              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
+              <Col span={3}><Button>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
             </Row>
           </FormItem>
         </Form>

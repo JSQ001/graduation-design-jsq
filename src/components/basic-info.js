@@ -7,7 +7,7 @@ import 'styles/components/basic-info.scss'
 
 /**
  * 基本信息组件
- * @params infoList   渲染表单所需要的配置项，见底端注释
+ * @params infoList   渲染表单所需要的配置项，详见search-area组件的 searchForm 表单列表
  * @params infoData  基本信息数据
  * @params updateHandle  点击保存时的回调
  * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
@@ -33,15 +33,20 @@ class BasicInfo extends React.Component{
       this.handelCancel();
     }
   }
-
+  //点击 "编辑"
   editInfo = () => {
     this.setState({ cardShow: false })
-  }
-
+  };
+  //渲染基本信息显示页
   renderGetInfo(item) {
     if (item.type == 'switch') {
       return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
     } else {
+      item.options && item.options.map((option)=>{  //有options选项时显示label值
+        if(this.state.params[item.id] == option.value) {
+          this.state.params[item.id] = option.label;
+        }
+      });
       return <div>{this.state.params[item.id]}</div>;
     }
   }
@@ -54,7 +59,9 @@ class BasicInfo extends React.Component{
           {this.renderGetInfo(item)}
         </Col>
       );
+      //获取默认值，用于search-area组件
       item.defaultValue = this.state.params[item.id];
+      //格式化日期的默认值
       if(item.type == 'date') {
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
       }
@@ -64,11 +71,11 @@ class BasicInfo extends React.Component{
 
   handleUpdate = (params) => {
     this.props.updateHandle(params);
-  }
+  };
 
   handelCancel = () => {
     this.setState({ cardShow: true })
-  }
+  };
 
   render() {
     const { cardShow, infoList } = this.state;
