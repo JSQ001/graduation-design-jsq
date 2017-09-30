@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Button, Table, Badge } from 'antd'
+import { Button, Table, Badge, Popover } from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
@@ -29,8 +29,8 @@ class BudgetScenarios extends React.Component {
       columns: [
         {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
-        {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName'},
-        {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? desc : '-'}</span>},
+        {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>},
         {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
@@ -153,7 +153,7 @@ class BudgetScenarios extends React.Component {
 
   handleRowClick = (record) => {
     record.organizationName = this.state.organizationInfo.organizationName;
-    console.log(record);
+    record.organizationId = this.state.organizationInfo.id;
     this.setState({
       updateParams: record
     }, () => {

@@ -28,7 +28,7 @@ class BudgetStrategyDetail extends React.Component {
       columns: [
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover content={desc}>{desc}</Popover>},
+        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
         {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
       ],

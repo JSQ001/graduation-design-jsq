@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { Form, Input, Row, Col, Select, Button, message } from 'antd'
@@ -13,7 +14,9 @@ class NewBudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       controlMethodNotice: '',
+      budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //控制策略详情
     }
   }
 
@@ -21,22 +24,29 @@ class NewBudgetStrategyDetail extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.controlStrategyId = this.props.params.strategyId;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
           console.log(res);
           if(res.status == 200){
+            this.setState({loading: false});
             message.success('操作成功');
+            this.handleCancle();
           }
         }).catch((e)=>{
-          if(e.response){
+          this.setState({loading: false});
+          if(e.response.data.validationErrors){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
           } else {
-            console.log(e)
+            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
         })
       }
     });
+  };
+
+  handleCancle = () => {
+    this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleMethodChange = (value) => {
@@ -143,8 +153,8 @@ class NewBudgetStrategyDetail extends React.Component {
             </Col>
           </Row>
           <div>
-            <Button type="primary" htmlType="submit" style={{marginRight:'20px'}}>保存</Button>
-            <Button>取消</Button>
+            <Button type="primary" htmlType="submit" style={{marginRight:'20px'}} loading={this.state.loading}>保存</Button>
+            <Button onClick={this.handleCancle}>取消</Button>
           </div>
         </Form>
       </div>
@@ -154,7 +164,7 @@ class NewBudgetStrategyDetail extends React.Component {
 
 NewBudgetStrategyDetail.contextTypes={
   router:React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return { }
@@ -163,3 +173,4 @@ function mapStateToProps(state) {
 const WrappedNewBudgetStrategyDetail = Form.create()(NewBudgetStrategyDetail);
 
 export default connect(mapStateToProps)(WrappedNewBudgetStrategyDetail);
+

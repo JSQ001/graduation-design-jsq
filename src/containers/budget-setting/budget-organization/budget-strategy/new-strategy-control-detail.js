@@ -25,33 +25,28 @@ class NewStrategyControlDetail extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.params.updateParams.id){ //更新
-      console.log('update in');
+    if(!nextProps.params.id) {
+      console.log(nextProps.params.strategyControlId, this.state.updateParams.strategyControlId);
       this.setState({
-        updateParams: nextProps.params.updateParams,
-        objectValue: nextProps.params.updateParams.object,
-        rangeValue: nextProps.params.updateParams.range,
-        mannerValue: nextProps.params.updateParams.manner,
-        operatorValue: nextProps.params.updateParams.operator,
-        valueValue: nextProps.params.updateParams.value,
-        periodStrategyValue: this.handlePeriodStrategy(nextProps.params.updateParams.periodStrategy)
+        updateParams: nextProps.params
       })
+    } else if(nextProps.params.id != this.state.updateParams.id){ //更新
+      console.log(456)
+      this.setState({
+        updateParams: nextProps.params,
+        objectValue: nextProps.params.object,
+        rangeValue: nextProps.params.range,
+        mannerValue: nextProps.params.manner,
+        operatorValue: nextProps.params.operator,
+        valueValue: nextProps.params.value,
+        periodStrategyValue: this.handlePeriodStrategy(nextProps.params.periodStrategy)
+      });
+      this.props.form.setFieldsValue(nextProps.params)
     }
   }
 
   onCancel = () =>{
-    this.setState({
-      updateParams: {},
-      objectValue: '',
-      rangeValue: '',
-      mannerValue: '',
-      operatorValue: '',
-      valueValue: '',
-      periodStrategyValue: ''
-    },()=>{
-      console.log(this.state.updateParams.id);
-      this.props.close();
-    })
+    this.props.close();
   };
 
   handleSave = (e) =>{
@@ -86,7 +81,6 @@ class NewStrategyControlDetail extends React.Component{
         values.id = this.state.updateParams.id;
         values.controlStrategyDetailId = this.props.params.strategyControlId;
         values.versionNumber = this.state.updateParams.versionNumber;
-        console.log(values);
         httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           if(res.status == 200){
             this.props.close(true);
@@ -113,10 +107,10 @@ class NewStrategyControlDetail extends React.Component{
       '季度': '当季预算额',
       '季初至今': '季度初至今预算额',
       '月度': '当月录入预算额'
-    }
+    };
     this.setState({ periodStrategyValue:config[value] })
     return config[value];
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -135,7 +129,7 @@ class NewStrategyControlDetail extends React.Component{
           <span style={{color:'#666'}}>【季初至今】</span>：按季度初至今预算额控制<br/>
           <span style={{color:'#666'}}>【年初至今】</span>：按年初至今预算额控制<br/>
           <span style={{color:'#666'}}>【滚动季度】</span>：按当月至后两个月共3个月合计预算额控制<br/>
-          <span style={{color:'#666'}}>【累计季度】</span>：按年初至当季度预算额控制<br/>
+          <span style={{color:'#666'}}>【累计季度】</span>：按年初至当季度预算额控制
         </div>
       </div>
     );
@@ -284,13 +278,13 @@ class NewStrategyControlDetail extends React.Component{
             </Col>
             <Col span={2}>
               <Popover placement="topLeft" content={content} title="预算控制期段">
-                <Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle'}}/>
+                <div><Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle'}}/></div>
               </Popover>
             </Col>
           </FormItem>
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
-              <div>{objectValue}{rangeValue}{periodStrategyValue}{mannerValue == '百分比' ? valueValue + '%' : operatorValue + valueValue}</div>
+              <div>{objectValue}{rangeValue}{periodStrategyValue}{mannerValue == '百分比' && valueValue ? valueValue + '%' : operatorValue + valueValue}</div>
             )}
           </FormItem>
           <div className="slide-footer">
