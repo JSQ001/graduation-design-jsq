@@ -111,6 +111,18 @@ const selectorData = {
       {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
     ],
     key: 'id'
+  },
+  'ruleParams': {
+    title: "规则参数",
+    searchForm: [
+      {type: 'input', id: 'paramsCode', label: '参数代码'},
+      {type: 'input', id: 'paramsName', label: '参数描述'}
+    ],
+    columns: [
+      {title: '参数代码', dataIndex: 'paramsCode'},
+      {title: '参数描述', dataIndex: 'paramsName'}
+    ],
+    key: 'id'
   }
 };
 

@@ -1,7 +1,7 @@
 {
   "budget.structureName": "预算表名称",
   "budget.structureCode": "预算表代码",
-  "budget.structureDescription": "预算表描述",
+  "budget.structureDescription": "备注",
   "budget.periodStrategy": "编制期段",
   "periodStrategy.month": "月度",
   "periodStrategy.quarter": "季度",

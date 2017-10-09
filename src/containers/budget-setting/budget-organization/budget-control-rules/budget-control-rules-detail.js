@@ -8,7 +8,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker  } from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker, Popconfirm, Popover  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail.scss';
 import SlideFrame from 'components/slide-frame'
@@ -18,20 +18,21 @@ import BasicInfo from 'components/basic-info'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-
+const strategyGroup = [];
 class BudgetControlRulesDetail extends React.Component{
   constructor(props){
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       buttonLoading: false,
       data: [],
       edit: false,
+      updateState: false,
       controlRule: {},
       startValue: null,
       endValue: null,
       slideFrameTitle: "",
-      strategyGroup:[],
       showSlideFrame: false,
       params: {},
       pagination: {
@@ -43,39 +44,60 @@ class BudgetControlRulesDetail extends React.Component{
         showQuickJumper: true,
       },
       infoList: [
-        {type: 'input', id: 'controlRuleCode', label: this.props.intl.formatMessage({id: 'budget.controlRuleCode'})+" :" /*业务规则代码*/},
-        {type: 'input', id: 'controlRuleName', label: this.props.intl.formatMessage({id: 'budget.controlRuleName'})+" :" /*业务规则名称*/},
-        {type: 'input', id: 'strategyGroupName', label: "控制策略 :"},
-        {type: 'date', id: 'startDate', label: this.props.intl.formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
+        {type: 'input', id: 'controlRuleCode', required: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.controlRuleCode'})+" :" /*业务规则代码*/},
+        {type: 'input', id: 'controlRuleName', label: formatMessage({id: 'budget.controlRuleName'})+" :" /*业务规则名称*/},
+        {type: 'select', options: strategyGroup, id: 'strategyGroupName', label: "控制策略 :"},
+        {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
         {type: 'date', id: 'endDate', label: " "},
-        {type: 'input', id: 'priority', label: this.props.intl.formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
+        {type: 'input', id: 'priority', required: true, disabled: true, label: formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
       ],
       columns: [
         {          /*规则参数类型*/
-          title: this.props.intl.formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType'
+          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType'
         },
         {          /*规则参数*/
-          title: this.props.intl.formatMessage({id:"budget.ruleParameter"}), key: "ruleParameter", dataIndex: 'ruleParameter'
+          title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameter", dataIndex: 'ruleParameter'
         },
         {          /*取值方式*/
-          title: this.props.intl.formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethod", dataIndex: 'filtrateMethod'
+          title: formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethod", dataIndex: 'filtrateMethod'
         },
         {          /*取值范围*/
-          title: this.props.intl.formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetail", dataIndex: 'summaryOrDetail'
+          title: formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetail", dataIndex: 'summaryOrDetail'
         },
         {          /*下限值*/
-          title: this.props.intl.formatMessage({id:"budget.parameterLowerLimit"}), key: "parameterLowerLimit", dataIndex: 'parameterLowerLimit'
+          title: formatMessage({id:"budget.parameterLowerLimit"}), key: "parameterLowerLimit", dataIndex: 'parameterLowerLimit'
         },
         {          /*上限值*/
-          title: this.props.intl.formatMessage({id:"budget.parameterUpperLimit"}), key: "parameterUpperLimit", dataIndex: 'parameterUpperLimit'
+          title: formatMessage({id:"budget.parameterUpperLimit"}), key: "parameterUpperLimit", dataIndex: 'parameterUpperLimit'
         },
         {          /*失效日期*/
-          title: this.props.intl.formatMessage({id:"budget.invalidDate"}), key: "invalidDate", dataIndex: 'invalidDate'
+          title: formatMessage({id:"budget.invalidDate"}), key: "invalidDate", dataIndex: 'invalidDate',
+          render: description => (
+            <span>
+              {description ? description : '-'}
+              <Popover content={description}>
+                {description}
+              </Popover>
+            </span>)
         },
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+          <span>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
+            <span className="ant-divider" />
+            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
+            </Popconfirm>
+          </span>)},  //操作
       ]
     }
   }
-
+  deleteItem = (e, record) => {
+    console.log(record)
+    httpFetch.delete(`${config.budgetUrl}/api/budget/control/rule/details/${record.id}`).then(response => {
+      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.organizationName})); // name删除成功
+      this.getList();
+    })
+  };
   componentWillMount(){
     this.getList();
     //根据路径上的预算规则id查出完整数据
@@ -93,18 +115,17 @@ class BudgetControlRulesDetail extends React.Component{
     //加载页面时，获取启用的控制策略
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
       if(response.status === 200){
-        let strategyGroup = [];
+        console.log(response)
         response.data.map((item)=>{
           let strategy = {
             id: item.id,
-            key: item.controlStrategyCode,
-            value: item.controlStrategyCode+" - "+item.controlStrategyName
+            label: item.controlStrategyCode+" - "+item.controlStrategyName,
+            value: item.controlStrategyCode,
+            title: item.controlStrategyName
           };
-          strategyGroup.push(strategy);
+          strategyGroup.addIfNotExist(strategy)
         });
-        this.setState({
-          strategyGroup: strategyGroup
-        })
+        console.log(strategyGroup)
       }
     })
   }
@@ -115,6 +136,7 @@ class BudgetControlRulesDetail extends React.Component{
     this.setState({
       buttonLoading: true
     });
+    console.log(123)
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.props.params.id[0];
@@ -174,8 +196,34 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
-  handleUpdate = (value)=>{
-    console.log(value)
+  handleUpdate = (values)=>{
+    values.organizationId = this.props.params.id;
+    values.controlRuleId = this.props.params.ruleId;
+    values.strategyGroupId = this.state.controlRule.strategyGroupId;
+    console.log(this.state.controlRule)
+    strategyGroup.map((item)=>{
+      if(item.title === values.strategyGroupName){
+        values.strategyGroupId = item.id;
+      }
+    });
+    console.log(values)
+    httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
+      if(response) {
+        message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
+        this.setState({
+          controlRule: response.data,
+          updateState: true
+        });
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      }
+      else {
+        console.log(e)
+      }
+    })
   };
 
   //获取规则明细
@@ -193,14 +241,14 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   render(){
-    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrame, params, controlRule } = this.state;
+    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrame, params, controlRule, updateState } = this.state;
     return(
       <div className="budget-control-rules-detail">
         <BasicInfo
           infoList={infoList}
           infoData={controlRule}
           updateHandle={this.handleUpdate}
-          updateState={true}sssss/>
+          updateState={updateState}/>
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">

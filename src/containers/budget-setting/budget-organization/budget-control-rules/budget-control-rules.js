@@ -18,6 +18,7 @@ let priority = [];
 class BudgetControlRules extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
@@ -37,35 +38,39 @@ class BudgetControlRules extends React.Component {
       searchForm: [
         /*控制规则从*/
         { type: 'select', id: 'controlRulesFrom',
-          label: this.props.intl.formatMessage({id: 'budget.controlRulesFrom'}),
+          label:formatMessage({id: 'budget.controlRulesFrom'}),
           options: controlRules
         },
         /*控制规则到*/
         { type: 'select', id: 'controlRulesTo',
-          label: this.props.intl.formatMessage({id: 'budget.controlRulesTo'}),
+          label: formatMessage({id: 'budget.controlRulesTo'}),
           options: controlRules
         },
                                                                                             /*优先级*/
         { type: 'select', id: 'priority',
-          label: this.props.intl.formatMessage({id: 'budget.controlRules.priority'}),
+          label: formatMessage({id: 'budget.controlRules.priority'}),
           options: priority
         }
       ],
       columns: [
         {          /*优先级*/
-          title: this.props.intl.formatMessage({id:"budget.controlRules.priority"}), key: "priority", dataIndex: 'priority'
+          title: formatMessage({id:"budget.controlRules.priority"}), key: "priority", dataIndex: 'priority'
         },
         {          /*控制规则代码*/
-          title: this.props.intl.formatMessage({id:"budget.controlRuleCode"}), key: "controlRuleCode", dataIndex: 'controlRuleCode'
+          title: formatMessage({id:"budget.controlRuleCode"}), key: "controlRuleCode", dataIndex: 'controlRuleCode'
         },
         {          /*控制规则名称*/
-          title: this.props.intl.formatMessage({id:"budget.controlRuleName"}), key: "controlRuleName", dataIndex: 'controlRuleName'
+          title: formatMessage({id:"budget.controlRuleName"}), key: "controlRuleName", dataIndex: 'controlRuleName'
         },
         {          /*控制策略*/
-          title: "控制策略", key: "strategyGroup", dataIndex: 'strategyGroup'
+          title: "控制策略", key: "strategyGroupName", dataIndex: 'strategyGroupName'
         },
         {          /*有效日期*/
-          title: this.props.intl.formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate'
+          title: formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate',
+          render:(recode,record)=>{
+            return record.startDate.substring(0,10)+ " ~ " +
+              record.endDate === "undefined" || record.endDate === '' ? '' :record.endDate.substring(0,10)
+          }
         },
       ]
     }

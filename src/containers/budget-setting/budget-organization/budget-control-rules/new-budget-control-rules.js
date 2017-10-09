@@ -37,7 +37,8 @@ class NewBudgetControlRules extends React.Component{
          let strategy = {
            id: item.id,
            key: item.controlStrategyCode,
-           value: item.controlStrategyCode+" - "+item.controlStrategyName
+           value: item.controlStrategyCode+" - "+item.controlStrategyName,
+           title: item.controlStrategyName
          };
          strategyGroup.push(strategy);
        });
@@ -84,7 +85,6 @@ class NewBudgetControlRules extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.props.organization.id
-        console.log(values)
         this.state.strategyGroup.map((item)=>{
           if(item.key === values.controlStrategy){
             values.strategyGroupId = item.id;
@@ -93,20 +93,34 @@ class NewBudgetControlRules extends React.Component{
         });
         httpFetch.post(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
           if(response.status === 200) {
+            message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-                 budgetControlRulesDetail.url.replace(':id', this.props.params.id).replace(':id', response.data.id));
+                 budgetControlRulesDetail.url.replace(':id', this.props.params.id).replace(':ruleId', response.data.id));
+
           }
         }).catch((e)=>{
-          console.log(e)
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          }
+          else {
+            console.log(e)
+          }
         })
       }
     })
   };
 
+  handleCancel = (e) =>{
+    e.preventDefault();
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+  };
+
  render(){
    const { getFieldDecorator } = this.props.form;
    const { strategyGroup, startValue, endValue} = this.state;
-   let strategyOptions = strategyGroup.map((item)=><Option key={item.key} >{item.value}</Option>);
+   const { formatMessage } = this.props.intl;
+   let strategyOptions = strategyGroup.map((item)=><Option key={item.key} title={item.title}>{item.value}</Option>);
    return(
      <div className="new-budget-control-rules">
        <div className="budget-control-rules-form">
@@ -114,11 +128,11 @@ class NewBudgetControlRules extends React.Component{
             <Row gutter={60}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.controlRuleCode"}) /*业务规则代码*/}
+                  label={ formatMessage({id:"budget.controlRuleCode"}) /*业务规则代码*/}
                   colon={true}>
                   {getFieldDecorator('controlRuleCode', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message: formatMessage({id:"common.please.enter"})},
                       /*{
                         validator:(item,value,callback)=>{
                           if(value === "undefined" || value === ""){
@@ -129,24 +143,25 @@ class NewBudgetControlRules extends React.Component{
                             console.log(response)
                             response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.controlRuleExist"})) : callback()
                           })
+
                         }
                       }*/
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>)
+                    <Input placeholder={ formatMessage({id:"common.please.enter"})}/>)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.controlRuleName"}) /*控制规则名称*/}
+                  label={ formatMessage({id:"budget.controlRuleName"}) /*控制规则名称*/}
                   colon={true}>
                   {getFieldDecorator('controlRuleName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message: formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>)
+                    <Input placeholder={ formatMessage({id:"common.please.enter"})}/>)
                   }
                 </FormItem>
               </Col>
@@ -156,10 +171,10 @@ class NewBudgetControlRules extends React.Component{
                   colon={true}>
                   {getFieldDecorator('controlStrategy', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message: formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}>
+                    <Select placeholder={ formatMessage({id:"common.please.select"})}>
                       {strategyOptions}
                     </Select>)
                   }
@@ -248,7 +263,7 @@ class NewBudgetControlRules extends React.Component{
               </Col>
             </Row>
            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
-           <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
+           <Button onClick={this.handleCancel} style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
          </Form>
        </div>
      </div>

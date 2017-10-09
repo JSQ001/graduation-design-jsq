@@ -24,7 +24,7 @@ class NewBudgetItem extends React.Component{
       organization: {},
       showItemType: false ,
       listSelectedData:[],
-      statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}),  /*启用*/
+      statusCode: this.props.intl.formatMessage({id:"common.status.enable"}),  /*启用*/
     };
   }
   componentWillMount(){
@@ -52,6 +52,14 @@ class NewBudgetItem extends React.Component{
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
             this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetItemDetail.url.replace(':id', this.props.params.id).replace(':itemId',response.data.id));
+          }
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          }
+          else {
+            console.log(e)
           }
         })
       }
@@ -93,14 +101,19 @@ class NewBudgetItem extends React.Component{
     this.showList(false)
   };
 
+  handleCancel = (e) =>{
+    e.preventDefault();
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { organization, statusCode, showItemType , listSelectedData} = this.state;
-
+    const { formatMessage } = this.props.intl;
     const attribute = [
-      {id:"immobilization",value: this.props.intl.formatMessage({id:"variationAttribute.immobilization"})},  /*固定*/
-      {id:"mix",value: this.props.intl.formatMessage({id:"variationAttribute.mix"})}, /*混合*/
-      {id:"year",value: this.props.intl.formatMessage({id:"variationAttribute.alteration"})} /*变动*/
+      {id:"immobilization",value: formatMessage({id:"variationAttribute.immobilization"})},  /*固定*/
+      {id:"mix",value: formatMessage({id:"variationAttribute.mix"})}, /*混合*/
+      {id:"alteration",value: formatMessage({id:"variationAttribute.alteration"})} /*变动*/
     ];
     const variationAttribute = attribute.map((item)=><Option key={item.id}>{item.value}</Option>)
     return (
@@ -110,7 +123,7 @@ class NewBudgetItem extends React.Component{
             <Row gutter={60}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.organization"})}  /*{/!*预算组织*!/}*/
+                  label={formatMessage({id:"budget.organization"})}  /*{/!*预算组织*!/}*/
                   colon={true}>
                   {getFieldDecorator('organizationName', {
                     initialValue: organization.organizationName,
@@ -121,11 +134,11 @@ class NewBudgetItem extends React.Component{
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.itemCode"})} /* {/!*预算项目代码*!/}*/
+                  label={formatMessage({id:"budget.itemCode"})} /* {/!*预算项目代码*!/}*/
                   colon={true}>
                   {getFieldDecorator('itemCode', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message:formatMessage({id:"common.please.enter"})},
                       {
                         validator:(item,value,callback)=>{
                           if(value === "undefined" || value === ""){
@@ -134,28 +147,28 @@ class NewBudgetItem extends React.Component{
                           }
                           httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.params.id}&itemCode=${value}`).then((response)=>{
                             console.log(response)
-                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.itemCodeExist"})) : callback()
+                            response.data.length>0 ? callback(formatMessage({id:"budget.itemCodeExist"})) : callback()
                           })
                           callback();
                         }
                       }
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
+                    <Input placeholder={formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.itemName"})} /* {/!*预算项目名称*!/}*/
+                  label={formatMessage({id:"budget.itemName"})} /* {/!*预算项目名称*!/}*/
                   colon={true}>
                   {getFieldDecorator('itemName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message:formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
+                    <Input placeholder={formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
@@ -164,30 +177,30 @@ class NewBudgetItem extends React.Component{
             <Row gutter={60}>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.itemType"}) /*预算项目类型*/}
+                  label={formatMessage({id:"budget.itemType"}) /*预算项目类型*/}
                   colon={true}>
                   {getFieldDecorator('itemTypeName', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},/* {/!*请输入*!/}*/
+                      {required:true,message:formatMessage({id:"common.please.enter"})},/* {/!*请输入*!/}*/
                     ],
                   })(
                     <Select
                         labelInValue
                         onFocus={this.handleFocus}
-                        placeholder={this.props.intl.formatMessage({id:"common.please.select"})} />) /*请输入*/
+                        placeholder={formatMessage({id:"common.please.select"})} />) /*请输入*/
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.item.variationAttribute"}) /*变动属性*/}
+                  label={formatMessage({id:"budget.item.variationAttribute"}) /*变动属性*/}
                   colon={true}>
                   {getFieldDecorator('variationAttribute', {
                     rules:[
-                      {required:true,message:this.props.intl.formatMessage({id:"common.please.enter"})},
+                      {required:true,message:formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
+                    <Select placeholder={formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
                       {variationAttribute}
                     </Select>)
                   }
@@ -195,21 +208,20 @@ class NewBudgetItem extends React.Component{
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.itemDescription"}) /*预算项目描述*/}
+                  label={formatMessage({id:"budget.itemDescription"}) /*预算项目描述*/}
                   colon={true}>
                   {getFieldDecorator('description', {
                     rules:[
-
                     ]
                   })(
-                    <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}
+                    <Input placeholder={formatMessage({id:"common.please.enter"})}
                     />)
                   }
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
+                  label={formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
                   {getFieldDecorator("isEnabled", {
                     initialValue: true,
@@ -218,8 +230,8 @@ class NewBudgetItem extends React.Component{
                       {
                         validator: (item,value,callback)=>{
                           this.setState({
-                            statusCode: value ? this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/
-                              : this.props.intl.formatMessage({id:"status.disabled"}) /*禁用*/
+                            statusCode: value ? formatMessage({id:"common.status.enable"}) /*启用*/
+                              : formatMessage({id:"status.disabled"}) /*禁用*/
                           })
                           callback();
                         }
@@ -231,8 +243,8 @@ class NewBudgetItem extends React.Component{
                 </FormItem>
               </Col>
             </Row>
-            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"}) /*保存*/}</Button>
-            <Button style={{ marginLeft: 8 }}> {this.props.intl.formatMessage({id:"common.cancel"}) /*取消*/}</Button>
+            <Button type="primary" htmlType="submit">{formatMessage({id:"common.save"}) /*保存*/}</Button>
+            <Button  onClick={this.handleCancel} style={{ marginLeft: 8 }}> {formatMessage({id:"common.cancel"}) /*取消*/}</Button>
             <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </Form>
         </div>
@@ -250,7 +262,7 @@ class NewBudgetItem extends React.Component{
 
 NewBudgetItem.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {

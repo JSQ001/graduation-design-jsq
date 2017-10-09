@@ -31,13 +31,13 @@ class BudgetItemDetail extends React.Component{
 
       },
       infoList: [
-        {type: 'input', id: 'organizationName', label: this.props.intl.formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
-        {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
-        {type: 'input', id: 'itemName', label: this.props.intl.formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
-        {type: 'select',options: [] , id: 'itemTypeName', label:"项目类型"},
+        {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
+        {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
+        {type: 'input', id: 'itemName', isRequired:true, label: this.props.intl.formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
+        {type: 'select',options: [] , id: 'itemTypeName', required:true, label:"项目类型"},
         {type: 'select',options: [] , id: 'variationAttribute', label: this.props.intl.formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
         {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
-        {type: 'switch', id: 'isEnabled', label: this.props.intl.formatMessage({id: 'common.columnStatus'}) +" :"/*状态*/},
+        {type: 'switch', id: 'isEnabled', label: this.props.intl.formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
       columns: [
@@ -84,12 +84,19 @@ class BudgetItemDetail extends React.Component{
       console.log(values)
       if (!err) {
         httpFetch.put(`${config.budgetUrl}/api/budget/items`,values).then((response) => {
-          console.log(response)
           if(response.status === 200){
             this.setState({
               buttonLoading: false,
               edit: false
             })
+          }
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
+          }
+          else {
+            console.log(e)
           }
         })
       }

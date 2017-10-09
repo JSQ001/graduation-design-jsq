@@ -30,65 +30,66 @@ class BudgetStructureDetail extends React.Component{
 
   constructor(props){
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       companyListSelector: false,
-      edit:false,
+      updateState: false,
       structure:{},
       showSlideFrame: false,
       showSlideFrameUpdate: false,
-      statusCode: this.props.intl.formatMessage({id:"common.statusEnable"}) /*启用*/,
+      statusCode: formatMessage({id:"common.status.enable"}) /*启用*/,
       total:0,
       data:[],
       pagination:{},
       status:"",
       columns:[],
       infoList: [
-        {type: 'input', id: 'organizationName', label: this.props.intl.formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
-        {type: 'input', id: 'structureCode', label: this.props.intl.formatMessage({id: 'budget.structureCode'})+" :" /*预算表代码*/},
-        {type: 'input', id: 'structureName', label: this.props.intl.formatMessage({id: 'budget.structureName'}) +" :"/*预算表名称*/},
-        {type: 'select',options: periodStrategy , id: 'periodStrategy', label: this.props.intl.formatMessage({id: 'budget.periodStrategy'}) +" :"/*编制期段*/},
-        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.structureDescription'}) +" :"/*预算表描述*/},
-        {type: 'switch', id: 'isEnabled', label: this.props.intl.formatMessage({id: 'common.columnStatus'}) +" :"/*状态*/},
+        {type: 'input', id: 'organizationName',isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
+        {type: 'input', id: 'structureCode',isRequired: true, disabled: true, label: formatMessage({id: 'budget.structureCode'})+" :" /*预算表代码*/},
+        {type: 'input', id: 'structureName' ,isRequired: true, label: formatMessage({id: 'budget.structureName'}) +" :"/*预算表名称*/},
+        {type: 'select',options: periodStrategy ,isRequired: true, id: 'periodStrategy', label: formatMessage({id: 'budget.periodStrategy'}) +" :"/*编制期段*/},
+        {type: 'input', id: 'description', label: formatMessage({id: 'budget.structureDescription'}) +" :"/*预算表描述*/},
+        {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
       columnGroup:{
         company:[
           {                        /*公司代码*/
-            title:this.props.intl.formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode'
+            title:formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode'
           },
           {                        /*公司代码*/
-            title:this.props.intl.formatMessage({id:"structure.companyDescription"}), key: "description", dataIndex: 'description'
+            title:formatMessage({id:"structure.companyDescription"}), key: "description", dataIndex: 'description'
           },
           {                        /*公司类型*/
-            title:this.props.intl.formatMessage({id:"structure.companyType"}), key: "companyType", dataIndex: 'companyType'
+            title:formatMessage({id:"structure.companyType"}), key: "companyType", dataIndex: 'companyType'
           },
           {                        /*启用*/
-            title:this.props.intl.formatMessage({id:"structure.enablement"}), key: "enablement", dataIndex: 'enablement',width:'10%'
+            title:formatMessage({id:"structure.enablement"}), key: "enablement", dataIndex: 'enablement',width:'10%'
           },
         ],
         dimension:[
           {                        /*维度代码*/
-          title:this.props.intl.formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
+          title:formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
            },
           {                        /*描述*/
-            title:this.props.intl.formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
+            title:formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
           },
           {                        /*布局位置*/
-            title:this.props.intl.formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
+            title:formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
           },
           {                        /*布局顺序*/
-            title:this.props.intl.formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
+            title:formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
           },
           {                        /*默认维值*/
-            title:this.props.intl.formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
+            title:formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
           },
           {                        /*操作*/
-            title:this.props.intl.formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
+            title:formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
           },]
       },
       tabs: [
-        {key: 'dimension', name: this.props.intl.formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
-        {key: 'company', name: this.props.intl.formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
+        {key: 'dimension', name: formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
+        {key: 'company', name: formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
         ],
       form: {
         name: '',
@@ -107,19 +108,13 @@ class BudgetStructureDetail extends React.Component{
     })
   }
 
-
-  //控制是否编辑
-  handleEdit = (flag) => {
-    this.setState({edit: flag})
-  };
-
   //保存所做的修改
   handleUpdate = (value) => {
     //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${this.state.structure.id}`).then((response)=>{
       if(response.status === 200){
         if(response.data.length>0 && this.state.structure.periodStrategy !== value.periodStrategy){
-          message.error("保存失败，该预算表已被日志记账类型引用，不允许修改编制期段！")
+          message.error(this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})) //该预算表已被预算日记账引用，不允许修改编制期段！
         }
       }
     });
@@ -129,14 +124,22 @@ class BudgetStructureDetail extends React.Component{
     httpFetch.put(`${config.budgetUrl}/api/budget/structures`,value).then((response)=>{
       if(response) {
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-        this.handleEdit(false)
+        this.setState({
+          structure: response.data,
+          updateState: true
+        });
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      }
+      else {
+        console.log(e)
       }
     })
   };
 
-  handleUpdateState = () =>{
-    return
-  };
 
   renderTabs(){
     return (
@@ -206,14 +209,14 @@ class BudgetStructureDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { infoList, structure, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
+    const { infoList, updateState, structure, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
         <BasicInfo
             infoList={infoList}
             infoData={structure}
             updateHandle={this.handleUpdate}
-            updateState={true}/>
+            updateState={updateState}/>
         <div className="structure-detail-distribution">
           <Tabs onChange={this.onChangeTabs}>
             {this.renderTabs()}
