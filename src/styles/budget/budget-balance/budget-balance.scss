@@ -1,0 +1,12 @@
+.budget-balance{
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 74px;
+  .footer-operate{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 64px;
+    line-height: 64px;
+  }
+}

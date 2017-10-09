@@ -8,7 +8,7 @@ import { Form, Input, Row, Col, Select, Button, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import 'styles/budget/budget-strategy/new-budget-strategy-detail.scss'
+import 'styles/budget-setting/budget-organization/budget-strategy/new-budget-strategy-detail.scss'
 
 class NewBudgetStrategyDetail extends React.Component {
   constructor(props) {

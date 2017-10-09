@@ -37,6 +37,8 @@ import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organizati
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 
+import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
@@ -281,12 +283,21 @@ const budgetJournal = {
   components: BudgetJournal,
   parent: 'budget',
   children: {}
-}
+};
+
+//预算余额
+const budgetBalance = {
+  key: 'budget-balance',
+  url:'/main/budget/budget-balance',
+  components: BudgetBalance,
+  parent: 'budget',
+  children: {}
+};
 
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetJournal],
+  subMenu: [budgetJournal, budgetBalance],
   icon: 'tags'
 };
 

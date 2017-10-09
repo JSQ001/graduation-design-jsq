@@ -8,7 +8,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon,message} from 'antd'
-import 'styles/budget/budget-versions/new-budget-versions.scss'
+import 'styles/budget-setting/budget-organization/budget-versions/new-budget-versions.scss'
 
 const FormItem = Form.Item;
 const sd = this;

@@ -10,7 +10,7 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
-import 'styles/budget/budget-organization/new-budget-organization.scss'
+import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
 class NewBudgetOrganization extends React.Component {
   constructor(props) {
