@@ -1,4 +1,5 @@
 {
+  "budget.itemType": "预算项目类型",
   "budget.itemTypeCode": "预算项目类型代码",
   "budget.itemTypeName": "预算项目类型名称",
   "budget.isEnabled": "状态",
