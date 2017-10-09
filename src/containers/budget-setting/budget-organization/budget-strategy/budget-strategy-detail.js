@@ -11,7 +11,7 @@ const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
 
-import 'styles/budget/budget-strategy/budget-strategy-detail.scss'
+import 'styles/budget-setting/budget-organization/budget-strategy/budget-strategy-detail.scss'
 
 class BudgetStrategyDetail extends React.Component {
   constructor(props) {

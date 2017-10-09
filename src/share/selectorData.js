@@ -50,23 +50,15 @@ const selectorData = {
     title: '添加公司',
     url: `${config.baseUrl}/api/budget/structures/query`,
     searchForm: [
-      {
-        type: 'input', id: 'companyCode', label: "公司代码"/*this.props.intl.formatMessage({id:'structure.companyCode'})*/ /*公司代码*/
-      },
-      {
-        type: 'input', id: 'companyName', label: "公司名称"/*this.props.intl.formatMessage({id:'structure.companyName'})*/ /*公司名称*/
-      },
-      {
-        type: 'input', id: 'companyCodeFrom', label:"公司代码从" /*this.props.intl.formatMessage({id:'structure.companyCodeFrom'})*/ /*公司代码从*/
-      },
-      {
-        type: 'input', id: 'companyCodeTo', label: "公司代码至"/* this.props.intl.formatMessage({id:'structure.companyCodeTo'})*/ /*公司代码至*/
-      }
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
     ],
     columns: [
-      {title: "公司代码"/*this.props.intl.formatMessage({id:'structure.companyCode'})*/, dataIndex: 'companyCode'},/*公司代码*/
-      {title: "公司明称"/*this.props.intl.formatMessage({id:'structure.companyName'})*/, dataIndex: 'companyName'}, /*公司明称*/
-      {title: "公司类型" /*this.props.intl.formatMessage({id:'structure.companyType'})*/, dataIndex: 'companyCode'} /*公司类型*/
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'companyName'},
+      {title: "公司类型", dataIndex: 'companyCode'}
     ],
     key: 'companyOID'
   },

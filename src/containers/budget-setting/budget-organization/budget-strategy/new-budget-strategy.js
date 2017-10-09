@@ -7,7 +7,7 @@ import config from 'config'
 import { Form, Input, Switch, message, Icon, Row, Col, Button } from 'antd'
 const FormItem = Form.Item;
 
-import 'styles/budget/budget-strategy/new-budget-strategy.scss'
+import 'styles/budget-setting/budget-organization/budget-strategy/new-budget-strategy.scss'
 
 class NewBudgetStrategy extends React.Component {
   constructor(props) {

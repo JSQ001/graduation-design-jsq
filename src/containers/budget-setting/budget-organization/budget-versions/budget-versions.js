@@ -10,7 +10,7 @@ import menuRoute from 'share/menuRoute'
 import {Link,Redirect,browserHistory,History} from 'react-router'
 import {Button,Table,Badge,Popconfirm,Form,message,DatePicker,Col,Row,Switch,notification,Icon} from 'antd'
 import SearchArea from 'components/search-area'
-import 'styles/budget/budget-versions/budget-versions.scss'
+import 'styles/budget-setting/budget-organization/budget-versions/budget-versions.scss'
 const FormItem = Form.Item;
 
 class BudgetVersions extends React.Component {
