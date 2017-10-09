@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { Form, Input, Switch, message, Icon, Row, Col, Button } from 'antd'
@@ -14,12 +15,8 @@ class NewBudgetStrategy extends React.Component {
     this.state = {
       loading: false,
       isEnabled: true,
+      budgetOrganizationDetail:  menuRoute.getRouteItem('budget-organization-detail','key'),    //预算组织详情
     };
-  }
-
-  componentWillMount() {
-    console.log("organization⬇️");
-    console.log(this.props);
   }
 
   handleSave = (e) =>{
@@ -33,17 +30,22 @@ class NewBudgetStrategy extends React.Component {
           if(res.status == 200){
             this.setState({loading: false});
             message.success('操作成功');
+            this.handleCancle();
           }
         }).catch((e)=>{
-          if(e.response){
-            message.error(`新建失败, 该预算控制策略代码已存在`);
-            this.setState({loading: false});
+          this.setState({loading: false});
+          if(e.response.data.validationErrors){
+            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
           } else {
-            console.log(e)
+            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
         })
       }
     });
+  };
+
+  handleCancle = () => {
+    this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
 
   switchChange = () => {
@@ -96,7 +98,7 @@ class NewBudgetStrategy extends React.Component {
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
               <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>保存</Button>
-              <Button>取消</Button>
+              <Button onClick={this.handleCancle}>取消</Button>
           </FormItem>
         </Form>
       </div>
@@ -104,6 +106,10 @@ class NewBudgetStrategy extends React.Component {
   }
 
 }
+
+NewBudgetStrategy.contextTypes={
+  router:React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

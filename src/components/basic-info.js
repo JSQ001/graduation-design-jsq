@@ -47,7 +47,7 @@ class BasicInfo extends React.Component{
           this.state.params[item.id] = option.label;
         }
       });
-      return <div>{this.state.params[item.id]}</div>;
+      return <div style={{wordWrap:'break-word'}}>{this.state.params[item.id]}</div>;
     }
   }
   getInfos() {

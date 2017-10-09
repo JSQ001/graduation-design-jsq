@@ -56,8 +56,7 @@ class StrategyControlDetail extends React.Component {
     this.setState({
       strategyControlId: this.props.params.strategyControlId,
       newParams: {
-        strategyControlId: this.props.params.strategyControlId,
-        updateParams: {}
+        strategyControlId: this.props.params.strategyControlId
       }
     },() => {
       this.getBasicInfo();
@@ -110,7 +109,6 @@ class StrategyControlDetail extends React.Component {
       showSlideFrame: flag,
       newParams: {
         strategyControlId: this.props.params.strategyControlId,
-        updateParams: {}
       }
     })
   };
@@ -160,18 +158,9 @@ class StrategyControlDetail extends React.Component {
     })
   };
   handleRowClick = (record) => {
-    /*this.setState({
-      showSlideFrame: true,
-      newParams: {
-        strategyControlId: this.props.params.strategyControlId,
-        updateParams: record
-      }
-    })*/
+    record.strategyControlId = this.props.params.strategyControlId;
     this.setState({
-      newParams: {
-        strategyControlId: this.props.params.strategyControlId,
-        updateParams: record
-      }
+      newParams: record
     }, () => {
       this.showUpdateSlide(true)
     })
@@ -207,7 +196,7 @@ class StrategyControlDetail extends React.Component {
                     show={showSlideFrame}
                     content={NewStrategyControlDetail}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}
+                    onClose={() => this.showUpdateSlide(false)}
                     params={newParams}/>
       </div>
     )

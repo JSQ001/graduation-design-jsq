@@ -39,6 +39,7 @@ class UpdateBudgetScenarios extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
+        values.organizationId = this.state.params.organizationId;
         values.id = this.state.params.id;
         values.versionNumber = this.state.params.versionNumber;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);

@@ -22,7 +22,7 @@ class BudgetStrategy extends React.Component {
       },
       columns: [
         {title: '预算控制策略代码', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
-        {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName', render: desc => <Popover content={desc}>{desc}</Popover>},
+        {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       data: [],    //列表值

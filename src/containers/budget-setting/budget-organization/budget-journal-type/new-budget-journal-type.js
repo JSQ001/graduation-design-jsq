@@ -23,7 +23,7 @@ class NewBudgetJournalType extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        values.organisationId = this.props.organization.id;
+        values.organizationId = this.props.organization.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/journal/types`, values).then((res)=>{
           this.setState({loading: false});
           message.success(`项目组${res.data.journalTypeName}新建成功`);
