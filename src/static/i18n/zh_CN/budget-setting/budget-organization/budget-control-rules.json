@@ -15,7 +15,15 @@
   "budget.parameterLowerLimit": "下限值",
   "budget.parameterUpperLimit": "上限值",
   "budget.invalidDate": "失效日期",
-  "budget.createRulesDetail": "新建规则明细"
-
-
+  "budget.createRulesDetail": "新建规则明细",
+  "budget.editRulesDetail": "编辑规则明细",
+  "budget.are.you.sure.to.delete.rule": "你确认要删除？",
+  "ruleParamsType.dimension": "维度相关",
+  "ruleParamsType.budget": "预算相关",
+  "ruleParamsType.organization": "组织架构相关",
+  "budget.filtrateMethodHelp.contain": "值范围为闭区间，包含左右边界值",
+  "budget.filtrateMethodHelp.exclude": "值范围为开区间，不包含左右边界值",
+  "budget.summaryOrDetailHelp.all": "在上下限值内的明细和汇总规则参数都包括在内",
+  "budget.summaryOrDetailHelp.summary": "只包括在上下限内的汇总规则参数",
+  "budget.summaryOrDetailHelp.detail": "只包括在上下限内的明细规则参数"
 }
