@@ -1,7 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button } from 'antd'
+import { Button, Form } from 'antd'
+const FormItem = Form.Item;
+
+import Chooser from 'components/chooser'
 
 import 'styles/budget/budget-balance/budget-balance.scss'
 import SearchArea from 'components/search-area'
@@ -25,7 +28,7 @@ class BudgetBalance extends React.Component {
           {type: 'select', id: 'seasonFrom', label: '季度从', isRequired: true, options: []},
           {type: 'select', id: 'seasonTo', label: '季度到', options: []}
         ]},
-        {type: 'select', id:'type', label: '金额/数量', isRequired: true, options: []},
+        {type: 'select', id:'type', label: '金额/数量', isRequired: true, options: []}
       ],
     };
   }
@@ -36,6 +39,11 @@ class BudgetBalance extends React.Component {
 
   clear = () => {
 
+  };
+
+  handleTest = (e) => {
+    e.preventDefault();
+    console.log(this.props.form.getFieldsValue())
   };
 
   render(){
@@ -63,4 +71,6 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetBalance));
+const WrappedBudgetBalance = Form.create()(BudgetBalance);
+
+export default connect(mapStateToProps)(injectIntl(WrappedBudgetBalance));
