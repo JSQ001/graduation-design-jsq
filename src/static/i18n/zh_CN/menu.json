@@ -34,6 +34,7 @@
   "menu.budget-item-detail": "预算项目详情",
   "menu.new-budget-control-rules": "新建预算规则",
   "menu.budget-control-rules-detail": "预算规则详情",
-  "menu.budget-balance": "预算余额"
-
+  "menu.budget-balance": "预算余额",
+  "menu.pay": "支付",
+  "menu.pay-workbench": "付款工作台"
 }

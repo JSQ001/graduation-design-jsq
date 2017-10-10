@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 
 import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
 
-
+import ListSelector from 'components/list-selector.js'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import 'styles/budget-setting/budget-organization/budget-structure/new-dimension.scss'
@@ -17,15 +17,15 @@ class NewDimension extends React.Component{
     super(props);
     this.state = {
       isEnabled: true,
-      organizationName: '',
+      showSelectDimension: false,
+      listSelectedData: [],
+      extraParams: {},
       loading: false
     };
   }
 
   componentWillMount(){
-    this.setState({
-      organizationName: this.props.params.organizationName
-    })
+
   }
 
   handleSave = (e) =>{
@@ -60,11 +60,47 @@ class NewDimension extends React.Component{
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
     }))
-  }
+  };
+
+  handleFocus = () => {
+    console.log(1)
+
+    this.refs.blur.focus();
+    this.showList(true)
+  };
+
+  showList = (flag) =>{
+    this.setState({
+      showSelectDimension: flag,
+    })
+  };
+
+  /**
+   * ListSelector确认点击事件，返回的结果包装为form需要的格式
+   * @param result
+   */
+  handleListOk = (result) => {
+    let formItem = {};
+    console.log(result)
+    let values = [];
+    result.result.map(item => {
+      values.push({
+        key: item[formItem.valueKey],
+        label: item[formItem.labelKey],
+        value: item
+      })
+    });
+    let value = {};
+    value[formItem.id] = values;
+    console.log(this.props.form)
+    this.props.form.setFieldsValue(value);
+    this.setState({ showListSelector: false });
+    formItem.handle && formItem.handle();
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, organizationName } = this.state;
+    const { isEnabled, showSelectDimension, listExtraParams, listSelectedData } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -86,11 +122,14 @@ class NewDimension extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="维度代码:">
             {getFieldDecorator('dimensionCode', {
-              rules: [{
-
-              }],
+              rules: [
+              ],
             })(
-              <Select placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+              <Select
+                mode="multiple"
+                labelInValue
+                onFocus={this.handleFocus}
+                placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="维度名称:" >
@@ -112,7 +151,9 @@ class NewDimension extends React.Component{
           <FormItem {...formItemLayout} label="布局顺序:">
             {getFieldDecorator('layoutPriority', {
               rules: [{
-
+                validator:(item,value,callback)=>{
+                  callback()
+                }
               }],
             })(
               <InputNumber placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
@@ -124,7 +165,11 @@ class NewDimension extends React.Component{
 
               }],
             })(
-              <Select placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+              <Select
+                mode="multiple"
+                labelInValue
+                onFocus={this.handleFocus}
+                placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="默认维度名称:" >
@@ -137,8 +182,16 @@ class NewDimension extends React.Component{
           <div className="slide-footer">
             <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
+            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>
+        <ListSelector
+            visible={showSelectDimension}
+            type="select_dimension"
+            onCancel={()=>this.showList(false)}
+            onOk={this.handleListOk}
+            selectedData={listSelectedData}
+            extraParams={listExtraParams}/>
       </div>
     )
   }

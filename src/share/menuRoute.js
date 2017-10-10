@@ -36,8 +36,13 @@ import NewBudgetJournalType from 'containers/budget-setting/budget-organization/
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
+import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journal'
+import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
+
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+
+import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -92,7 +97,7 @@ const newBudgetStructure = {
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:id',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:structureId',
   components: BudgetStructureDetail,
   parent:'budget-organization-detail',
   children: {
@@ -150,7 +155,7 @@ const newBudgetItem = {
 //预算项目详情
 const budgetItemDetail = {
   key: 'budget-item-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:itemId',
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
 
@@ -167,7 +172,7 @@ const newBudgetControlRules = {
 //预算控制规则详情
 const budgetControlRulesDetail = {
   key: 'budget-control-rules-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:ruleId',
   components: BudgetControlRulesDetail,
   parent: 'budget-organization-detail'
 };
@@ -276,13 +281,28 @@ const budgetSetting = {
 
 //////////////////////预算模块///////////////////////////
 
+//新建预算日记账
+const newBudgetJournal={
+  key:'new-budget-journal',
+  url:'/main/budget/budget-journal/new-budget-journal',
+  components:NewBudgetJournal,
+  parent: 'budgetJournal',
+};
+
+//预算日记账详情
+const budgetJournalDetail={
+  key:'budget-journal-detail',
+  url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
+  components:NewBudgetJournal,
+  parent: 'budgetJournal',
+};
+
 //预算日记账
 const budgetJournal = {
   key:'budget-journal',
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
-  parent: 'budget',
-  children: {}
+  children: {newBudgetJournal,budgetJournalDetail}
 };
 
 //预算余额
@@ -302,6 +322,26 @@ const budget = {
 };
 
 //////////////////////预算模块结束///////////////////////////
+
+//////////////////////支付模块///////////////////////////
+
+//付款工作台
+const payWorkbench = {
+  key: 'pay-workbench',
+  url:'/main/pay/pay-workbench',
+  components: PayWorkbench,
+  parent: 'pay',
+  children: {}
+};
+
+//支付
+const pay = {
+  key:'pay',
+  subMenu: [payWorkbench],
+  icon: 'pay-circle'
+};
+
+//////////////////////支付模块结束///////////////////////////
 
 //首页
 const dashboard = {
@@ -352,7 +392,8 @@ const menu = [
   financialManagement,
   expenseReport,
   budgetSetting,
-  budget
+  budget,
+  pay
 ];
 
 /**
