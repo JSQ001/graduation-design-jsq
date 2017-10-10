@@ -31,7 +31,7 @@ class BudgetScenarios extends React.Component {
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>},
-        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', width: '10%' , render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
