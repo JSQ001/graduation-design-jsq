@@ -114,4 +114,3 @@ BasicInfo.propTypes = {
 const WrappedBasicInfo= Form.create()(BasicInfo);
 
 export default WrappedBasicInfo;
-
