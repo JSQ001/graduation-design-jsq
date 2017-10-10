@@ -13,14 +13,20 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 
 
-const controlRules = [];
-
+let controlRules = [];
+let priority = [];
 class BudgetControlRules extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
+      searchParams: {
+        controlRuleFrom: "",
+        controlRuleTo: "",
+        priority: "",
+      },
       pagination: {
         current:0,
         page:0,
@@ -32,35 +38,39 @@ class BudgetControlRules extends React.Component {
       searchForm: [
         /*控制规则从*/
         { type: 'select', id: 'controlRulesFrom',
-          label: this.props.intl.formatMessage({id: 'budget.controlRulesFrom'}),
+          label:formatMessage({id: 'budget.controlRulesFrom'}),
           options: controlRules
         },
         /*控制规则到*/
         { type: 'select', id: 'controlRulesTo',
-          label: this.props.intl.formatMessage({id: 'budget.controlRulesTo'}),
+          label: formatMessage({id: 'budget.controlRulesTo'}),
           options: controlRules
         },
                                                                                             /*优先级*/
         { type: 'select', id: 'priority',
-          label: this.props.intl.formatMessage({id: 'budget.controlRules.priority'}),
-          options:[]
+          label: formatMessage({id: 'budget.controlRules.priority'}),
+          options: priority
         }
       ],
       columns: [
         {          /*优先级*/
-          title: this.props.intl.formatMessage({id:"budget.controlRules.priority"}), key: "priority", dataIndex: 'priority'
+          title: formatMessage({id:"budget.controlRules.priority"}), key: "priority", dataIndex: 'priority'
         },
         {          /*控制规则代码*/
-          title: this.props.intl.formatMessage({id:"budget.controlRuleCode"}), key: "controlRuleCode", dataIndex: 'controlRuleCode'
+          title: formatMessage({id:"budget.controlRuleCode"}), key: "controlRuleCode", dataIndex: 'controlRuleCode'
         },
         {          /*控制规则名称*/
-          title: this.props.intl.formatMessage({id:"budget.controlRuleName"}), key: "controlRuleName", dataIndex: 'controlRuleName'
+          title: formatMessage({id:"budget.controlRuleName"}), key: "controlRuleName", dataIndex: 'controlRuleName'
         },
         {          /*控制策略*/
-          title: "控制策略", key: "strategyGroup", dataIndex: 'strategyGroup'
+          title: "控制策略", key: "strategyGroupName", dataIndex: 'strategyGroupName'
         },
         {          /*有效日期*/
-          title: this.props.intl.formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate'
+          title: formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate',
+          render:(recode,record)=>{
+            return record.startDate.substring(0,10)+ " ~ " +
+              record.endDate === "undefined" || record.endDate === '' ? '' :record.endDate.substring(0,10)
+          }
         },
       ]
     }
@@ -73,16 +83,44 @@ class BudgetControlRules extends React.Component {
 
   handleSearch = (values) =>{
     console.log(values)
+    let searchParams = {
+      controlRulesFrom: values.controlRulesFrom,
+      controlRuleTo: values.controlRuleTo,
+      priority: values.priority
+    };
+    this.setState({
+      searchParams:searchParams,
+      loading: true,
+      page: 1
+    }, ()=>{
+      this.getList();
+    })
   };
 
   //获取控制规则数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}`).then((response)=>{
+    let params = this.state.searchParams;
+    console.log(params)
+    let url = `${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    httpFetch.get(url).then((response)=>{
       if(response.status === 200){
+        console.log(response);
         response.data.map((item)=>{
           item.key = item.id;
-        })
-
+          let control = {
+            label: item.controlRuleName,
+            value: item.controlRuleCode
+          };
+          let pop = {
+            label: item.priority,
+            value: item.priority
+          };
+          controlRules.push(control);
+          priority.push(pop);
+        });
         this.setState({
           loading: false,
           data: response.data,
@@ -122,7 +160,7 @@ class BudgetControlRules extends React.Component {
 //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
   }
 
   render(){

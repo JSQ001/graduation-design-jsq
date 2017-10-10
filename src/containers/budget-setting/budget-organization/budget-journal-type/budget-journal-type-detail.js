@@ -39,7 +39,7 @@ class BudgetJournalTypeDetail extends React.Component {
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/query`,
           selectorItem: selectorData['budget_journal_structure'],
-          extraParams: {organizationId: this.props.organization.id},
+          extraParams: {organizationId: this.props.organization.id, journalTypeId: this.props.params.typeId},
           columns: [
             {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
@@ -51,7 +51,7 @@ class BudgetJournalTypeDetail extends React.Component {
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
           url: `${config.budgetUrl}/api/budget/journal/type/assign/items/query`,
           selectorItem: selectorData['budget_journal_item'],
-          extraParams: {organizationId: this.props.organization.id},
+          extraParams: {organizationId: this.props.organization.id, journalTypeId: this.props.params.typeId},
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},

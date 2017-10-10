@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge, notification  } from 'antd';
+import { Button, Table, Badge, notification, Popover  } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -16,6 +16,7 @@ import 'styles/budget-setting/budget-organization/budget-structure/budget-struct
 class BudgetStructure extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
@@ -25,63 +26,56 @@ class BudgetStructure extends React.Component {
       },
       pagination: {
         current: 1,
-        page: 1,
+        page: 0,
         total:0,
         pageSize:10,
         showSizeChanger:true,
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'input', id: 'structureCode', label: this.props.intl.formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
-        {type: 'input', id: 'structureName', label: this.props.intl.formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
+        {type: 'input', id: 'structureCode', label: formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
+        {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
       ],
       columns: [
         {          /*预算组织*/
-          title: this.props.intl.formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
+          title: formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
         },
         {          /*预算表代码*/
-          title: this.props.intl.formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
+          title: formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
         },
-        {          /*预算表描述*/
-          title: this.props.intl.formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description'
+        {          /*预算表名称*/
+          title: formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
+          title: formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
           render: (recode)=>{
             if(recode === "month")
-              return this.props.intl.formatMessage({id:"periodStrategy.month"}) /*月度*/
+              return formatMessage({id:"periodStrategy.month"}) /*月度*/
             if(recode === "quarter")
-              return this.props.intl.formatMessage({id:"periodStrategy.quarter"}) /*季度*/
+              return formatMessage({id:"periodStrategy.quarter"}) /*季度*/
             if(recode === "year")
-              return this.props.intl.formatMessage({id:"periodStrategy.year"}) /*年度*/
+              return formatMessage({id:"periodStrategy.year"}) /*年度*/
           }
         },
+        {           /*备注*/
+          title: formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description',
+          render: description => (
+            <span>
+              {description ? description : '-'}
+              <Popover content={description}>
+                {description}
+              </Popover>
+            </span>)
+        },
         {           /*状态*/
-          title: this.props.intl.formatMessage({id:"common.columnStatus"}),
+          title: formatMessage({id:"common.column.status"}),
           key: 'status',
           width: '10%',
           dataIndex: 'isEnabled',
-          render: (recode) => {
-            if (recode) {
-              return (
-                <div>
-                  <Badge status="success"/>
-                  { this.props.intl.formatMessage({id:"common.statusEnable"}) }  {/*启用*/}
-                </div>
-              );
-            } else {
-              if (recode === undefined) {
-                return
-              } else {
-                return (
-                  <div>
-                    <Badge status="error"/>
-                    { this.props.intl.formatMessage({id:"common.statusDisable"}) }  {/*禁用*/}
-                  </div>
-                );
-              }
-            }
-          }
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          )
         }
       ],
     }
@@ -92,7 +86,12 @@ class BudgetStructure extends React.Component {
 
   //获取预算表数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&structureCode=${this.state.searchParams.structureCode||''}&structureName=${this.state.searchParams.structureName||''}`).then((response)=>{
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    httpFetch.get(url).then((response)=>{
       console.log(response)
       response.data.map((item,index)=>{
         item.key = item.structureCode;
@@ -113,7 +112,6 @@ class BudgetStructure extends React.Component {
   };
 
   handleSearch = (values) =>{
-    console.log(values)
     let searchParams = {
       structureName: values.structureName,
       structureCode: values.structureCode
@@ -134,7 +132,8 @@ class BudgetStructure extends React.Component {
       pagination:{
         current: pagination.current,
         page: pagination.current-1,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
+        total: pagination.total
       }
     }, ()=>{
       this.getList();
@@ -145,26 +144,26 @@ class BudgetStructure extends React.Component {
       this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
     }else{
       notification["error"]({
-        description:this.props.intl.formatMessage({id:""})  /*请维护当前账套下的预算组织*/
+        description: formatMessage({id:""})  /*请维护当前账套下的预算组织*/
       })
     }
   }
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    console.log(record)
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id));
-  }
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':structureId', record.id));
+  };
 
   render(){
+    const { formatMessage } = this.props.intl;
     const { searchForm, loading, data, columns, pagination } = this.state;
     return (
       <div className="budget-structure">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
         <Table

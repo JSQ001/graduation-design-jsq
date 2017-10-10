@@ -64,8 +64,7 @@ class NewDimension extends React.Component{
 
   handleFocus = () => {
     console.log(1)
-
-    this.refs.blur.focus();
+    //this.refs.blur.focus();
     this.showList(true)
   };
 
@@ -182,16 +181,15 @@ class NewDimension extends React.Component{
           <div className="slide-footer">
             <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
-            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>
         <ListSelector
-            visible={showSelectDimension}
-            type="select_dimension"
-            onCancel={()=>this.showList(false)}
-            onOk={this.handleListOk}
-            selectedData={listSelectedData}
-            extraParams={listExtraParams}/>
+          visible={showSelectDimension}
+          type="select_dimension"
+          onCancel={()=>this.showList(false)}
+          onOk={this.handleListOk}
+          selectedData={listSelectedData}
+          extraParams={listExtraParams}/>
       </div>
     )
   }

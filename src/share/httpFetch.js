@@ -112,7 +112,7 @@ methodList.map(method => {
   httpFetch[method] = function(url, params ,header){
     if(!header)
       header = {};
-    if(url.indexOf('/api/budget') === -1) //TODO:预算模块暂时不能传token
+    if(url.indexOf(config.budgetUrl) === -1) //TODO:预算模块暂时不能传token
       header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
