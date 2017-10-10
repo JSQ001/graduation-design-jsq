@@ -4,9 +4,11 @@ import { injectIntl } from 'react-intl';
 import { Button, Table, Select } from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal.scss"
+
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+
 
 const journalTypeCode = [];
 
@@ -17,11 +19,14 @@ class BudgetJournal extends React.Component {
       loading: true,
       data: [],
       params:{},
+      organization:{},
       pagination: {
         current:0,
         page:0,
         total:0,
         pageSize:10,
+        showUpdateSlideFrame:false,
+        showCreateSlideFrame:false,
         showSizeChanger:true,
         showQuickJumper:true,
       },
@@ -31,14 +36,20 @@ class BudgetJournal extends React.Component {
           labelKey: 'journalTypeName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{organizationId: this.props.id}
+          listExtraParams:{organizationId:908139656192442369}
         },
         {type: 'input', id: 'journalNumber',
           label: this.props.intl.formatMessage({id: 'budget.journalNumber'}), /*预算日记账编号*/
         },
         {type: 'select', id: 'periodStrategy',
           label:  this.props.intl.formatMessage({id: 'budget.journal'})+this.props.intl.formatMessage({id: 'budget.periodStrategy'}),
-          options: journalTypeCode
+          options:
+            [
+              {value:'Y',label:this.props.intl.formatMessage({id:"budget.year"})},
+              {value:'Q',label:this.props.intl.formatMessage({id:"budget.quarter"})},
+              {value:'M',label:this.props.intl.formatMessage({id:"budget.month"})}
+
+            ]
         },
       ],
 
@@ -70,6 +81,16 @@ class BudgetJournal extends React.Component {
 
   componentWillMount(){
     this.getList();
+    this.getOrganization();
+  }
+
+  getOrganization(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        organization:request.data
+      })
+    })
   }
 
   //获取预算日记账数据
@@ -120,7 +141,7 @@ class BudgetJournal extends React.Component {
   };
 
   render(){
-    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany} = this.state;
+    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany,organization} = this.state;
     return (
       <div className="budget-journal">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>

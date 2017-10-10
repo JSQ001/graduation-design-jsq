@@ -27,7 +27,6 @@ import 'styles/components/search-area.scss'
  * TODO: 选项render函数、searchUrl和getUrl的method区分，时间段格式
  */
 class SearchArea extends React.Component{
-
   constructor(props) {
     super(props);
     this.state = {
