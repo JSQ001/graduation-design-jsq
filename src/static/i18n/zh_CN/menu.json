@@ -33,6 +33,7 @@
   "menu.new-budget-item": "新建预算项目",
   "menu.budget-item-detail": "预算项目详情",
   "menu.new-budget-control-rules": "新建预算规则",
-  "menu.budget-control-rules-detail": "预算规则详情"
+  "menu.budget-control-rules-detail": "预算规则详情",
+  "menu.budget-balance": "预算余额"
 
 }

@@ -10,7 +10,7 @@ const FormItem = Form.Item;
 import config from 'config';
 import httpFetch from 'share/httpFetch';
 
-import 'styles/budget/buget-item-type/budget-item-type.scss'
+import 'styles/budget-setting/budget-organization/buget-item-type/budget-item-type.scss'
 
 
 class NewBudgetItemType extends React.Component {

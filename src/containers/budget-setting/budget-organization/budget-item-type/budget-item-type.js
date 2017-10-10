@@ -13,7 +13,7 @@ import SearchArea from 'components/search-area'
 import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
-import 'styles/budget/buget-item-type/budget-item-type.scss'
+import 'styles/budget-setting/budget-organization/buget-item-type/budget-item-type.scss'
 
 
 class BudgetItemType extends React.Component {

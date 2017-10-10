@@ -50,27 +50,19 @@ const selectorData = {
     title: '添加公司',
     url: `${config.baseUrl}/api/budget/structures/query`,
     searchForm: [
-      {
-        type: 'input', id: 'companyCode', label: "公司代码"/*this.props.intl.formatMessage({id:'structure.companyCode'})*/ /*公司代码*/
-      },
-      {
-        type: 'input', id: 'companyName', label: "公司名称"/*this.props.intl.formatMessage({id:'structure.companyName'})*/ /*公司名称*/
-      },
-      {
-        type: 'input', id: 'companyCodeFrom', label:"公司代码从" /*this.props.intl.formatMessage({id:'structure.companyCodeFrom'})*/ /*公司代码从*/
-      },
-      {
-        type: 'input', id: 'companyCodeTo', label: "公司代码至"/* this.props.intl.formatMessage({id:'structure.companyCodeTo'})*/ /*公司代码至*/
-      }
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
     ],
     columns: [
-      {title: "公司代码"/*this.props.intl.formatMessage({id:'structure.companyCode'})*/, dataIndex: 'companyCode'},/*公司代码*/
-      {title: "公司明称"/*this.props.intl.formatMessage({id:'structure.companyName'})*/, dataIndex: 'companyName'}, /*公司明称*/
-      {title: "公司类型" /*this.props.intl.formatMessage({id:'structure.companyType'})*/, dataIndex: 'companyCode'} /*公司类型*/
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'companyName'},
+      {title: "公司类型", dataIndex: 'companyCode'}
     ],
-    key: 'companyOID'
+    key: 'id'
   },
-  'itemType': {
+  'item_type': {
     title: "预算项目类型",
     url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
@@ -95,6 +87,32 @@ const selectorData = {
       {title: '预算项目代码', dataIndex: 'itemCode', width: '25%'},
       {title: '预算项目描述', dataIndex: 'itemName', width: '40%'},
       {title: '预算项目类型', dataIndex: 'itemTypeName', width: '35%'}
+    ],
+    key: 'id'
+  },
+  'select_dimension':{
+    title: '选择维度',
+    searchForm: [
+      {type: 'input', id: 'dimensionCode', label: '维度代码'},
+      {type: 'input', id: 'dimensionName', label: '维度名称'},
+    ],
+    columns: [
+      {title: '维度代码', dataIndex: 'dimensionCode', width: '25%'},
+      {title: '维度名称', dataIndex: 'dimensionName', width: '25%'},
+      {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
+      {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
+    ],
+    key: 'id'
+  },
+  'ruleParams': {
+    title: "规则参数",
+    searchForm: [
+      {type: 'input', id: 'paramsCode', label: '参数代码'},
+      {type: 'input', id: 'paramsName', label: '参数描述'}
+    ],
+    columns: [
+      {title: '参数代码', dataIndex: 'paramsCode'},
+      {title: '参数描述', dataIndex: 'paramsName'}
     ],
     key: 'id'
   },

@@ -4,20 +4,24 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select } from 'antd';
+import { Button, Table, Select, Popover } from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+import ListSelector from 'components/list-selector'
+
 
 const itemCode = [];
 class BudgetItem extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
+      companyListSelector: false,
       params:{},
       selectedRowKeys: [],
       batchCompany: true,
@@ -32,40 +36,55 @@ class BudgetItem extends React.Component {
       searchForm: [
         {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'budget.itemCode'}) }, /*预算项目代码*/
         {type: 'select', id: 'itemCodeFrom',
-          label: this.props.intl.formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
+          label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
           options: itemCode
         },
         {type: 'select', id: 'itemCodeTo',
-          label: this.props.intl.formatMessage({id: 'budget.itemCodeTo'}), /*预算项目代码至*/
+          label: formatMessage({id: 'budget.itemCodeTo'}), /*预算项目代码至*/
           options: itemCode
         },
         {type: 'list', id: 'itemTypeName',
-          listType: 'itemType',
+          listType: 'item_type',
           labelKey: 'itemTypeName',
-          valueKey: 'itemTypeOID',
-          label: this.props.intl.formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
+          valueKey: 'id',
+          label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id}
         },
       ],
 
       columns: [
         {          /*预算组织*/
-          title: this.props.intl.formatMessage({id:"budget.organization"}), key: "organizationCode", dataIndex: 'organizationCode'
+          title: formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
         },
         {          /*预算项目代码*/
-          title: this.props.intl.formatMessage({id:"budget.itemCode"}), key: "itemCode", dataIndex: 'itemCode'
+          title: formatMessage({id:"budget.itemCode"}), key: "itemCode", dataIndex: 'itemCode'
         },
         {          /*预算项目名称*/
-          title: this.props.intl.formatMessage({id:"budget.itemName"}), key: "itemName", dataIndex: 'itemName'
+          title: formatMessage({id:"budget.itemName"}), key: "itemName", dataIndex: 'itemName'
         },
         {          /*预算项目类型*/
-          title: this.props.intl.formatMessage({id:"budget.itemType"}), key: "itemType", dataIndex: 'itemType'
+          title: formatMessage({id:"budget.itemType"}), key: "itemTypeName", dataIndex: 'itemTypeName'
         },
         {          /*变动属性*/
-          title: this.props.intl.formatMessage({id:"budget.item.variationAttribute"}), key: "variationAttribute", dataIndex: 'variationAttribute'
+          title: formatMessage({id:"budget.item.variationAttribute"}), key: "variationAttribute", dataIndex: 'variationAttribute',
+          render: (recode)=>{
+            if(recode === "immobilization")
+              return formatMessage({id:"variationAttribute.immobilization"}) /*固定*/
+            if(recode === "mix")
+              return formatMessage({id:"variationAttribute.mix"}) /*混合*/
+            if(recode === "alteration")
+              return formatMessage({id:"variationAttribute.alteration"}) /*变动*/
+          }
         },
-        {          /*预算项目描述*/
-          title: this.props.intl.formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description'
+        {          /*备注*/
+          title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description',
+          render: description => (
+            <span>
+              {description ? description : '-'}
+              <Popover content={description}>
+                {description}
+              </Popover>
+            </span>)
         },
       ],
       selectedEntityOIDs: []    //已选择的列表项的OIDs
@@ -76,14 +95,10 @@ class BudgetItem extends React.Component {
     this.getList();
   }
 
-  handleSelectItemType = (e)=>{
-    e.preventDefault();
-    console.log(124)
-  }
-
   //获取预算项目数据
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`).then((response)=>{
+      console.log(response)
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
@@ -192,18 +207,20 @@ class BudgetItem extends React.Component {
 
   //批量分配公司
   handleBatchCompany = () =>{
-
+    this.setState({
+      companyListSelector: true,
+    });
   };
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-    budgetItemDetail.url.replace(':id', this.props.id).replace(':id', record.id));
+    budgetItemDetail.url.replace(':id', this.props.id).replace(':itemId', record.id));
   };
 
   render(){
-    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany} = this.state;
-
+    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany, companyListSelector} = this.state;
+    const { formatMessage } = this.props.intl;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -214,10 +231,10 @@ class BudgetItem extends React.Component {
       <div className="budget-item">
        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
-            <Button onClick={this.handleBatchCompany} disabled={batchCompany}>{this.props.intl.formatMessage({id:"budget.item.batchCompany"})}</Button>
+            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+            <Button onClick={this.handleBatchCompany} disabled={batchCompany}>{formatMessage({id:"budget.item.batchCompany"})}</Button>
           </div>
         </div>
         <Table
@@ -230,6 +247,8 @@ class BudgetItem extends React.Component {
           onChange={this.onChangePager}
           size="middle"
           bordered/>
+        <ListSelector type="company"
+                      visible={companyListSelector}/>
       </div>
     )
   }

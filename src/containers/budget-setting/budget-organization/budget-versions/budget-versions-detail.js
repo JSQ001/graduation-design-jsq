@@ -6,17 +6,14 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Form, Table, Button, notification, Icon,Checkbox, Badge, Row, Col, Input, Switch, Dropdown, Alert, Modal, Upload,Select,DatePicker,message} from 'antd';
 const Option = Select.Option;
-const FormItem =Form.Item;
-import moment from 'moment'
+const FormItem = Form.Item;
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import CompanySelect from 'components/selector/company-selector'
+
+import 'styles/budget-setting/budget-organization/budget-versions/budget-versions-detail.scss'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
-
-import 'styles/budget/budget-versions/budget-versions-detail.scss'
-
 
 class BudgetVersionsDetail extends React.Component {
   constructor(props) {
@@ -257,8 +254,6 @@ class BudgetVersionsDetail extends React.Component {
                         onCancel={this.CancelHandle}
                         type='company'
                     />
-
-       {/*   <CompanySelect  visible={this.state.showImportFrame} submitHandle={this.submitHandle} onCancel={this.CancelHandle}/>*/}
 
         </div>
       </div>

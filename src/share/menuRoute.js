@@ -40,6 +40,8 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 
+import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
@@ -93,7 +95,7 @@ const newBudgetStructure = {
 //预算表详情
 const budgetStructureDetail = {
   key:'budget-structure-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:id',
+  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-structure/budget-structure-detail/:structureId',
   components: BudgetStructureDetail,
   parent:'budget-organization-detail',
   children: {
@@ -151,7 +153,7 @@ const newBudgetItem = {
 //预算项目详情
 const budgetItemDetail = {
   key: 'budget-item-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-item/budget-item-detail/:itemId',
   components: BudgetItemDetail,
   parent: 'budget-organization-detail'
 
@@ -168,7 +170,7 @@ const newBudgetControlRules = {
 //预算控制规则详情
 const budgetControlRulesDetail = {
   key: 'budget-control-rules-detail',
-  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:id',
+  url: '/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-control-rules/budget-control-rules-detail/:ruleId',
   components: BudgetControlRulesDetail,
   parent: 'budget-organization-detail'
 };
@@ -283,7 +285,7 @@ const newBudgetJournal={
   url:'/main/budget/budget-journal/new-budget-journal',
   components:NewBudgetJournal,
   parent: 'budgetJournal',
-}
+};
 
 //预算日记账详情
 const budgetJournalDetail={
@@ -291,22 +293,29 @@ const budgetJournalDetail={
   url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
   components:BudgetJournalDetail,
   parent: 'budgetJournal',
-}
-
+};
 
 //预算日记账
 const budgetJournal = {
   key:'budget-journal',
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
-  parent: 'budget',
   children: {newBudgetJournal,budgetJournalDetail}
-}
+};
+
+//预算余额
+const budgetBalance = {
+  key: 'budget-balance',
+  url:'/main/budget/budget-balance',
+  components: BudgetBalance,
+  parent: 'budget',
+  children: {}
+};
 
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetJournal],
+  subMenu: [budgetJournal, budgetBalance],
   icon: 'tags'
 };
 
