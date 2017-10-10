@@ -60,9 +60,9 @@ const selectorData = {
       {title: "公司明称", dataIndex: 'companyName'},
       {title: "公司类型", dataIndex: 'companyCode'}
     ],
-    key: 'companyOID'
+    key: 'id'
   },
-  'itemType': {
+  'item_type': {
     title: "预算项目类型",
     url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
@@ -87,6 +87,32 @@ const selectorData = {
       {title: '预算项目代码', dataIndex: 'itemCode', width: '25%'},
       {title: '预算项目描述', dataIndex: 'itemName', width: '40%'},
       {title: '预算项目类型', dataIndex: 'itemTypeName', width: '35%'}
+    ],
+    key: 'id'
+  },
+  'select_dimension':{
+    title: '选择维度',
+    searchForm: [
+      {type: 'input', id: 'dimensionCode', label: '维度代码'},
+      {type: 'input', id: 'dimensionName', label: '维度名称'},
+    ],
+    columns: [
+      {title: '维度代码', dataIndex: 'dimensionCode', width: '25%'},
+      {title: '维度名称', dataIndex: 'dimensionName', width: '25%'},
+      {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
+      {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
+    ],
+    key: 'id'
+  },
+  'ruleParams': {
+    title: "规则参数",
+    searchForm: [
+      {type: 'input', id: 'paramsCode', label: '参数代码'},
+      {type: 'input', id: 'paramsName', label: '参数描述'}
+    ],
+    columns: [
+      {title: '参数代码', dataIndex: 'paramsCode'},
+      {title: '参数描述', dataIndex: 'paramsName'}
     ],
     key: 'id'
   }

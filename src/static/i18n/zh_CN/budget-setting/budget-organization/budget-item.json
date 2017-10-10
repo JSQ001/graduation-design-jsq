@@ -5,7 +5,7 @@
   "budget.itemName": "预算项目名称",
   "budget.itemType": "预算项目类型",
   "budget.item.variationAttribute": "变动属性",
-  "budget.itemDescription": "描述",
+  "budget.itemDescription": "备注",
   "budget.item.batchCompany": "批量分配公司",
   "budget.itemCodeExist": "该预算项目已存在",
   "variationAttribute.immobilization": "固定",

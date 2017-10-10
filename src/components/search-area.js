@@ -69,7 +69,6 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
-    console.log(values);
     for(let id in values){
       this.props.searchForm.map(item => {
         if(item.id === id){
@@ -288,6 +287,7 @@ class SearchArea extends React.Component{
    * @param item 需要显示的FormItem
    */
   handleFocus = (item) => {
+    console.log(1)
     this.refs.blur.focus();
     this.showList(item)
   };
@@ -337,6 +337,7 @@ class SearchArea extends React.Component{
     });
     let value = {};
     value[formItem.id] = values;
+    console.log(value)
     this.props.form.setFieldsValue(value);
     this.setState({ showListSelector: false });
     formItem.handle && formItem.handle();
