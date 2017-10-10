@@ -11,7 +11,7 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
-import ListSelector from 'components/list-selector'
+import Chooser from 'components/chooser'
 
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
@@ -32,11 +32,7 @@ class SearchArea extends React.Component{
     super(props);
     this.state = {
       expand: false,
-      searchForm: [],
-      showListSelector: false,
-      listType: '',
-      listSelectedData: [],
-      listExtraParams: {}
+      searchForm: []
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -214,15 +210,13 @@ class SearchArea extends React.Component{
       }
       //弹出框列表选择组件
       case 'list':{
-        return <Select
-          mode="multiple"
-          labelInValue
-          placeholder={item.placeholder}
-          onFocus={() => this.handleFocus(item)}
-          dropdownStyle={{ display: 'none' }}
-          disabled={item.disabled}
-        >
-        </Select>
+        return <Chooser placeholder={item.placeholder}
+                        disabled={item.disabled}
+                        type={item.listType}
+                        labelKey={item.labelKey}
+                        valueKey={item.labelKey}
+                        listExtraParams={item.listExtraParams}
+                        selectorItem={item.selectorItem}/>
       }
       //switch状态切换组件
       case 'switch':{
@@ -282,68 +276,7 @@ class SearchArea extends React.Component{
     return children;
   }
 
-  /**
-   * list控件因为select没有onClick事件，所以用onFocus代替
-   * 每次focus后，用一个隐藏的input来取消聚焦
-   * @param item 需要显示的FormItem
-   */
-  handleFocus = (item) => {
-    this.refs.blur.focus();
-    this.showList(item)
-  };
-
-  /**
-   * 显示ListSelector，如果有已经选择的值则包装为ListSelector需要的默认值格式传入
-   * @param item 需要显示的FormItem
-   */
-  showList = (item) => {
-    let listSelectedData = [];
-    let values = this.props.form.getFieldValue(item.id);
-    if(values && values.length > 0){
-      values.map(value => {
-        listSelectedData.push(value.value)
-      });
-    }
-    this.setState({
-      listExtraParams: item.listExtraParams,
-      listType : item.listType,
-      showListSelector: true,
-
-      listSelectedData
-    })
-  };
-
-  handleListCancel = () => {
-    this.setState({ showListSelector: false })
-  };
-
-  /**
-   * ListSelector确认点击事件，返回的结果包装为form需要的格式
-   * @param result
-   */
-  handleListOk = (result) => {
-    let formItem = {};
-    this.props.searchForm.map(item => {
-      if(item.listType === result.type)
-        formItem = item;
-    });
-    let values = [];
-    result.result.map(item => {
-      values.push({
-        key: item[formItem.valueKey],
-        label: item[formItem.labelKey],
-        value: item
-      })
-    });
-    let value = {};
-    value[formItem.id] = values;
-    this.props.form.setFieldsValue(value);
-    this.setState({ showListSelector: false });
-    formItem.handle && formItem.handle();
-  };
-
   render(){
-    const { showListSelector, listType, listSelectedData, listExtraParams, selectorItem } = this.state;
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
@@ -361,14 +294,6 @@ class SearchArea extends React.Component{
             <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
           </Col>
         </Row>
-        <ListSelector visible={showListSelector}
-                      type={listType}
-                      onCancel={this.handleListCancel}
-                      onOk={this.handleListOk}
-                      selectedData={listSelectedData}
-                      extraParams={listExtraParams}
-                      selectorItem={selectorItem}/>
-        <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
       </Form>
     )
   }
@@ -395,6 +320,7 @@ class SearchArea extends React.Component{
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
           items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
+          selectorItem: {}  //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
         }
  */
 SearchArea.propTypes = {
