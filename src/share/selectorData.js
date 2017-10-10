@@ -115,6 +115,19 @@ const selectorData = {
       {title: '参数描述', dataIndex: 'paramsName'}
     ],
     key: 'id'
+  },
+  'budget_journal_type':{
+    title: "预算日记账类型",
+    url: `${config.budgetUrl}/api/budget/journalType/query`,
+    searchForm:[
+      {type: 'input', id: 'journalTypeCode', label: '预算日记账类型代码'},
+      {type: 'input', id: 'journalTypeName', label: '预算日记账类型代码'},
+    ],
+    columns: [
+      {title: '预算日记账类型代码', dataIndex: 'journalTypeCode'},
+      {title: '预算日记账类型名称', dataIndex: 'journalTypeName'},
+    ],
+    key: 'id'
   }
 };
 

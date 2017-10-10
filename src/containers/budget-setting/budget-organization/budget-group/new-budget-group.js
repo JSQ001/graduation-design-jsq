@@ -22,6 +22,7 @@ class NewBudgetGroup extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        console.log(values)
         values.organizationId =  this.props.organization.id;
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
