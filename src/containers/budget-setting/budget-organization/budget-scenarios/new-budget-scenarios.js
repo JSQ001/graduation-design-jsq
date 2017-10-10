@@ -6,7 +6,7 @@ const { TextArea } = Input;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import 'styles/budget/budget-organization/budget-scenarios/new-budget-scenarios.scss'
+import 'styles/budget-setting/budget-organization/budget-scenarios/new-budget-scenarios.scss'
 
 class NewBudgetScenarios extends React.Component{
   constructor(props) {

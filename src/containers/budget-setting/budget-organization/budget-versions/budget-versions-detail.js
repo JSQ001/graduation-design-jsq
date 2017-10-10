@@ -10,7 +10,7 @@ import moment from 'moment'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import CompanySelect from 'components/selector/company-selector'
-import 'styles/budget/budget-versions/budget-versions-detail.scss'
+import 'styles/budget-setting/budget-organization/budget-versions/budget-versions-detail.scss'
 const FormItem =Form.Item;
 
 class BudgetVersionsDetail extends React.Component {

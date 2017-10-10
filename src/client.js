@@ -14,6 +14,17 @@ import config from 'config'
 import configureStore from 'stores';
 const store = configureStore.reduxStore();
 
+/**
+ *          ___   ___    ________   ___         ___   _________   _______
+ *         /  /  /  /  /  ______/  /  /        /  /  /  ___   /  /  ____/
+ *        /  /  /  /  /  /        /  /        /  /  /  /  /  /  /  /
+ *       /  /__/  /  /  /_____   /  /        /  /  /  /  /  /  /  /___
+ *      /  ___   /  /  ______/  /  /        /  /  /  /  /  /  /___   /
+ *     /  /  /  /  /  /        /  /        /  /  /  /  /  /      /  /
+ *    /  /  /  /  /  /_____   /  /_____   /  /  /  /__/  /  ____/  /
+ *   /__/  /__/  /________/  /________/  /__/  /________/  /______/
+ *
+ */
 ReactDOM.render(
   <AppContainer>
     <Provider store={store}>
