@@ -27,6 +27,12 @@ let bank = [
     "operation": "编辑 分行信息"
   }
 ]
+let bankType = [
+  {value:"cashBank", label:"现金银行"},
+  {value:"clearingBank", label:"清算银行"},
+  {value:"innerBank", label:"内部银行"},
+  {value:"commonBank", label:"一般银行"}
+];
 
 class BankDefinition extends React.Component{
   constructor(props){
@@ -47,7 +53,7 @@ class BankDefinition extends React.Component{
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'budget.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'budget.bankName'}) }, /*银行名称*/
-        {type: 'select', options: [], id: 'bankType', label: formatMessage({id: 'budget.bankType'})}  /*银行类型*/
+        {type: 'select', options: bankType, id: 'bankType', label: formatMessage({id: 'budget.bankType'})}  /*银行类型*/
       ],
       pagination: {
         current: 1,
@@ -120,10 +126,11 @@ class BankDefinition extends React.Component{
   //获取公司下的银行数据
   getList(){
     let params = this.state.searchParams;
-    let url = `http://139.224.220.217:9084/api/CompanyBank/selectByCompanyId?companyId=${this.props.company.companyOID}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let url = `${config.budgetUrl}/api/cash/banks/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
+    console.log(url)
     httpFetch.get(url).then((response)=>{
       console.log(response)
     })

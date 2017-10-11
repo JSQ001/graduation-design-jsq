@@ -11,9 +11,9 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/pay/bank-definition/branch-bank-information.scss'
 import SlideFrame from 'components/slide-frame'
-//import NewBankDefinition from 'containers/budget/bank-definition/new-bank-definition'
+import CreateOrUpdateBranchBank from 'containers/pay/bank-definition/createOrUpdate-branch-bank'
+import 'styles/pay/bank-definition/branch-bank-information.scss'
 
 class BranchBankInformation extends React.Component{
   constructor(props){
@@ -23,6 +23,8 @@ class BranchBankInformation extends React.Component{
     this.state = {
       loading: true,
       data: [],
+      slideFrameTitle: "",
+      belongsBank: {},
       searchParams: {
         bankCode: "",
         bankName: "",
@@ -73,9 +75,26 @@ class BranchBankInformation extends React.Component{
     console.log(values)
   };
 
+  handleCreate = ()=>{
+    this.setState({
+      showSlideFrame: true,
+      slideFrameTitle: "新建分行",
+      nowBank: {}
+    });
+  };
+
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.getList();
+    }
+    this.setState({
+      showSlideFrame: false
+    })
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading, searchForm, pagination, columns, showSlideFrame, newParams } = this.state;
+    const { loading, searchForm, pagination, columns, slideFrameTitle, showSlideFrame, belongsBank } = this.state;
 
     return(
       <div className="branch-bank-information">
@@ -83,12 +102,18 @@ class BranchBankInformation extends React.Component{
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={()=>this.showSlide(true)}>{formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
           </div>
         </div>
         <Table
           loading={loading}
           columns={columns}/>
+        <SlideFrame title={slideFrameTitle}
+                    show={showSlideFrame}
+                    content={CreateOrUpdateBranchBank}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.setState({showSlideFrame : false})}
+                    params={belongsBank}/>
       </div>
     )
   }

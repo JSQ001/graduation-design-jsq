@@ -11,8 +11,8 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/budget/bank-definition/new-branch-bank.scss'
 import SlideFrame from 'components/slide-frame'
+import 'styles/pay/bank-definition/createOrUpdate-branch-bank.scss'
 
 const FormItem = Form.Item;
 

@@ -139,7 +139,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
-              return <Option key={option.value}>{option.label}</Option>
+              return <Option key={option.value} title={option.title}>{option.label}</Option>
             })}
           </Select>
         )
@@ -203,7 +203,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
+            return <Option key={option.key}  value={JSON.stringify(option.value)}>{option.label}</Option>
           })}
         </Select>
       }
