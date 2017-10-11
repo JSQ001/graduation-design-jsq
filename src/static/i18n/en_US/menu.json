@@ -36,7 +36,9 @@
   "menu.budget-control-rules-detail": "budget rule detail",
   "menu.bank-definition": "Bank definition",
   "menu.branch-bank-information": "Branch bank information",
-  "menu.budget-balance": "Budget balance"
+  "menu.budget-balance": "Budget balance",
+  "menu.pay": "Pay",
+  "menu.pay-workbench": "Pay workbench"
 
 
 }

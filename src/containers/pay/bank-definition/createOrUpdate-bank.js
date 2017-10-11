@@ -12,7 +12,7 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/budget/bank-definition/new-bank-definition.scss'
+import 'styles/pay/bank-definition/new-bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
 
 const FormItem = Form.Item;

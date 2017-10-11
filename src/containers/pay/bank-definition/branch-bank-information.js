@@ -11,7 +11,7 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/budget/bank-definition/branch-bank-information.scss'
+import 'styles/pay/bank-definition/branch-bank-information.scss'
 import SlideFrame from 'components/slide-frame'
 //import NewBankDefinition from 'containers/budget/bank-definition/new-bank-definition'
 

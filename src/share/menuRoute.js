@@ -36,12 +36,16 @@ import NewBudgetJournalType from 'containers/budget-setting/budget-organization/
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
-import BankDefinition from 'containers/budget/bank-definition/bank-definition'
-import BranchBankInformation from 'containers/budget/bank-definition/branch-bank-information'
 import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journal'
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+
+import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
+import BankDefinition from 'containers/pay/bank-definition/bank-definition'
+import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
+
+
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -304,7 +308,37 @@ const budgetJournal = {
   components: BudgetJournal,
   parent: 'budget',
   children: {}
-}
+};
+
+
+//预算余额
+const budgetBalance = {
+  key: 'budget-balance',
+  url:'/main/budget/budget-balance',
+  components: BudgetBalance,
+  parent: 'budget',
+  children: {}
+};
+
+//预算
+const budget = {
+  key:'budget',
+  subMenu: [budgetJournal, budgetBalance],
+  icon: 'tags'
+};
+
+//////////////////////预算模块结束///////////////////////////
+
+//////////////////////支付模块///////////////////////////
+
+//付款工作台
+const payWorkbench = {
+  key: 'pay-workbench',
+  url:'/main/pay/pay-workbench',
+  components: PayWorkbench,
+  parent: 'pay',
+  children: {}
+};
 
 //分行信息
 const branchBankInformation = {
@@ -325,23 +359,16 @@ const bankDefinition = {
   }
 };
 
-//预算余额
-const budgetBalance = {
-  key: 'budget-balance',
-  url:'/main/budget/budget-balance',
-  components: BudgetBalance,
-  parent: 'budget',
-  children: {}
+//支付
+const pay = {
+  key:'pay',
+  subMenu: [payWorkbench, bankDefinition],
+  icon: 'pay-circle'
 };
 
-//预算
-const budget = {
-  key:'budget',
-  subMenu: [budgetJournal, budgetBalance],
-  icon: 'tags'
-};
 
-//////////////////////预算模块结束///////////////////////////
+
+//////////////////////支付模块结束///////////////////////////
 
 //首页
 const dashboard = {
@@ -392,7 +419,8 @@ const menu = [
   financialManagement,
   expenseReport,
   budgetSetting,
-  budget
+  budget,
+  pay
 ];
 
 /**

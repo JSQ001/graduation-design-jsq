@@ -11,9 +11,9 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/budget/bank-definition/bank-definition.scss'
+import 'styles/pay/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
-import CreateOrUpdateBank from 'containers/budget/bank-definition/createOrUpdate-bank'
+import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
 
 let bank = [
   {
