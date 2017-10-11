@@ -48,6 +48,7 @@ class StrategyControlDetail extends React.Component {
       },
       newParams: {},
       keyWords: '',
+      isNew: false, //判断侧滑是新建或编辑
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
@@ -107,6 +108,7 @@ class StrategyControlDetail extends React.Component {
   showSlide = (flag) => {
     this.setState({
       showSlideFrame: flag,
+      isNew: true,
       newParams: {
         strategyControlId: this.props.params.strategyControlId,
       }
@@ -114,7 +116,8 @@ class StrategyControlDetail extends React.Component {
   };
   showUpdateSlide = (flag) => {
     this.setState({
-      showSlideFrame: flag
+      showSlideFrame: flag,
+      isNew: false
     })
   };
 
@@ -167,7 +170,7 @@ class StrategyControlDetail extends React.Component {
   };
 
   render() {
-    const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, newParams } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, newParams, isNew } = this.state;
     return (
       <div className="strategy-control-detail">
         <BasicInfo infoList={infoList}
@@ -175,7 +178,7 @@ class StrategyControlDetail extends React.Component {
                    updateHandle={this.handleUpdate}
                    updateState={updateState}/>
         <div className="table-header">
-          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${this.state.pagination.total} 条数据`}</div>
+          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${this.state.pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary"  onClick={() => this.showSlide(true)}>新 建</Button>
             <Search
@@ -192,7 +195,7 @@ class StrategyControlDetail extends React.Component {
                onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
-        <SlideFrame title="新建触发条件"
+        <SlideFrame title={(isNew ? '新建' : '编辑') + '触发条件'}
                     show={showSlideFrame}
                     content={NewStrategyControlDetail}
                     afterClose={this.handleCloseSlide}

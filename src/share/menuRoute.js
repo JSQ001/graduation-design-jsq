@@ -42,6 +42,8 @@ import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
 
+import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
+
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
@@ -321,6 +323,26 @@ const budget = {
 
 //////////////////////预算模块结束///////////////////////////
 
+//////////////////////支付模块///////////////////////////
+
+//付款工作台
+const payWorkbench = {
+  key: 'pay-workbench',
+  url:'/main/pay/pay-workbench',
+  components: PayWorkbench,
+  parent: 'pay',
+  children: {}
+};
+
+//支付
+const pay = {
+  key:'pay',
+  subMenu: [payWorkbench],
+  icon: 'pay-circle'
+};
+
+//////////////////////支付模块结束///////////////////////////
+
 //首页
 const dashboard = {
   key:'dashboard',
@@ -370,7 +392,8 @@ const menu = [
   financialManagement,
   expenseReport,
   budgetSetting,
-  budget
+  budget,
+  pay
 ];
 
 /**

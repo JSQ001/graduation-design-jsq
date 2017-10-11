@@ -278,7 +278,7 @@ class NewStrategyControlDetail extends React.Component{
             </Col>
             <Col span={2}>
               <Popover placement="topLeft" content={content} title="预算控制期段">
-                <div><Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle'}}/></div>
+                <div><Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle',color:'#49a9ee'}}/></div>
               </Popover>
             </Col>
           </FormItem>
