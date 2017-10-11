@@ -169,7 +169,7 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   //新建规则明细,左侧划出
-  showSlide = (flag, title,params) => {
+  showSlide = (flag,title,params) => {
     this.setState({
       showSlideFrame: flag,
       slideFrameTitle: title,

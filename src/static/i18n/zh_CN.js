@@ -39,6 +39,7 @@ import login from 'static/i18n/zh_CN/login.json'
 import budgetStructure from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-structure.json'
 import budgetItem from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-item.json'
 import budgetControlRules from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-control-rules.json'
+import bankDefinition from 'static/i18n/zh_CN/budget/bank-definition.json'
 
 const i18nList = [
   common,  //公用
@@ -48,7 +49,7 @@ const i18nList = [
   budgetStructure,  //预算表
   budgetItem,  //预算项目
   budgetControlRules, //预算控制规则
-
+  bankDefinition, //银行定义
 ];
 
 let result = {};

@@ -33,6 +33,8 @@
   "menu.new-budget-item": "新建预算项目",
   "menu.budget-item-detail": "预算项目详情",
   "menu.new-budget-control-rules": "新建预算规则",
-  "menu.budget-control-rules-detail": "预算规则详情"
+  "menu.budget-control-rules-detail": "预算规则详情",
+  "menu.bank-definition": "银行定义",
+  "menu.branch-bank-information": "分行信息"
 
 }

@@ -36,6 +36,8 @@ import NewBudgetJournalType from 'containers/budget-setting/budget-organization/
 import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type-detail'
 
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
+import BankDefinition from 'containers/budget/bank-definition/bank-definition'
+import BranchBankInformation from 'containers/budget/bank-definition/branch-bank-information'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -281,12 +283,34 @@ const budgetJournal = {
   components: BudgetJournal,
   parent: 'budget',
   children: {}
-}
+};
+
+//分行信息
+const branchBankInformation = {
+  key:'branch-bank-information',
+  url:'/main/budget/bank-definition/branch-bank-information/:id',
+  components: BranchBankInformation,
+  parent: 'bank-definition',
+};
+
+//银行定义
+const bankDefinition = {
+  key:'bank-definition',
+  url:'/main/budget/bank-definition',
+  components: BankDefinition ,
+  parent: 'budget',
+  children: {
+    branchBankInformation
+  }
+};
 
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetJournal],
+  subMenu: [
+    budgetJournal,
+    bankDefinition
+  ],
   icon: 'tags'
 };
 
