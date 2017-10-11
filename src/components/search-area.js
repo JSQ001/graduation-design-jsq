@@ -301,14 +301,15 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > maxLength 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',                    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items中的一种
-          id: '',                     //必填，表单id，搜索后返回的数据key
-          label: '',                 //必填，界面显示名称label
-          listType: '',             //可选，当type为list时必填，listSelector的type类型
-          listExtraParams: '',     //可选，当type为list时有效，listSelector的extraParams
-          disabled: false         //可选，是否可用
-          isRequired: false,     //可选，是否必填
-          options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items中的一种
+          id: '',                      //必填，表单id，搜索后返回的数据key
+          label: '',                  //必填，界面显示名称label
+          listType: '',              //可选，当type为list时必填，listSelector的type类型
+          listExtraParams: '',      //可选，当type为list时有效，listSelector的extraParams
+          disabled: false          //可选，是否可用
+          isRequired: false,      //可选，是否必填
+          options: [{label: '',  value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          selectorItem: {}      //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
           searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
@@ -318,7 +319,6 @@ class SearchArea extends React.Component{
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
           items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
-          selectorItem: {}  //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
         }
  */
 SearchArea.propTypes = {
