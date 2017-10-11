@@ -2,12 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select } from 'antd';
-import SearchArea from 'components/search-area.js';
-import "styles/budget/budget-journal/budget-journal.scss"
+
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+import SearchArea from 'components/search-area.js';
+
+import "styles/budget/budget-journal/budget-journal.scss"
 
 
 const journalTypeCode = [];

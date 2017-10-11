@@ -15,6 +15,9 @@ import menuRoute from 'share/menuRoute'
 import selectorData from 'share/selectorData'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
+import SlideFrame from 'components/slide-frame.js'
+import NewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
+
 
 class BudgetJournalDetail extends React.Component {
   constructor(props) {
@@ -25,8 +28,8 @@ class BudgetJournalDetail extends React.Component {
       data: [],
       params:{},
       organization:{},
-      showUpdateSlideFrame:false,
-      showCreateSlideFrame:false,
+      showSlideFramePut:false,
+      showSlideFrameNew:false,
       showModal:false,
       updateState:false,
       pagination: {
@@ -41,15 +44,16 @@ class BudgetJournalDetail extends React.Component {
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalNumber"}), id: 'journalNumber', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeId', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"})},
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"})},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'list', id: 'journalTypeName',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{}
+          listExtraParams:{'organizationId':1}
         },
+
         {
           type: 'combobox',
           id: 'structureId',
@@ -62,6 +66,8 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'structureName',
           valueKey: 'id'
         },
+
+
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
 
         {type:'select',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',
@@ -74,19 +80,20 @@ class BudgetJournalDetail extends React.Component {
             ]
 
         },
+
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
           labelKey: 'versionName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.version'}),  /*预算版本*/
-          listExtraParams:{}
+          listExtraParams:{'organizationId':1}
         },
         {type: 'list', id: 'scenarioName',
           listType: 'budget_scenarios',
           labelKey: 'scenarioName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
-          listExtraParams:{}
+          listExtraParams:{'organizationId':1}
         },
 
 
@@ -143,6 +150,18 @@ class BudgetJournalDetail extends React.Component {
     };
   }
 
+
+  componentWillMount(){
+    console.log(this.props.location)
+    const data = this.props.location.state.fromData;
+    console.log(data);
+    this.setState({
+      infoDate:data
+    })
+  }
+
+
+
   showImport=()=>{}
 
   updateHandleInfo=()=>{}
@@ -160,8 +179,25 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
+  handleCloseNewSlide=()=>{
+    this.setState({
+      showSlideFrameNew:false,
+    })
+  }
+  showSlideFrameNew=(value)=>{
+    this.setState({
+      showSlideFrameNew:value,
+    })
+  }
+
+
+  handleAfterCloseNewSlide=(value)=>{
+      console.log(value)
+  }
+
+
   render(){
-    const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal} = this.state;
+    const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
@@ -176,7 +212,7 @@ class BudgetJournalDetail extends React.Component {
           <div className="table-header">
             <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
             <div className="table-header-buttons">
-              <Button type="primary" onClick={() => this.showImport(true)}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
+              <Button type="primary" onClick={()=>this.showSlideFrameNew(true)}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
 
               <Button onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.delete"})}</Button>
@@ -206,6 +242,14 @@ class BudgetJournalDetail extends React.Component {
           <p>Some contents...</p>
           <p>Some contents...</p>
         </Modal>
+
+        <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
+                    show={showSlideFrameNew}
+                    content={NewBudgetJournalDetail}
+                    afterClose={this.handleAfterCloseNewSlide}
+                    onClose={()=>this.showSlideFrameNew(false)}
+                    params={{}}/>
+
       </div>
     )
   }
