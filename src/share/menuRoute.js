@@ -38,6 +38,10 @@ import BudgetJournalTypeDetail from 'containers/budget-setting/budget-organizati
 import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 import BankDefinition from 'containers/budget/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/budget/bank-definition/branch-bank-information'
+import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journal'
+import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
+
+import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -276,6 +280,23 @@ const budgetSetting = {
 
 //////////////////////预算模块///////////////////////////
 
+
+//新建预算日记账
+const newBudgetJournal={
+  key:'new-budget-journal',
+  url:'/main/budget/budget-journal/new-budget-journal',
+  components:NewBudgetJournal,
+  parent: 'budgetJournal',
+};
+
+//预算日记账详情
+const budgetJournalDetail={
+  key:'budget-journal-detail',
+  url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
+  components:NewBudgetJournal,
+  parent: 'budgetJournal',
+};
+
 //预算日记账
 const budgetJournal = {
   key:'budget-journal',
@@ -283,7 +304,7 @@ const budgetJournal = {
   components: BudgetJournal,
   parent: 'budget',
   children: {}
-};
+}
 
 //分行信息
 const branchBankInformation = {
@@ -304,13 +325,19 @@ const bankDefinition = {
   }
 };
 
+//预算余额
+const budgetBalance = {
+  key: 'budget-balance',
+  url:'/main/budget/budget-balance',
+  components: BudgetBalance,
+  parent: 'budget',
+  children: {}
+};
+
 //预算
 const budget = {
   key:'budget',
-  subMenu: [
-    budgetJournal,
-    bankDefinition
-  ],
+  subMenu: [budgetJournal, budgetBalance],
   icon: 'tags'
 };
 

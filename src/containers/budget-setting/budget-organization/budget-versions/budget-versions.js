@@ -10,7 +10,7 @@ import menuRoute from 'share/menuRoute'
 import {Link,Redirect,browserHistory,History} from 'react-router'
 import {Button,Table,Badge,Popconfirm,Form,message,DatePicker,Col,Row,Switch,notification,Icon} from 'antd'
 import SearchArea from 'components/search-area'
-import 'styles/budget/budget-versions/budget-versions.scss'
+import 'styles/budget-setting/budget-organization/budget-versions/budget-versions.scss'
 const FormItem = Form.Item;
 
 class BudgetVersions extends React.Component {
@@ -19,20 +19,18 @@ class BudgetVersions extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {title:'预算组织',dataIndex:'organizationId',key:'organizationId',render:(recode)=>{return <span> {this.props.organization.organizationName}</span> } },
-        {title: '预算版本代码', dataIndex: 'versionCode', key: 'versionCode',},
-        {title: '预算版本名称', dataIndex: 'versionName', key: 'versionName',},
-        {title: '版本日期', dataIndex: 'versionDate', key: 'versionDate',},
-        {title: '预算版本描述', dataIndex: 'description', key: 'description',render:(recode)=>{return <span>{recode?recode:'-'}</span>}},
-        {title: '版本状态', dataIndex: 'status', key: 'status', render: (recode) => { return <div>{ recode=="NEW"?"新建":(recode="CURRENT"?"当前":"历史")}</div>}},
-        {title: '状态',dataIndex: 'isEnabled', key: 'isEnabled',
+        {title: this.props.intl.formatMessage({id:"budget.organization"}),dataIndex:'organizationId',key:'organizationId',render:(recode)=>{return <span> {this.props.organization.organizationName}</span> } },
+        {title: this.props.intl.formatMessage({id:"budget.versionCode"}), dataIndex: 'versionCode', key: 'versionCode',},
+        {title:  this.props.intl.formatMessage({id:"budget.versionName"}), dataIndex: 'versionName', key: 'versionName',},
+        {title:  this.props.intl.formatMessage({id:"budget.versionDate"}), dataIndex: 'versionDate', key: 'versionDate',},
+        {title: this.props.intl.formatMessage({id:"budget.description"}), dataIndex: 'description', key: 'description',render:(recode)=>{return <span>{recode?recode:'-'}</span>}},
+        {title:  this.props.intl.formatMessage({id:"budget.status"}), dataIndex: 'status', key: 'status', render: (recode) => { return <div>{ recode=="NEW"?this.props.intl.formatMessage({id:"budget.new"}):(recode="CURRENT"?this.props.intl.formatMessage({id:"budget.current"}):this.props.intl.formatMessage({id:"budget.history"}))}</div>}},
+        {title:  this.props.intl.formatMessage({id:"budget.isEnabled"}),dataIndex: 'isEnabled', key: 'isEnabled',
           render: (recode,text) => {
             return (
               <div >
-                <Popconfirm placement="top" title={recode?"确定禁用":"确定禁用"} onConfirm={(recode,text)=>(this.editEnabledHandle)} okText="确定" cancelText="取消">
                   <Badge status={ recode?"success":"error"}/>
-                  {recode?"启用":"禁用"}
-                </Popconfirm>
+                  {recode? this.props.intl.formatMessage({id:"common.status.enable"}): this.props.intl.formatMessage({id:"common.status.disable"})}
               </div>
             );}
         },
@@ -43,8 +41,8 @@ class BudgetVersions extends React.Component {
         enabled: true
       },
       searchForm: [
-        {type: 'input', id: 'versionCode', label: '预算版本代码'},
-        {type: 'input', id: 'versionName', label: '预算版本名字'},
+        {type: 'input', id: 'versionCode', label: this.props.intl.formatMessage({id:"budget.versionCode"})},
+        {type: 'input', id: 'versionName', label: this.props.intl.formatMessage({id:"budget.versionName"})},
       ],
       pageSize: 10,
       page:0,
@@ -166,9 +164,9 @@ class BudgetVersions extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{`共 ${this.state.pagination.total} 条数据`}</div>
+          <div className="table-header-title"> {this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
           <div className="table-header-buttons">
-            <Button type="primary"  onClick={this.createHandle}>新建</Button>
+            <Button type="primary"  onClick={this.createHandle}>{this.props.intl.formatMessage({id:"common.create"})}</Button>
           </div>
         </div>
 

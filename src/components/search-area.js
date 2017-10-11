@@ -11,7 +11,7 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
-import ListSelector from 'components/list-selector'
+import Chooser from 'components/chooser'
 
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
@@ -24,7 +24,7 @@ import 'styles/components/search-area.scss'
  * @params submitHandle  点击搜索时的回调
  * @params clearHandle  点击重置时的回调
  * @params eventHandle  表单项onChange事件，于searchForm内的event有联动，见底端注释
- * TODO: 选项render函数、searchUrl和getUrl的method区分，时间段格式
+ * TODO: 选项render函数、searchUrl和getUrl的method区分
  */
 class SearchArea extends React.Component{
 
@@ -32,11 +32,7 @@ class SearchArea extends React.Component{
     super(props);
     this.state = {
       expand: false,
-      searchForm: [],
-      showListSelector: false,
-      listType: '',
-      listSelectedData: [],
-      listExtraParams: {}
+      searchForm: []
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -211,113 +207,75 @@ class SearchArea extends React.Component{
           })}
         </Select>
       }
+      //弹出框列表选择组件
       case 'list':{
-        return <Select
-          mode="multiple"
-          labelInValue
-          placeholder={item.placeholder}
-          onFocus={() => this.handleFocus(item)}
-          dropdownStyle={{ display: 'none' }}
-          disabled={item.disabled}
-        >
-        </Select>
+        return <Chooser placeholder={item.placeholder}
+                        disabled={item.disabled}
+                        type={item.listType}
+                        labelKey={item.labelKey}
+                        valueKey={item.labelKey}
+                        listExtraParams={item.listExtraParams}
+                        selectorItem={item.selectorItem}/>
       }
       //switch状态切换组件
       case 'switch':{
         return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle} disabled={item.disabled}/>
       }
+      //同一单元格下多个表单项组件
+      case 'items':{
+        return (
+          <Row gutter={10} key={item.id}>
+            {item.items.map(searchItem => {
+              return (
+                <Col span={parseInt(24 / item.items.length)} key={searchItem.id}>
+                  <FormItem label={searchItem.label} colon={false}>
+                    {this.props.form.getFieldDecorator(searchItem.id, {
+                      initialValue: searchItem.defaultValue,
+                      rules: [{
+                        required: searchItem.isRequired,
+                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: searchItem.label}),  //name 不可为空
+                      }]
+                    })(
+                      this.renderFormItem(searchItem)
+                    )}
+                  </FormItem>
+                </Col>
+              )}
+            )}
+          </Row>
+        )
+      }
     }
   }
 
   getFields(){
-    const count = this.state.expand ? this.state.searchForm.length : 6;
+    const count = this.state.expand ? this.state.searchForm.length : this.props.maxLength;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {};
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
         <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
-          <FormItem {...formItemLayout} label={item.label} colon={false}>
-            {getFieldDecorator(item.id, {
-              initialValue: item.defaultValue,
-              rules: [{
-                required: item.isRequired,
-                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
-              }]
-            })(
-              this.renderFormItem(item)
-            )}
-          </FormItem>
+          {item.type === 'items' ? this.renderFormItem(item) :
+            <FormItem {...formItemLayout} label={item.label} colon={false}>
+              {getFieldDecorator(item.id, {
+                initialValue: item.defaultValue,
+                rules: [{
+                  required: item.isRequired,
+                  message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
+                }]
+              })(
+                this.renderFormItem(item)
+              )}
+            </FormItem>
+          }
         </Col>
       );
     });
     return children;
   }
 
-  /**
-   * list控件因为select没有onClick事件，所以用onFocus代替
-   * 每次focus后，用一个隐藏的input来取消聚焦
-   * @param item 需要显示的FormItem
-   */
-  handleFocus = (item) => {
-    console.log(1)
-    this.refs.blur.focus();
-    this.showList(item)
-  };
-
-  /**
-   * 显示ListSelector，如果有已经选择的值则包装为ListSelector需要的默认值格式传入
-   * @param item 需要显示的FormItem
-   */
-  showList = (item) => {
-    let listSelectedData = [];
-    let values = this.props.form.getFieldValue(item.id);
-    if(values && values.length > 0){
-      values.map(value => {
-        listSelectedData.push(value.value)
-      });
-    }
-    this.setState({
-      listExtraParams: item.listExtraParams,
-      listType : item.listType,
-      showListSelector: true,
-
-      listSelectedData
-    })
-  };
-
-  handleListCancel = () => {
-    this.setState({ showListSelector: false })
-  };
-
-  /**
-   * ListSelector确认点击事件，返回的结果包装为form需要的格式
-   * @param result
-   */
-  handleListOk = (result) => {
-    let formItem = {};
-    this.props.searchForm.map(item => {
-      if(item.listType === result.type)
-        formItem = item;
-    });
-    let values = [];
-    result.result.map(item => {
-      values.push({
-        key: item[formItem.valueKey],
-        label: item[formItem.labelKey],
-        value: item
-      })
-    });
-    let value = {};
-    value[formItem.id] = values;
-    console.log(value)
-    this.props.form.setFieldsValue(value);
-    this.setState({ showListSelector: false });
-    formItem.handle && formItem.handle();
-  };
-
   render(){
-    const { showListSelector, listType, listSelectedData, listExtraParams, selectorItem } = this.state;
     return (
       <Form
         className="ant-advanced-search-form common-top-area"
@@ -326,7 +284,7 @@ class SearchArea extends React.Component{
         <Row gutter={40}>{this.getFields()}</Row>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
-            {this.state.searchForm.length > 6 ? (
+            {this.state.searchForm.length > this.props.maxLength ? (
               <a className="toggle-button" onClick={this.toggle}>
                 {this.state.expand ? this.props.intl.formatMessage({id: "common.fold"}) : this.props.intl.formatMessage({id: "common.more"})} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
@@ -335,14 +293,6 @@ class SearchArea extends React.Component{
             <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
           </Col>
         </Row>
-        <ListSelector visible={showListSelector}
-                      type={listType}
-                      onCancel={this.handleListCancel}
-                      onOk={this.handleListOk}
-                      selectedData={listSelectedData}
-                      extraParams={listExtraParams}
-                      selectorItem={selectorItem}/>
-        <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
       </Form>
     )
   }
@@ -350,16 +300,17 @@ class SearchArea extends React.Component{
 
 /**
  *
- * @type searchForm 表单列表，如果项数 > 6 则自动隐藏多余选项到下拉部分，每一项的格式如下：
+ * @type searchForm 表单列表，如果项数 > maxLength 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',                    //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list中的一种
-          id: '',                     //必填，表单id，搜索后返回的数据key
-          label: '',                 //必填，界面显示名称label
-          listType: '',             //可选，当type为list时必填，listSelector的type类型
-          listExtraParams: '',     //可选，当type为list时有效，listSelector的extraParams
-          disabled: false         //可选，是否可用
-          isRequired: false,     //可选，是否必填
-          options: [{label: '', value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items中的一种
+          id: '',                      //必填，表单id，搜索后返回的数据key
+          label: '',                  //必填，界面显示名称label
+          listType: '',              //可选，当type为list时必填，listSelector的type类型
+          listExtraParams: '',      //可选，当type为list时有效，listSelector的extraParams
+          disabled: false          //可选，是否可用
+          isRequired: false,      //可选，是否必填
+          options: [{label: '',  value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
+          selectorItem: {}      //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
           searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
@@ -368,7 +319,7 @@ class SearchArea extends React.Component{
           searchKey: '',  //可选，搜索参数名
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
-
+          items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
         }
  */
 SearchArea.propTypes = {
@@ -378,9 +329,13 @@ SearchArea.propTypes = {
   clearHandle: React.PropTypes.func,  //重置事件
   okText:  React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //左侧ok按钮的文本
   clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
+  maxLength: React.PropTypes.number,  //搜索区域最大表单数量
+  onSearch: React.PropTypes.func
 };
 
 SearchArea.defaultProps = {
+  onSearch: null,
+  maxLength: 6,
   eventHandle: () => {},
   okText: <FormattedMessage id='common.search'/>,  //搜索
   clearText: <FormattedMessage id='common.clear'/>  //重置

@@ -71,7 +71,7 @@ class CreateOrUpdateBank extends React.Component{
       if (!err) {
         console.log(values)
         this.state.isEditor ?
-          httpFetch.put(`http://139.224.220.217:9084//api/CompanyBank/insertOrUpdate`,values).then((response)=>{
+          httpFetch.put(`${config.baseUrl}/api/CompanyBank/insertOrUpdate`,values).then((response)=>{
             console.log(response)
             this.props.close(true);
             this.setState({
@@ -86,7 +86,7 @@ class CreateOrUpdateBank extends React.Component{
             }
           })
           :
-           httpFetch.post(`http://139.224.220.217:9084//api/CompanyBank/insertOrUpdate`,values).then((response)=>{
+           httpFetch.post(`${config.baseUrl}/api/CompanyBank/insertOrUpdate`,values).then((response)=>{
           console.log(response)
           this.props.close(true);
           this.setState({

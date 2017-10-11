@@ -40,6 +40,9 @@ import budgetStructure from 'static/i18n/zh_CN/budget-setting/budget-organizatio
 import budgetItem from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-item.json'
 import budgetControlRules from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-control-rules.json'
 import bankDefinition from 'static/i18n/zh_CN/budget/bank-definition.json'
+import budgetVersion from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-version.json'
+import budgetItemType from  'static/i18n/zh_CN/budget-setting/budget-organization/budget-item-type.json'
+import budgetJournal from 'static/i18n/zh_CN/budget-journal/budget-journal.json'
 
 const i18nList = [
   common,  //公用
@@ -49,6 +52,9 @@ const i18nList = [
   budgetStructure,  //预算表
   budgetItem,  //预算项目
   budgetControlRules, //预算控制规则
+  budgetVersion, //预算版本
+  budgetItemType, //预算项目类型
+  budgetJournal,  //预算日记账
   bankDefinition, //银行定义
 ];
 
