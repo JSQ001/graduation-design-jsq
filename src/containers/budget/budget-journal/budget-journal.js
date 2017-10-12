@@ -38,7 +38,7 @@ class BudgetJournal extends React.Component {
           labelKey: 'journalTypeName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{organizationId:908139656192442369}
+          listExtraParams:{organizationId:1}
         },
         {type: 'input', id: 'journalNumber',
           label: this.props.intl.formatMessage({id: 'budget.journalNumber'}), /*预算日记账编号*/

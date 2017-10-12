@@ -37,11 +37,36 @@ class NewBudgetJournalFrom extends React.Component {
 
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
-    let path=this.state.budgetJournalDetailPage.url.replace(":budgetJournalHeaderId",undefined);
+    const data =value;
+    console.log(this.props.user);
+    console.log(this.props.company)
+    let valueData ={
+      ...value,
+      'organizationId':this.state.organization.id,
+      'organizationName':this.state.organization.organizationName,
+      'employeeName':this.props.user.fullName,
+      'employeeId':this.props.user.userOID,
+      'companyOID':this.props.company.companyOID,
+      'companyName':this.props.user.companyName,
+      'journalTypeName':value.journalTypeName[0].value.journalTypeName,
+      'journalTypeId':value.journalTypeName[0].value.journalTypeId,
+      'structureId':910338272176853000,
+      'structureName':undefined,
+      'versionId':value.versionName[0].value.versionName,
+      'versionName':value.versionName[0].value.id,
+      'scenarioId':value.scenarioName[0].value.scenarioName,
+      'scenarioName':value.scenarioName[0].value.id,
+
+
+    }
+    console.log(valueData);
+    console.log("123123")
+
+   let path=this.state.budgetJournalDetailPage.url.replace(":budgetJournalHeaderId",undefined);
     let location ={
         pathname:path,
         state:{
-          fromData:value
+          fromData:valueData
         }
     }
 
@@ -71,7 +96,7 @@ class NewBudgetJournalFrom extends React.Component {
       }
       this.setState({
         organization:request.data,
-        organizationId:data
+        organizationId:data,
       })
     })
   }
@@ -97,16 +122,19 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   //选择预算日记账类型，设置对应的预算表选
-  handleJournalTypeChange=(value)=>{
-     console.log(value)
-    this.getStructure()
+  handleJournalTypeChange=(values)=>{
+     console.log(values)
+    let value = values[0].value
+
+    this.getStructure(value.journalTypeId)
 
   }
 
 
   //根据账套类型，获得预算表
-  getStructure(journalTypeId){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${journalTypeId}`).then(req=>{
+  getStructure(value){
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${value}`).then(req=>{
+      console.log(req.data);
       this.setState(
         {structureGroup:req.data}
       )
@@ -115,32 +143,21 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   //选择预算表时，获得年度和期间段
-  handleSelectChange=(value)=>{
-    console.log(value);
-      let id=123;
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/structure/selectBysStructureId/${id}`).then(req=>{
+  handleSelectChange=(values)=>{
+    console.log(values)
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/structure/selectBysStructureId/${values.id}`).then(req=>{
       let data =req.data;
+      console.log(data)
       this.props.form.setFieldsValue({
-        periodYear: '',
-        periodStrategy:''
+        periodYear: 'data.periodYear',
+        periodStrategy:'data.periodStrategy'
+
       });
     })
 
 
   }
 
-  //根据预算表获取，年和编制期间
-/*
-  getStructureDate(id){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/structure/selectBysStructureId/${id}`).then(req=>{
-      this.setState(
-        {
-
-        }
-      )
-    })
-  }
-*/
 
   scenarioChange=(value)=>{
     console.log(value);
@@ -216,8 +233,9 @@ class NewBudgetJournalFrom extends React.Component {
               <Chooser
               type='budget_journal_type'
               labelKey='journalTypeName'
-              valueKey='id'
+              valueKey='journalTypeId'
               listExtraParams={this.state.organizationId}
+              onChange={this.handleJournalTypeChange}
               />
 
             )}
@@ -273,9 +291,9 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
               <Chooser
-                type='budget_scenarios'
-                labelKey='scenarioName'
-                valueKey='scenariosName'
+                type='budget_versions'
+                labelKey='versionName'
+                valueKey='id'
                 listExtraParams={this.state.organizationId}
               />
             )}
@@ -291,11 +309,10 @@ class NewBudgetJournalFrom extends React.Component {
             })(
 
               <Chooser
-              type='budget_versions'
-              labelKey='versionsName'
-              valueKey='versionsName'
+              type='budget_scenarios'
+              labelKey='scenarioName'
+              valueKey='id'
               listExtraParams={this.state.organizationId}
-              onChange={this.scenarioChange}
              />
 
             )}
@@ -310,14 +327,6 @@ class NewBudgetJournalFrom extends React.Component {
 
         <div>
 
-          <ListSelector visible={showListSelector}
-                        type={listType}
-                        onCancel={this.handleListCancel}
-                        onOk={this.handleListOk}
-                        selectedData={listSelectedData}
-                        extraParams={listExtraParams}
-                        selectorItem={selectorItem}/>
-          <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
         </div>
       </div>
     )

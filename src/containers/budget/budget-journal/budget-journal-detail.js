@@ -44,7 +44,7 @@ class BudgetJournalDetail extends React.Component {
       infoDate:[],
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalNumber"}), id: 'journalNumber', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeId', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'list', id: 'journalTypeName',
@@ -57,17 +57,16 @@ class BudgetJournalDetail extends React.Component {
 
         {
           type: 'combobox',
-          id: 'structureId',
+          id: 'structureName',
           label: this.props.intl.formatMessage({id:"budget.structureId"}),  /*预算表*/
           placeholder: this.props.intl.formatMessage({id:"common.please.enter"}),
           options: [],
-          searchUrl: `${config.budgetUrl}/api/budget/structures/query`,
+          searchUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=1`,
           method: 'get',
           searchKey: '',
           labelKey: 'structureName',
           valueKey: 'id'
         },
-
 
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
 
@@ -165,10 +164,14 @@ class BudgetJournalDetail extends React.Component {
 
   showImport=()=>{}
 
-  updateHandleInfo=()=>{}
+  //保存编辑
+  updateHandleInfo=(value)=>{
+    console.log(value)
+  }
 
 
 
+  //处理导入
   handleModal=(value)=>{
     this.setState({
       showModal: value,
