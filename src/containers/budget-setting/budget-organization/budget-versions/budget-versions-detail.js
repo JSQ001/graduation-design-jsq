@@ -21,14 +21,12 @@ class BudgetVersionsDetail extends React.Component {
     this.state = {
       updateState: false,
       data: [],
-      columns: [{
-        title: '公司代码', dataIndex: 'companyCode', key: 'companyCode',},
+      columns: [
+        {title: '公司代码', dataIndex: 'companyCode', key: 'companyCode',},
         {title: '公司名称', dataIndex: 'companyName', key: 'companyName',},
         {title: '公司类型', dataIndex: 'companyType', key: 'companyType',},
-        {title: '启用', dataIndex: 'isEnabled', key: 'isEnabled',
-          render:(text,recode)=>{return <Checkbox defaultChecked={recode?true:false} onChange={this.isEnabledEditHandle(text,recode)}  />}
-
-        }],
+        {title: '启用', key: 'isEnabled', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
+      ],
       infoDate:[],
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'organizationName', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
@@ -51,6 +49,7 @@ class BudgetVersionsDetail extends React.Component {
       pagination: {
         total: 0
       },
+      loading:false,
       showImportFrame: false,
       optionData:[{value:"NEW",label:this.props.intl.formatMessage({id:"budget.new"})},{value:"CURRENT",label:this.props.intl.formatMessage({id:"budget.current"})},{value:"HISTORY",label:this.props.intl.formatMessage({id:"budget.history"})}],
       edit: false,
@@ -65,10 +64,17 @@ class BudgetVersionsDetail extends React.Component {
 
   }
 
-//编辑启用
-  isEnabledEditHandle(text,recode){
+  //编辑启用
+  onChangeEnabled = (e, record) => {
+    console.log("111111111111111111")
+    this.setState({loading: true});
+    record.isDefault = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/version/assign/companies`, record).then(response => {
+        this.setState({loading: false})
+    })
+  };
 
-  }
+
 
 
   componentWillMount(){

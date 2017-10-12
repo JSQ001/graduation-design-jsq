@@ -1,0 +1,12 @@
+{
+  "budget.bankCode": "Bank code",
+  "budget.bankName": "Bank name",
+  "budget.bankType": "Bank type",
+  "budget.bank.digitalCode": "Bank digital code",
+  "budget.bank.letterCode": "Bank letter code",
+  "budget.branchBankCode": "Branch bank code",
+  "budget.branchBankName": "Branch bank name",
+  "budget.branchBankNumber": "Branch bank number",
+  "budget.belongsToBank": "Belongs to Bank"
+
+}

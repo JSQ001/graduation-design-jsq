@@ -31,10 +31,13 @@
   "menu.new-budget-structure": "New budget structure",
   "menu.budget-structure-detail": "Budget structure detail",
   "menu.new-budget-item": "New Budget item",
-  "menu.budget-item-detail": "预算项目详情",
-  "menu.new-budget-control-rules": "新建预算规则",
-  "menu.budget-control-rules-detail": "预算规则详情",
   "menu.budget-balance": "Budget balance",
-  "menu.budget-balance-result": "Budget balance result"
-
+  "menu.budget-balance-result": "Budget balance result",
+  "menu.budget-item-detail": "Budget item detail",
+  "menu.new-budget-control-rules": "New budget rule",
+  "menu.budget-control-rules-detail": "budget rule detail",
+  "menu.bank-definition": "Bank definition",
+  "menu.branch-bank-information": "Branch bank information",
+  "menu.pay": "Pay",
+  "menu.pay-workbench": "Pay workbench"
 }

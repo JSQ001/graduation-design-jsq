@@ -165,7 +165,6 @@ class NewBudgetRulesDetail extends React.Component{
       {id: 'detail', value: '明细'}
     ];
     const summaryOrDetailOptions = summaryOrDetail.map((item)=><Option key={item.id}>{item.value}</Option>)
-
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -208,7 +207,7 @@ class NewBudgetRulesDetail extends React.Component{
                     this.setState({
                       filtrateMethodHelp: value === "contain" ? formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
                         : formatMessage({id:"budget.filtrateMethodHelp.exclude"}) /*值范围为开区间，不包含左右边界值*/
-                    })
+                    });
                     callback();
                   }
                 }

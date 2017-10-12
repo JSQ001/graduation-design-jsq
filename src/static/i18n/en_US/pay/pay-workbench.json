@@ -1,0 +1,11 @@
+{
+  "payWorkbench.payOnline": "Pay Online",
+  "payWorkbench.RePay": "重新支付",
+  "payWorkbench.CancelPay": "取消支付",
+  "payWorkbench.Unpaid": "Unpaid",
+  "payWorkbench.Payment": "Payment Result",
+  "payWorkbench.Fail": "Fail or Refund",
+  "payWorkbench.Success": "Success",
+  "payWorkbench.Payment.Message": "支付结果与银行业务处理速度有关，请耐心等待",
+  "payWorkbench.Success.Message": "付款相关操作，请切换下方标签至【未付款】"
+}

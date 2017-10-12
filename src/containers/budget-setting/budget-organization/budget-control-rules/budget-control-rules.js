@@ -178,7 +178,6 @@ class BudgetControlRules extends React.Component {
           loading={loading}
           dataSource={data}
           columns={columns}
-          //rowSelection={rowSelection}
           onRowClick={this.handleRowClick}
           pagination={pagination}
           onChange={this.onChangePager}
