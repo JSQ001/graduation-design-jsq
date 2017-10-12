@@ -40,6 +40,7 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
@@ -311,13 +312,22 @@ const budgetJournal = {
 };
 
 
+const budgetBalanceResult = {
+  key: 'budget-balance-result',
+  url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
+  components: BudgetBalanceResult,
+  parent: 'budget-balance'
+};
+
 //预算余额
 const budgetBalance = {
   key: 'budget-balance',
   url:'/main/budget/budget-balance',
   components: BudgetBalance,
   parent: 'budget',
-  children: {}
+  children: {
+    budgetBalanceResult
+  }
 };
 
 //预算
