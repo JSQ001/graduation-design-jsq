@@ -41,6 +41,7 @@ import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal
 
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -303,13 +304,22 @@ const budgetJournal = {
   children: {newBudgetJournal,budgetJournalDetail}
 };
 
+const budgetBalanceResult = {
+  key: 'budget-balance-result',
+  url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
+  components: BudgetBalanceResult,
+  parent: 'budget-balance'
+};
+
 //预算余额
 const budgetBalance = {
   key: 'budget-balance',
   url:'/main/budget/budget-balance',
   components: BudgetBalance,
   parent: 'budget',
-  children: {}
+  children: {
+    budgetBalanceResult
+  }
 };
 
 //预算

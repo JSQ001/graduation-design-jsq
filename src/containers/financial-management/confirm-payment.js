@@ -184,14 +184,10 @@ class ConfirmPayment extends React.Component{
   search = (result) => {
     result.dateFrom = result.dateFrom ? result.dateFrom.format('YYYY-MM-DD') : undefined;
     result.dateTo = result.dateTo ? result.dateTo.format('YYYY-MM-DD') : undefined;
-    let corporationOIDs = [];
-    result.legalEntity ? result.legalEntity.map(corporation => {
-      corporationOIDs.push(corporation.key)
-    }) : null;
     let searchParams = {
-      applicantOID: result.user ? result.user.key : undefined,
+      applicantOID: result.user,
       businessCode: result.formID,
-      corporationOIDs: corporationOIDs,
+      corporationOIDs: result.legalEntity,
       endDate: result.dateTo,
       startDate: result.dateFrom,
       status: this.state.status

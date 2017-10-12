@@ -48,7 +48,7 @@ const selectorData = {
   },
   'company': {
     title: '添加公司',
-    url: `${config.baseUrl}/api/budget/structures/query`,
+    url: `${config.baseUrl}/api/company/by/term`,
     searchForm: [
       {type: 'input', id: 'companyCode', label: "公司代码"},
       {type: 'input', id: 'companyName', label: "公司名称"},
@@ -57,8 +57,8 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'companyName'},
-      {title: "公司类型", dataIndex: 'companyCode'}
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
   },

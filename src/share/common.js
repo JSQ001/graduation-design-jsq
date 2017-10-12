@@ -21,4 +21,4 @@ Array.prototype.addIfNotExist = function(item){
 };
 
 //金额过滤
-React.Component.prototype.filterMoney = money => <span className="money-cell">{(money || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
+React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
