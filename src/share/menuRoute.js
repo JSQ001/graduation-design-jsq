@@ -293,7 +293,7 @@ const newBudgetJournal={
 const budgetJournalDetail={
   key:'budget-journal-detail',
   url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
-  components:NewBudgetJournal,
+  components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
 
