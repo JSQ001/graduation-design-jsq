@@ -3,9 +3,19 @@
   "payWorkbench.RePay": "重新支付",
   "payWorkbench.CancelPay": "取消支付",
   "payWorkbench.Unpaid": "未付款",
-  "payWorkbench.Payment": "等待付款结果",
+  "payWorkbench.Wait": "等待付款结果",
   "payWorkbench.Fail": "退款或失败",
   "payWorkbench.Success": "成功",
-  "payWorkbench.Payment.Message": "支付结果与银行业务处理速度有关，请耐心等待",
-  "payWorkbench.Success.Message": "付款相关操作，请切换下方标签至【未付款】"
+  "payWorkbench.Wait.Message": "支付结果与银行业务处理速度有关，请耐心等待",
+  "payWorkbench.Success.Message": "付款相关操作，请切换下方标签至【未付款】",
+  "payWorkbench.receiptNumber": "单据编号",
+  "payWorkbench.receiptType": "单据类型",
+  "payWorkbench.applicant": "申请人",
+  "payWorkbench.dateFrom": "申请日期从",
+  "payWorkbench.dateTo": "申请日期至",
+  "payWorkbench.mountFrom": "金额区间从",
+  "payWorkbench.mountTo": "金额区间至",
+  "payWorkbench.payee": "收款方",
+  "payWorkbench.payedAmount.tooltip": "点击修改本次支付金额",
+  "payWorkbench.accountNumber.tooltip": "点击修改收款账号"
 }
