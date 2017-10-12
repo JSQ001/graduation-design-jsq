@@ -13,7 +13,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
-import "styles/budget-setting/budget-organization/budget-item/new-budget-item.scss"
+import "styles/budget/budget-journal/new-budget-journal.scss"
 
 class NewBudgetJournalFrom extends React.Component {
   constructor(props) {

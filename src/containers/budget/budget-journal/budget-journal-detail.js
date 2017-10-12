@@ -16,7 +16,8 @@ import selectorData from 'share/selectorData'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame.js'
-import NewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
+import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
+import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
 
 
 class BudgetJournalDetail extends React.Component {
@@ -202,8 +203,6 @@ class BudgetJournalDetail extends React.Component {
     return (
       <div>
         <div className="budget-versions-detail">
-
-          {console.log(infoDate)}
           <BasicInfo infoList={infoList}
                      infoData={infoDate}
                      updateHandle={this.updateHandleInfo}
@@ -226,26 +225,26 @@ class BudgetJournalDetail extends React.Component {
           />
 
         </div>
-        <div>
+
+        <div className="footer-operate">
           <Button>提交</Button>
           <Button>{this.props.intl.formatMessage({id:"common.save"})}</Button>
           <Button>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
         </div>
 
         <Modal
+          width={600}
           title="Basic Modal"
           visible={showModal}
           onOk={this.handleModalOk}
           onCancel={() => this.handleModal(false)}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <BudgetJournalDetailLead/>
         </Modal>
 
         <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
                     show={showSlideFrameNew}
-                    content={NewBudgetJournalDetail}
+                    content={WrappedNewBudgetJournalDetail}
                     afterClose={this.handleAfterCloseNewSlide}
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={{}}/>
