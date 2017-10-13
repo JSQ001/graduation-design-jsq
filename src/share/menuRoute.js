@@ -39,11 +39,13 @@ import BudgetJournal from 'containers/budget/budget-journal/budget-journal'
 import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journal'
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
-
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
+import BankDefinition from 'containers/pay/bank-definition/bank-definition'
+import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -282,6 +284,7 @@ const budgetSetting = {
 
 //////////////////////预算模块///////////////////////////
 
+
 //新建预算日记账
 const newBudgetJournal={
   key:'new-budget-journal',
@@ -294,7 +297,7 @@ const newBudgetJournal={
 const budgetJournalDetail={
   key:'budget-journal-detail',
   url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
-  components:NewBudgetJournal,
+  components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
 
@@ -303,7 +306,16 @@ const budgetJournal = {
   key:'budget-journal',
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
-  children: {newBudgetJournal,budgetJournalDetail}
+  parent: 'budget',
+  children: {}
+};
+
+
+const budgetBalanceResult = {
+  key: 'budget-balance-result',
+  url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
+  components: BudgetBalanceResult,
+  parent: 'budget-balance'
 };
 
 //预算余额
@@ -312,7 +324,9 @@ const budgetBalance = {
   url:'/main/budget/budget-balance',
   components: BudgetBalance,
   parent: 'budget',
-  children: {}
+  children: {
+    budgetBalanceResult
+  }
 };
 
 //预算
@@ -345,12 +359,33 @@ const payWorkbench = {
   }
 };
 
+//分行信息
+const branchBankInformation = {
+  key:'branch-bank-information',
+  url:'/main/budget/bank-definition/branch-bank-information/:id',
+  components: BranchBankInformation,
+  parent: 'bank-definition',
+};
+
+//银行定义
+const bankDefinition = {
+  key:'bank-definition',
+  url:'/main/budget/bank-definition',
+  components: BankDefinition ,
+  parent: 'budget',
+  children: {
+    branchBankInformation
+  }
+};
+
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench],
+  subMenu: [payWorkbench, bankDefinition],
   icon: 'pay-circle'
 };
+
+
 
 //////////////////////支付模块结束///////////////////////////
 

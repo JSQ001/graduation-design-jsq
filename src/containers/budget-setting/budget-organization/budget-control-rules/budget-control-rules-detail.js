@@ -47,8 +47,11 @@ class BudgetControlRulesDetail extends React.Component{
         {type: 'input', id: 'controlRuleCode', required: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.controlRuleCode'})+" :" /*业务规则代码*/},
         {type: 'input', id: 'controlRuleName', label: formatMessage({id: 'budget.controlRuleName'})+" :" /*业务规则名称*/},
         {type: 'select', options: strategyGroup, id: 'strategyGroupName', label: "控制策略 :"},
-        {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
-        {type: 'date', id: 'endDate', label: " "},
+        {type: 'items', id: 'effectiveDate',label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", items: [
+          {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", isRequired: true},
+          {type: 'date', id: 'endDate', label: ' '}
+        ]},
+        //{type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
         {type: 'input', id: 'priority', required: true, disabled: true, label: formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
       ],
       columns: [
@@ -92,7 +95,6 @@ class BudgetControlRulesDetail extends React.Component{
     }
   }
   deleteItem = (e, record) => {
-    console.log(record)
     httpFetch.delete(`${config.budgetUrl}/api/budget/control/rule/details/${record.id}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.organizationName})); // name删除成功
       this.getList();
@@ -103,7 +105,8 @@ class BudgetControlRulesDetail extends React.Component{
     //根据路径上的预算规则id查出完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
-        console.log(response)
+        let endDate = response.data.endDate === "undefined" ? null : response.data.endDate.substring(0,10)
+        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ "+ endDate;
         this.setState({
           controlRule: response.data,
           createParams: response.data
@@ -115,7 +118,6 @@ class BudgetControlRulesDetail extends React.Component{
     //加载页面时，获取启用的控制策略
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
       if(response.status === 200){
-        console.log(response)
         response.data.map((item)=>{
           let strategy = {
             id: item.id,
@@ -125,7 +127,6 @@ class BudgetControlRulesDetail extends React.Component{
           };
           strategyGroup.addIfNotExist(strategy)
         });
-        console.log(strategyGroup)
       }
     })
   }
@@ -136,7 +137,6 @@ class BudgetControlRulesDetail extends React.Component{
     this.setState({
       buttonLoading: true
     });
-    console.log(123)
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.props.params.id[0];
@@ -146,7 +146,6 @@ class BudgetControlRulesDetail extends React.Component{
             return
           }
         });
-        console.log(values)
         httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
           if(response.status === 200) {
             this.setState({
@@ -162,14 +161,13 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   handleChange = (e)=>{
-    console.log(e.target.value)
     this.setState({
       buttonLoading: false,
     })
   };
 
   //新建规则明细,左侧划出
-  showSlide = (flag, title,params) => {
+  showSlide = (flag,title,params) => {
     this.setState({
       showSlideFrame: flag,
       slideFrameTitle: title,
@@ -200,13 +198,11 @@ class BudgetControlRulesDetail extends React.Component{
     values.organizationId = this.props.params.id;
     values.controlRuleId = this.props.params.ruleId;
     values.strategyGroupId = this.state.controlRule.strategyGroupId;
-    console.log(this.state.controlRule)
     strategyGroup.map((item)=>{
       if(item.title === values.strategyGroupName){
         values.strategyGroupId = item.id;
       }
     });
-    console.log(values)
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
       if(response) {
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
@@ -229,7 +225,6 @@ class BudgetControlRulesDetail extends React.Component{
   //获取规则明细
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}`).then((response)=>{
-      console.log(response)
       if(response.status === 200){
         this.setState({
           data: response.data

@@ -61,6 +61,14 @@ class BasicInfo extends React.Component{
       );
       //获取默认值，用于search-area组件
       item.defaultValue = this.state.params[item.id];
+
+      //规则定义的有效时间
+      if(item.items){
+        item.items.map((index)=>{
+          index.defaultValue = moment( this.state.params[index.id], 'YYYY-MM-DD');
+        });
+      }
+
       //格式化日期的默认值
       if(item.type == 'date') {
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');

@@ -17,6 +17,7 @@ import payWorkbench from 'static/i18n/en_US/pay/pay-workbench.json'
 import budgetVersion from 'static/i18n/en_US/budget-setting/budget-organization/budget-version.json'
 import budgetItemType from  'static/i18n/en_US/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/en_US/budget-journal/budget-journal.json'
+import bankDefinition from 'static/i18n/en_US/pay/bank-definition.json'
 
 
 const i18nList = [
@@ -30,7 +31,9 @@ const i18nList = [
   payWorkbench, //付款工作台
   budgetVersion, //预算版本
   budgetItemType, //预算项目类型
-  budgetJournal   //预算日记账
+  budgetJournal,   //预算日记账
+  bankDefinition, //银行定义
+
 ];
 
 let result = {};

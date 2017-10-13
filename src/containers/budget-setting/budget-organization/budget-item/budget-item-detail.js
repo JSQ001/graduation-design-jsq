@@ -19,6 +19,7 @@ const TabPane = Tabs.TabPane;
 class BudgetItemDetail extends React.Component{
   constructor(props){
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       buttonLoading: false,
@@ -31,19 +32,19 @@ class BudgetItemDetail extends React.Component{
 
       },
       infoList: [
-        {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
-        {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
-        {type: 'input', id: 'itemName', isRequired:true, label: this.props.intl.formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
-        {type: 'select',options: [] , id: 'itemTypeName', required:true, label:"项目类型"},
-        {type: 'select',options: [] , id: 'variationAttribute', label: this.props.intl.formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
-        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
-        {type: 'switch', id: 'isEnabled', label: this.props.intl.formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
+        {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
+        {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
+        {type: 'input', id: 'itemName', isRequired:true, label: formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
+        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"项目类型"},
+        {type: 'select',options: [] , id: 'variationAttribute',disabled: true, label: formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
+        {type: 'input', id: 'description', label: formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
+        {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
       columns: [
-        {title: this.props.intl.formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
-        {title: this.props.intl.formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: this.props.intl.formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'} /*公司类型*/
+        {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
+        {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
+        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'} /*公司类型*/
       ],
     }
   }

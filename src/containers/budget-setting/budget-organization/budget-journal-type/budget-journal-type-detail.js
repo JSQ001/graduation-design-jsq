@@ -66,8 +66,8 @@ class BudgetJournalTypeDetail extends React.Component {
         },
         COMPANY: {
           columns: [
-            {title: "公司代码", dataIndex: "personCode", width: '30%'},
-            {title: "公司简称", dataIndex: "personName", width: '50%'},
+            {title: "公司代码", dataIndex: "companyCode", width: '30%'},
+            {title: "公司简称", dataIndex: "companyCode", width: '50%'},
             {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'}/>},
           ]
         }
