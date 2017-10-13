@@ -39,5 +39,6 @@
   "menu.bank-definition": "Bank definition",
   "menu.branch-bank-information": "Branch bank information",
   "menu.pay": "Pay",
-  "menu.pay-workbench": "Pay workbench"
+  "menu.pay-workbench": "Pay workbench",
+  "menu.payment-detail": "Payment detail"
 }

@@ -43,10 +43,9 @@ import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
 import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
+import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
-
-
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -341,13 +340,23 @@ const budget = {
 
 //////////////////////支付模块///////////////////////////
 
+//支付流水详情
+const paymentDetail = {
+  key:'payment-detail',
+  url:'/main/pay/pay-workbench/payment-detail/:id',
+  components: PaymentDetail,
+  parent: 'pay-workbench'
+};
+
 //付款工作台
 const payWorkbench = {
   key: 'pay-workbench',
   url:'/main/pay/pay-workbench',
   components: PayWorkbench,
   parent: 'pay',
-  children: {}
+  children: {
+    paymentDetail
+  }
 };
 
 //分行信息

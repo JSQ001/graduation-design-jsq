@@ -38,6 +38,7 @@
   "menu.budget-balance-result": "预算余额查询结果",
   "menu.pay": "支付",
   "menu.pay-workbench": "付款工作台",
+  "menu.payment-detail": "支付流水详情",
   "menu.bank-definition": "银行定义",
   "menu.branch-bank-information": "分行信息"
 }
