@@ -36,5 +36,6 @@
   "menu.budget-control-rules-detail": "预算规则详情",
   "menu.budget-balance": "Budget balance",
   "menu.pay": "Pay",
-  "menu.pay-workbench": "Pay workbench"
+  "menu.pay-workbench": "Pay workbench",
+  "menu.payment-detail": "Payment detail"
 }

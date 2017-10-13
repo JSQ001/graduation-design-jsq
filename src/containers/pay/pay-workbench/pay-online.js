@@ -2,12 +2,72 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Tabs, Table, Breadcrumb, Icon, Alert, Tooltip, Badge, Modal, Form, Select, Input } from 'antd'
+import { Button, Tabs, Table, Breadcrumb, Icon, Alert, Tooltip, Badge, Modal, Form, Select, Input, Menu, Dropdown, InputNumber, DatePicker, Pagination } from 'antd'
 const TabPane = Tabs.TabPane;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
 import SearchArea from 'components/search-area'
+import menuRoute from 'share/menuRoute'
+
+import 'styles/pay/pay-workbench/pay-online.scss'
+
+class EditableCell extends React.Component {
+  state = {
+    value: this.props.value,
+    editType: this.props.editType,
+    message: this.props.message,
+    maxPayedAmount: this.props.maxPayedAmount,
+    editable: false,
+  };
+  handleNumberChange = (value) => {
+    this.setState({ value })
+  };
+  handleStringChange = (e) => {
+    this.setState({ value: e.target.value })
+  }
+  check = () => {
+    this.setState({ editable: false });
+    if (this.props.onChange) {
+      this.props.onChange(this.state.value);
+    }
+  };
+  edit = () => {
+    this.setState({ editable: true });
+  };
+  render() {
+    const { value, editType, message, maxPayedAmount, editable } = this.state;
+    return (
+      <div className="editable-cell">
+        {
+          editable ?
+            <div className="editable-cell-input-wrapper">
+              {
+                editType == 'number' ?
+                  <InputNumber value={value} max={maxPayedAmount} min={0} onChange={this.handleNumberChange} onPressEnter={this.check}/>
+                  :
+                  <Input value={value} onChange={this.handleStringChange} onPressEnter={this.check}/>
+              }
+              <Icon type="check" className="editable-cell-icon-check" onClick={this.check}/>
+            </div>
+            :
+            <div className="editable-cell-text-wrapper">
+              {
+                editType == 'number' ?
+                  (value || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+                  :
+                  (value || '')
+              }
+
+              <Tooltip placement="top" title={message}>
+                <Icon type="edit" className="editable-cell-icon" onClick={this.edit} />
+              </Tooltip>
+            </div>
+        }
+      </div>
+    );
+  }
+}
 
 class PayOnline extends React.Component {
   constructor(props) {
@@ -48,56 +108,54 @@ class PayOnline extends React.Component {
         {title: '总金额', dataIndex: 'totalAmount', key: 'totalAmount', render: this.filterMoney},
         {title: '已核销金额', dataIndex: 'cancelAmount', key: 'cancelAmount', render: this.filterMoney},
         {title: '可支付金额', dataIndex: 'payAmount', key: 'payAmount', render: this.filterMoney},
-        {title: '本次支付金额', dataIndex: 'payedAmount', key: 'payedAmount', render: (amount) => (
-          <div style={{textAlign: 'right'}}>
-            <span>{(amount || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>
-            <Tooltip placement="top" title={formatMessage({id: "payWorkbench.payedAmount.tooltip"})}>
-              <Icon type="edit" style={{cursor: 'pointer', padding: '0 5px 0 10px'}}/>
-            </Tooltip>
-          </div>
-        )},
+        {title: '本次支付金额', dataIndex: 'payedAmount', key: 'payedAmount', render: (amount, record) => {
+          return (
+            <div style={{textAlign: 'right'}}>
+              <EditableCell value={amount} editType="number"
+                            message={formatMessage({id: "payWorkbench.payedAmount.tooltip"})}
+                            maxPayedAmount={record.payAmount} />
+            </div>)}
+          },
         {title: '付款方式', dataIndex: 'payWay', key: 'payWay'},
         {title: '类型 | 收款方', dataIndex: 'payee', key: 'payee'},
         {title: '收款账号', dataIndex: 'accountNumber', key: 'accountNumber', render: (number) => (
-          <div>
-            <span>{number}</span>
-            <Tooltip placement="top" title={formatMessage({id: "payWorkbench.accountNumber.tooltip"})}>
-              <Icon type="edit" style={{cursor: 'pointer', padding: '0 5px 0 10px'}}/>
-            </Tooltip>
-          </div>
+          <EditableCell value={number} editType="string"
+                        message={formatMessage({id: "payWorkbench.accountNumber.tooltip"})} />
         )},
         {title: '状态', dataIndex: 'state', key: 'state', render: (state) => <Badge status='default' text={state}/>},
-        {title: '操作', key: 'opera', fixed: 'right', render: () => (
-          <span><a>查看</a><span className="ant-divider"/><a>更多 <Icon type="down"/></a></span>
+        {title: '操作', key: 'opera', fixed: 'right', render: (text, record) => (
+          <span>
+            <a onClick={(e) => {e.preventDefault();e.stopPropagation();this.checkPaymentDetail(record)}}>查看</a>
+            <span className="ant-divider"/><a>更多 <Icon type="down"/></a>
+          </span>
         )}],
       waitColumns: [
         {title: '付款流水号', dataIndex: 'serialNumber', key: 'serialNumber'},
         {title: '单据编号 | 单据类型', dataIndex: 'billsNumber', key: 'billsNumber'},
         {title: '工号 | 申请人', dataIndex: 'applicant', key: 'applicant'},
         {title: '币种', dataIndex: 'currency', key: 'currency'},
-        {title: '本次支付金额', dataIndex: 'payedAmount', key: 'payedAmount', render: (amount) => (
-          <div style={{textAlign: 'right'}}>
-            <span>{(amount || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>
-            <Tooltip placement="top" title={formatMessage({id: "payWorkbench.payedAmount.tooltip"})}>
-              <Icon type="edit" style={{cursor: 'pointer', padding: '0 5px 0 10px'}}/>
-            </Tooltip>
-          </div>
-        )},
+        {title: '本次支付金额', dataIndex: 'payedAmount', key: 'payedAmount', render: this.filterMoney},
         {title: '付款方式', dataIndex: 'payWay', key: 'payWay'},
         {title: '类型 | 收款方', dataIndex: 'payee', key: 'payee'},
-        {title: '收款账号', dataIndex: 'accountNumber', key: 'accountNumber', render: (number) => (
-          <div>
-            <span>{number}</span>
-            <Tooltip placement="top" title={formatMessage({id: "payWorkbench.accountNumber.tooltip"})}>
-              <Icon type="edit" style={{cursor: 'pointer', padding: '0 5px 0 10px'}}/>
-            </Tooltip>
-          </div>
-        )},
+        {title: '收款账号', dataIndex: 'accountNumber', key: 'accountNumber'},
         {title: '支付日期', dataIndex: 'payDate', key: 'payDate'},
         {title: '状态', dataIndex: 'state', key: 'state', render: (state) => <Badge status='processing' text={state}/>},
-        {title: '操作', key: 'opera', fixed: 'right', render: () => (
-          <span><a>查看</a><span className="ant-divider"/><a>更多 <Icon type="down"/></a></span>
-        )}],
+        {title: '操作', key: 'opera', fixed: 'right', render: (text, record) => {
+          const menu = (
+            <Menu>
+              <Menu.Item><a onClick={this.confirmSuccess}>确认成功</a></Menu.Item>
+              <Menu.Item><a onClick={this.confirmFail}>确认失败</a></Menu.Item>
+            </Menu>
+          );
+          return (
+            <div>
+              <a onClick={(e) => {e.preventDefault();e.stopPropagation();this.checkPaymentDetail(record)}}>查看</a>
+              <span className="ant-divider"/>
+              <Dropdown overlay={menu}>
+                <a>更多 <Icon type="down"/></a>
+              </Dropdown>
+            </div>)}
+        }],
       failColumns: [
         {title: '付款流水号', dataIndex: 'serialNumber', key: 'serialNumber'},
         {title: '单据编号 | 单据类型', dataIndex: 'billsNumber', key: 'billsNumber'},
@@ -107,17 +165,16 @@ class PayOnline extends React.Component {
         {title: '付款方式', dataIndex: 'payWay', key: 'payWay'},
         {title: '类型 | 收款方', dataIndex: 'payee', key: 'payee'},
         {title: '收款账号', dataIndex: 'accountNumber', key: 'accountNumber', render: (number) => (
-          <div>
-            <span>{number}</span>
-            <Tooltip placement="top" title={formatMessage({id: "payWorkbench.accountNumber.tooltip"})}>
-              <Icon type="edit" style={{cursor: 'pointer', padding: '0 5px 0 10px'}}/>
-            </Tooltip>
-          </div>
+          <EditableCell value={number} editType="string"
+                        message={formatMessage({id: "payWorkbench.accountNumber.tooltip"})} />
         )},
         {title: '状态', dataIndex: 'state', key: 'state', render: (state) => <Badge status='error' text={state}/>},
         {title: '付款批次号', dataIndex: 'batchNumber', key: 'batchNumber'},
-        {title: '操作', key: 'opera', fixed: 'right', render: () => (
-          <span><a>查看</a><span className="ant-divider"/><a>更多 <Icon type="down"/></a></span>
+        {title: '操作', key: 'opera', fixed: 'right', render: (text, record) => (
+          <span>
+            <a onClick={(e) => {e.preventDefault();e.stopPropagation();this.checkPaymentDetail(record)}}>查看</a>
+            <span className="ant-divider"/><a>更多 <Icon type="down"/></a>
+          </span>
         )}],
       successColumns: [
         {title: '付款流水号', dataIndex: 'serialNumber', key: 'serialNumber'},
@@ -130,8 +187,11 @@ class PayOnline extends React.Component {
         {title: '收款账号', dataIndex: 'accountNumber', key: 'accountNumber'},
         {title: '状态', dataIndex: 'state', key: 'state', render: (state) => <Badge status='success' text={state}/>},
         {title: '付款批次号', dataIndex: 'batchNumber', key: 'batchNumber'},
-        {title: '操作', key: 'opera', fixed: 'right', render: () => (
-          <span><a>查看</a><span className="ant-divider"/><a>更多 <Icon type="down"/></a></span>
+        {title: '操作', key: 'opera', fixed: 'right', render: (text, record) => (
+          <span>
+            <a onClick={(e) => {e.preventDefault();e.stopPropagation();this.checkPaymentDetail(record)}}>查看</a>
+            <span className="ant-divider"/><a>更多 <Icon type="down"/></a>
+          </span>
         )}],
       pagination: {
         total: 0
@@ -154,9 +214,10 @@ class PayOnline extends React.Component {
       rePayAble: false,                //退款或失败 - 重新支付按钮是否可用
       cancelPayAble: false,            //退款或失败 - 取消支付按钮是否可用
       payModalVisible: false,
+      confirmSuccessDate: '',
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //新建控制策略
     };
   }
-
 
   componentWillMount() {
     let data = [];
@@ -211,6 +272,58 @@ class PayOnline extends React.Component {
   //清空搜索区域
   clear = () => {
 
+  };
+
+  //查看支付流水详情
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
+  };
+
+  confirmSuccessDateChange = (date, confirmSuccessDate) => {
+    console.log(date, confirmSuccessDate);
+    this.setState({ confirmSuccessDate });
+  };
+
+  //确认成功Modal
+  confirmSuccess = () => {
+    const formItemLayout = {
+      labelCol: { span: 8 },
+      wrapperCol: { span: 14, offset: 1 },
+    };
+    Modal.confirm({
+      title:
+        <p style={{color:'#666',fontSize:'14px',position:'relative',top:'2px'}}>
+          <span style={{marginRight:'10px'}}>将付款状态更改为</span>
+          <Badge status='success' text='支付成功' />
+        </p>,
+      content:
+        <div>
+          <p style={{color:'rgb(240, 65, 52)'}}>请通过网银或询问银行的方式确认该笔付款已成功转账</p>
+          <Form style={{marginTop:'20px'}}>
+            <FormItem {...formItemLayout} label="实际付款日期">
+              <DatePicker />
+            </FormItem>
+          </Form>
+        </div>,
+      iconType: 'exclamation-circle',
+      okText: '确认成功',
+      cancelText: '取消',
+    })
+  };
+
+  //确认失败Modal
+  confirmFail = () => {
+    Modal.confirm({
+      title:
+        <p style={{color:'#666',fontSize:'14px',position:'relative',top:'2px'}}>
+          <span style={{marginRight:'10px'}}>将付款状态更改为</span>
+          <Badge status='error' text='支付失败' />
+        </p>,
+      content: <p style={{color:'rgb(240, 65, 52)'}}>请务必向银行确认该付款支付失败，以免产生重复支付</p>,
+      iconType: 'exclamation-circle',
+      okText: '确认失败',
+      cancelText: '取消',
+    })
   };
 
   //列表选择提示信息
@@ -370,6 +483,22 @@ class PayOnline extends React.Component {
     this.setState({ payModalVisible: false });
   };
 
+  unpaidPaginationChange = (page, pageSize) => {
+    console.log(page, pageSize);
+  };
+
+  waitPaginationChange = (page, pageSize) => {
+    console.log(page, pageSize);
+  };
+
+  failPaginationChange = (page, pageSize) => {
+    console.log(page, pageSize);
+  };
+
+  successPaginationChange = (page, pageSize) => {
+    console.log(page, pageSize);
+  };
+
   //渲染Tabs
   renderTabs(){
     return (
@@ -384,7 +513,7 @@ class PayOnline extends React.Component {
   };
 
   renderContent = () => {
-    const { loading, unpaidColumns, waitColumns, failColumns, successColumns, data, data1, pagination, unpaidSelectedRowKeys, failSelectedRowKeys, nowStatus } = this.state;
+    const { loading, unpaidColumns, waitColumns, failColumns, successColumns, data, data1, pagination, unpaidSelectedRowKeys, failSelectedRowKeys, nowStatus, pageSize } = this.state;
     switch (nowStatus){
       case 'Unpaid':
         const rowSelection = {
@@ -407,13 +536,21 @@ class PayOnline extends React.Component {
             <Table rowKey="id"
                    columns={unpaidColumns}
                    dataSource={data}
-                   pagination={pagination}
+                   pagination={false}
                    loading={loading}
                    rowSelection={rowSelection}
                    title={()=>{return tableTitle}}
                    scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
+            <Pagination size="small"
+                        defaultPageSize={pageSize}
+                        showSizeChanger
+                        pageSizeOptions={['1','2','5','10']}
+                        total={10} //数据总数
+                        onChange={this.unpaidPaginationChange}
+                        onShowSizeChange={this.unpaidPaginationChange}
+                        style={{margin:'16px 0',position:'absolute',right:0}} />
           </div>
         );
       case 'Wait':
@@ -429,12 +566,20 @@ class PayOnline extends React.Component {
             <Table rowKey="id"
                    columns={waitColumns}
                    dataSource={data}
-                   pagination={pagination}
+                   pagination={false}
                    loading={loading}
                    title={()=>{return waitTitle}}
                    scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
+            <Pagination size="small"
+                        defaultPageSize={pageSize}
+                        showSizeChanger
+                        pageSizeOptions={['1','2','5','10']}
+                        total={10} //数据总数
+                        onChange={this.waitPaginationChange}
+                        onShowSizeChange={this.waitPaginationChange}
+                        style={{margin:'16px 0',position:'absolute',right:0}} />
           </div>
         );
       case 'Fail':
@@ -456,13 +601,21 @@ class PayOnline extends React.Component {
             <Table rowKey="id"
                    columns={failColumns}
                    dataSource={data1}
-                   pagination={pagination}
+                   pagination={false}
                    loading={loading}
                    rowSelection={rowSelectionFail}
                    title={()=>{return failTitle}}
                    scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
+            <Pagination size="small"
+                        defaultPageSize={pageSize}
+                        showSizeChanger
+                        pageSizeOptions={['1','2','5','10']}
+                        total={data1.length} //数据总数
+                        onChange={this.failPaginationChange}
+                        onShowSizeChange={this.failPaginationChange}
+                        style={{margin:'16px 0',position:'absolute',right:0}} />
           </div>
         );
       case 'Success':
@@ -478,12 +631,20 @@ class PayOnline extends React.Component {
             <Table rowKey="id"
                    columns={successColumns}
                    dataSource={data}
-                   pagination={pagination}
+                   pagination={false}
                    loading={loading}
                    title={()=>{return successTitle}}
                    scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
+            <Pagination size="small"
+                        defaultPageSize={pageSize}
+                        showSizeChanger
+                        pageSizeOptions={['1','2','5','10']}
+                        total={10} //数据总数
+                        onChange={this.successPaginationChange}
+                        onShowSizeChange={this.successPaginationChange}
+                        style={{margin:'16px 0',position:'absolute',right:0}} />
           </div>
         );
     }
@@ -502,20 +663,37 @@ class PayOnline extends React.Component {
       case 'Unpaid':
         payButton = (
           <div>
-            <Button type="primary" style={{margin:"30px auto 10px"}} disabled={!payOnlineAble}  onClick={this.showPayModal}>{this.props.intl.formatMessage({id:"payWorkbench.payOnline"})}</Button>
+            <Button type="primary" style={{margin:"30px auto 10px"}} disabled={!payOnlineAble} onClick={this.showPayModal}>{this.props.intl.formatMessage({id:"payWorkbench.payOnline"})}{/*线上支付*/}</Button>
             {unpaidNoticeWarning ? <Alert className="pay-notice-warning" message={unpaidNoticeWarning} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
             {unpaidNoticeError ? <Alert message={unpaidNoticeError} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
           </div>
         );
         break;
       case 'Wait':
-        payButton = <Alert message={formatMessage({id:"payWorkbench.Wait.Message"})} type="info" showIcon style={{margin:"30px auto 10px"}}/>;
+        payButton = (
+          <div>
+            <Alert message={formatMessage({id:"payWorkbench.Wait.Message"})} type="info" showIcon style={{margin:"30px auto 10px"}}/>
+            <Alert
+              message="请注意，以下付款已超过12小时未更新状态"
+              description={
+                <div style={{color:'#999'}}>
+                  <p>付款流水号：1232131234234123434 | 单据类型：对公付款单</p>
+                  <p>付款流水号：1232131234234123434 | 单据类型：对公付款单</p>
+                </div>
+              }
+              type="warning"
+              showIcon
+              style={{marginBottom:'10px'}}
+            />
+          </div>
+        );
         break;
       case 'Fail':
         payButton = (
           <div style={{margin:"30px auto 10px"}}>
-            <Button type="primary" style={{margin:"0 10px 10px 0"}} disabled={!rePayAble}>{this.props.intl.formatMessage({id:"payWorkbench.RePay"})}</Button>
-            <Button type="primary" disabled={!cancelPayAble}>{this.props.intl.formatMessage({id:"payWorkbench.CancelPay"})}</Button>
+            <Button type="primary" style={{margin:"0 10px 10px 0"}} disabled={!rePayAble}
+                    onClick={this.showPayModal}>{this.props.intl.formatMessage({id:"payWorkbench.RePay"})}{/*重新支付*/}</Button>
+            <Button type="primary" disabled={!cancelPayAble}>{this.props.intl.formatMessage({id:"payWorkbench.CancelPay"})}{/*取消支付*/}</Button>
             {failNoticeWarning ? <Alert className="pay-notice-warning" message={failNoticeWarning} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
             {failNoticeError ? <Alert message={failNoticeError} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
           </div>
@@ -592,6 +770,10 @@ class PayOnline extends React.Component {
   }
 
 }
+
+PayOnline.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}
