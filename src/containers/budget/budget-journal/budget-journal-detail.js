@@ -406,6 +406,10 @@ class BudgetJournalDetail extends React.Component {
 
   }
 
+//删除该预算日记账
+  HandelDeleteJournal=()=>{
+
+  }
 
 
 
@@ -436,14 +440,15 @@ class BudgetJournalDetail extends React.Component {
                  size="middle"
                  onRowClick={this.showEditor}
           />
+          <div className="footer-operate">
+            <Button type="primary">提交</Button>
+            <Button type="primary">{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button className="delete" onClick={this.HandleDeleteJournal}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+          </div>
 
         </div>
 
-        <div className="footer-operate">
-          <Button>提交</Button>
-          <Button>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-          <Button>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
-        </div>
+
 
         <BudgetJournalDetailLead
           visible={showModal}
