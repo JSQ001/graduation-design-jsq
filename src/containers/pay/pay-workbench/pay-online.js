@@ -10,8 +10,6 @@ const { TextArea } = Input;
 import SearchArea from 'components/search-area'
 import menuRoute from 'share/menuRoute'
 
-import 'styles/pay/pay-workbench/pay-online.scss'
-
 class EditableCell extends React.Component {
   state = {
     value: this.props.value,
