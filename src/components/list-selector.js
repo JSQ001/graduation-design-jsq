@@ -32,6 +32,7 @@ import selectorData from 'share/selectorData'
  * @params selectedData  默认选择的值，如果一个页面由多个ListSelector配置，则不同的选择项应该在后续多次选择时传入对应的选择项
  * @params extraParams  搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
  * @params selectorItem  组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
+ * @params single 是否单选,默认为false
  *
  * type与selectorItem不可共存，如果两者都有，selectorItem起作用
  *
@@ -54,12 +55,14 @@ class ListSelector extends React.Component {
       selectorItem: {},  //当前的选择器类型数据项, 包含url、searchForm、columns
       searchParams: {},  //搜索需要的参数
       rowSelection: {
+        type: this.props.single ? 'radio' : 'checkbox',
         selectedRowKeys: [],
         onChange: this.onSelectChange,
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       }
     };
+    console.log(this.props.single)
   }
 
   search = (params) => {
@@ -196,14 +199,18 @@ class ListSelector extends React.Component {
    */
   onSelectItem = (record, selected) => {
     let { selectedData, selectorItem } = this.state;
-    if(!selected){
-      selectedData.map((selected, index) => {
-        if(selected[selectorItem.key] === record[selectorItem.key]){
-          selectedData.splice(index, 1);
-        }
-      })
+    if(this.props.single){
+      selectedData = [record];
     } else {
-      selectedData.push(record);
+      if(!selected){
+        selectedData.map((selected, index) => {
+          if(selected[selectorItem.key] === record[selectorItem.key]){
+            selectedData.splice(index, 1);
+          }
+        })
+      } else {
+        selectedData.push(record);
+      }
     }
     this.setState({ selectedData });
   };
@@ -249,12 +256,14 @@ ListSelector.propTypes = {
   type: React.PropTypes.string,  //选择类型
   selectedData: React.PropTypes.array,  //默认选择的值id数组
   extraParams: React.PropTypes.object,  //搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
-  selectorItem: React.PropTypes.object  //组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
+  selectorItem: React.PropTypes.object,  //组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
+  single: React.PropTypes.bool  //是否单选
 };
 
 ListSelector.defaultProps = {
   afterClose: () => {},
-  extraParams: {}
+  extraParams: {},
+  single: false
 };
 
 function mapStateToProps() {

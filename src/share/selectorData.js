@@ -62,6 +62,19 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'available_company': {
+    title: '切换公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司名称"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
   'item_type': {
     title: "预算项目类型",
     url: `${config.budgetUrl}/api/budget/itemType/query`,
