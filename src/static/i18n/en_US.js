@@ -18,7 +18,7 @@ import budgetVersion from 'static/i18n/en_US/budget-setting/budget-organization/
 import budgetItemType from  'static/i18n/en_US/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/en_US/budget-journal/budget-journal.json'
 import bankDefinition from 'static/i18n/en_US/pay/bank-definition.json'
-import agencySetting from 'static/i18n/en_US/company-setting/agency-setting.json'
+import agencySetting from 'static/i18n/en_US/approve-setting/agency-setting.json'
 
 
 const i18nList = [

@@ -4,23 +4,38 @@ import { injectIntl } from 'react-intl';
 
 import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker } from 'antd';
 const FormItem = Form.Item;
-const CheckboxGroup = Checkbox.Group;
+const Option = Select.Option;
+import debounce from 'lodash.debounce'
+import httpFetch from 'share/httpFetch'
+import config from 'config'
 
 class NewAgencyRelation extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: false,
       agentData: [],
-      statusValue: '启用',
+      statusValue: {'0': formatMessage({id:'common.enabled'})}, //启用
       uuid: 0,
     };
+    this.handleChange = debounce(this.handleChange, 250);
   }
 
-  handleStatusChange = (isEnabled) => {
-    this.setState({
-      statusValue: isEnabled ? '启用' : '禁用'
-    })
+  handleChange = (value) => {
+    let url = `${config.baseUrl}/api/search/users/by/${value}`;
+    value && httpFetch.get(url).then((response)=>{
+      this.setState({
+        agentData: response.data
+      })
+    });
+  };
+
+  handleStatusChange = (checked, key) => {
+    const { formatMessage } = this.props.intl;
+    let statusValue = this.state.statusValue;
+    statusValue[key] = checked ? formatMessage({id:'common.enabled'}) : formatMessage({id:'common.disabled'}); //启用 禁用
+    this.setState({ statusValue })
   };
 
   add = () => {
@@ -39,9 +54,6 @@ class NewAgencyRelation extends React.Component {
   remove = (k) => {
     const { form } = this.props;
     const keys = form.getFieldValue('keys');
-    if (keys.length === 1) {
-      return;
-    }
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
     });
@@ -55,6 +67,7 @@ class NewAgencyRelation extends React.Component {
       labelCol: { span: 1 }
     };
     const options = agentData.map(d => <Option key={d.userOID}>{d.fullName} - {d.employeeID}</Option>);
+    console.log(options);
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
     const forms = keys.map((key) => {
@@ -77,12 +90,12 @@ class NewAgencyRelation extends React.Component {
           </FormItem>
           <FormItem style={{display:'inline-block'}}
                     colon={false}
-                    label={<span>{formatMessage({id:'common.column.status'})} ：<span>{statusValue}</span></span>}>
+                    label={<span>{formatMessage({id:'common.column.status'})} ：<span>{statusValue[key] || statusValue[0]}</span></span>}>
             {getFieldDecorator(`isEnabled-${key}`, 'isEnabled')(
               <Switch defaultChecked={true}
                       checkedChildren={<Icon type="check" />}
                       unCheckedChildren={<Icon type="cross" />}
-                      onChange={this.handleStatusChange}/>
+                      onChange={(checked) => {this.handleStatusChange(checked, key)}}/>
             )}
           </FormItem>
           <FormItem style={{borderTop:'1px solid #eaeaea',paddingTop:'10px'}}
@@ -117,7 +130,7 @@ class NewAgencyRelation extends React.Component {
             </FormItem>
             <FormItem style={{display:'inline-block'}}>
               {getFieldDecorator(`endDate-${key}`, 'endDate')(
-                <DatePicker format="YYYY-MM-DD" placeholder={formatMessage({id:'agencySetting.indefinite'})} />
+                <DatePicker format="YYYY-MM-DD" placeholder={formatMessage({id:'agencySetting.indefinite'})} /> //无限制
               )}
             </FormItem>
           </FormItem>
@@ -134,7 +147,7 @@ class NewAgencyRelation extends React.Component {
     return (
       <div className="new-agency-relation">
         <h3 className="header-title">{formatMessage({id:'agencySetting.agency-relation'})}</h3>{/*代理关系*/}
-        <p style={{color:'#999'}}>选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配</p>
+        <p style={{color:'#999'}}>{formatMessage({id:'agencySetting.agency-relation-intro'})}</p>{/*选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配*/}
         {forms}
         <Button type="dashed" className="new-relation-btn" onClick={this.add}>
           <Icon type="plus" /> {formatMessage({id:'common.add'})/* 添加 */}

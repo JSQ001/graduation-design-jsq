@@ -9,9 +9,9 @@ import debounce from 'lodash.debounce'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import NewAgencyRelation from 'containers/company-setting/agency-setting/new-agency-relation'
+import NewAgencyRelation from 'containers/approve-setting/agency-setting/new-agency-relation'
 
-import 'styles/company-setting/agency-setting/new-agency.scss'
+import 'styles/approve-setting/agency-setting/new-agency.scss'
 
 class NewAgency extends React.Component {
   constructor(props) {

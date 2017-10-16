@@ -48,8 +48,8 @@ import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
-import AgencySetting from 'containers/company-setting/agency-setting/agency-setting'
-import NewAgency from 'containers/company-setting/agency-setting/new-agency'
+import AgencySetting from 'containers/approve-setting/agency-setting/agency-setting'
+import NewAgency from 'containers/approve-setting/agency-setting/new-agency'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -392,12 +392,12 @@ const pay = {
 
 //////////////////////支付模块结束///////////////////////////
 
-//////////////////////企业设置模块///////////////////////////
+//////////////////////审批设置模块///////////////////////////
 
 //新建代理
 const newAgency = {
   key:'new-agency',
-  url:'/main/company-setting/agency-setting/new-agency',
+  url:'/main/approve-setting/agency-setting/new-agency',
   components: NewAgency,
   parent: 'agency-setting'
 };
@@ -405,22 +405,23 @@ const newAgency = {
 //代理设置
 const agencySetting = {
   key:'agency-setting',
-  url:'/main/company-setting/agency-setting',
+  url:'/main/approve-setting/agency-setting',
   components: AgencySetting,
-  parent: 'company-setting',
+  parent: 'approve-setting',
   children: {
     newAgency
   }
 };
 
-//企业设置
-const companySetting = {
-  key:'company-setting',
+//审批设置
+const approveSetting = {
+  key:'approve-setting',
   subMenu: [agencySetting],
-  icon: 'global'
+  icon: 'global',
+  admin: true
 };
 
-//////////////////////企业设置模块结束///////////////////////////
+//////////////////////审批设置模块结束///////////////////////////
 
 //首页
 const dashboard = {
@@ -484,7 +485,7 @@ const menu = [
   budgetSetting,
   budget,
   pay,
-  companySetting
+  approveSetting
 ];
 
 /**

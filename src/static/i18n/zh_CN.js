@@ -44,7 +44,7 @@ import payWorkbench from 'static/i18n/zh_CN/pay/pay-workbench.json'
 import budgetVersion from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-version.json'
 import budgetItemType from  'static/i18n/zh_CN/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/zh_CN/budget-journal/budget-journal.json'
-import agencySetting from 'static/i18n/zh_CN/company-setting/agency-setting.json'
+import agencySetting from 'static/i18n/zh_CN/approve-setting/agency-setting.json'
 
 const i18nList = [
   common,  //公用
