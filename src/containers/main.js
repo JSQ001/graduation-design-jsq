@@ -156,7 +156,7 @@ class Main extends React.Component{
   renderMenu(){
     const { adminMode } = this.state;
     return (
-      <Menu theme="dark" mode="inline" selectedKeys={this.state.selectedKeys} openKeys={this.state.openKeys}>
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
         {this.state.menu.map(item =>
           item.subMenu ? (
             ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <SubMenu
