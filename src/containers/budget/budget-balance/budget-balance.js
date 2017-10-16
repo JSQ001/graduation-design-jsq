@@ -69,12 +69,12 @@ class BudgetBalance extends React.Component {
         {type: 'date', id: 'periodLowerLimit', label: '期间从', isRequired: true},
         {type: 'date', id: 'periodUpperLimit', label: '期间到'}
       ]},
-      {type: 'select', id:'periodSummaryFlag', label: '期间汇总', isRequired: true, options: []},
+      {type: 'value_list', id:'periodSummaryFlag', label: '期间汇总', isRequired: true, options: [], valueListCode: 2020},
       {type: 'items', id: 'seasonRange', items: [
-        {type: 'select', id: 'quarterLowerLimit', label: '季度从', isRequired: true, options: [{key: '1', label: '2'}]},
-        {type: 'select', id: 'quarterUpperLimit', label: '季度到', options: []}
+        {type: 'value_list', id: 'quarterLowerLimit', label: '季度从', isRequired: true, options: [], valueListCode: 2021},
+        {type: 'value_list', id: 'quarterUpperLimit', label: '季度到', options: [], valueListCode: 2021}
       ]},
-      {type: 'select', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: []}
+      {type: 'value_list', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: [], valueListCode: 2019}
     ];
     this.setState({ searchForm });
   }
@@ -118,7 +118,7 @@ class BudgetBalance extends React.Component {
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
       if(values[item.id] && item.entity){
-        if(item.type === 'combobox' || item.type === 'select'){
+        if(item.type === 'combobox' || item.type === 'select' || item.type === 'value_list'){
           values[item.id] = JSON.parse(values[item.id].title)
         } else if(item.type === 'multiple') {
           let result = [];
@@ -135,6 +135,28 @@ class BudgetBalance extends React.Component {
 
   clear = () => {
     this.props.form.resetFields();
+  };
+
+  //得到值列表的值增加options
+  getValueListOptions = (item) => {
+    this.getSystemValueList(item.valueListCode).then(res => {
+      let options = [];
+      res.data.values.map(data => {
+        options.push({label: data.messageKey, value: data.code, data: data})
+      });
+      let searchForm = this.state.searchForm;
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id)
+          searchItem.options = options;
+        if(searchItem.type === 'items')
+          searchItem.items.map(subItem => {
+            if(subItem.id === item.id)
+              subItem.options = options;
+          });
+        return searchItem;
+      });
+      this.setState({ searchForm });
+    })
   };
 
   //根据接口返回数据重新设置options
@@ -207,6 +229,20 @@ class BudgetBalance extends React.Component {
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
               return <Option key={option.key} title={JSON.stringify(option.value)}>{option.label}</Option>
+            })}
+          </Select>
+        )
+      }
+      //值列表选择组件
+      case 'value_list':{
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+                  onFocus={() => this.getValueListOptions(item)}>
+            {item.options.map((option)=>{
+              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
