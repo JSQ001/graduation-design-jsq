@@ -409,13 +409,6 @@ const securitySetting = {
   children:{}
 };
 
-//设置
-const setting = {
-  key:'setting',
-  subMenu: [valueList, securitySetting],
-  icon: 'setting'
-};
-
 //////////////////////设置模块结束///////////////////////////
 
 
@@ -446,7 +439,7 @@ const financialManagement = {
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList],
+  subMenu: [valueList, securitySetting],
   icon: 'setting',
   admin: true
 };
