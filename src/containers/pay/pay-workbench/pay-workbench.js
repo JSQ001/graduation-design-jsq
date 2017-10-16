@@ -4,9 +4,9 @@ import { injectIntl } from 'react-intl';
 
 import { Radio } from 'antd';
 
-import PayOnline from 'containers/pay/pay-workbench/pay-online/pay-online'
-import PayOffline from 'containers/pay/pay-workbench/pay-offline/pay-offline'
-import PayFile from 'containers/pay/pay-workbench/pay-file/pay-file'
+import PayOnline from 'containers/pay/pay-workbench/pay-online'
+import PayOffline from 'containers/pay/pay-workbench/pay-offline'
+import PayFile from 'containers/pay/pay-workbench/pay-file'
 
 import 'styles/pay/pay-workbench/pay-workbench.scss'
 
