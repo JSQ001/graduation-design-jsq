@@ -40,5 +40,8 @@
   "menu.branch-bank-information": "Branch bank information",
   "menu.pay": "Pay",
   "menu.pay-workbench": "Pay workbench",
-  "menu.payment-detail": "Payment detail"
+  "menu.payment-detail": "Payment detail",
+  "menu.company-setting": "Company setting",
+  "menu.agency-setting": "Agency setting",
+  "menu.new-agency": "New agency"
 }

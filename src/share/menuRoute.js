@@ -47,6 +47,9 @@ import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
+import AgencySetting from 'containers/company-setting/agency-setting/agency-setting'
+import NewAgency from 'containers/company-setting/agency-setting/new-agency'
+
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
@@ -385,9 +388,37 @@ const pay = {
   icon: 'pay-circle'
 };
 
-
-
 //////////////////////支付模块结束///////////////////////////
+
+//////////////////////企业设置模块///////////////////////////
+
+//新建代理
+const newAgency = {
+  key:'new-agency',
+  url:'/main/company-setting/agency-setting/new-agency',
+  components: NewAgency,
+  parent: 'agency-setting'
+};
+
+//代理设置
+const agencySetting = {
+  key:'agency-setting',
+  url:'/main/company-setting/agency-setting',
+  components: AgencySetting,
+  parent: 'company-setting',
+  children: {
+    newAgency
+  }
+};
+
+//企业设置
+const companySetting = {
+  key:'company-setting',
+  subMenu: [agencySetting],
+  icon: 'global'
+};
+
+//////////////////////企业设置模块结束///////////////////////////
 
 //首页
 const dashboard = {
@@ -439,7 +470,8 @@ const menu = [
   expenseReport,
   budgetSetting,
   budget,
-  pay
+  pay,
+  companySetting
 ];
 
 /**

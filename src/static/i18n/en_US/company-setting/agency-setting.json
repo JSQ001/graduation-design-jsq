@@ -1,0 +1,11 @@
+{
+  "agencySetting.principal": "Principal",
+  "agencySetting.create-agency": "新建代理关系",
+  "agencySetting.serial-number": "序号",
+  "agencySetting.employeeId": "工号",
+  "agencySetting.userName": "姓名",
+  "agencySetting.departmentName": "部门",
+  "agencySetting.dutyName": "职务",
+  "agencySetting.chose-principal": "请选择被代理人",
+  "agencySetting.principal-explain": "需要他人帮助其填写、提交相应单据的人"
+}

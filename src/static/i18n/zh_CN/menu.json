@@ -40,5 +40,8 @@
   "menu.pay-workbench": "付款工作台",
   "menu.payment-detail": "支付流水详情",
   "menu.bank-definition": "银行定义",
-  "menu.branch-bank-information": "分行信息"
+  "menu.branch-bank-information": "分行信息",
+  "menu.company-setting": "企业设置",
+  "menu.agency-setting": "代理设置",
+  "menu.new-agency": "新建代理"
 }
