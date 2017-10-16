@@ -7,6 +7,20 @@
   "budget.branchBankCode": "Branch bank code",
   "budget.branchBankName": "Branch bank name",
   "budget.branchBankNumber": "Branch bank number",
-  "budget.belongsToBank": "Belongs to Bank"
+  "budget.belongsToBank": "Belongs to Bank",
+  "bank.branchInfo": "Branch bank information",
+  "bank.createBank": "Create bank",
+  "bank.editorBank": "Edit bank",
+  "bank.validateExist": "Bank already existed",
+  "bank.bankCodeLong": "bankCode(digital)",
+  "bank.bankCodeString": "bankCode(letter)",
+  "bank.innerBankInfo": "For use between internal departments of enterprises, non-real Banks",
+  "bank.createBranchBank": "Create branch bank",
+  "bank.updateBranchBank": "Edit branch bank",
+  "bank.parentBank": "belongs to the bank",
+  "bank.bankAddress": "bank address",
+  "bank.contactName": "contact",
+  "bank.phone": "contactPhone",
+  "bank.email": "contactEmail"
 
 }
