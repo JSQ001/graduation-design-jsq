@@ -138,7 +138,8 @@ class BudgetStructure extends React.Component {
     }, ()=>{
       this.getList();
     })
-  }
+  };
+
   handleCreate = () =>{
     if(this.props.organization.isEnabled) {
       this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
@@ -147,7 +148,7 @@ class BudgetStructure extends React.Component {
         description: formatMessage({id:""})  /*请维护当前账套下的预算组织*/
       })
     }
-  }
+  };
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
