@@ -383,7 +383,8 @@ class BudgetJournalDetail extends React.Component {
 
 
   handleAfterCloseNewSlide=(value)=>{
-      console.log(value)
+      console.log(value);
+
   }
 
 
@@ -413,8 +414,8 @@ class BudgetJournalDetail extends React.Component {
     const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut} = this.state;
     const { formatMessage } = this.props.intl;
     return (
-      <div>
-        <div className="budget-versions-detail">
+      <div className="budget-versions-detail">
+        <div className="budget-versions-cent">
           <BasicInfo infoList={infoList}
                      infoData={infoDate}
                      updateHandle={this.updateHandleInfo}
@@ -425,8 +426,7 @@ class BudgetJournalDetail extends React.Component {
             <div className="table-header-buttons">
               <Button type="primary" onClick={()=>this.showSlideFrameNew(true)}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
-
-              <Button onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.delete"})}</Button>
+              <Button className="delete" onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.delete"})}</Button>
             </div>
           </div>
           <Table columns={columns}
@@ -458,7 +458,6 @@ class BudgetJournalDetail extends React.Component {
                     afterClose={this.handleAfterCloseNewSlide}
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={{}}/>
-
       </div>
     )
   }
