@@ -35,8 +35,8 @@ class BranchBankInformation extends React.Component{
       },
       newParams: {},
       searchForm: [
-        {type: 'input', id: 'bankBranchCode', label: formatMessage({id: 'budget.branchBankCode'}) }, /*分行代码*/
-        {type: 'input', id: 'bankBranchName', label: formatMessage({id: 'budget.branchBankName'}) }, /*分行名称*/
+        {type: 'input', id: 'bankBranchCode', label: formatMessage({id: 'bank.branchBankCode'}) }, /*分行代码*/
+        {type: 'input', id: 'bankBranchName', label: formatMessage({id: 'bank.branchBankName'}) }, /*分行名称*/
         {type: 'select', options: [], id: 'country', label: "国家"},  /*银行类型*/
         {type: 'select', options: [], id: 'address', label: "地址"}  /*银行类型*/
       ],
@@ -50,10 +50,10 @@ class BranchBankInformation extends React.Component{
       },
       columns: [
         {          /*所属银行*/
-          title: formatMessage({id:"budget.belongsToBank"}), key: "bankDigitalCode", dataIndex: 'bankDigitalCode'
+          title: formatMessage({id:"bank.belongsToBank"}), key: "bankDigitalCode", dataIndex: 'bankDigitalCode'
         },
         {          /*分行行号*/
-          title: formatMessage({id:"budget.branchBankNumber"}), key: "branchBankNumber", dataIndex: 'branchBankNumber'
+          title: formatMessage({id:"bank.branchBankNumber"}), key: "branchBankNumber", dataIndex: 'branchBankNumber'
         },
         {          /*国家*/
           title: "国家", key: "country", dataIndex: 'country'
@@ -62,7 +62,7 @@ class BranchBankInformation extends React.Component{
           title: "地址", key: "city", dataIndex: 'address'
         },
         {          /*分行名称*/
-          title: formatMessage({id:"budget.branchBankName"}), key: "branchBankName", dataIndex: 'branchBankName'
+          title: formatMessage({id:"bank.branchBankName"}), key: "branchBankName", dataIndex: 'branchBankName'
         },
         {          /*状态*/
           title: formatMessage({id:"common.column.status"}), key: "status", dataIndex: 'status'
@@ -106,7 +106,7 @@ class BranchBankInformation extends React.Component{
     console.log(this.state.belongsBank)
 
     let params = this.state.searchParams;
-    let url = `${config.payUrl}/api/cash/bank/branches/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&bankCode=${this.state.belongsBank.bankCode}`;
+    let url = `${config.payUrl}/api/cash/bank/branches/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -135,7 +135,7 @@ class BranchBankInformation extends React.Component{
   handleCreate = ()=>{
     this.setState({
       showSlideFrame: true,
-      slideFrameTitle: "新建分行",
+      slideFrameTitle: this.props.intl.formatMessage({id:"bank.createBranchBank"}),
       slideFrameParams: {
         key: "create",
         value: this.state.belongsBank
@@ -146,7 +146,7 @@ class BranchBankInformation extends React.Component{
   //点击行，银行分行编辑页面
   handleRowClick = (record, index, event) =>{
     this.setState({
-      slideFrameTitle: "编辑分行",
+      slideFrameTitle: this.props.intl.formatMessage({id:"bank.updateBranchBank"}),
       showSlideFrame: true,
       slideFrameParams: {
         key: "update",

@@ -28,6 +28,12 @@ class NewBranchBank extends React.Component{
     }
   }
 
+  componentWillMount(){
+    this.setState({
+      branchBank: JSON.stringify(this.props.params) === "{}" ? {} : this.props.params.value
+    })
+  }
+
   componentWillReceiveProps(nextprops){
     console.log(nextprops.params)
     this.setState({
@@ -54,7 +60,7 @@ class NewBranchBank extends React.Component{
           if(response.status === 200){
             console.log(response)
             this.props.close(true);
-            message.success('操作成功');
+            message.success(this.props.intl.formatMessage({id:"common.save.success"},{name:values.bankName}));
             this.setState({
               loading: false
             });
@@ -73,7 +79,7 @@ class NewBranchBank extends React.Component{
             if(response.status === 200){
               console.log(response)
               this.props.close(true);
-              message.success('操作成功');
+              message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:""}));
               this.setState({
                 loading: false
               });
@@ -99,34 +105,35 @@ class NewBranchBank extends React.Component{
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { defaultIsEnabled, isEditor, loading, belongsBank, branchBank, operation} = this.state;
+    const { defaultIsEnabled, isEditor, loading, branchBank, operation} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+    console.log(branchBank)
     return(
       <div className="create-or-update-branch-bank">
         <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout}
-                    label="状态:">
+                    label={formatMessage({id:"common.column.status"})+" :"}>
             {getFieldDecorator('isEnabled', {
               valuePropName:"defaultChecked",
               initialValue: defaultIsEnabled
             })(
               <div>
                 <Switch defaultChecked={defaultIsEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:15,width:100}}>{ defaultIsEnabled ? '启用' : '禁用' }</span>
+                <span className="enabled-type" style={{marginLeft:15,width:100}}>{ defaultIsEnabled ? formatMessage({id:"common.enabled"}) : formatMessage({id:"common.disabled"}) }</span>
               </div>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="所属银行" >
+          </FormItem>                                          {/*所属银行*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.parentBank"})} >
             {getFieldDecorator('bankDigitalCode', {
-              initialValue: belongsBank.bankName,
+              initialValue: branchBank.bankName,
             })(
               <Input disabled/>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="分行行号" >
+          </FormItem>                          {/*分行行号*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.branchBankNumber"})} >
             {getFieldDecorator('bankBranchCode', {
               rules: [{
                 required: true,
@@ -135,8 +142,8 @@ class NewBranchBank extends React.Component{
             })(
               <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="分行名称" >
+          </FormItem>                      {/*分行名称*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.branchBankName"})} >
             {getFieldDecorator('bankBranchName', {
               rules: [{
                 required: true,
@@ -199,8 +206,8 @@ class NewBranchBank extends React.Component{
             })(
               <Select/>
             )}
-          </FormItem>*/}
-          <FormItem {...formItemLayout} label="银行地址" >
+          </FormItem>*/}                                     {/*银行地址*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.bankAddress"})} >
             {getFieldDecorator('address', {
               rules: [{
                 required: true
@@ -208,8 +215,8 @@ class NewBranchBank extends React.Component{
             })(
               <Select/>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="联系人" >
+          </FormItem>                           {/*联系人*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.contactName"})} >
             {getFieldDecorator('contactName', {
               rules: [{
                 required: true
@@ -217,8 +224,8 @@ class NewBranchBank extends React.Component{
             })(
               <Input/>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="联系人电话" >
+          </FormItem>                       {/*联系人电话*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.phone"})} >
             {getFieldDecorator('phone', {
               rules: [{
                 required: true
@@ -226,8 +233,8 @@ class NewBranchBank extends React.Component{
             })(
               <Input/>
             )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="联系人Email" >
+          </FormItem>               {/*联系人Email*/}
+          <FormItem {...formItemLayout} label={formatMessage({id:"bank.email"})}>
             {getFieldDecorator('email', {
               rules: [{
                 required: true

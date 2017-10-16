@@ -39,9 +39,9 @@ class BankDefinition extends React.Component{
       },
       newParams: {},
       searchForm: [
-        {type: 'input', id: 'bankCode', label: formatMessage({id: 'budget.bankCode'}) }, /*银行代码*/
-        {type: 'input', id: 'bankName', label: formatMessage({id: 'budget.bankName'}) }, /*银行名称*/
-        {type: 'select', options: bankType, id: 'bankType', label: formatMessage({id: 'budget.bankType'})}  /*银行类型*/
+        {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
+        {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
+        {type: 'select', options: bankType, id: 'bankType', label: formatMessage({id: 'bank.bankType'})}  /*银行类型*/
       ],
       pagination: {
         current: 1,
@@ -53,16 +53,25 @@ class BankDefinition extends React.Component{
       },
       columns: [
         {          /*银行数字代码*/
-          title: formatMessage({id:"budget.bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
+          title: formatMessage({id:"bank.bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
         },
         {          /*银行字母代码*/
-          title: formatMessage({id:"budget.bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
+          title: formatMessage({id:"bank.bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
         },
         {          /*银行名称*/
-          title: formatMessage({id:"budget.bankName"}), key: "bankName", dataIndex: 'bankName'
+          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
         },
         {          /*银行类型*/
-          title: formatMessage({id:"budget.bankType"}), key: "bankType", dataIndex: 'bankType'
+          title: formatMessage({id:"bank.bankType"}), key: "bankType", dataIndex: 'bankType',
+          render: recode => {
+            let value = recode;
+            bankType.map((item)=>{
+              if(item.value === recode){
+                value = item.label
+              }
+            });
+            return value
+          }
         },
         {          /*状态*/
           title: formatMessage({id:"common.column.status"}), key: "isEnabled", dataIndex: 'isEnabled',
@@ -74,9 +83,9 @@ class BankDefinition extends React.Component{
           title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
           render: (text, record) => (
             <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id:"common.edit"})}</a>
             <span className="ant-divider" />
-            <a href="#" onClick={(e) => this.goBranchBank(e, record)}>分行信息</a>
+            <a href="#" onClick={(e) => this.goBranchBank(e, record)}>{formatMessage({id:"bank.branchInfo"})}</a>  {/*分行信息*/}
           </span>)
         },
       ]
@@ -92,7 +101,7 @@ class BankDefinition extends React.Component{
     e.stopPropagation();
     this.setState({
       showSlideFrame: true,
-      slideFrameTitle: "编辑银行",
+      slideFrameTitle: this.props.intl.formatMessage({id:"bank.editorBank"}), /*编辑银行*/
       nowBank: {bank: record},
     })
   };
@@ -104,8 +113,8 @@ class BankDefinition extends React.Component{
   handleCreate = ()=>{
     this.setState({
       showSlideFrame: true,
-      slideFrameTitle: "新建银行",
-      nowBank: {}
+      slideFrameTitle: this.props.intl.formatMessage({id:"bank.createBank"}),  //新建银行
+      nowBank: {bank:{}}
     });
   };
 
@@ -173,6 +182,7 @@ class BankDefinition extends React.Component{
         total: pagination.total
       }
     }, ()=>{
+
       this.getList();
     })
   };

@@ -22,6 +22,8 @@
   "common.delete.success": "{name} 删除成功",
   "common.create.success": "{name} 新建成功",
   "common.save.success": "{name} 保存成功",
+  "common.create.filed": "新建失败",
+  "common.save.filed": "保存失败",
   "common.can.not.be.empty": "{name} 不能为空",
   "common.more": "更多",
   "common.fold": "收起",

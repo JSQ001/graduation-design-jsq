@@ -9,8 +9,11 @@ import requireAuthentication from 'components/requireAuthentication'
 
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
+
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
+import SecuritySetting from 'containers/setting/security-setting/security-setting'
+
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
@@ -40,12 +43,12 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+//import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
+//import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
-
-
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -60,24 +63,7 @@ const confirmPayment = {
   parent: 'financial-management'
 };
 
-//新建值列表
-const newValueList = {
-  key:'new-value-list',
-  url:'/main/setting/value-list/new-value-list',
-  components: NewValueList,
-  parent: 'value-list'
-};
 
-//值列表
-const valueList = {
-  key:'value-list',
-  url:'/main/setting/value-list',
-  components: ValueList,
-  parent: 'setting',
-  children: {
-    newValueList
-  }
-};
 
 //我的账本
 const myAccount = {
@@ -297,7 +283,7 @@ const newBudgetJournal={
 const budgetJournalDetail={
   key:'budget-journal-detail',
   url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
-  components:NewBudgetJournal,
+  components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
 
@@ -311,13 +297,24 @@ const budgetJournal = {
 };
 
 
+/*
+const budgetBalanceResult = {
+  key: 'budget-balance-result',
+  url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
+  components: BudgetBalanceResult,
+  parent: 'budget-balance'
+};
+*/
+
 //预算余额
 const budgetBalance = {
   key: 'budget-balance',
   url:'/main/budget/budget-balance',
   components: BudgetBalance,
   parent: 'budget',
-  children: {}
+  children: {
+    //budgetBalanceResult
+  }
 };
 
 //预算
@@ -331,14 +328,24 @@ const budget = {
 
 //////////////////////支付模块///////////////////////////
 
+//支付流水详情
+/*const paymentDetail = {
+  key:'payment-detail',
+  url:'/main/pay/pay-workbench/payment-detail/:id',
+  components: PaymentDetail,
+  parent: 'pay-workbench'
+};*/
+
 //付款工作台
-const payWorkbench = {
+/*const payWorkbench = {
   key: 'pay-workbench',
   url:'/main/pay/pay-workbench',
   components: PayWorkbench,
   parent: 'pay',
-  children: {}
-};
+  children: {
+    paymentDetail
+  }
+};*/
 
 //分行信息
 const branchBankInformation = {
@@ -362,13 +369,54 @@ const bankDefinition = {
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench, bankDefinition],
+  subMenu: [ bankDefinition],
   icon: 'pay-circle'
 };
 
 
 
 //////////////////////支付模块结束///////////////////////////
+
+
+//////////////////////设置模块开始///////////////////////////
+
+//新建值列表
+const newValueList = {
+  key:'new-value-list',
+  url:'/main/setting/value-list/new-value-list',
+  components: NewValueList,
+  parent: 'value-list'
+};
+
+//值列表
+const valueList = {
+  key:'value-list',
+  url:'/main/setting/value-list',
+  components: ValueList,
+  parent: 'setting',
+  children: {
+    newValueList
+  }
+};
+
+//安全配置
+const securitySetting = {
+  key:'security-setting',
+  url:'/main/setting/security-setting',
+  components: SecuritySetting,
+  parent: 'setting',
+  children:{}
+};
+
+//设置
+const setting = {
+  key:'setting',
+  subMenu: [valueList, securitySetting],
+  icon: 'setting'
+};
+
+//////////////////////设置模块结束///////////////////////////
+
 
 //首页
 const dashboard = {
@@ -385,12 +433,6 @@ const financialManagement = {
   icon: 'pay-circle-o'
 };
 
-//设置
-const setting = {
-  key:'setting',
-  subMenu: [valueList],
-  icon: 'setting'
-};
 
 //报销单
 const expenseReport = {

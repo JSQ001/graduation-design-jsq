@@ -34,11 +34,11 @@
   "menu.budget-item-detail": "Budget item detail",
   "menu.new-budget-control-rules": "New budget rule",
   "menu.budget-control-rules-detail": "budget rule detail",
-  "menu.bank-definition": "Bank definition",
-  "menu.branch-bank-information": "Branch bank information",
   "menu.budget-balance": "Budget balance",
   "menu.pay": "Pay",
-  "menu.pay-workbench": "Pay workbench"
-
+  "menu.pay-workbench": "Pay workbench",
+  "menu.bank-definition": "Bank definition",
+  "menu.branch-bank-information": "Branch bank information",
+  "menu.security-setting": "Security setting"
 
 }
