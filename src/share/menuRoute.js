@@ -286,7 +286,7 @@ const newBudgetJournal={
 //预算日记账详情
 const budgetJournalDetail={
   key:'budget-journal-detail',
-  url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
+  url:'/main/budget/budget-journal/budget-journal-detail/:journalCode',
   components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
@@ -297,7 +297,7 @@ const budgetJournal = {
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
   parent: 'budget',
-  children: {}
+  children: {newBudgetJournal,budgetJournalDetail}
 };
 
 const budgetBalanceResult = {

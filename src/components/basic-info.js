@@ -11,6 +11,7 @@ import 'styles/components/basic-info.scss'
  * @params infoData  基本信息数据
  * @params updateHandle  点击保存时的回调
  * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
+ * @params eventHandle 表单的onChange事件
  */
 
 class BasicInfo extends React.Component{
@@ -85,6 +86,10 @@ class BasicInfo extends React.Component{
     this.setState({ cardShow: true })
   };
 
+  handelEvent=(event,e)=>{
+    this.props.eventHandle(event,e);
+  }
+
   render() {
     const { cardShow, infoList } = this.state;
     let domRender;
@@ -101,6 +106,7 @@ class BasicInfo extends React.Component{
         <SearchArea searchForm={infoList}
                     submitHandle={this.handleUpdate}
                     clearHandle={this.handelCancel}
+                    eventHandle={this.handelEvent}
                     okText="保存" clearText="取消"/>
       )
     }
@@ -117,7 +123,12 @@ BasicInfo.propTypes = {
   infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
   updateHandle: React.PropTypes.func.isRequired,  //更新表单事件
   updateState: React.PropTypes.bool.isRequired,  //更新状态（true／false）
+  eventHandle: React.PropTypes.func,  //表单的onChang事件
 };
+
+BasicInfo.defaultProps={
+  eventHandle:()=>{}
+}
 
 const WrappedBasicInfo= Form.create()(BasicInfo);
 

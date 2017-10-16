@@ -22,12 +22,15 @@ class NewBudgetJournalDetail extends React.Component {
     this.state = {
       loading:false,
       searchForm: [
+
         /*公司*/
         {type: 'list', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}), listType: 'company',isRequired: true, labelKey: 'companyName', valueKey: 'companyCode'},
         /*部门*/
         {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
         /*预算项目*/
-        {type: 'select', id:'ItemId', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: []},
+        {type: 'select', id:'ItemId', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+          url:`${config.baseUrl}/api/budget/items/find/all`,
+        },
         /*期间*/
         {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: []},
         /*季度*/
@@ -121,6 +124,10 @@ class NewBudgetJournalDetail extends React.Component {
     }
   };
 
+  setOptionsToFormItemSelect=(item,url,key)=>{
+
+  }
+
   //渲染搜索表单组件
   renderFormItem(item){
     let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
@@ -132,7 +139,8 @@ class NewBudgetJournalDetail extends React.Component {
       //选择组件
       case 'select':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
+                  onFocus={item.getUrl ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}
@@ -264,6 +272,25 @@ class NewBudgetJournalDetail extends React.Component {
 
   onCancel=()=>{
     this.props.close();
+  }
+
+  componentWillMount(){
+    this.getCurrency
+  }
+
+  //获得币种
+  getCurrency=()=>{
+    httpFetch.get(`http://uat.huilianyi.com/api/company/standard/currency?language=chineseName&page=0&size=30`).then((req)=>{
+        console.log(req.data);
+        console.log(121321312)
+    })
+  }
+
+  //获得预算项目
+  getItem=()=>{
+    httpFetch.get().then((req)=>{
+
+    })
   }
 
   render(){

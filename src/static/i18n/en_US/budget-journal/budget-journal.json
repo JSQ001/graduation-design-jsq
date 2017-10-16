@@ -5,7 +5,7 @@
   "budget.operationUnitId":"经营单位",
   "budget.organisationId":"预算组织",
   "budget.structureId":"预算表",
-  "budget.journalNumber":"预算日记账编号",
+  "budget.journalCode":"预算日记账编号",
   "budget.periodStrategy":"编制期段",
   "budget.periodYear":"预算年度",
   "budget.periodQuarter":"预算季度",
@@ -54,7 +54,7 @@
   "budget.leading.result":"导入结果",
   "budget.new.excel":"创建电子表格",
   "budget.download.excel":"下载Excel模板",
-  "budget.download.excel.step1.":"1.点击上方按钮",
+  "budget.download.excel.step1":"1.点击上方按钮",
   "budget.download.excel.step2":"2.严格按照导入模板整理数据，检查必输事项是否缺少数据",
   "budget.download.excel.step3":"3.关闭Excel文件后，方可进行数据导入",
   "budget.upload.excel":"上传电子表格",
@@ -63,7 +63,9 @@
   "budget.upload.excel.step3":"3.点击【下一步】按钮",
   "budget.leading.files":"导入文件",
   "budget.leading.susses":"导入成功:",
-  "budget.leading.filed":"导入失败:"
+  "budget.leading.filed":"导入失败:",
+  "budget.lastStep":"下一步",
+  "budget.Item":"预算项目"
 
 
 }
