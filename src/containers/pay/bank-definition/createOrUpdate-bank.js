@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Form, Input, Switch, Icon, Select } from 'antd';
+import { Button, Form, Input, Switch, Icon, Select, message } from 'antd';
 import debounce from 'lodash.debounce';
 
 import SearchArea from 'components/search-area.js';
@@ -23,19 +23,29 @@ class CreateOrUpdateBank extends React.Component{
     super(props);
     this.state = {
       loading: false,
+      defaultStatus: true,
+      statusCode: "启用",
       isEnabled: true,
       bankTypeHelp: "",
       bank:{},
       isEditor: false,
-    }
+    };
     this.validateBankCode = debounce(this.validateBankCode,1000)
   }
 
+  componentWillMount(){
+    console.log(123)
+    console.log(this.props)
+  }
+
+
   componentWillReceiveProps(nextprops){
-    console.log(nextprops.params)
+    console.log(nextprops.params);
     this.setState({
-      bank: nextprops.params,
-      isEditor: JSON.stringify(nextprops.params) == "{}" ? false : true
+      bank: nextprops.params.bank,
+      isEditor: JSON.stringify(nextprops.params.bank) == "{}" ? false : true,
+      defaultStatus: JSON.stringify(nextprops.params.bank) == "{}" ? true : nextprops.params.bank.isEnabled,
+//      isEnabled: JSON.stringify(nextprops.params) == "{}" ? true : nextprops.params.isEnabled,
     })
   }
 
@@ -45,18 +55,16 @@ class CreateOrUpdateBank extends React.Component{
    * @param value 输入的值
    */
   validateBankCode = (item,value,callback)=>{
-    console.log(item.field);
-    console.log(value)
-    if(item.field === "bankDigitalCode"){
+    if(item.field === "bankCodeLong"){
       let re = /^[0-9]+$/;
       if(!re.test(value)) {
-        this.props.form.setFieldsValue({"bankDigitalCode":""});
+        this.props.form.setFieldsValue({"bankCodeLong":""});
       }
     }
-    if(item.field === "bankLetterCode"){
+    if(item.field === "bankCodeString"){
       let re = /^[a-z || A-Z]+$/;
       if(!re.test(value)) {
-        this.props.form.setFieldsValue({"bankLetterCode":""});
+        this.props.form.setFieldsValue({"bankCodeString":""});
       }
     }
     callback()
@@ -64,37 +72,42 @@ class CreateOrUpdateBank extends React.Component{
 
   handleSubmit = (e)=>{
     e.preventDefault();
-    this.setState({
+   /* this.setState({
       loading: true
-    });
+    });*/
     this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log(values)
       if (!err) {
         console.log(values)
         this.state.isEditor ?
-          httpFetch.put(`${config.baseUrl}/api/CompanyBank/insertOrUpdate`,values).then((response)=>{
+          httpFetch.put(`${config.payUrl}/api/CompanyBank/insertOrUpdate`,values).then((response)=>{
             console.log(response)
-            this.props.close(true);
+            message.success("保存成功！");
             this.setState({
               loading: false
-            })
+            });
+            this.props.close(true);
           }).catch((e)=>{
             if(e.response){
-              console.log(e)
+              message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+              this.setState({loading: false});
             }
             else {
               console.log(e)
             }
           })
           :
-           httpFetch.post(`${config.baseUrl}/api/CompanyBank/insertOrUpdate`,values).then((response)=>{
+           httpFetch.post(`${config.payUrl}/api/cash/banks`,values).then((response)=>{
           console.log(response)
+          message.success("保存成功")
           this.props.close(true);
           this.setState({
             loading: false
           })
         }).catch((e)=>{
           if(e.response){
-            console.log(e)
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
           }
           else {
             console.log(e)
@@ -105,17 +118,22 @@ class CreateOrUpdateBank extends React.Component{
   };
 
   onCancel = () =>{
+    //this.props.form.resetFields();
     this.props.close();
   };
+
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, loading, bankTypeHelp, bank, isEditor} = this.state;
+
+    const { defaultStatus, loading, bankTypeHelp, bank, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+
+    console.log(this.state.defaultStatus)
 
     const bankType = [
       {id:"cashBank", value:"现金银行"},
@@ -129,23 +147,29 @@ class CreateOrUpdateBank extends React.Component{
         <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout}
                     label="状态:">
-            {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
-              initialValue: bank.isEnabled
+            {getFieldDecorator('isEnabled',{
+              initialValue: defaultStatus,
+              valuePropName: 'checked'
             })(
-              <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:15,width:100}}>{ isEnabled ? '启用' : '禁用' }</span>
-              </div>
-            )}
+                <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}
+                onChange={(value)=>{
+                  console.log(value)
+                  this.setState({
+                    flag: 'y',
+                    isEnabled: value
+                  })
+                }}
+                />
+              )}
           </FormItem>
+          <span className="enabled-type" style={{marginLeft:15,width:100}}>{(this.state.flag === 'y'? this.state.isEnabled : defaultStatus ) ? "启用" : "禁用"}</span>
           <FormItem {...formItemLayout} label="银行代码（数字）" >
-            {getFieldDecorator('bankDigitalCode', {
-              initialValue: bank.bankDigitalCode,
+            {getFieldDecorator('bankCodeLong', {
+              initialValue: bank.bankCodeLong,
               rules: [
                 {
                   required: true,
-                  message: formatMessage({id:"common.please.select"})
+                  message: formatMessage({id:"common.please.enter"})
                 },
                 {
                   validator:(item,value,callback)=>this.validateBankCode(item,value,callback)
@@ -156,8 +180,8 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="银行代码（字母）" >
-            {getFieldDecorator('bankLetterCode', {
-              initialValue: bank.bankLetterCode,
+            {getFieldDecorator('bankCodeString', {
+              initialValue: bank.bankCodeString,
               rules: [{
                 required: true,
                 message: formatMessage({id:"common.please.select"})
@@ -170,7 +194,7 @@ class CreateOrUpdateBank extends React.Component{
               <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="银行明称" >
+          <FormItem {...formItemLayout} label="银行名称" >
             {getFieldDecorator('bankName', {
               initialValue: bank.bankName,
               rules: [

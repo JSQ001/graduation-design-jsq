@@ -15,18 +15,6 @@ import 'styles/pay/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
 import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
 
-let bank = [
-  {
-    "id": 1001,
-    "key": 1001,
-    "bankDigitalCode": "1001",
-    "bankLetterCode": "HSB",
-    "bankName": "中国人民银行",
-    "bankType": "现金银行",
-    "isEnabled": true,
-    "operation": "编辑 分行信息"
-  }
-]
 let bankType = [
   {value:"cashBank", label:"现金银行"},
   {value:"clearingBank", label:"清算银行"},
@@ -65,10 +53,10 @@ class BankDefinition extends React.Component{
       },
       columns: [
         {          /*银行数字代码*/
-          title: formatMessage({id:"budget.bank.digitalCode"}), key: "bankDigitalCode", dataIndex: 'bankDigitalCode'
+          title: formatMessage({id:"budget.bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
         },
         {          /*银行字母代码*/
-          title: formatMessage({id:"budget.bank.letterCode"}), key: "bankLetterCode", dataIndex: 'bankLetterCode'
+          title: formatMessage({id:"budget.bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
         },
         {          /*银行名称*/
           title: formatMessage({id:"budget.bankName"}), key: "bankName", dataIndex: 'bankName'
@@ -96,22 +84,20 @@ class BankDefinition extends React.Component{
   }
 
   componentWillMount(){
-
-
+    this.getList();
   }
 
   editItem = (e, record) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
-      nowBank: record,
       showSlideFrame: true,
-      slideFrameTitle:"编辑银行"
+      slideFrameTitle: "编辑银行",
+      nowBank: {bank: record},
     })
   };
 
   goBranchBank = (e, record) =>{
-    console.log(record)
     this.context.router.push(menuRoute.getMenuItemByAttr('bank-definition', 'key').children.branchBankInformation.url.replace(':id', record.id));
   };
 
@@ -126,18 +112,33 @@ class BankDefinition extends React.Component{
   //获取公司下的银行数据
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/cash/banks/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let url = `${config.payUrl}/api/cash/banks/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
-    console.log(url)
     httpFetch.get(url).then((response)=>{
-      console.log(response)
+      if(response.status === 200){
+        console.log(response);
+        response.data.map((item)=>{
+          item.key = item.id;
+        });
+        this.setState({
+          loading: false,
+          data: response.data,
+          pagination: {
+            total: Number(response.headers['x-total-count']),
+            current: this.state.pagination.current,
+            page: this.state.pagination.page,
+            pageSize:this.state.pagination.pageSize,
+            showSizeChanger:true,
+            showQuickJumper:true,
+          },
+        });
+      }
     })
   }
 
   handleSearch = (values) =>{
-    console.log(this.props.company)
     let searchParams = {
       bankName: values.bankName,
       bankCode: values.bankCode,
@@ -161,9 +162,29 @@ class BankDefinition extends React.Component{
     })
   };
 
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    console.log(pagination)
+    this.setState({
+      pagination:{
+        current: pagination.current,
+        page: pagination.current-1,
+        pageSize: pagination.pageSize,
+        total: pagination.total
+      }
+    }, ()=>{
+      this.getList();
+    })
+  };
+
+  //点击行，银行分行页面
+  handleRowClick = (record, index, event) =>{
+    this.context.router.push(menuRoute.getMenuItemByAttr('bank-definition', 'key').children.branchBankInformation.url.replace(':id', record.id));
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading, searchForm, pagination, columns, showSlideFrame, nowBank, slideFrameTitle } = this.state;
+    const { loading,data, searchForm, pagination, columns, showSlideFrame, nowBank, slideFrameTitle } = this.state;
 
     return(
       <div className="budget-bank-definition">
@@ -175,9 +196,14 @@ class BankDefinition extends React.Component{
           </div>
         </div>
         <Table
-            dataSource={bank}
+            dataSource={data}
             loading={false}
-            columns={columns}/>
+            pagination={pagination}
+            onChange={this.onChangePager}
+            columns={columns}
+            onRowClick={this.handleRowClick}
+            size="middle"
+            bordered/>
         <SlideFrame title={slideFrameTitle}
                     show={showSlideFrame}
                     content={CreateOrUpdateBank}
