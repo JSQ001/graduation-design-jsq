@@ -21,6 +21,7 @@ class NewBudgetJournalDetail extends React.Component {
     super(props);
     this.state = {
       loading:false,
+      organization:{},
       searchForm: [
 
         /*公司*/
@@ -28,8 +29,9 @@ class NewBudgetJournalDetail extends React.Component {
         /*部门*/
         {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
         /*预算项目*/
-        {type: 'select', id:'ItemId', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
-          url:`${config.baseUrl}/api/budget/items/find/all`,
+        {type: 'select', id:'ItemName', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+          labelKey:'ItemName',valueKey:'id',
+          url:`${config.budgetUrl}/api/budget/items/find/all`,
         },
         /*期间*/
         {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: []},
@@ -66,8 +68,23 @@ class NewBudgetJournalDetail extends React.Component {
 
   }
 
+  //获取预算组织
+  getOrganization(){
+    console.log("Youcdscsdc")
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        organization:request.data
+      })
+    })
+  }
+
+  componentWillMount(){
+    this.getOrganization();
+  }
 
 
+  
   search = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
@@ -124,8 +141,24 @@ class NewBudgetJournalDetail extends React.Component {
     }
   };
 
-  setOptionsToFormItemSelect=(item,url,key)=>{
 
+  //获得值列表里面的数据
+  setOptionsToFormItemSelect=(item,url,key)=>{
+    console.log(this.state.organization)
+    console.log(item);
+    let params = {};
+    let path = item.url;
+    if(item.id=="ItemName"){
+      path = path+`?organizationId=${this.state.organization.id}`
+    }
+    url=path;
+    httpFetch.get(url, params).then((res) => {
+      let options = [];
+      res.data.map(data => {
+        options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+      });
+      this.setState({ searchForm });
+    })
   }
 
   //渲染搜索表单组件
@@ -140,7 +173,7 @@ class NewBudgetJournalDetail extends React.Component {
       case 'select':{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
-                  onFocus={item.getUrl ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+                  onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}

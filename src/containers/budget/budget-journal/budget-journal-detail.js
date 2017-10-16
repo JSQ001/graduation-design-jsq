@@ -52,6 +52,7 @@ class BudgetJournalDetail extends React.Component {
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       },
+      organization:{},
       infoDate:[],
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
@@ -81,6 +82,7 @@ class BudgetJournalDetail extends React.Component {
             ]
 
         },
+
 
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -151,6 +153,15 @@ class BudgetJournalDetail extends React.Component {
     };
   }
 
+  //获取预算组织
+  getOrganization(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        organization:request.data
+      })
+    })
+  }
 
   //当选择行变化的时候
   onSelectChange=(selectedRowKeys, selectedRows)=>{
