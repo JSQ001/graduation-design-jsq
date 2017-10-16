@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Modal } from 'antd';
+import { Button, Table, Select,Modal,message } from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal-detail.scss"
 
@@ -35,6 +35,8 @@ class BudgetJournalDetail extends React.Component {
       showSlideFrameNew:false,
       showModal:false,
       updateState:false,
+      pageSize:10,
+      page:0,
       pagination: {
         current:0,
         page:0,
@@ -42,6 +44,13 @@ class BudgetJournalDetail extends React.Component {
         pageSize:10,
         showSizeChanger:true,
         showQuickJumper:true,
+      },
+      selectorItem:{},
+      rowSelection: {
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
+        onSelect: this.onSelectItem,
+        onSelectAll: this.onSelectAll
       },
       infoDate:[],
       infoList: [
@@ -140,6 +149,34 @@ class BudgetJournalDetail extends React.Component {
         },
       ],
     };
+  }
+
+
+  //当选择行变化的时候
+  onSelectChange=(selectedRowKeys, selectedRows)=>{
+      console.log(selectedRowKeys);
+      this.setState({
+        selectorItem:selectedRows
+      })
+  }
+
+  onSelectItem=()=>{
+
+  }
+
+  onSelectAll=()=>{
+
+  }
+
+
+  //删除预算日记账行
+  handleDeleteLine=()=>{
+    let data = this.state.rowSelection;
+    httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,data).then((res)=>{
+        message.success("删除成功");
+    }).catch(e=>{
+      message.error("删除失败");
+    })
   }
 
 
@@ -323,19 +360,11 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
-  //根据头id 获取数据
-  getDataByHeadId=(id)=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/id`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        headerAndListData:request.data
-      })
-    })
-  }
 
 
  //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=(budgetJournalCode)=>{
+
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
     console.log(request.data)
       let listData = request.data.list;
@@ -343,11 +372,21 @@ class BudgetJournalDetail extends React.Component {
     this.setState({
       headerAndListData:request.data,
       infoDate:headerData,
-      data:listData
+      data:listData,
+      pagination: {
+        total:request.data.list.length ,
+        onChange: this.onChangePager,
+        pageSize: this.state.pageSize,
+        current: this.state.page + 1
+      }
     })
   })
   }
 
+  //当页码变化
+  onChangePager=()=>{
+
+  }
 
   showImport=()=>{}
 
@@ -407,7 +446,15 @@ class BudgetJournalDetail extends React.Component {
   }
 
 //删除该预算日记账
-  HandelDeleteJournal=()=>{
+  handleDeleteJournal=()=> {
+    console.log(this.state.headerAndListData);
+    const id = this.state.headerAndListData.dto.id;
+    console.log(id);
+    httpFetch.delete(`${config.budgetUrl}/api/budget/journals/${id}`).then((req) => {
+      message.success("成功删除该预算日记账")
+    }).catch(e => {
+      message.error("失败")
+    })
 
   }
 
@@ -415,7 +462,7 @@ class BudgetJournalDetail extends React.Component {
 
   render(){
 
-    const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut} = this.state;
+    const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut,rowSelection} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-versions-detail">
@@ -430,7 +477,7 @@ class BudgetJournalDetail extends React.Component {
             <div className="table-header-buttons">
               <Button type="primary" onClick={()=>this.showSlideFrameNew(true)}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
-              <Button className="delete" onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.delete"})}</Button>
+              <Button className="delete" onClick={this.handleDeleteLine}>{this.props.intl.formatMessage({id:"common.delete"})}</Button>
             </div>
           </div>
           <Table columns={columns}
@@ -439,11 +486,13 @@ class BudgetJournalDetail extends React.Component {
                  bordered
                  size="middle"
                  onRowClick={this.showEditor}
+                 rowSelection={rowSelection}
+
           />
           <div className="footer-operate">
             <Button type="primary">提交</Button>
             <Button type="primary">{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Button className="delete" onClick={this.HandleDeleteJournal}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            <Button className="delete" onClick={this.handleDeleteJournal}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </div>
 
         </div>
