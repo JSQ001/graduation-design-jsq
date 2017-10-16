@@ -2,15 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Tabs, Table, Breadcrumb, Icon, Alert, Tooltip, Badge, Modal, Form, Select, Input, Menu, Dropdown, InputNumber, DatePicker, Pagination } from 'antd'
+import { Button, Tabs, Table, Breadcrumb, Icon, Alert, Tooltip, Badge, Modal, Form, Select, Input, Menu, Dropdown, InputNumber, DatePicker, Pagination, message } from 'antd'
 const TabPane = Tabs.TabPane;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
 import SearchArea from 'components/search-area'
 import menuRoute from 'share/menuRoute'
-
-import 'styles/pay/pay-workbench/pay-online.scss'
 
 class EditableCell extends React.Component {
   state = {
@@ -80,18 +78,14 @@ class PayOnline extends React.Component {
         {type: 'input', id: 'receiptNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})},
         {type: 'select', id: 'receiptType', label: formatMessage({id: "payWorkbench.receiptType"}), options: []},
         {type: 'select', id: 'applicant', label: formatMessage({id: "payWorkbench.applicant"}), options: []},
-        {
-          type: 'items', id: 'dateRange', items: [
+        {type: 'items', id: 'dateRange', items: [
           {type: 'date', id: 'dateFrom', label: formatMessage({id: "payWorkbench.dateFrom"})},
           {type: 'date', id: 'dateTo', label: formatMessage({id: "payWorkbench.dateTo"})}
-        ]
-        },
-        {
-          type: 'items', id: 'mountRange', items: [
+        ]},
+        {type: 'items', id: 'mountRange', items: [
           {type: 'input', id: 'mountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})},
           {type: 'input', id: 'mountTo', label: formatMessage({id: "payWorkbench.mountTo"})}
-        ]
-        },
+        ]},
         {type: 'select', id: 'payee', label: formatMessage({id: "payWorkbench.payee"}), options: []}
       ],
       tabs: [
@@ -214,7 +208,7 @@ class PayOnline extends React.Component {
       rePayAble: false,                //退款或失败 - 重新支付按钮是否可用
       cancelPayAble: false,            //退款或失败 - 取消支付按钮是否可用
       payModalVisible: false,
-      confirmSuccessDate: '',
+      confirmSuccessDate: null,
       paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //新建控制策略
     };
   }
@@ -280,34 +274,42 @@ class PayOnline extends React.Component {
   };
 
   confirmSuccessDateChange = (date, confirmSuccessDate) => {
-    console.log(date, confirmSuccessDate);
     this.setState({ confirmSuccessDate });
+  };
+
+  confirmSuccessBtn = () => {
+    console.log(this.state.confirmSuccessDate);
+    if (!this.state.confirmSuccessDate) {
+      return message.error('请选择实际付款日期')
+    }
+    return new Promise((resolve, reject) => {
+      setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+    })
+      .then(() => {message.success('success')})
+      .catch(() => {message.error('error')});
   };
 
   //确认成功Modal
   confirmSuccess = () => {
-    const formItemLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 14, offset: 1 },
-    };
+    this.setState({ confirmSuccessDate: null });
     Modal.confirm({
       title:
-        <p style={{color:'#666',fontSize:'14px',position:'relative',top:'2px'}}>
+        <div style={{color:'#666',fontSize:'14px',position:'relative',top:'2px'}}>
           <span style={{marginRight:'10px'}}>将付款状态更改为</span>
           <Badge status='success' text='支付成功' />
-        </p>,
+        </div>,
       content:
         <div>
-          <p style={{color:'rgb(240, 65, 52)'}}>请通过网银或询问银行的方式确认该笔付款已成功转账</p>
-          <Form style={{marginTop:'20px'}}>
-            <FormItem {...formItemLayout} label="实际付款日期">
-              <DatePicker />
-            </FormItem>
-          </Form>
+          <div style={{color:'rgb(240, 65, 52)'}}>请通过网银或询问银行的方式确认该笔付款已成功转账</div>
+          <div style={{marginTop:'20px'}}>
+            <span><span style={{color:'#f00',marginRight:'5px',position:'relative',top:'2px'}}>*</span>实际付款日期：</span>
+            <DatePicker onChange={this.confirmSuccessDateChange} />
+          </div>
         </div>,
       iconType: 'exclamation-circle',
       okText: '确认成功',
       cancelText: '取消',
+      onOk: this.confirmSuccessBtn,
     })
   };
 
@@ -474,10 +476,12 @@ class PayOnline extends React.Component {
   showPayModal = () => {
     this.setState({ payModalVisible: true });
   };
+
   handleOk = (e) => {
     console.log(e);
     this.setState({ payModalVisible: false });
   };
+
   handleCancel = (e) => {
     console.log(e);
     this.setState({ payModalVisible: false });
