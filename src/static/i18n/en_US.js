@@ -19,7 +19,7 @@ import budgetItemType from  'static/i18n/en_US/budget-setting/budget-organizatio
 import budgetJournal from 'static/i18n/en_US/budget-journal/budget-journal.json'
 import bankDefinition from 'static/i18n/en_US/pay/bank-definition.json'
 import agencySetting from 'static/i18n/en_US/approve-setting/agency-setting.json'
-
+import securitySetting from 'static/i18n/en_US/setting/security-setting.json'
 
 const i18nList = [
   common,  //公用
@@ -35,6 +35,7 @@ const i18nList = [
   budgetJournal,   //预算日记账
   bankDefinition, //银行定义
   agencySetting, //代理设置
+  securitySetting //安全配置
 
 ];
 

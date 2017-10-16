@@ -140,6 +140,7 @@ class BudgetVersionsDetail extends React.Component {
 
 
   infoDateChangeHandle=()=>{
+    console.log("versionAssignCompany")
     this.versionAssignCompany(this.state.newAssignCompanyDate);
   }
 
@@ -159,13 +160,15 @@ class BudgetVersionsDetail extends React.Component {
 
 //分配公司确定
   submitHandle=(value)=>{
+   const data =value.result;
+    console.log(data);
     const isEnabled = true;
     let dataValue=[];
-    for(let a=0;a<value.length;a++){
+    for(let a=0;a<data.length;a++){
       const newData ={
-        "companyCode":value[a].companyCode,
-        "companyName":value[a].companyName,
-        "companyId": value[a].companyId,
+        "companyCode":data[a].companyCode,
+        "companyName":data[a].companyName,
+        "companyId": data[a].companyId,
         "versionId":this.props.params.id,
         "isEnabled":isEnabled
       }
@@ -176,9 +179,7 @@ class BudgetVersionsDetail extends React.Component {
     console.log(dataValue)
 
     this.setState({
-
       newAssignCompanyDate:dataValue
-
     })
 
     this.showImport(false)

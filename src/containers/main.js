@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button } from 'antd';
 const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -36,6 +36,7 @@ class Main extends React.Component{
       collapsed: false,
       check: false,
       adminMode: false,
+      companyMode: true,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
       dashboardAdminPage: menuRoute.getRouteItem('dashboard-admin', 'key')
@@ -44,6 +45,10 @@ class Main extends React.Component{
 
   componentWillMount(){
     this.checkParams();
+    this.setMenuSelectedState();
+  }
+
+  setMenuSelectedState(){
     let nowMenuItem = menuRoute.getMenuItemByAttr(this.props.routes[this.props.routes.length - 1].path, 'url');
     this.setState({
       selectedKeys: [nowMenuItem.key],
@@ -56,15 +61,22 @@ class Main extends React.Component{
     return true;
   }
 
+  //切换模式
+  handleModeChange = () => {
+    const { adminMode, dashboardAdminPage,  dashboardPage} = this.state;
+    this.context.router.replace(!adminMode ? dashboardAdminPage.url : dashboardPage.url);
+    this.setState({ adminMode: !adminMode }, () => {
+      this.setMenuSelectedState();
+    });
+  };
+
   handleModeMenuClick = (e) => {
     switch (e.key){
       case 'bloc':
-        this.setState({ adminMode: true });
-        this.context.router.push(this.state.dashboardAdminPage.url);
+        this.setState({ companyMode: false });
         break;
       case 'company':
-        this.setState({ adminMode: false });
-        this.context.router.push(this.state.dashboardPage.url);
+        this.setState({ companyMode: true });
         break;
       case 'change':
         this.setState({ showListSelector: true })
@@ -74,11 +86,11 @@ class Main extends React.Component{
 
   //渲染公司模式切换下拉选项
   renderModeMenu = () => {
-    const { adminMode, collapsed } = this.state;
+    const { companyMode, collapsed } = this.state;
     let menu = (
       <Menu onClick={this.handleModeMenuClick}>
-        {this.checkAuthorities('ROLE_TENANT_ADMIN') && !adminMode ? <Menu.Item key="bloc">集团模式</Menu.Item> : null}
-        {adminMode ? <Menu.Item key="company">公司模式</Menu.Item> : null}
+        {this.checkAuthorities('ROLE_TENANT_ADMIN') && companyMode ? <Menu.Item key="bloc">集团模式</Menu.Item> : null}
+        {!companyMode ? <Menu.Item key="company">公司模式</Menu.Item> : null}
         <Menu.Item key="change">切换公司</Menu.Item>
       </Menu>
     );
@@ -208,7 +220,7 @@ class Main extends React.Component{
   };
 
   render(){
-    const { collapsed, check, showListSelector } = this.state;
+    const { collapsed, check, showListSelector, adminMode } = this.state;
     return (
       <Layout className="helios-main">
         <Sider width={202} className="helios-sider" collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
@@ -221,6 +233,7 @@ class Main extends React.Component{
               <img src={LogoImg}/>
             </div>
             <div className="user-area">
+              <Button className="admin-button" onClick={this.handleModeChange}>{adminMode ? '退出管理员模式' : '管理员模式'}</Button>
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
                 <Option value="en">English</Option>

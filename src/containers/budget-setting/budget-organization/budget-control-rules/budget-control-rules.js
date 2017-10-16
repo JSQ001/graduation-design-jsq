@@ -189,7 +189,7 @@ class BudgetControlRules extends React.Component {
 }
 BudgetControlRules.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps() {
   return {}

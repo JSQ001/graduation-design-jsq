@@ -10,8 +10,11 @@ import requireAuthentication from 'components/requireAuthentication'
 import DashboardAdmin from 'containers/dashboard-admin'
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
+
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
+import SecuritySetting from 'containers/setting/security-setting/security-setting'
+
 import MyAccount from 'containers/expense-report/my-account'
 
 import NewBudgetOrganization from 'containers/budget-setting/budget-organization/new-budget-organization'
@@ -41,10 +44,12 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
+
 import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
+
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
@@ -65,24 +70,7 @@ const confirmPayment = {
   parent: 'financial-management'
 };
 
-//新建值列表
-const newValueList = {
-  key:'new-value-list',
-  url:'/main/setting/value-list/new-value-list',
-  components: NewValueList,
-  parent: 'value-list'
-};
 
-//值列表
-const valueList = {
-  key:'value-list',
-  url:'/main/setting/value-list',
-  components: ValueList,
-  parent: 'setting',
-  children: {
-    newValueList
-  }
-};
 
 //我的账本
 const myAccount = {
@@ -301,7 +289,7 @@ const newBudgetJournal={
 //预算日记账详情
 const budgetJournalDetail={
   key:'budget-journal-detail',
-  url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
+  url:'/main/budget/budget-journal/budget-journal-detail/:journalCode',
   components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
@@ -312,9 +300,8 @@ const budgetJournal = {
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
   parent: 'budget',
-  children: {}
+  children: {newBudgetJournal,budgetJournalDetail}
 };
-
 
 const budgetBalanceResult = {
   key: 'budget-balance-result',
@@ -386,7 +373,7 @@ const bankDefinition = {
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench, bankDefinition],
+  subMenu: [ bankDefinition],
   icon: 'pay-circle'
 };
 
@@ -423,6 +410,40 @@ const approveSetting = {
 
 //////////////////////审批设置模块结束///////////////////////////
 
+
+//////////////////////设置模块开始///////////////////////////
+
+//新建值列表
+const newValueList = {
+  key:'new-value-list',
+  url:'/main/setting/value-list/new-value-list',
+  components: NewValueList,
+  parent: 'value-list'
+};
+
+//值列表
+const valueList = {
+  key:'value-list',
+  url:'/main/setting/value-list',
+  components: ValueList,
+  parent: 'setting',
+  children: {
+    newValueList
+  }
+};
+
+//安全配置
+const securitySetting = {
+  key:'security-setting',
+  url:'/main/setting/security-setting',
+  components: SecuritySetting,
+  parent: 'setting',
+  children:{}
+};
+
+//////////////////////设置模块结束///////////////////////////
+
+
 //首页
 const dashboard = {
   key:'dashboard',
@@ -450,7 +471,7 @@ const financialManagement = {
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList],
+  subMenu: [valueList, securitySetting],
   icon: 'setting',
   admin: true
 };
