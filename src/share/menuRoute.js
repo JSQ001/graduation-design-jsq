@@ -7,6 +7,7 @@ import { Router, Route, browserHistory } from 'react-router'
 import Main from 'containers/main'
 import requireAuthentication from 'components/requireAuthentication'
 
+import DashboardAdmin from 'containers/dashboard-admin'
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
@@ -52,6 +53,7 @@ import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
 const menuIndexUrl = '/main/dashboard';
+const menuAdminIndexUrl = '/main/dashboard-admin';
 
 //确认付款
 const confirmPayment = {
@@ -388,6 +390,15 @@ const dashboard = {
   icon: 'home'
 };
 
+//集团模式首页
+const dashboardAdmin = {
+  key:'dashboard-admin',
+  url: menuAdminIndexUrl,
+  components: DashboardAdmin,
+  icon: 'home',
+  admin: true
+};
+
 //财务管理
 const financialManagement = {
   key:'financial-management',
@@ -399,7 +410,8 @@ const financialManagement = {
 const setting = {
   key:'setting',
   subMenu: [valueList],
-  icon: 'setting'
+  icon: 'setting',
+  admin: true
 };
 
 //报销单
@@ -424,6 +436,7 @@ const expenseReport = {
  * @params children    页面内部所有页面 key : page
  */
 const menu = [
+  dashboardAdmin,
   dashboard,
   setting,
   financialManagement,

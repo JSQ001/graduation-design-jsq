@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon, Select } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown } from 'antd';
 const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -13,9 +13,11 @@ import 'styles/main.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import {setLanguage} from 'actions/main'
+import { setLanguage } from 'actions/main'
+import { setCompany } from 'actions/login'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import Loading from 'components/loading'
+import ListSelector from 'components/list-selector'
 
 import { injectIntl } from 'react-intl';
 
@@ -32,7 +34,11 @@ class Main extends React.Component{
       selectedKeys: [],
       openKeys: [],
       collapsed: false,
-      check: false
+      check: false,
+      adminMode: false,
+      showListSelector: false,
+      dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
+      dashboardAdminPage: menuRoute.getRouteItem('dashboard-admin', 'key')
     };
   }
 
@@ -49,6 +55,43 @@ class Main extends React.Component{
     this.checkParams();
     return true;
   }
+
+  handleModeMenuClick = (e) => {
+    switch (e.key){
+      case 'bloc':
+        this.setState({ adminMode: true });
+        this.context.router.push(this.state.dashboardAdminPage.url);
+        break;
+      case 'company':
+        this.setState({ adminMode: false });
+        this.context.router.push(this.state.dashboardPage.url);
+        break;
+      case 'change':
+        this.setState({ showListSelector: true })
+    }
+  }
+  ;
+
+  //渲染公司模式切换下拉选项
+  renderModeMenu = () => {
+    const { adminMode, collapsed } = this.state;
+    let menu = (
+      <Menu onClick={this.handleModeMenuClick}>
+        {this.checkAuthorities('ROLE_TENANT_ADMIN') && !adminMode ? <Menu.Item key="bloc">集团模式</Menu.Item> : null}
+        {adminMode ? <Menu.Item key="company">公司模式</Menu.Item> : null}
+        <Menu.Item key="change">切换公司</Menu.Item>
+      </Menu>
+    );
+    return <Dropdown overlay={menu}><span>{collapsed ? '' :  (this.props.company.name + ' ')}<Icon type="down" /></span></Dropdown>
+  };
+
+  //切换公司
+  handleChangeCompany = (result) => {
+    this.setState({ showListSelector: false });
+    if(result && result.result.length > 0){
+      this.props.dispatch(setCompany(result.result[0]));
+    }
+  };
 
   /**
    * 检查url时设置当前url及redux的值
@@ -99,27 +142,28 @@ class Main extends React.Component{
   }
 
   renderMenu(){
+    const { adminMode } = this.state;
     return (
       <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
         {this.state.menu.map(item =>
           item.subMenu ? (
-            <SubMenu
+            ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <SubMenu
               key={item.key}
               title={<span><Icon type={item.icon} /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
                 <Menu.Item key={subItem.key}><Link to={subItem.url}>{this.props.intl.formatMessage({id: `menu.${subItem.key}`})}</Link></Menu.Item>
               )}
-            </SubMenu>
+            </SubMenu> : null
           ) : (
-            <Menu.Item key={item.key}>
+            ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <Menu.Item key={item.key}>
               <Link to={item.url}>
                 <span>
                   <Icon type={item.icon} />
                   <span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span>
                 </span>
               </Link>
-            </Menu.Item>
+            </Menu.Item> : null
           )
         )}
       </Menu>
@@ -164,11 +208,11 @@ class Main extends React.Component{
   };
 
   render(){
-    const { collapsed, check } = this.state;
+    const { collapsed, check, showListSelector } = this.state;
     return (
       <Layout className="helios-main">
         <Sider width={202} className="helios-sider" collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
-          <div className="company-name">{this.props.company.name}</div>
+          <div className="company-name">{this.renderModeMenu()}</div>
           {this.renderMenu()}
         </Sider>
         <Layout style={{ marginLeft: collapsed ? 64 : 202 }} className="content-layout">
@@ -194,6 +238,11 @@ class Main extends React.Component{
             {check ? menuRoute.MainRoute : <Loading/>}
           </Content>
         </Layout>
+        <ListSelector type="available_company"
+                      visible={showListSelector}
+                      onOk={this.handleChangeCompany}
+                      onCancel={() => { this.setState({showListSelector: false}) }}
+                      single={true}/>
       </Layout>
     )
   }

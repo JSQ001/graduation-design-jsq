@@ -70,7 +70,7 @@ class Chooser extends React.Component {
 
   render() {
     const { showListSelector, listSelectedData, value } = this.state;
-    const { placeholder, disabled, selectorItem, type, listExtraParams } = this.props;
+    const { placeholder, disabled, selectorItem, type, listExtraParams, single } = this.props;
     return (
       <div className="chooser">
         <Select
@@ -89,7 +89,8 @@ class Chooser extends React.Component {
                       onOk={this.handleListOk}
                       selectedData={listSelectedData}
                       extraParams={listExtraParams}
-                      selectorItem={selectorItem}/>
+                      selectorItem={selectorItem}
+                      single={single}/>
         <input ref="chooserBlur" style={{ position: 'absolute', top: '-100vh' }}/>
       </div>
     );
@@ -104,13 +105,15 @@ Chooser.propTypes = {
   valueKey: React.PropTypes.string,  //表单项的id变量名
   labelKey: React.PropTypes.string,  //表单项的显示变量名
   listExtraParams: React.PropTypes.object,  //listSelector的额外参数
-  onChange: React.PropTypes.func  //进行选择后的回调
+  onChange: React.PropTypes.func,  //进行选择后的回调
+  single: React.PropTypes.bool  //是否单选
 };
 
 Chooser.defaultProps = {
   placeholder: "请选择",
   disabled: false,
-  listExtraParams: {}
+  listExtraParams: {},
+  single: false
 };
 
 export default Chooser;

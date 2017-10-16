@@ -36,31 +36,45 @@ class BudgetBalance extends React.Component {
       ],
       searchForm: [],
       typeOptions: [],
-      organizationId: '908139656192442369' //TODO:默认组织ID
+      organizationId: '908139656192442369', //TODO:默认组织ID
+      searchParams: {
+        periodSummaryFlag: false,
+        amountQuarterFlag: '',
+        yearLimit: '',
+        quarterLowerLimit: '',
+        quarterUpperLimit: '',
+        periodLowerLimit: '',
+        periodUpperLimit: '',
+        queryLineList: []
+      }
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
 
-  //TODO:进入该页面时或登录时获取默认组织ID
+  //TODO:进入该页面时或登录时获取默认组织ID放入state
   componentWillMount(){
     let searchForm = [
-      {type: 'list', id:'company', label: '公司', listType: 'company',isRequired: true, labelKey: 'name', valueKey: 'id'},
-      {type: 'select', id:'version', label: '版本', isRequired: true, options: []},
+      {type: 'list', id:'companyId', label: '公司', listType: 'company',isRequired: true, labelKey: 'name', valueKey: 'id'},
+      {type: 'select', id:'version', label: '预算版本', isRequired: true, options: [], method: 'get',
+        getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId: this.state.organizationId},
+        labelKey: 'versionName', valueKey: 'versionCode'},
       {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId: this.state.organizationId},
         labelKey: 'structureName', valueKey: 'structureCode'},
-      {type: 'select', id:'budgetScenarios', label: '预算场景', isRequired: true, options: []},
-      {type: 'select', id:'year', label: '年度', isRequired: true, options: []},
+      {type: 'select', id:'budgetScenarios', label: '预算场景', isRequired: true, options: [], method: 'get',
+        getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId: this.state.organizationId},
+        labelKey: 'scenariosName', valueKey: 'scenariosCode'},
+      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: []},
       {type: 'items', id: 'dateRange', items: [
-        {type: 'date', id: 'dateFrom', label: '期间从', isRequired: true},
-        {type: 'date', id: 'dateTo', label: '期间到'}
+        {type: 'date', id: 'periodLowerLimit', label: '期间从', isRequired: true},
+        {type: 'date', id: 'periodUpperLimit', label: '期间到'}
       ]},
-      {type: 'switch', id:'total', label: '期间汇总', isRequired: true, defaultValue: false},
+      {type: 'select', id:'periodSummaryFlag', label: '期间汇总', isRequired: true, options: []},
       {type: 'items', id: 'seasonRange', items: [
-        {type: 'select', id: 'seasonFrom', label: '季度从', isRequired: true, options: [{key: '1', label: '2'}]},
-        {type: 'select', id: 'seasonTo', label: '季度到', options: []}
+        {type: 'select', id: 'quarterLowerLimit', label: '季度从', isRequired: true, options: [{key: '1', label: '2'}]},
+        {type: 'select', id: 'quarterUpperLimit', label: '季度到', options: []}
       ]},
-      {type: 'select', id:'type', label: '金额/数量', isRequired: true, options: []}
+      {type: 'select', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: []}
     ];
     this.setState({ searchForm });
   }
