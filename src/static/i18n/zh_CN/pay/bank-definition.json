@@ -1,0 +1,11 @@
+{
+  "budget.bankCode": "银行代码",
+  "budget.bankName": "银行名称",
+  "budget.bankType": "银行类型",
+  "budget.bank.digitalCode": "银行数字代码",
+  "budget.bank.letterCode": "银行字母代码",
+  "budget.branchBankCode": "分行代码",
+  "budget.branchBankName": "分行名称",
+  "budget.branchBankNumber": "分行行号",
+  "budget.belongsToBank": "所属银行"
+}

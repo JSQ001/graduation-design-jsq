@@ -5,17 +5,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon } from 'antd';
-
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector.js'
-
 import "styles/budget-setting/budget-organization/budget-item/new-budget-item.scss"
-
 const FormItem = Form.Item;
 const Option = Select.Option;
-
 class NewBudgetItem extends React.Component{
   constructor(props){
     super(props);
@@ -39,7 +35,6 @@ class NewBudgetItem extends React.Component{
         organization: this.props.organization,
       })
   }
-
   //新建预算项目
   handleSave = (e) =>{
     e.preventDefault();
@@ -65,12 +60,10 @@ class NewBudgetItem extends React.Component{
       }
     });
   };
-
   handleFocus = () => {
     this.refs.blur.focus();
     this.showList(true)
   };
-
   showList = (flag) => {
     let listSelectedData = [];
     let values = this.props.form.getFieldValue("itemTypeName");
@@ -84,7 +77,6 @@ class NewBudgetItem extends React.Component{
       listSelectedData
     })
   };
-
   handleListOk = (result) => {
     console.log(result)
     let values = [];
@@ -100,12 +92,10 @@ class NewBudgetItem extends React.Component{
     this.props.form.setFieldsValue(value);
     this.showList(false)
   };
-
   handleCancel = (e) =>{
     e.preventDefault();
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
-
   render(){
     const { getFieldDecorator } = this.props.form;
     const { organization, statusCode, showItemType , listSelectedData} = this.state;
@@ -185,9 +175,9 @@ class NewBudgetItem extends React.Component{
                     ],
                   })(
                     <Select
-                        labelInValue
-                        onFocus={this.handleFocus}
-                        placeholder={formatMessage({id:"common.please.select"})} />) /*请输入*/
+                      labelInValue
+                      onFocus={this.handleFocus}
+                      placeholder={formatMessage({id:"common.please.select"})} />) /*请输入*/
                   }
                 </FormItem>
               </Col>
@@ -259,16 +249,13 @@ class NewBudgetItem extends React.Component{
     )
   }
 }
-
 NewBudgetItem.contextTypes = {
   router: React.PropTypes.object
 };
-
 function mapStateToProps(state) {
   return {
     organization: state.budget.organization
   }
 }
-
 const WrappedNewBudgetItem = Form.create()(NewBudgetItem);
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetItem));

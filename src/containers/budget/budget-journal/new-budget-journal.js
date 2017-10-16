@@ -7,8 +7,8 @@ import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Form,Input,Switch,Icon} from 'antd';
 const FormItem = Form.Item;
 
-import Chooser from  'components/Chooser'
-import ListSelector from 'components/list-selector.js'
+import Chooser from  'components/Chooser';
+import ListSelector from 'components/list-selector.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -38,8 +38,7 @@ class NewBudgetJournalFrom extends React.Component {
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
     const data =value;
-    console.log(this.props.user);
-    console.log(this.props.company)
+    console.log(value);
     let valueData ={
       ...value,
       'organizationId':this.state.organization.id,
@@ -50,7 +49,7 @@ class NewBudgetJournalFrom extends React.Component {
       'companyName':this.props.user.companyName,
       'journalTypeName':value.journalTypeName[0].value.journalTypeName,
       'journalTypeId':value.journalTypeName[0].value.journalTypeId,
-      'structureId':910338272176853000,
+      'structureId':value.structureId,
       'structureName':undefined,
       'versionId':value.versionName[0].value.versionName,
       'versionName':value.versionName[0].value.id,
@@ -62,16 +61,60 @@ class NewBudgetJournalFrom extends React.Component {
     console.log(valueData);
     console.log("123123")
 
-   let path=this.state.budgetJournalDetailPage.url.replace(":budgetJournalHeaderId",undefined);
-    let location ={
-        pathname:path,
-        state:{
-          fromData:valueData
+    let userData ={
+      "dto" :
+        {
+          "companyId":this.props.company.companyOID,
+          "companyName":this.props.user.fullName,
+          "organizationId":this.state.organization.id,
+          "organizationName":this.state.organization.organizationName,
+          "structureId":value.structureId,
+          "structureName":"structureName",
+          "periodYear": "2017",
+          "periodQuarter": "1",
+          "periodName": "11",
+          "description": "1111",
+          "reversedFlag":"N",
+          "sourceBudgetHeaderId":undefined,
+          "sourceType":undefined,
+          "employeeId":this.state.organization.id,
+          "employeeName":this.state.organization.organizationName,
+          "periodNumber": "2",
+          "unitId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+          "unitName":"periodNumber",
+          'versionId':value.versionName[0].value.id,
+          'versionName':value.versionName[0].value.versionName,
+          'scenarioId':value.scenarioName[0].value.id,
+          'scenarioName':value.scenarioName[0].value.scenarioName,
+          "status":"NEW",
+          "journalTypeId":value.journalTypeName[0].value.journalTypeId,
+          "journalTypeName":value.journalTypeName[0].value.journalTypeName,
+          "versionNumber":"1"
         }
+      ,
+      "list":[]
     }
+    console.log(userData)
 
-    this.context.router.push(location);
+    this.saveHeard(userData);
+
+
+
+
+
   }
+
+  //保存日记账头
+  saveHeard=(value)=>{
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals`,value).then((request)=>{
+      console.log(request.data)
+      let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",request.data.dto.journalCode);
+      this.context.router.push(path);
+    })
+  }
+
+
+
 
   //处理表单数据
   handleFrom=(e)=>{
@@ -144,16 +187,18 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得年度和期间段
   handleSelectChange=(values)=>{
-    console.log(values)
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/structure/selectBysStructureId/${values.id}`).then(req=>{
-      let data =req.data;
-      console.log(data)
-      this.props.form.setFieldsValue({
-        periodYear: 'data.periodYear',
-        periodStrategy:'data.periodStrategy'
 
-      });
-    })
+    this.state.structureGroup.map((item)=>{
+      if(item.id=values){
+        this.props.form.setFieldsValue({
+          periodYear:item.periodYear ,
+          periodStrategy:item.periodStrategy
+
+        });
+      }
+    });
+
+
 
 
   }
@@ -174,13 +219,13 @@ class NewBudgetJournalFrom extends React.Component {
       wrapperCol: { span: 14, offset: 1 },
     };
 
-    let strategyOptions = structureGroup.map((item)=><Option key={item.key} >{item.value}</Option>);
+    let strategyOptions = structureGroup.map((item)=><Option key={item.id} >{item.structureName}</Option>);
 
     return (
       <div className="new-budget-journal">
         <Form onSubmit={this.handleFrom} style={{width:'55%',margin:'0 auto'}}>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.journalNumber"})} >
-            {getFieldDecorator('journalNumber', {
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.journalCode"})} >
+            {getFieldDecorator('journalCode', {
               rules: [{
               }],
               initialValue: '-'
@@ -265,7 +310,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Input/>
+              <Input disabled={true}/>
             )}
           </FormItem>
 
@@ -278,7 +323,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Input/>
+              <Input disabled={true}/>
             )}
           </FormItem>
 

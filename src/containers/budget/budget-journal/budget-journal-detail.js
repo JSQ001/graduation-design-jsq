@@ -20,6 +20,7 @@ import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-jou
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
 
 
+
 class BudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -29,6 +30,7 @@ class BudgetJournalDetail extends React.Component {
       data: [],
       params:{},
       organization:{},
+      headerAndListData:{},
       showSlideFramePut:false,
       showSlideFrameNew:false,
       showModal:false,
@@ -43,7 +45,7 @@ class BudgetJournalDetail extends React.Component {
       },
       infoDate:[],
       infoList: [
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalNumber"}), id: 'journalNumber', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
@@ -54,19 +56,9 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
           listExtraParams:{'organizationId':1}
         },
-
-        {
-          type: 'combobox',
-          id: 'structureName',
-          label: this.props.intl.formatMessage({id:"budget.structureId"}),  /*预算表*/
-          placeholder: this.props.intl.formatMessage({id:"common.please.enter"}),
-          options: [],
-          searchUrl: `${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=1`,
-          method: 'get',
-          searchKey: '',
-          labelKey: 'structureName',
-          valueKey: 'id'
-        },
+        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
+          labelKey: 'structureName', valueKey: 'structureCode'},
 
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
 
@@ -152,14 +144,209 @@ class BudgetJournalDetail extends React.Component {
 
 
   componentWillMount(){
-    console.log(this.props.location)
-    const data = this.props.location.state.fromData;
-    console.log(data);
-    this.setState({
-      infoDate:data
+    //根据编制期代码拿数据
+    const data1={
+      "id": null,
+      "isEnabled": null,
+      "isDeleted": null,
+      "createdDate": null,
+      "createdBy": null,
+      "lastUpdatedDate": null,
+      "lastUpdatedBy": null,
+      "budgetJournalHeaders": {
+        "id": 899636999271137300,
+        "isEnabled": true,
+        "isDeleted": false,
+        "createdDate": "2017-08-21T22:19:10+08:00",
+        "createdBy": null,
+        "lastUpdatedDate": "2017-08-21T22:19:10+08:00",
+        "lastUpdatedBy": null,
+        "companyId": 1,
+        "operationUnitId": 1,
+        "organisationId": 1,
+        "structureId": 1,
+        "journalCode": "BGT20178211",
+        "periodYear": null,
+        "periodQuarter": null,
+        "periodName": null,
+        "description": null,
+        "scenarioId": 1,
+        "versionId": 1,
+        "status": "11",
+        "reversedFlag": null,
+        "sourceBudgetHeaderId": null,
+        "sourceType": null,
+        "journalTypeId": 1,
+        "employeeId": null,
+        "positionId": null,
+        "unitId": null
+      },
+      "list": [
+        {
+          "id": 899636999355023400,
+          "isEnabled": true,
+          "isDeleted": true,
+          "createdDate": "2017-08-21T22:19:09+08:00",
+          "createdBy": null,
+          "lastUpdatedDate": "2017-08-21T22:19:10+08:00",
+          "lastUpdatedBy": null,
+          "journalHeaderId": 899636999271137300,
+          "budgetItemId": 1111,
+          "currency":"RNB",
+          "periodYear": 2017,
+          "periodQuarter": 1,
+          "periodName": 1,
+          "rateType": "RGF",
+          "rateQuotation":"daongt",
+          "rate": 1.00,
+          "amount": null,
+          "functionalAmount": null,
+          "quantity": null,
+          "unit": "Java1",
+          "companyId": null,
+          "operationUnitId": null,
+          "unitId": null,
+          "positionId": null,
+          "employeeId": null,
+          "remark": 1,
+          "dimension1Id": null,
+          "dimension2Id": null,
+          "dimension3Id": null,
+          "dimension4Id": null,
+          "dimension5Id": null,
+          "dimension6Id": null,
+          "dimension7Id": null,
+          "dimension8Id": null,
+          "dimension9Id": null,
+          "dimension10Id": null,
+          "dimension11Id": null,
+          "dimension12Id": null,
+          "dimension13Id": null,
+          "dimension14Id": null,
+          "dimension15Id": null,
+          "dimension16Id": null,
+          "dimension17Id": null,
+          "dimension18Id": null,
+          "dimension19Id": null,
+          "dimension20Id": null
+        },
+        {
+          "id": 899636999388577800,
+          "isEnabled": true,
+          "isDeleted": true,
+          "createdDate": "2017-08-21T22:19:09+08:00",
+          "createdBy": null,
+          "lastUpdatedDate": "2017-08-21T22:19:10+08:00",
+          "lastUpdatedBy": null,
+          "journalHeaderId": 899636999271137300,
+          "budgetItemId": 2222,
+          "currency": null,
+          "periodYear": null,
+          "periodQuarter": null,
+          "periodName": null,
+          "rateType": null,
+          "rateQuotation": null,
+          "rate": null,
+          "amount": null,
+          "functionalAmount": null,
+          "quantity": null,
+          "unit": null,
+          "companyId": null,
+          "operationUnitId": null,
+          "unitId": null,
+          "positionId": null,
+          "employeeId": null,
+          "remark": null,
+          "dimension1Id": null,
+          "dimension2Id": null,
+          "dimension3Id": null,
+          "dimension4Id": null,
+          "dimension5Id": null,
+          "dimension6Id": null,
+          "dimension7Id": null,
+          "dimension8Id": null,
+          "dimension9Id": null,
+          "dimension10Id": null,
+          "dimension11Id": null,
+          "dimension12Id": null,
+          "dimension13Id": null,
+          "dimension14Id": null,
+          "dimension15Id": null,
+          "dimension16Id": null,
+          "dimension17Id": null,
+          "dimension18Id": null,
+          "dimension19Id": null,
+          "dimension20Id": null
+        }
+      ]
+    }
+
+    const data={
+      "dto" :
+        {
+          "companyId":"683edfba-4e52-489e-8ce4-6e820d5478b2",
+          "companyName":"companyName",
+          "organizationId":"1",
+          "organizationName":"orgName1",
+          "structureId":"1",
+          "structureName":"structureName",
+          "scenarioId":"1",
+          "scenarioName":"scenarioId",
+          "periodYear": "2017",
+          "periodQuarter": "1",
+          "periodName": "11",
+          "description": "1111",
+          "reversedFlag":"y",
+          "sourceBudgetHeaderId": "1",
+          "sourceType": "233",
+          "employeeId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+          "employeeName":"employeename",
+          "periodNumber": "2",
+          "unitId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+          "unitName":"periodNumber",
+          "versionId":"1",
+          "versionName":"versionName",
+          "status":"NEW",
+          "journalTypeId":"912159728258908162",
+          "journalTypeName":"bgtJournalTypeName",
+          "versionNumber":"1"
+        }
+      ,
+      "list":[{}]
+    }
+
+
+    const journalCode =this.props.params.journalCode;
+
+    this.getDataByBudgetJournalCode(journalCode)
+
+  }
+
+
+  //根据头id 获取数据
+  getDataByHeadId=(id)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/id`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        headerAndListData:request.data
+      })
     })
   }
 
+
+ //根据预算日记账编码查询预算日记账头行
+  getDataByBudgetJournalCode=(budgetJournalCode)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
+    console.log(request.data)
+      let listData = request.data.list;
+      let headerData =request.data.dto;
+    this.setState({
+      headerAndListData:request.data,
+      infoDate:headerData,
+      data:listData
+    })
+  })
+  }
 
 
   showImport=()=>{}
@@ -200,7 +387,29 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
+
+  handleAfterCloseEditorSlide=()=>{
+    this.setState({
+
+    })
+  }
+
+  showSlideFrameEditor=(value)=>{
+    this.setState({
+      showSlideFrameNew:value,
+    })
+  }
+
+  showEditor=(value)=>{
+    console.log(value)
+
+  }
+
+
+
+
   render(){
+
     const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut} = this.state;
     const { formatMessage } = this.props.intl;
     return (
@@ -225,6 +434,7 @@ class BudgetJournalDetail extends React.Component {
                  pagination={pagination}
                  bordered
                  size="middle"
+                 onRowClick={this.showEditor}
           />
 
         </div>
@@ -235,15 +445,12 @@ class BudgetJournalDetail extends React.Component {
           <Button>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
         </div>
 
-        <Modal
-          width={600}
-          title="Basic Modal"
+        <BudgetJournalDetailLead
           visible={showModal}
           onOk={this.handleModalOk}
           onCancel={() => this.handleModal(false)}
         >
-          <BudgetJournalDetailLead/>
-        </Modal>
+        </BudgetJournalDetailLead>
 
         <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
                     show={showSlideFrameNew}

@@ -40,8 +40,8 @@ class BudgetJournal extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
           listExtraParams:{organizationId:1}
         },
-        {type: 'input', id: 'journalNumber',
-          label: this.props.intl.formatMessage({id: 'budget.journalNumber'}), /*预算日记账编号*/
+        {type: 'input', id: 'journalCode',
+          label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
         {type: 'select', id: 'periodStrategy',
           label:  this.props.intl.formatMessage({id: 'budget.journal'})+this.props.intl.formatMessage({id: 'budget.periodStrategy'}),
@@ -57,16 +57,16 @@ class BudgetJournal extends React.Component {
 
       columns: [
         {          /*预算日记账编号*/
-          title: this.props.intl.formatMessage({id:"budget.journalNumber"}), key: "journalNumber", dataIndex: 'journalNumber'
+          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeId", dataIndex: 'journalTypeId'
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeId'
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
         },
         {          /*预算表*/
-          title: this.props.intl.formatMessage({id:"budget.structureId"}), key: "structureId", dataIndex: 'structureId'
+          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureId'
         },
         {          /*预算期间*/
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
@@ -142,6 +142,15 @@ class BudgetJournal extends React.Component {
     this.context.router.push(path)
   };
 
+  //跳转到详情
+  HandleRowClick=(value)=>{
+    console.log(value);
+    const journalCode =value.journalCode;
+    let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
+    this.context.router.push(path)
+
+  }
+
   render(){
     const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany,organization} = this.state;
     return (
@@ -159,7 +168,9 @@ class BudgetJournal extends React.Component {
           columns={columns}
           pagination={pagination}
           size="middle"
-          bordered/>
+          bordered
+          onRowClick={this.HandleRowClick}
+        />
       </div>
     )
   }
