@@ -64,27 +64,20 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
-    for(let id in values){
-      this.props.searchForm.map(item => {
-        if(item.id === id){
-          if(item.type === 'multiple'){
-            values[id].map(value => {
-              value.value = JSON.parse(value.key);
-              value.key = value.value[item.valueKey];
-              delete value.title;
-              return value
-            })
-          }
-          if(item.type === 'combobox'){
-            if(values[id]){
-              values[id].value = JSON.parse(values[id].key);
-              values[id].key = values[id].value[item.valueKey];
-              delete values[id].title;
-            }
-          }
+    let searchForm = [].concat(this.state.searchForm);
+    searchForm.map(item => {
+      if(values[item.id] && item.entity) {
+        if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
+          values[item.id] = JSON.parse(values[item.id].title);
+        } else if (item.type === 'multiple') {
+          let result = [];
+          values[item.id].map(value => {
+            result.push(JSON.parse(value.title));
+          });
+          values[item.id] = result;
         }
-      })
-    }
+      }
+    });
     this.props.submitHandle(values)
   };
 
@@ -97,6 +90,60 @@ class SearchArea extends React.Component{
   //区域点击事件，返回事件给父级进行处理
   handleEvent = (e, event) => {
     this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
+  };
+
+  //给select增加options
+  getOptions = (item) => {
+    if(item.options.length === 0){
+      let url = item.getUrl;
+      if(item.method === 'get' && item.getParams){
+        url += '?';
+        let keys = Object.keys(item.getParams);
+        keys.map(paramName => {
+          url += `&${paramName}=${item.getParams[paramName]}`
+        })
+      }
+      httpFetch[item.method](url, item.getParams).then((res) => {
+        let options = [];
+        res.data.map(data => {
+          options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+        });
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === item.id)
+            searchItem.options = options;
+          if(searchItem.type === 'items')
+            searchItem.items.map(subItem => {
+              if(subItem.id === item.id)
+                subItem.options = options;
+            });
+          return searchItem;
+        });
+        this.setState({ searchForm });
+      })
+    }
+  };
+
+  //得到值列表的值增加options
+  getValueListOptions = (item) => {
+    this.getSystemValueList(item.valueListCode).then(res => {
+      let options = [];
+      res.data.values.map(data => {
+        options.push({label: data.messageKey, value: data.code, data: data})
+      });
+      let searchForm = this.state.searchForm;
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id)
+          searchItem.options = options;
+        if(searchItem.type === 'items')
+          searchItem.items.map(subItem => {
+            if(subItem.id === item.id)
+              subItem.options = options;
+          });
+        return searchItem;
+      });
+      this.setState({ searchForm });
+    })
   };
 
   //根据接口返回数据重新设置options
@@ -112,7 +159,7 @@ class SearchArea extends React.Component{
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -136,9 +183,27 @@ class SearchArea extends React.Component{
       //选择组件
       case 'select':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+                  onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
-              return <Option key={option.value}>{option.label}</Option>
+              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            })}
+          </Select>
+        )
+      }
+      //值列表选择组件
+      case 'value_list':{
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+                  onFocus={() => this.getValueListOptions(item)}>
+            {item.options.map((option)=>{
+              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -174,7 +239,7 @@ class SearchArea extends React.Component{
       //带搜索的选择组件
       case 'combobox':{
         return <Select
-          labelInValue
+          labelInValue={!!item.entity}
           showSearch
           allowClear
           placeholder={item.placeholder}
@@ -185,7 +250,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
+            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -193,7 +258,7 @@ class SearchArea extends React.Component{
       case 'multiple':{
         return <Select
           mode="multiple"
-          labelInValue
+          labelInValue={!!item.entity}
           placeholder={item.placeholder}
           filterOption={!item.searchUrl}
           optionFilterProp='children'
@@ -202,7 +267,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
+            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -302,7 +367,7 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > maxLength 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items中的一种
+          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items, value_list中的一种
           id: '',                      //必填，表单id，搜索后返回的数据key
           label: '',                  //必填，界面显示名称label
           listType: '',              //可选，当type为list时必填，listSelector的type类型
@@ -314,15 +379,16 @@ class SearchArea extends React.Component{
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
           searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
-          getUrl: '',       //可选，初始显示的值需要的接口
-          method: '',      //可选，接口所需要的接口类型get/post
+          getUrl: '',       //可选，初始显示的值需要的接口,适用与select、multiple、combobox
+          method: '',      //可选，getUrl接口所需要的接口类型get/post
           searchKey: '',  //可选，搜索参数名
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
           items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
-          entity: false   //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
-          getParam: ''   //可选,getUrl所需要的参数
-          single: false //可选,当type为list时是否为单选
+          entity: false     //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
+          getParam: ''     //可选,getUrl所需要的参数
+          single: false   //可选,当type为list时是否为单选
+          valueListCode: //可选，当type为value_list时的值列表coode
         }
  */
 SearchArea.propTypes = {

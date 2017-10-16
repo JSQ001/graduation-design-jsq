@@ -42,6 +42,9 @@
   "menu.pay": "Pay",
   "menu.pay-workbench": "Pay workbench",
   "menu.payment-detail": "Payment detail",
+  "menu.approve-setting": "Approve setting",
+  "menu.agency-setting": "Agency setting",
+  "menu.new-agency": "New agency",
   "menu.bank-definition": "Bank definition",
   "menu.branch-bank-information": "Branch bank information",
   "menu.security-setting": "Security setting"
