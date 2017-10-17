@@ -95,14 +95,14 @@ React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config
 /**
  * 将一个元素包装成雪碧图动画，雪碧图为垂直方向
  * @param dom  需要包装的dom
- * @param url  雪碧图url '../images/.....'
+ * @param img  雪碧图资源
  * @param height  单个frame的高
  * @param width  单个frame的宽
  * @param total  总共帧数
  * @param duration 动画持续时间
  */
-window.spriteAnimation = function(dom, url, height, width, total, duration = 500){
-  dom.style.backgroundImage = `url('${url}')`;
+window.spriteAnimation = function(dom, img, height, width, total, duration = 500){
+  dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
 
