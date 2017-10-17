@@ -379,6 +379,7 @@ class BudgetJournalDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
     console.log(request.data)
       let listData = request.data.list;
+    console.log(listData);
       let headerData =request.data.dto;
     this.setState({
       headerAndListData:request.data,
@@ -432,9 +433,73 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
+  //获得表单数据
   handleAfterCloseNewSlide=(value)=>{
-      console.log(value);
+    this.setState({
+      showSlideFrameNew:false,
+    })
 
+    console.log(value);
+    if(value.company!=undefined) {
+      let company = JSON.parse(value.company);
+      let item = JSON.parse(value.item);
+      let periodName = JSON.parse(value.periodName);
+      // let currency =JSON.parse(value.currency);
+      const valueData = {
+        "companyId": company.companyOID,
+        "companyName": company.name,
+        "unitId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+        "departmentCode": "department1code",
+        "costCenter": "我是测试成本中心",
+        "itemId": item.id,
+        "itemName": item.itemName,
+        "currency": "RNB",
+        "rateType": "1",
+        "rateQuotation": "1",
+        "rate": value.rate,
+        "amount": value.amount,
+        "functionalAmount": value.functionalAmount,
+        "quantity": value.quantity,
+        "unit": "1",
+        "remark": "1",
+        "periodYear": value.periodYear,
+        "periodQuarter": "2",
+        "periodName": "201701",
+        "dimension1Id": "1111",
+        "dimension2Id": "2222",
+        "dimension3Id": null,
+        "dimension4Id": null,
+        "dimension5Id": null,
+        "dimension6Id": null,
+        "dimension7Id": null,
+        "dimension8Id": null,
+        "dimension9Id": null,
+        "dimension10Id": null,
+        "dimension11Id": null,
+        "dimension12Id": null,
+        "dimension13Id": null,
+        "dimension14Id": null,
+        "dimension15Id": null,
+        "dimension16Id": null,
+        "dimension17Id": null,
+        "dimension18Id": null,
+        "dimension19Id": null,
+        "dimension20Id": null,
+      }
+      const valueData2 = valueData;
+      let data = this.state.data;
+      let headerAndListData = this.state.headerAndListData;
+      headerAndListData.list.addIfNotExist(valueData);
+      data.addIfNotExist(valueData2);
+      this.setState({
+        data:data,
+        headerAndListData: headerAndListData
+      });
+
+      console.log(headerAndListData)
+      console.log(this.state.data);
+      console.log(55555555555555555555555)
+    }
   }
 
 
