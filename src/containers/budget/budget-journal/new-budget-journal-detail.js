@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm,InputNumber} from 'antd'
 const FormItem = Form.Item;
+const Option = Select.Option;
 import debounce from 'lodash.debounce';
 
 import Chooser from  'components/Chooser'
@@ -29,8 +30,8 @@ class NewBudgetJournalDetail extends React.Component {
         /*部门*/
         {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
         /*预算项目*/
-        {type: 'select', id:'ItemName', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
-          labelKey:'ItemName',valueKey:'id',
+        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+          labelKey:'itemName',valueKey:'id',
           url:`${config.budgetUrl}/api/budget/items/find/all`,
         },
         /*期间*/
@@ -80,11 +81,20 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   componentWillMount(){
-    this.getOrganization();
+    console.log("yujuyuyj")
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request);
+      this.setState({
+        organization:request.data
+      })
+    }).catch((e)=>{
+      console.log("失败")
+    })
   }
 
 
-  
+
+
   search = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
@@ -143,20 +153,33 @@ class NewBudgetJournalDetail extends React.Component {
 
 
   //获得值列表里面的数据
-  setOptionsToFormItemSelect=(item,url,key)=>{
+  setOptionsToFormItemSelect=(item,url)=>{
     console.log(this.state.organization)
     console.log(item);
     let params = {};
     let path = item.url;
-    if(item.id=="ItemName"){
-      path = path+`?organizationId=${this.state.organization.id}`
+    let organizationId ;
+    if(item.id=="item"){
+      path = path+`?organizationId=1`
     }
+
     url=path;
     httpFetch.get(url, params).then((res) => {
       let options = [];
       res.data.map(data => {
         options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
       });
+
+      console.log(options)
+
+   let searchForm = this.state.searchForm;
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id)
+          searchItem.options = options;
+        return searchItem;
+      });
+      console.log(searchForm);
+
       this.setState({ searchForm });
     })
   }
@@ -175,7 +198,8 @@ class NewBudgetJournalDetail extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
                   onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
-              return <Option key={option.value}>{option.label}</Option>
+             // let a  = [option.key,option.label]
+              return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
             })}
           </Select>
         )
