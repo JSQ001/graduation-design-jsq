@@ -70,9 +70,9 @@ Date.prototype.format = function (fmt) {
  * 2012 规则参数类型
  * 2013 取值方式
  * 2014 取值范围
- * 2015 规则参数类型_预算
- * 2016 规则参数类型_组织
- * 2017 规则参数类型_维度
+ * 2015 规则参数类型_预算相关
+ * 2016 规则参数类型_组织架构相关
+ * 2017 规则参数类型_维度相关
  * 2018 预算业务类型
  * 2019 金额／数量
  * 2020 期间汇总标志
@@ -91,4 +91,42 @@ Date.prototype.format = function (fmt) {
  * @param code 值列表代码
  */
 React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config.baseUrl}/api/custom/enumeration/system/by/type?systemCustomEnumerationType=${code}`);
+
+/**
+ * 将一个元素包装成雪碧图动画，雪碧图为垂直方向
+ * @param dom  需要包装的dom
+ * @param url  雪碧图url '../images/.....'
+ * @param height  单个frame的高
+ * @param width  单个frame的宽
+ * @param total  总共帧数
+ * @param duration 动画持续时间
+ */
+window.spriteAnimation = function(dom, url, height, width, total, duration = 500){
+  dom.style.backgroundImage = `url('${url}')`;
+  dom.style.backgroundSize = `${width}px`;
+  dom.frames = total;
+
+  dom.onmouseenter = function(){
+    let enterInterval = setInterval(() => {
+      clearInterval(dom.leaveInterval);
+      dom.enterInterval = enterInterval;
+      dom.style.backgroundPosition = `0 ${dom.frames * height}px`;
+      dom.frames--;
+      if(dom.frames === 0)
+        clearInterval(enterInterval);
+    }, duration / total)
+  };
+  dom.onmouseleave = function(){
+    let leaveInterval = setInterval(() => {
+      clearInterval(dom.enterInterval);
+      dom.leaveInterval = leaveInterval;
+      dom.frames++;
+      dom.style.backgroundPosition = `0 ${dom.frames * height}px`;
+      if(dom.frames === total)
+        clearInterval(leaveInterval);
+    }, duration / total)
+  };
+}
+
+
 
