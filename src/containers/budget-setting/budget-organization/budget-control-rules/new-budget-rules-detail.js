@@ -277,7 +277,7 @@ class NewBudgetRulesDetail extends React.Component{
         </Form>
         <ListSelector
           visible={showParamsType}
-          type="ruleParams"
+          type="rule_params"
           onCancel={()=>this.showList(false)}
           onOk={this.handleListOk}
           selectedData={listSelectedData}

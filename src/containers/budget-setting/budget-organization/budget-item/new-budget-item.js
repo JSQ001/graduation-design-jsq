@@ -240,7 +240,7 @@ class NewBudgetItem extends React.Component{
         </div>
         <ListSelector
           visible={showItemType}
-          type="item_type"
+          type="budget_item_type"
           onCancel={()=>this.showList(false)}
           onOk={this.handleListOk}
           selectedData={listSelectedData}

@@ -59,13 +59,13 @@ class BudgetBalanceResult extends React.Component {
   };
 
   renderTotal = () => {
-    return this.state.total.map(item => {
+    return this.state.total.map((item, outerIndex) => {
       return (
-        <div className="currency-item">
+        <div className="currency-item" key={outerIndex}>
           {item.currencyCode}
-          {Object.keys(item).map(itemName => {
+          {Object.keys(item).map((itemName, index) => {
             return itemName === 'currencyCode' ? null : (
-              <span className="currency-item-child">
+              <span className="currency-item-child" key={index}>
                 <span className="ant-divider" />{this.state.menuText[itemName]}：{this.renderMoney(item[itemName], itemName === 'total' ? 0 : 2)}
               </span>
             )

@@ -44,7 +44,7 @@ class BudgetItem extends React.Component {
           options: itemCode
         },
         {type: 'list', id: 'itemTypeName',
-          listType: 'item_type',
+          listType: 'budget_item_type',
           labelKey: 'itemTypeName',
           valueKey: 'id',
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/

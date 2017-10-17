@@ -62,7 +62,6 @@ class ListSelector extends React.Component {
         onSelectAll: this.onSelectAll
       }
     };
-    console.log(this.props.single)
   }
 
   search = (params) => {
