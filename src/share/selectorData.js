@@ -48,7 +48,7 @@ const selectorData = {
   },
   'company': {
     title: '添加公司',
-    url: `${config.baseUrl}/api/budget/structures/query`,
+    url: `${config.baseUrl}/api/company/by/term`,
     searchForm: [
       {type: 'input', id: 'companyCode', label: "公司代码"},
       {type: 'input', id: 'companyName', label: "公司名称"},
@@ -57,8 +57,21 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'companyName'},
-      {title: "公司类型", dataIndex: 'companyCode'}
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
+  'available_company': {
+    title: '切换公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司名称"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
   },
@@ -118,17 +131,44 @@ const selectorData = {
   },
   'budget_journal_type':{
     title: "预算日记账类型",
-    url: `${config.budgetUrl}/api/budget/journalType/query`,
+    url: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`,
     searchForm:[
       {type: 'input', id: 'journalTypeCode', label: '预算日记账类型代码'},
-      {type: 'input', id: 'journalTypeName', label: '预算日记账类型代码'},
+      {type: 'input', id: 'journalTypeName', label: '预算日记账类型名称'},
     ],
     columns: [
       {title: '预算日记账类型代码', dataIndex: 'journalTypeCode'},
       {title: '预算日记账类型名称', dataIndex: 'journalTypeName'},
     ],
     key: 'id'
+  },
+  'budget_versions':{
+    title:"预算版本",
+    url:`${config.budgetUrl}/api/budget/versions/query`,
+    searchForm:[
+      {type: 'input', id: 'versionCode', label: '预算版本代码'},
+      {type: 'input', id: 'versionName', label: '预算版本名称'},
+    ],
+    columns: [
+      {title: '预算版本代码', dataIndex: 'versionCode'},
+      {title: '预算版本名称', dataIndex: 'versionName'},
+    ],
+    key: 'id'
+  },
+  'budget_scenarios':{
+    title:"预算场景",
+    url:`${config.budgetUrl}/api/budget/scenarios/query`,
+    searchForm:[
+      {type: 'input', id: 'scenarioCode', label: '预算场景代码'},
+      {type: 'input', id: 'scenarioName', label: '预算场景名称'},
+    ],
+    columns: [
+      {title: '预算场景代码', dataIndex: 'scenarioCode'},
+      {title: '预算场景名称', dataIndex: 'scenarioName'},
+    ],
+    key: 'id'
   }
+
 };
 
 export default selectorData;

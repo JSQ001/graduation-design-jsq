@@ -22,12 +22,14 @@
       text-align: center;
     }
   }
-  .ant-select-selection.ant-select-selection--multiple{
-    .ant-select-selection__choice{
-      padding: 0 10px;
-    }
-    .ant-select-selection__choice__remove{
-      display: none;
+  .chooser{
+    .ant-select-selection.ant-select-selection--multiple{
+      .ant-select-selection__choice{
+        padding: 0 10px;
+      }
+      .ant-select-selection__choice__remove{
+        display: none;
+      }
     }
   }
 }

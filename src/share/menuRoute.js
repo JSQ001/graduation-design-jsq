@@ -7,6 +7,7 @@ import { Router, Route, browserHistory } from 'react-router'
 import Main from 'containers/main'
 import requireAuthentication from 'components/requireAuthentication'
 
+import DashboardAdmin from 'containers/dashboard-admin'
 import Dashboard from 'containers/dashboard'
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 
@@ -44,18 +45,22 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
-//import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
+import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
-//import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
+import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
+
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
+import AgencySetting from 'containers/approve-setting/agency-setting/agency-setting'
+import NewAgency from 'containers/approve-setting/agency-setting/new-agency'
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
 const menuIndexUrl = '/main/dashboard';
+const menuAdminIndexUrl = '/main/dashboard-admin';
 
 //确认付款
 const confirmPayment = {
@@ -284,7 +289,7 @@ const newBudgetJournal={
 //预算日记账详情
 const budgetJournalDetail={
   key:'budget-journal-detail',
-  url:'/main/budget/budget-journal/budget-journal-detail/:budgetJournalHeaderId',
+  url:'/main/budget/budget-journal/budget-journal-detail/:journalCode',
   components:BudgetJournalDetail,
   parent: 'budgetJournal',
 };
@@ -295,18 +300,17 @@ const budgetJournal = {
   url:'/main/budget/budget-journal',
   components: BudgetJournal,
   parent: 'budget',
-  children: {}
+  children: {newBudgetJournal,budgetJournalDetail}
 };
 
 
-/*
 const budgetBalanceResult = {
   key: 'budget-balance-result',
   url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
   components: BudgetBalanceResult,
   parent: 'budget-balance'
 };
-*/
+
 
 //预算余额
 const budgetBalance = {
@@ -315,7 +319,7 @@ const budgetBalance = {
   components: BudgetBalance,
   parent: 'budget',
   children: {
-    //budgetBalanceResult
+    budgetBalanceResult
   }
 };
 
@@ -331,15 +335,15 @@ const budget = {
 //////////////////////支付模块///////////////////////////
 
 //支付流水详情
-/*const paymentDetail = {
+const paymentDetail = {
   key:'payment-detail',
   url:'/main/pay/pay-workbench/payment-detail/:id',
   components: PaymentDetail,
   parent: 'pay-workbench'
-};*/
+};
 
 //付款工作台
-/*const payWorkbench = {
+const payWorkbench = {
   key: 'pay-workbench',
   url:'/main/pay/pay-workbench',
   components: PayWorkbench,
@@ -347,7 +351,7 @@ const budget = {
   children: {
     paymentDetail
   }
-};*/
+};
 
 //分行信息
 const branchBankInformation = {
@@ -378,6 +382,38 @@ const pay = {
 
 
 //////////////////////支付模块结束///////////////////////////
+
+
+//////////////////////审批设置模块///////////////////////////
+
+//新建代理
+const newAgency = {
+  key:'new-agency',
+  url:'/main/approve-setting/agency-setting/new-agency',
+  components: NewAgency,
+  parent: 'agency-setting'
+};
+
+//代理设置
+const agencySetting = {
+  key:'agency-setting',
+  url:'/main/approve-setting/agency-setting',
+  components: AgencySetting,
+  parent: 'approve-setting',
+  children: {
+    newAgency
+  }
+};
+
+//审批设置
+const approveSetting = {
+  key:'approve-setting',
+  subMenu: [agencySetting],
+  icon: 'global',
+  admin: true
+};
+
+//////////////////////审批设置模块结束///////////////////////////
 
 
 //////////////////////设置模块开始///////////////////////////
@@ -423,8 +459,10 @@ const callbackSetting = {
 const setting = {
   key:'setting',
   subMenu: [valueList, securitySetting, callbackSetting],
-  icon: 'setting'
+  icon: 'setting',
+  admin: true
 };
+
 
 //////////////////////设置模块结束///////////////////////////
 
@@ -435,6 +473,15 @@ const dashboard = {
   url: menuIndexUrl,
   components: Dashboard,
   icon: 'home'
+};
+
+//集团模式首页
+const dashboardAdmin = {
+  key:'dashboard-admin',
+  url: menuAdminIndexUrl,
+  components: DashboardAdmin,
+  icon: 'home',
+  admin: true
 };
 
 //财务管理
@@ -467,13 +514,15 @@ const expenseReport = {
  * @params children    页面内部所有页面 key : page
  */
 const menu = [
+  approveSetting,
   dashboard,
   setting,
   financialManagement,
   expenseReport,
   budgetSetting,
   budget,
-  pay
+  pay,
+  approveSetting
 ];
 
 /**

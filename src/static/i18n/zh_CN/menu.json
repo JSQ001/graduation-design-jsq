@@ -3,6 +3,7 @@
   "menu.new-value-list": "新建值列表",
   "menu.value-list": "值列表",
   "menu.dashboard": "仪表盘",
+  "menu.dashboard-admin": "集团仪表盘",
   "menu.financial-management": "财务管理",
   "menu.setting": "设置",
   "menu.my-account": "我的账本",
@@ -22,7 +23,9 @@
   "menu.new-budget-strategy-detail": "新建策略明细",
   "menu.strategy-control-detail": "策略明细",
   "menu.budget-rule": "预算控制规则定义",
-  "menu.budget-journal": "预算日记账类型定义",
+  "menu.budget-journal": "预算日记账",
+  "menu.budget-journal-detail":"预算日记账详情",
+  "menu.new-budget-journal":"新建预算日记账",
   "menu.budget-journal-type": "预算日记账类型定义",
   "menu.new-budget-journal-type": "新建预算日记账类型",
   "menu.budget-journal-type-detail": "预算日记账详情",
@@ -42,5 +45,9 @@
   "menu.bank-definition": "银行定义",
   "menu.branch-bank-information": "分行信息",
   "menu.security-setting": "安全设置",
-  "menu.callback-setting": "回调设置"
+  "menu.callback-setting": "回调设置",
+  "menu.approve-setting": "审批设置",
+  "menu.agency-setting": "代理设置",
+  "menu.new-agency": "新建代理",
+  "menu.security-setting": "安全设置"
 }
