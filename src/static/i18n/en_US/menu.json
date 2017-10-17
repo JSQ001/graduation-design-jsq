@@ -39,6 +39,6 @@
   "menu.pay-workbench": "Pay workbench",
   "menu.bank-definition": "Bank definition",
   "menu.branch-bank-information": "Branch bank information",
-  "menu.security-setting": "Security setting"
-
+  "menu.security-setting": "Security setting",
+  "menu.callback-setting": "The callback is set"
 }

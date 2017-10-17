@@ -13,6 +13,7 @@ import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
 import SecuritySetting from 'containers/setting/security-setting/security-setting'
+import CallbackSetting from  'containers/setting/callback-setting/callback-setting'
 
 import MyAccount from 'containers/expense-report/my-account'
 
@@ -49,6 +50,7 @@ import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 //import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
+
 
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
@@ -408,10 +410,19 @@ const securitySetting = {
   children:{}
 };
 
+//回调设置
+const callbackSetting = {
+  key:'callback-setting',
+  url:'/main/setting/callback-setting',
+  components:CallbackSetting,
+  parent: 'setting',
+  children:{}
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting],
+  subMenu: [valueList, securitySetting, callbackSetting],
   icon: 'setting'
 };
 
