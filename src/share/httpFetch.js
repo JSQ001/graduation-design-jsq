@@ -112,8 +112,7 @@ methodList.map(method => {
   httpFetch[method] = function(url, params ,header){
     if(!header)
       header = {};
-    if(url.indexOf(config.budgetUrl) === -1) //TODO:预算模块暂时不能传token
-      header.Authorization = "Bearer " + localStorage.token;
+    header.Authorization = "Bearer " + localStorage.token;
     return axios(url, {
       url: url,
       method: method.toUpperCase(),
