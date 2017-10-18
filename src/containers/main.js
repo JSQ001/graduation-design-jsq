@@ -251,11 +251,13 @@ class Main extends React.Component{
             {check ? menuRoute.MainRoute : <Loading/>}
           </Content>
         </Layout>
+
         <ListSelector type="available_company"
                       visible={showListSelector}
                       onOk={this.handleChangeCompany}
                       onCancel={() => { this.setState({showListSelector: false}) }}
                       single={true}/>
+
       </Layout>
     )
   }
