@@ -1,0 +1,133 @@
+.call-back-setting{
+  .a{
+    display:inline;
+    background: #05afd1;
+  }
+  .b{
+    display:inline;
+    background: #FF0000;
+  }
+  .call-back-setting-head{
+    .picture{
+      height: 75px;
+      width: 75px;
+      background: #05afd1;
+      //background-image: url('/images/callback-setting.png');
+      background-position: 0 0;
+      display:inline-block;
+
+    }
+    .head-context{
+      //position: relative;
+      margin-left: 20px;
+      top: -60px;
+      height: 75px;
+      width: 90%;
+      display: inline-block;
+      .head-form-title{
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .head-form-tips{
+        font-size: 16px;
+        background: #E19D08;
+        margin-left: 15px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .head-status{
+        margin-left: 60vw;
+      }
+
+      .head-form{
+        padding-top: 50px;
+        .formItem-title{
+          margin-top: -40px;
+        }
+        .formItem-update{
+          margin-top: -25px;
+        }
+      }
+
+    }
+
+    /*.aaa{
+      height: 75px;
+      width: 75px;
+      background-image: url(https://img.alicdn.com/tps/TB1ceKWLXXXXXaEapXXXXXXXXXX-150-9000.jpg);
+      background-position: 0px 400px;
+    }*/
+    /*.picture:hover(1) {
+      background-position:0 100px
+    }
+    .picture:hover(2) {
+      background-position:0 200px
+    }
+    .picture:hover(3) {
+      background-position:0 300px
+    }
+    .picture:hover(4) {
+      background-position:0 400px
+    }
+    .picture:hover(5) {
+      background-position:0 500px
+    }
+    .picture:hover(6) {
+      background-position:0 600px
+    }
+    .picture:hover(7) {
+      background-position:0 700px
+    }
+    .picture:hover(8) {
+      background-position:0 800px
+    }
+    .picture:hover(9) {
+      background-position:0 1=900px
+    }
+    .picture:hover(10) {
+      background-position:0 1000px
+    }
+    .picture:hover(11) {
+      background-position:0 1100px
+    }
+    .picture:hover(12) {
+      background-position:0 1200px
+    }
+    .picture:hover(13) {
+      background-position:0 1300px
+    }
+    .picture:hover(14) {
+      background-position:0 1400px
+    }*/
+  }
+  .call-back-setting-tabs{
+    margin-top: 20px;
+  }
+  .call-back-setting-table-header{
+    .table-header-api{
+      .table-header-api-tips{
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .table-header-api-title{
+        margin-top: 15px;
+        margin-bottom: 12px;
+      }
+    }
+    .table-header-apiSetting{
+      .table-header-apiSetting-tips{
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .table-header-apiSetting-title{
+        margin-top: 12px;
+      }
+      .table-header-button{
+        margin-top: 8px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
