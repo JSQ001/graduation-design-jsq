@@ -23,6 +23,9 @@ class NewBudgetRulesDetail extends React.Component{
       ruleDetail: {},
       isEnabled: true,
       loading: false,
+      ruleParameterType: [], //值列表：规则参数类型
+      filtrateMethod: [], //值列表：取值方式
+      summaryOrDetail: [], //值列表：取值范围
       filtrateMethodHelp: '',
       summaryOrDetailHelp: '',
       showParamsType: false,
@@ -31,7 +34,48 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillMount(){
-    //获取规则参数类型
+    //值列表：获取规则参数类型
+    this.getSystemValueList(2012).then((response)=>{
+      let ruleParameterType = [];
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        ruleParameterType.push(option);
+      });
+      this.setState({
+        ruleParameterType: ruleParameterType
+      })
+    });
+    //值列表：取值方式
+    this.getSystemValueList(2013).then((response)=>{
+      let filtrateMethod = [];
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        filtrateMethod.push(option);
+      });
+      this.setState({
+        filtrateMethod: filtrateMethod
+      })
+    });
+    //值列表：取值范围
+    this.getSystemValueList(2014).then((response)=>{
+      let summaryOrDetail = [];
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        summaryOrDetail.push(option);
+      });
+      this.setState({
+        summaryOrDetail: summaryOrDetail
+      })
+    });
   }
 
   componentWillReceiveProps(nextprops){
@@ -140,30 +184,16 @@ class NewBudgetRulesDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, loading, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp } = this.state;
+    const { isEnabled, loading, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterType, filtrateMethod, summaryOrDetail } = this.state;
     const { formatMessage } = this.props.intl;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
-    const ruleParamsType = [
-      {id: "dimension", value: formatMessage({id:"ruleParamsType.dimension"})}, /*维度相关*/
-      {id: "budget", value: formatMessage({id:"ruleParamsType.budget"})}, /*预算相关*/
-      {id: "organization", value: formatMessage({id:"ruleParamsType.organization"})}, /*组织架构相关*/
-    ];
-    const paramsType = ruleParamsType.map((item)=><Option key={item.id}>{item.value}</Option>);
+    const paramsType = ruleParameterType.map((item)=><Option key={item.id}>{item.value}</Option>);
 
-    const filtrateMethod = [
-      {id: "contain", value: '包含'},
-      {id: "exclude", value: '排除'}
-    ];
     const filtrateMethodOption = filtrateMethod.map((item)=><Option key={item.id}>{item.value}</Option>)
 
-    const summaryOrDetail = [
-      {id: 'all', value: '全部'},
-      {id: 'summary', value: '汇总'},
-      {id: 'detail', value: '明细'}
-    ];
     const summaryOrDetailOptions = summaryOrDetail.map((item)=><Option key={item.id}>{item.value}</Option>)
     return(
       <div className="new-budget-control-rules-detail">

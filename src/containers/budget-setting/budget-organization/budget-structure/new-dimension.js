@@ -11,6 +11,7 @@ import 'styles/budget-setting/budget-organization/budget-structure/new-dimension
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const Option = Select.Option;
 
 class NewDimension extends React.Component{
   constructor(props) {
@@ -19,13 +20,28 @@ class NewDimension extends React.Component{
       isEnabled: true,
       showSelectDimension: false,
       listSelectedData: [],
+      layoutPosition:[], //值列表：布局位置
       extraParams: {},
       loading: false
     };
   }
 
   componentWillMount(){
-
+    //获取布局位置的值列表
+    this.getSystemValueList(2003).then((response)=>{
+      let layoutPosition = [];
+      console.log(response.data)
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        layoutPosition.push(option);
+      });
+      this.setState({
+        layoutPosition: layoutPosition
+      })
+    });
   }
 
   handleSave = (e) =>{
@@ -100,11 +116,13 @@ class NewDimension extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, showSelectDimension, listExtraParams, listSelectedData } = this.state;
+    const { isEnabled, showSelectDimension, listExtraParams, listSelectedData, layoutPosition } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+
+    const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>)
     return (
       <div className="new-budget-scenarios">
         <Form onSubmit={this.handleSave}>
@@ -145,7 +163,9 @@ class NewDimension extends React.Component{
 
               }],
             })(
-              <Select placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+              <Select placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}>
+                {options}
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="布局顺序:">

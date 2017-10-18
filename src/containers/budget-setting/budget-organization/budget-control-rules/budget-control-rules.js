@@ -82,7 +82,6 @@ class BudgetControlRules extends React.Component {
   }
 
   handleSearch = (values) =>{
-    console.log(values)
     let searchParams = {
       controlRulesFrom: values.controlRulesFrom,
       controlRuleTo: values.controlRuleTo,
@@ -100,7 +99,6 @@ class BudgetControlRules extends React.Component {
   //获取控制规则数据
   getList(){
     let params = this.state.searchParams;
-    console.log(params)
     let url = `${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
