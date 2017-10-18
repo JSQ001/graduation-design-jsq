@@ -273,6 +273,7 @@ class NewBudgetControlRules extends React.Component{
 
 NewBudgetControlRules.contextTypes = {
   router: React.PropTypes.object
+
 }
 
 function mapStateToProps(state) {
