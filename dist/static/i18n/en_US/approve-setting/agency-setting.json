@@ -1,0 +1,19 @@
+{
+  "agencySetting.agent": "Agent",
+  "agencySetting.agent-bills": "代理单据",
+  "agencySetting.principal": "Principal",
+  "agencySetting.create-agency": "新建代理关系",
+  "agencySetting.agency-relation": "代理关系",
+  "agencySetting.serial-number": "序号",
+  "agencySetting.employeeId": "工号",
+  "agencySetting.userName": "姓名",
+  "agencySetting.departmentName": "部门",
+  "agencySetting.dutyName": "职务",
+  "agencySetting.chose-principal": "请选择被代理人",
+  "agencySetting.principal-explain": "需要他人帮助其填写、提交相应单据的人",
+  "agencySetting.agency-date": "代理日期",
+  "agencySetting.indefinite":"无限制",
+  "agencySetting.expense-account": "报销单",
+  "agencySetting.application-form": "申请单",
+  "agencySetting.agency-relation-intro": "选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配"
+}

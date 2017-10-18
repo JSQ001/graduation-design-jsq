@@ -29,8 +29,8 @@ node_modules
 # Bower
 bower_components/
 
-# Dist folder
-dist/
+# Dist folder 去除ignore配置
+# dist/
 
 # IDE/Editor data
 .idea/
