@@ -375,7 +375,7 @@ const bankDefinition = {
 //支付
 const pay = {
   key:'pay',
-  subMenu: [ bankDefinition],
+  subMenu: [payWorkbench, bankDefinition],
   icon: 'pay-circle'
 };
 
@@ -460,7 +460,7 @@ const setting = {
   key:'setting',
   subMenu: [valueList, securitySetting, callbackSetting],
   icon: 'setting',
-  admin: true
+ // admin: true
 };
 
 

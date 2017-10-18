@@ -1,47 +1,72 @@
 .security-setting{
- font-family:PingFangSC-Regular;
-  font-size:15px;
-  color:#999999;
-  letter-spacing:0;
-  text-align:left;
-  .security-setting-companyID{
-  }
-
-  .security-setting-companyKey{
-    margin-top: 20px;
+  .security-setting-company{
+    font-size: 16px;
+    padding-bottom: 20px;
+    font-weight: bold;
   }
 
   .security-setting-slid{
+    height: 0;
+    border-top: 1px solid #e9e9e9;
+    border-right:0;
+    border-bottom:0;
+    border-left:0;
+  }
+
+  .security-setting-Rule{
     margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
   }
 
-  .security-setting-basicRule{
-    margin-top: 20px;
+  .security-setting-formItem{
+     margin-left: -43px;
+    .formItem-label{
+      width: 100px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-value{
+      margin-left:33px;
+    }
+    .formItem-label-2{
+      width: 100px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-value-2{
+      margin-left:33px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-label-info{
+      width: 100px;
+      float: left;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-value-info{
+      margin-left:33px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-label-group{
+      width: 100px;
+      float: left;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-value-group{
+      margin-left:33px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
+    .formItem-value-group-tips{
+      margin-left:33px;
+      display:-moz-inline-box;
+      display:inline-block;
+    }
   }
 
-  .security-setting-formItem-1{
-    margin: 10px -20px;
-
-  }
-  .security-setting-formItem-2{
-    margin-left: -42px;
-  }
-
-
-  .ant-col-4{
-    margin-left: -92px;
-  }
-  .security-setting-formItem-5{
-    margin: 10px -65px;
-  }
-  .security-setting-formItem-6{
-    margin-left: 72px;
-  }
-
-  /*.security-setting-save{
-    margin: 20px 120px;
-  }*/
-/*  .security-setting-cancel{
-    margin: 20px 10px;
-  }*/
 }

@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Form, InputNumber, Checkbox, Row, Col} from 'antd'
+import { Button, Form, InputNumber, Checkbox, Radio, Row, Col} from 'antd'
 
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
@@ -15,6 +15,15 @@ import menuRoute from 'share/menuRoute'
 import 'styles/setting/security-setting/security-setting.scss'
 
 const FormItem = Form.Item;
+const CheckboxGroup = Checkbox.Group;
+const RadioGroup = Radio.Group;
+
+let passwordRule = [
+  { label: '小写字母', value: 'lowercase' },
+  { label: '大写字母', value: 'uppercase' },
+  { label: '数字', value: 'digital', },
+  { label: '特殊字符', value: 'specialCharacters' },
+];
 
 
 class SecuritySetting extends React.Component{
@@ -59,83 +68,96 @@ class SecuritySetting extends React.Component{
       wrapperCol: { span: 20, offset: 1 },
     };
 
+    const radioStyle = {
+      display: 'block',
+      height: '30px',
+      lineHeight: '30px',
+    };
+
     return(
       <div className="security-setting">
-        <div className="security-setting-companyID">
-          企业ID: 1231231231232
+        <div className="security-setting-company">
+          企业ID： 1231231231232
         </div>
-        <div className="security-setting-companyKey">
+        <div className="security-setting-company">
           企业密钥：{this.renderEnterpriseKey()}
         </div>
         <hr className="security-setting-slid"/>
-       {/* <div className="security-setting-slid"/>*/}
         <Form onSubmit={this.handleSubmit}>
-          <div className="security-setting-basicRule">基础规则</div>
-            <FormItem {...formItemLayout} label="密码长度为" className="security-setting-formItem-1">
+          <div className="security-setting-Rule">基础规则</div>
+            <FormItem {...formItemLayout} >
               {getFieldDecorator('passwordLengthMin')(
-                <div>
-                <InputNumber max={20} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/> 到20位
+                <div className="security-setting-formItem">
+                  <span className="formItem-label">密码长度：</span>
+                  <InputNumber className="formItem-value" min={6} max={20} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/> 到20位
                 </div>
                 )
               }
             </FormItem>
-            <FormItem {...{labelCol:{span:3},wrapperCol: { span: 10, offset: 1 }}} label="密码中必须包含" className="security-setting-formItem-2">
+            <FormItem {...formItemLayout}>
               {getFieldDecorator('passwordLength')(
-                <div>
-                  <Checkbox />小写字母 &nbsp;&nbsp;&nbsp;&nbsp;<Checkbox  />大写字母&nbsp;&nbsp;&nbsp;&nbsp; <Checkbox defaultChecked disabled /> 数字&nbsp;&nbsp;&nbsp;&nbsp; <Checkbox  /> 特殊字符
+                <div className="security-setting-formItem">
+                  <span className="formItem-label-2">密码中必须包含：</span>
+                  <CheckboxGroup  options={passwordRule} className="formItem-value-2" defaultValue={['digital']} />
                 </div>
               )
               }
             </FormItem>
-            <FormItem {...formItemLayout} label="密码有效期" className="security-setting-formItem-1">
+            <FormItem {...formItemLayout}>
               {getFieldDecorator('passwordLength')(
-                <div>
-                  <InputNumber max={1095}  placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/> 天 (最多1095天，0表示永不过期，过期后不可以登录)
-
+                <div className="security-setting-formItem">
+                  <span className="formItem-label">密码有效期：</span>
+                  <InputNumber className="formItem-value" min={0}  max={1095}  placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/><span> 天（最多1095天，0表示永不过期，过期后不可以登录）</span>
                 </div>
               )
               }
             </FormItem>
 
-            <FormItem {...{labelCol:{span:4},wrapperCol: { span: 40, offset:3 }}} label="历史密码检查" className="security-setting-formItem-4">
+            <FormItem {...formItemLayout}>
               {getFieldDecorator('passwordRepeatTimes')(
-                <div>
-                  禁止使用前&nbsp; <InputNumber max={24} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>次密码 (最大24，0表示不启用历史密码检查策略)
+                <div className="security-setting-formItem">
+                  <span className="formItem-label">历史密码检查：</span>
+                  <span className="formItem-value">禁止使用前&nbsp;&nbsp;<InputNumber min={0} max={24} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>次密码 （最大24，0表示不启用历史密码检查策略</span>
                 </div>
               )
               }
             </FormItem>
 
           <hr className="security-setting-slid"/>
-          <div className="security-setting-basicRule">其它规则</div>
-          <FormItem {...{labelCol:{span:3},wrapperCol: { span: 10, offset: 1 }}} label="账号失效时间" className="security-setting-formItem-5">
+          <div className="security-setting-Rule">其它规则</div>
+            <FormItem {...formItemLayout}>
             {getFieldDecorator('dimissionDelayDays')(
-              <div>
-                员工离职&nbsp; <InputNumber max={180} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>天后账号失效，将不能进行登录操作（最大180）
+              <div className="security-setting-formItem">
+                <span className="formItem-label">账号失效时间：</span>
+                <span className="formItem-value">员工离职&nbsp; <InputNumber min={1} max={180} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>天后账号失效，将不能进行登录操作（最大180）</span>
               </div>
-            )
-            }
+            )}
           </FormItem>
-          <FormItem {...{labelCol:{span:3},wrapperCol: { span: 20, offset: 1 }}} label="密码中必须包含" className="security-setting-formItem-2">
+            <FormItem {...formItemLayout}>
             {getFieldDecorator('passwordLength')(
-              <div>
-                <Checkbox defaultChecked disabled /> 邮箱（邮箱将用于含附件消息如报销单电子件的推送）
-                <Checkbox />手机（海外手机不支持短消息推送）
+              <div className="security-setting-formItem">
+                <span className="formItem-label-info">信息通知渠道：</span>
+                <span className="formItem-value-info">
+                  <Checkbox defaultChecked disabled /> 邮箱（邮箱将用于含附件消息如报销单电子件的推送）<br/>
+                  <Checkbox />&nbsp;&nbsp;&nbsp;手机（海外手机不支持短消息推送）
+                </span>
               </div>
-            )
-            }
+            )}
           </FormItem>
-          <FormItem {...{labelCol:{span:4},wrapperCol: { span: 20, offset: 1 }}} label="员工和组织架构信息创建" className="security-setting-formItem-6">
+            <FormItem {...formItemLayout}>
             {getFieldDecorator('passwordLength')(
-              <div>
-                <div>为确保信息的准确性，信息的同步方式只能选择一种，切换后会覆盖相同账号的信息</div>
-                <Checkbox  /> 手动创建（员工信息支持excel批量导入）
-                <Checkbox />接口同步
+              <div className="security-setting-formItem">
+                <span className="formItem-label-group">员工和组织架构信息创建：</span>
+                <div className="formItem-value-group-tips">为确保信息的准确性，信息的同步方式只能选择一种，切换后会覆盖相同账号的信息</div><br/>
+                <RadioGroup className="formItem-value-group">
+                  <Radio style={radioStyle} value={1}>手动创建（员工信息支持excel批量导入）</Radio>
+                  <Radio style={radioStyle} value={2}>接口同步</Radio>
+                </RadioGroup>
               </div>
             )
             }
           </FormItem>
-          <FormItem wrapperCol={{ offset: 7 }}>
+            <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
               <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
               <Col span={3}><Button>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
