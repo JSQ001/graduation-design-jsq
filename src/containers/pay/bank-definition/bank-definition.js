@@ -53,10 +53,10 @@ class BankDefinition extends React.Component{
       },
       columns: [
         {          /*银行数字代码*/
-          title: formatMessage({id:"bank.bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
+          title: formatMessage({id:"bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
         },
         {          /*银行字母代码*/
-          title: formatMessage({id:"bank.bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
+          title: formatMessage({id:"bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
         },
         {          /*银行名称*/
           title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
