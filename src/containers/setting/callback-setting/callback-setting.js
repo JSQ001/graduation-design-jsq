@@ -292,7 +292,7 @@ class CallBackSetting extends React.Component{
                     content={NewBudgetScenarios}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
-                    params={}/>
+                    params={""}/>
       </div>
     )
   }
