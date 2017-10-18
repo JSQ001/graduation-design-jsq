@@ -23,10 +23,12 @@ class BudgetBalance extends React.Component {
       budgetBalanceResult: menuRoute.getRouteItem('budget-balance-result', 'key'),
       showSlideFrame: false,
       params: [],
+      queryLineListTypeOptions: [],
+      queryLineListParamOptions: {},
       columns: [
-        {title: '参数类型', dataIndex: 'type', width: '10%', render: (text, record, index) => this.renderColumns(index, 'type')},
-        {title: '参数', dataIndex: 'params', width: '40%', render: (text, record, index) => this.renderColumns(index, 'params')},
-        {title: '参数值', dataIndex: 'value', width: '40%', render: (text, record, index) => this.renderColumns(index, 'value')},
+        {title: '参数类型', dataIndex: 'type', width: '20%', render: (text, record, index) => this.renderColumns(index, 'type')},
+        {title: '参数', dataIndex: 'params', width: '35%', render: (text, record, index) => this.renderColumns(index, 'params')},
+        {title: '参数值', dataIndex: 'value', width: '35%', render: (text, record, index) => this.renderColumns(index, 'value')},
         {title: '类型', dataIndex: 'operation', width: '10%', render: (text, record, index) => (
           <span>
             <Popconfirm onConfirm={(e) => this.deleteItem(e, index)} title="你确定要删除这条数据吗?">
@@ -35,7 +37,6 @@ class BudgetBalance extends React.Component {
           </span>)}
       ],
       searchForm: [],
-      typeOptions: [],
       organizationId: '908139656192442369', //TODO:默认组织ID
       searchParams: {
         periodSummaryFlag: false,
@@ -46,6 +47,12 @@ class BudgetBalance extends React.Component {
         periodLowerLimit: '',
         periodUpperLimit: '',
         queryLineList: []
+      },
+      paramsKey: 0,
+      paramTypeMap: {
+        'BGT_RULE_PARAMETER_BUDGET': 2015,
+        'BGT_RULE_PARAMETER_ORG': 2016,
+        'BGT_RULE_PARAMETER_DIM': 2017
       }
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
@@ -53,18 +60,29 @@ class BudgetBalance extends React.Component {
 
   //TODO:进入该页面时或登录时获取默认组织ID放入state
   componentWillMount(){
+    let { queryLineListTypeOptions } = this.state;
+    this.getSystemValueList(2012).then(res => {
+      queryLineListTypeOptions = [];
+      res.data.values.map(data => {
+        queryLineListTypeOptions.push({label: data.messageKey, value: data.code})
+      });
+      this.setState({ queryLineListTypeOptions })
+    });
+    let nowYear = new Date().getFullYear();
+    let yearOptions = [];
+    for(let i = nowYear - 20; i <= nowYear + 20; i++)
+      yearOptions.push({label: i, key: i})
     let searchForm = [
-      {type: 'list', id:'companyId', label: '公司', listType: 'company',isRequired: true, labelKey: 'name', valueKey: 'id'},
-      {type: 'select', id:'version', label: '预算版本', isRequired: true, options: [], method: 'get',
+      {type: 'select', id:'versionId', label: '预算版本', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId: this.state.organizationId},
-        labelKey: 'versionName', valueKey: 'versionCode'},
-      {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+        labelKey: 'versionName', valueKey: 'id'},
+      {type: 'select', id:'structureId', label: '预算表', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId: this.state.organizationId},
-        labelKey: 'structureName', valueKey: 'structureCode'},
-      {type: 'select', id:'budgetScenarios', label: '预算场景', isRequired: true, options: [], method: 'get',
+        labelKey: 'structureName', valueKey: 'id'},
+      {type: 'select', id:'scenarioId', label: '预算场景', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId: this.state.organizationId},
-        labelKey: 'scenariosName', valueKey: 'scenariosCode'},
-      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: []},
+        labelKey: 'scenarioName', valueKey: 'id'},
+      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: yearOptions},
       {type: 'items', id: 'dateRange', items: [
         {type: 'date', id: 'periodLowerLimit', label: '期间从', isRequired: true},
         {type: 'date', id: 'periodUpperLimit', label: '期间到'}
@@ -80,21 +98,65 @@ class BudgetBalance extends React.Component {
   }
 
   renderColumns = (index, dataIndex) => {
+    const { queryLineListTypeOptions, queryLineListParamOptions, params } = this.state;
     switch(dataIndex){
       case 'type':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}>
-            {this.state.typeOptions.map((option)=>{
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={(value) => this.handleChangeType(value, index)}
+                  value={params[index].type}>
+            {queryLineListTypeOptions.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}
           </Select>
         );
       }
       case 'params':{
-        return <Chooser/>;
+        let paramOptions = queryLineListParamOptions[params[index].type];
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={(value) => this.handleChangeParams(value, index)}
+                  value={params[index].params}
+                  onFocus={() => this.handleFocusParamSelect(index)}>
+            {paramOptions ? paramOptions.map((option)=>{
+              return <Option key={option.value}>{option.label}</Option>
+            }) : null}
+          </Select>
+        );
       }
       case 'value':{
         return <Chooser/>;
+      }
+    }
+  };
+
+  handleChangeType = (value, index) => {
+    let { params } = this.state;
+    params[index].type = value;
+    params[index].params = '';
+    this.setState({ params });
+  };
+
+  handleChangeParams = (value, index) => {
+    let { params } = this.state;
+    params[index].params = value;
+    this.setState({ params });
+  };
+
+  //点击参数选择框时的回调，若没有对应的值列表则获取
+  handleFocusParamSelect = (index) => {
+    let { params, queryLineListParamOptions, paramTypeMap } = this.state;
+    let type = params[index].type;
+    if(type !== ''){
+      if(!queryLineListParamOptions[type]){
+        this.getSystemValueList(paramTypeMap[type]).then(res => {
+          let options = [];
+          res.data.values.map(data => {
+            options.push({label: data.messageKey, value: data.code})
+          });
+          queryLineListParamOptions[type] = options;
+          this.setState({ queryLineListParamOptions });
+        });
       }
     }
   };
@@ -106,10 +168,11 @@ class BudgetBalance extends React.Component {
   };
 
   handleNew = () => {
-    let newParams = {type: '', params: '', value: ''};
-    let { params } = this.state;
+    let { params, paramsKey } = this.state;
+    let newParams = {type: '', params: '', value: '', key: paramsKey};
     params.push(newParams);
-    this.setState({ params });
+    paramsKey++;
+    this.setState({ params, paramsKey});
   };
 
   search = (e) => {
@@ -129,7 +192,9 @@ class BudgetBalance extends React.Component {
         }
       }
     });
-    console.log(values)
+    console.log(values);
+    values.queryLineList = [];
+    console.log(this.state.params);
     // this.context.router.push(this.state.budgetBalanceResult.url);
   };
 
