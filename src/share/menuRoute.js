@@ -56,6 +56,8 @@ import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-in
 import AgencySetting from 'containers/approve-setting/agency-setting/agency-setting'
 import NewAgency from 'containers/approve-setting/agency-setting/new-agency'
 
+import  BeepTimer from 'containers/finance-setting/beep-timer/beep-timer.js'
+
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
@@ -444,6 +446,25 @@ const securitySetting = {
 //////////////////////设置模块结束///////////////////////////
 
 
+
+
+//////////////////////财务设置模块开始///////////////////////////
+
+
+
+
+//单据提醒管理
+const beepTimer = {
+  key:'beep-timer',
+  url:'/main/finance-setting/beep-timer',
+  components: BeepTimer,
+  parent: 'finance-setting',
+  children:{}
+};
+
+
+//////////////////////财务设置模块结束///////////////////////////
+
 //首页
 const dashboard = {
   key:'dashboard',
@@ -473,8 +494,15 @@ const setting = {
   key:'setting',
   subMenu: [valueList, securitySetting],
   icon: 'setting',
-  admin: true
+ // admin: true
 };
+
+//财务设置
+const financeSetting = {
+  key:'finance-setting',
+  subMenu: [beepTimer],
+  icon: 'setting',
+}
 
 //报销单
 const expenseReport = {
@@ -501,6 +529,7 @@ const menu = [
   dashboardAdmin,
   dashboard,
   setting,
+  financeSetting,
   financialManagement,
   expenseReport,
   budgetSetting,

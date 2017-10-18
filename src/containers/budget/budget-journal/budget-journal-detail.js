@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Modal,message } from 'antd';
+import { Button, Table, Select,Modal,message,Popconfirm} from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal-detail.scss"
 
@@ -485,6 +485,7 @@ class BudgetJournalDetail extends React.Component {
         "dimension18Id": null,
         "dimension19Id": null,
         "dimension20Id": null,
+        "versionNumber": "2"
       }
       const valueData2 = valueData;
       let data = this.state.data;
@@ -534,6 +535,20 @@ class BudgetJournalDetail extends React.Component {
 
   }
 
+//保存新增，或修改
+  handleSaveJournal=()=>{
+    let headerAndListData = this.state.headerAndListData;
+    console.log(headerAndListData);
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
+      console.log(req.data)
+      message.success("成功");
+      this.getDataByBudgetJournalCode;
+    }).catch(e => {
+      message.error("失败")
+    })
+
+  }
+
 
 
   render(){
@@ -567,8 +582,10 @@ class BudgetJournalDetail extends React.Component {
           />
           <div className="footer-operate">
             <Button type="primary">提交</Button>
-            <Button type="primary">{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Button className="delete" onClick={this.handleDeleteJournal}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            <Button type="primary" onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
+            <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            </Popconfirm>
           </div>
 
         </div>
