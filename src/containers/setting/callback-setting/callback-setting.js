@@ -13,6 +13,7 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 
 import SlideFrame from 'components/slide-frame'
+import UpdateCallbackSetting from 'containers/setting/callback-setting/update-callback-setting'
 import 'styles/setting/callback-setting/callback-setting.scss'
 
 const FormItem = Form.Item;
@@ -289,10 +290,10 @@ class CallBackSetting extends React.Component{
           bordered/>
         <SlideFrame title="全局设置"
                     show={showSlideFrame}
-                    content={NewBudgetScenarios}
+                    content={UpdateCallbackSetting}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
-                    params={""}/>
+                    params={{}}/>
       </div>
     )
   }
