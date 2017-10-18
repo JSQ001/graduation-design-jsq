@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Modal,message } from 'antd';
+import { Button, Table, Select,Modal,message,Popconfirm} from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal-detail.scss"
 
@@ -52,6 +52,7 @@ class BudgetJournalDetail extends React.Component {
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       },
+      organization:{},
       infoDate:[],
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
@@ -81,6 +82,7 @@ class BudgetJournalDetail extends React.Component {
             ]
 
         },
+
 
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -151,6 +153,15 @@ class BudgetJournalDetail extends React.Component {
     };
   }
 
+  //获取预算组织
+  getOrganization(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        organization:request.data
+      })
+    })
+  }
 
   //当选择行变化的时候
   onSelectChange=(selectedRowKeys, selectedRows)=>{
@@ -368,6 +379,7 @@ class BudgetJournalDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
     console.log(request.data)
       let listData = request.data.list;
+    console.log(listData);
       let headerData =request.data.dto;
     this.setState({
       headerAndListData:request.data,
@@ -421,9 +433,74 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
+  //获得表单数据
   handleAfterCloseNewSlide=(value)=>{
-      console.log(value);
+    this.setState({
+      showSlideFrameNew:false,
+    })
 
+    console.log(value);
+    if(value.company!=undefined) {
+      let company = JSON.parse(value.company);
+      let item = JSON.parse(value.item);
+      let periodName = JSON.parse(value.periodName);
+      // let currency =JSON.parse(value.currency);
+      const valueData = {
+        "companyId": company.companyOID,
+        "companyName": company.name,
+        "unitId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+        "departmentCode": "department1code",
+        "costCenter": "我是测试成本中心",
+        "itemId": item.id,
+        "itemName": item.itemName,
+        "currency": "RNB",
+        "rateType": "1",
+        "rateQuotation": "1",
+        "rate": value.rate,
+        "amount": value.amount,
+        "functionalAmount": value.functionalAmount,
+        "quantity": value.quantity,
+        "unit": "1",
+        "remark": "1",
+        "periodYear": value.periodYear,
+        "periodQuarter": "2",
+        "periodName": "201701",
+        "dimension1Id": "1111",
+        "dimension2Id": "2222",
+        "dimension3Id": null,
+        "dimension4Id": null,
+        "dimension5Id": null,
+        "dimension6Id": null,
+        "dimension7Id": null,
+        "dimension8Id": null,
+        "dimension9Id": null,
+        "dimension10Id": null,
+        "dimension11Id": null,
+        "dimension12Id": null,
+        "dimension13Id": null,
+        "dimension14Id": null,
+        "dimension15Id": null,
+        "dimension16Id": null,
+        "dimension17Id": null,
+        "dimension18Id": null,
+        "dimension19Id": null,
+        "dimension20Id": null,
+        "versionNumber": "2"
+      }
+      const valueData2 = valueData;
+      let data = this.state.data;
+      let headerAndListData = this.state.headerAndListData;
+      headerAndListData.list.addIfNotExist(valueData);
+      data.addIfNotExist(valueData2);
+      this.setState({
+        data:data,
+        headerAndListData: headerAndListData
+      });
+
+      console.log(headerAndListData)
+      console.log(this.state.data);
+      console.log(55555555555555555555555)
+    }
   }
 
 
@@ -452,6 +529,20 @@ class BudgetJournalDetail extends React.Component {
     console.log(id);
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/${id}`).then((req) => {
       message.success("成功删除该预算日记账")
+    }).catch(e => {
+      message.error("失败")
+    })
+
+  }
+
+//保存新增，或修改
+  handleSaveJournal=()=>{
+    let headerAndListData = this.state.headerAndListData;
+    console.log(headerAndListData);
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
+      console.log(req.data)
+      message.success("成功");
+      this.getDataByBudgetJournalCode;
     }).catch(e => {
       message.error("失败")
     })
@@ -491,8 +582,10 @@ class BudgetJournalDetail extends React.Component {
           />
           <div className="footer-operate">
             <Button type="primary">提交</Button>
-            <Button type="primary">{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Button className="delete" onClick={this.handleDeleteJournal}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            <Button type="primary" onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
+            <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            </Popconfirm>
           </div>
 
         </div>

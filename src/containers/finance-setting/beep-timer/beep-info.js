@@ -1,12 +1,12 @@
 /**
- * Created by 13576 on 2017/10/16.
+ * Created by 13576 on 2017/10/18.
  */
+
 import React from 'react'
 import { connect } from 'react-redux'
 import { Form, Input, Switch, Button, Icon ,Tabs} from 'antd'
 const FormItem = Form.Item;
 const TabPane =Tabs.TabPane;
-
 
 class BeepTimer extends React.Component{
   constructor(props) {
@@ -39,15 +39,7 @@ class BeepTimer extends React.Component{
     };
     return (
       <div className="beep-timer">
-          <Tabs type="line">
-            <TabPane key="1">
-                        1231231
-            </TabPane>
 
-            <TabPane key="2">
-                  dfvdfvdfbvf
-            </TabPane>
-          </Tabs>
       </div>
     )
   }

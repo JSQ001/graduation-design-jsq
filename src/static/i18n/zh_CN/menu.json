@@ -42,12 +42,13 @@
   "menu.pay": "支付",
   "menu.pay-workbench": "付款工作台",
   "menu.payment-detail": "支付流水详情",
+  "menu.approve-setting": "审批设置",
+  "menu.agency-setting": "代理设置",
+  "menu.new-agency": "新建代理",
   "menu.bank-definition": "银行定义",
   "menu.branch-bank-information": "分行信息",
   "menu.security-setting": "安全设置",
   "menu.callback-setting": "回调设置",
-  "menu.approve-setting": "审批设置",
-  "menu.agency-setting": "代理设置",
-  "menu.new-agency": "新建代理",
-  "menu.security-setting": "安全设置"
+  "menu.finance-setting":"财务设置",
+  "menu.beep-timer":"单据提醒管理"
 }
