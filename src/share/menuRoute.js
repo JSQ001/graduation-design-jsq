@@ -14,6 +14,7 @@ import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
 import SecuritySetting from 'containers/setting/security-setting/security-setting'
+import CallbackSetting from  'containers/setting/callback-setting/callback-setting'
 
 import MyAccount from 'containers/expense-report/my-account'
 
@@ -44,7 +45,6 @@ import NewBudgetJournal from 'containers/budget/budget-journal/new-budget-journa
 import BudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail'
 
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
-
 import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
@@ -303,12 +303,14 @@ const budgetJournal = {
   children: {newBudgetJournal,budgetJournalDetail}
 };
 
+
 const budgetBalanceResult = {
   key: 'budget-balance-result',
   url:'/main/budget/budget-balance/budget-balance-result/:id',
   components: BudgetBalanceResult,
   parent: 'budget-balance'
 };
+
 
 //预算余额
 const budgetBalance = {
@@ -373,11 +375,14 @@ const bankDefinition = {
 //支付
 const pay = {
   key:'pay',
-  subMenu: [ bankDefinition],
+  subMenu: [payWorkbench, bankDefinition],
   icon: 'pay-circle'
 };
 
+
+
 //////////////////////支付模块结束///////////////////////////
+
 
 //////////////////////审批设置模块///////////////////////////
 
@@ -441,6 +446,24 @@ const securitySetting = {
   children:{}
 };
 
+//回调设置
+const callbackSetting = {
+  key:'callback-setting',
+  url:'/main/setting/callback-setting',
+  components:CallbackSetting,
+  parent: 'setting',
+  children:{}
+};
+
+//设置
+const setting = {
+  key:'setting',
+  subMenu: [valueList, securitySetting, callbackSetting],
+  icon: 'setting',
+ // admin: true
+};
+
+
 //////////////////////设置模块结束///////////////////////////
 
 
@@ -468,13 +491,6 @@ const financialManagement = {
   icon: 'pay-circle-o'
 };
 
-//设置
-const setting = {
-  key:'setting',
-  subMenu: [valueList, securitySetting],
-  icon: 'setting',
-  admin: true
-};
 
 //报销单
 const expenseReport = {
@@ -498,7 +514,7 @@ const expenseReport = {
  * @params children    页面内部所有页面 key : page
  */
 const menu = [
-  dashboardAdmin,
+  approveSetting,
   dashboard,
   setting,
   financialManagement,
