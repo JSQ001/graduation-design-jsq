@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm,InputNumber} from 'antd'
 const FormItem = Form.Item;
+const Option = Select.Option;
 import debounce from 'lodash.debounce';
 
 import Chooser from  'components/Chooser'
@@ -21,36 +22,47 @@ class NewBudgetJournalDetail extends React.Component {
     super(props);
     this.state = {
       loading:false,
+      organization:{},
       searchForm: [
 
         /*公司*/
-        {type: 'list', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}), listType: 'company',isRequired: true, labelKey: 'companyName', valueKey: 'companyCode'},
+        {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
+          labelKey: 'name', valueKey: 'companyOID',event:'company',
+          url: `${config.baseUrl}/api/company/available`
+        },
         /*部门*/
         {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
         /*预算项目*/
-        {type: 'select', id:'ItemId', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
-          url:`${config.baseUrl}/api/budget/items/find/all`,
+        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+          labelKey:'itemName',valueKey:'id',
+          url:`${config.budgetUrl}/api/budget/items/find/all`,
         },
         /*期间*/
-        {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: []},
+        {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: [],
+          labelKey:'periodName',valueKey:'periodName',event:'periodName',
+          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`
+        },
         /*季度*/
-        {type: 'select', id:'periodQuarter"', label:  this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true, options: []},
+        {type: 'input', id:'periodQuarter"', label:this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true,},
         /*年度*/
-        {type: 'select', id:'periodYear', label:  this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true, options: []},
+        {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,},
         /*币种*/
-        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: []},
+        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],
+          labelKey:'currencyName',valueKey:'currency',
+          url:`http://uat.huilianyi.com/api/company/standard/currency?language=chineseName&page=0&size=10`
+        },
         /*汇率类型*/
-        {type: 'select', id:'rateType', label:  this.props.intl.formatMessage({id:"budget.rateType"}), isRequired: true, options: []},
+        {type: 'value_list', id:'rateType', label:  this.props.intl.formatMessage({id:"budget.rateType"}),  options: [],valueListCode:2101},
         /*标价方法*/
-        {type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), isRequired: true, options: []},
+        {type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), options: []},
         /*汇率*/
-        {type: 'select', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true, options: []},
+        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,},
         /*金额*/
-        {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, defaultValue:0},
+        {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
         /*本位金额*/
-        {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), isRequired: true,defaultValue:0},
-        /*数字*/
-        {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,defaultValue:0},
+        {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0},
+        /*数量*/
+        {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
         /*单位*/
         {type: 'select', id:'unit', label:  this.props.intl.formatMessage({id:"budget.unit"}), isRequired: true, options: []},
         /*备注*/
@@ -65,6 +77,76 @@ class NewBudgetJournalDetail extends React.Component {
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
 
   }
+
+
+  //表单的联动事件处理
+  handleEvent(event,e){
+    console.log( JSON.parse(event));
+    event =JSON.parse(event);
+
+    console.log(event);
+    switch (e){
+      case 'company':{
+        return;
+      }
+      case 'periodName':{
+        let searchForm =this.state.searchForm;
+        console.log(searchForm);
+        this.props.form.setFieldsValue({
+          periodQuarter:1,
+          periodYear:event.periodYear ,
+        });
+
+       /* searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === 'periodQuarter'){
+            searchItem.defaultValue = event.quarterNum;
+            console.log(event.quarterNum)
+            return searchItem;
+          }
+          if(searchItem.id === 'periodYear'){
+            searchItem.defaultValue = event.periodYear;
+            console.log(event.periodYear);
+            return searchItem;
+          }
+
+        });
+        console.log(searchForm);
+
+        this.setState({
+          searchForm:searchForm
+        })*/
+      }
+      case 'currency':{
+        return;
+      }
+
+    }
+
+  }
+
+
+  //获取预算组织
+  getOrganization(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request.data)
+      this.setState({
+        organization:request.data
+      })
+    })
+  }
+
+  componentWillMount(){
+    console.log("yujuyuyj")
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
+      console.log(request);
+      this.setState({
+        organization:request.data
+      })
+    }).catch((e)=>{
+      console.log("失败")
+    })
+  }
+
 
 
 
@@ -124,9 +206,63 @@ class NewBudgetJournalDetail extends React.Component {
     }
   };
 
-  setOptionsToFormItemSelect=(item,url,key)=>{
 
+  //获select得值列表里面的数据
+  setOptionsToFormItemSelect=(item,url)=>{
+    console.log(this.state.organization)
+    console.log(item);
+    let params = {};
+    let path = item.url;
+    let organizationId ;
+    if(item.id=="item"){
+      path = path+`?organizationId=1`
+    }
+
+    url=path;
+    httpFetch.get(url, params).then((res) => {
+      let options = [];
+      res.data.map(data => {
+        options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+      });
+
+      console.log(options)
+
+   let searchForm = this.state.searchForm;
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id)
+          searchItem.options = options;
+        return searchItem;
+      });
+      console.log(searchForm);
+
+      this.setState({ searchForm });
+    })
   }
+
+
+  //得到值列表的值增加options
+  getValueListOptions = (item) => {
+    this.getSystemValueList(item.valueListCode).then(res => {
+      let options = [];
+      res.data.values.map(data => {
+        options.push({label: data.messageKey, value: data.code, data: data})
+      });
+      let searchForm = this.state.searchForm;
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id)
+          searchItem.options = options;
+        if(searchItem.type === 'items')
+          searchItem.items.map(subItem => {
+            if(subItem.id === item.id)
+              subItem.options = options;
+          });
+        return searchItem;
+      });
+      this.setState({ searchForm });
+    })
+  };
+
+
 
   //渲染搜索表单组件
   renderFormItem(item){
@@ -140,9 +276,24 @@ class NewBudgetJournalDetail extends React.Component {
       case 'select':{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
-                  onFocus={item.getUrl ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+                  onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
-              return <Option key={option.value}>{option.label}</Option>
+             // let a  = [option.key,option.label]
+              return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
+            })}
+          </Select>
+        )
+      }
+      //值列表选择组件
+      case 'value_list':{
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+                  onFocus={() => this.getValueListOptions(item)}>
+            {item.options.map((option)=>{
+              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -158,7 +309,7 @@ class NewBudgetJournalDetail extends React.Component {
       //数字选择InputNumber
 
       case 'inputNumber':{
-        return <InputNumber disabled={item.disabled} onChange={handle} min={0}/>
+        return <InputNumber disabled={item.disabled} onChange={handle} min={0} step={item.step}/>
       }
 
       //带搜索的选择组件
@@ -265,7 +416,7 @@ class NewBudgetJournalDetail extends React.Component {
   HandleSubmit=(e)=>{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
+      this.props.close(values);
     })
 
   }

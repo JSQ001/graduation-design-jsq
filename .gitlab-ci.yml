@@ -1,0 +1,62 @@
+image: registry.huilianyi.com/devops/gitlab-runner-docker:node-runner
+
+variables:
+    IMAGE: registry.huilianyi.com/huilianyi/huilianyi-admin
+    DEV_VERSION: dev-1.0.$CI_PIPELINE_ID
+    STAGE_VERSION: stage-1.0.$CI_PIPELINE_ID
+    RELEASE_VERSION: prod-1.0.$CI_PIPELINE_ID
+
+cache:
+  untracked: true
+  key: "$CI_BUILD_REF_NAME"
+  paths:
+    - node_modules/
+
+stages:
+- build
+- dev-release
+- stage-release
+- release
+
+build:
+    stage: build
+    script:
+    - "npm install"
+    - "bower install"
+    - "grunt"
+
+
+dev-release:
+    stage: dev-release
+    only:
+    - "development"
+    - "gitlab-ci"
+    when: manual
+    script:
+    - "grunt"
+    - "docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.huilianyi.com"
+    - "docker build -t $IMAGE:$DEV_VERSION ."
+    - "docker push $IMAGE:$DEV_VERSION"
+
+stage-release:
+    stage: stage-release
+    only:
+    - "release/stage"
+    when: manual
+    script:
+    - "mvn install docker:build"
+    - "docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.huilianyi.com"
+    - "docker build -t $IMAGE:$STAGE_VERSION ."
+    - "docker push $IMAGE:$STAGE_VERSION"
+
+
+prod-release:
+    stage: release
+    only:
+    - "release/prod"
+    when: manual
+    script:
+    - "mvn install docker:build"
+    - "docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.huilianyi.com"
+    - "docker build -t $IMAGE:$RELEASE_VERSION ."
+    - "docker push $IMAGE:$RELEASE_VERSION"

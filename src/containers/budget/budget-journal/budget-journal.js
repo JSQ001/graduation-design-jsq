@@ -86,6 +86,7 @@ class BudgetJournal extends React.Component {
     this.getOrganization();
   }
 
+  //获取预算组织
   getOrganization(){
     httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
       console.log(request.data)

@@ -47,5 +47,7 @@
   "menu.new-agency": "New agency",
   "menu.bank-definition": "Bank definition",
   "menu.branch-bank-information": "Branch bank information",
-  "menu.security-setting": "Security setting"
+  "menu.security-setting": "Security setting",
+  "menu.finance-setting":"Finance setting",
+  "menu.beep-timer":"beep timer"
 }
