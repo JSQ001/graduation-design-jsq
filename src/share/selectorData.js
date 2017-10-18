@@ -75,7 +75,7 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'item_type': {
+  'budget_item_type': {
     title: "预算项目类型",
     url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
@@ -117,7 +117,7 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'ruleParams': {
+  'rule_params': {
     title: "规则参数",
     searchForm: [
       {type: 'input', id: 'paramsCode', label: '参数代码'},

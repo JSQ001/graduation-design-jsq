@@ -306,7 +306,7 @@ const budgetJournal = {
 
 const budgetBalanceResult = {
   key: 'budget-balance-result',
-  url:'/main/budget/budget-balance/budget-balance-result/:schemeId',
+  url:'/main/budget/budget-balance/budget-balance-result/:id',
   components: BudgetBalanceResult,
   parent: 'budget-balance'
 };
