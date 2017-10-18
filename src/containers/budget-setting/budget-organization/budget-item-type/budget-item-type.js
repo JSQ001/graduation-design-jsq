@@ -22,7 +22,7 @@ class BudgetItemType extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {title: this.props.intl.formatMessage({id:"budget.organizationName"}), dataIndex: 'organizationName', key: 'organizationName',},
+        {title: this.props.intl.formatMessage({id:"budget.organization"}), dataIndex: 'organizationName', key: 'organizationName',},
         {title: this.props.intl.formatMessage({id:"budget.itemTypeCode"}), dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
         {title: this.props.intl.formatMessage({id:"budget.itemTypeName"}), dataIndex: 'itemTypeName', key: 'itemTypeName',},
         {title: this.props.intl.formatMessage({id:"budget.isEnabled"}),dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
