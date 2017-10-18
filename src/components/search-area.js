@@ -106,7 +106,7 @@ class SearchArea extends React.Component{
       httpFetch[item.method](url, item.getParams).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {

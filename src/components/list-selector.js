@@ -155,9 +155,9 @@ class ListSelector extends React.Component {
       this.setState({ selectedData : nextProps.selectedData });
     else
       this.setState({ selectedData : [] });
-    if(nextProps.type !== this.state.type && !nextProps.selectorItem)
+    if(nextProps.type !== this.state.type && !nextProps.selectorItem && nextProps.visible)
       this.checkType(nextProps.type);
-    else if(nextProps.selectorItem)
+    else if(nextProps.selectorItem && nextProps.visible)
       this.checkSelectorItem(nextProps.selectorItem)
   };
 
