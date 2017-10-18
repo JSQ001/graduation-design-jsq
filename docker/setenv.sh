@@ -22,11 +22,19 @@ server {
         proxy_pass $ARTEMIS_URL/oauth/;
         proxy_set_header Host \$host;
     }
-    location /api/ {
-        proxy_pass $ARTEMIS_URL/api/;
+
+    location /api/budget/ {
+        proxy_pass $BUDGET_URL;
         proxy_set_header Host \$host;
         client_max_body_size 10m;
     }
+
+    location /api/cash/ {
+            proxy_pass $PAY_URL;
+            proxy_set_header Host \$host;
+            client_max_body_size 10m;
+        }
+
 
 #    location /brms/ {
 #        proxy_pass $BRMS_URL/brms;

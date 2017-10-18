@@ -105,7 +105,6 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
-
   dom.onmouseenter = function(){
     let enterInterval = setInterval(() => {
       clearInterval(dom.leaveInterval);
@@ -126,7 +125,7 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
         clearInterval(leaveInterval);
     }, duration / total)
   };
-}
+};
 
 
 

@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { Row, Col, Card, Icon } from 'antd';
 import 'styles/dashboard.scss'
 
-import BallSprite from 'images/sprite/ball.png'
 import Aliyun1 from 'images/sprite/aliyun-1.jpg'
 import Aliyun2 from 'images/sprite/aliyun-2.jpg'
 import Aliyun3 from 'images/sprite/aliyun-3.jpg'
