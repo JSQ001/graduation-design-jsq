@@ -1,4 +1,5 @@
-import  BeepTimer from 'containers/finance-setting/beep-timer/beep-timer.js'
+import BeepTimer from 'containers/finance-setting/beep-timer/beep-timer'
+import AccountPeriodDefine from 'containers/finance-setting/account-period-define/account-period-define'
 
 //单据提醒管理
 const beepTimer = {
@@ -9,10 +10,18 @@ const beepTimer = {
   children:{}
 };
 
+const accountPeriodDefine = {
+  key:'account-period-define',
+  url:'/main/finance-setting/account-period-define',
+  components: AccountPeriodDefine,
+  parent: 'finance-setting',
+  children:{}
+};
+
 //财务设置
 const financeSetting = {
   key:'finance-setting',
-  subMenu: [beepTimer],
+  subMenu: [beepTimer, accountPeriodDefine],
   icon: 'setting',
   admin: true
 };
