@@ -19,6 +19,27 @@ class Chooser extends React.Component {
   }
 
   /**
+   * value为传入值
+   * @param nextProps
+   */
+  componentWillReceiveProps = (nextProps) => {
+    if(nextProps.value && nextProps.value.length > 0 && this.state.value.length === 0){
+      let values = [];
+      nextProps.value.map(item => {
+        values.push({
+          key: item[this.props.valueKey],
+          label: item[this.props.labelKey],
+          value: item
+        })
+      });
+      this.setState({ value: values })
+    }
+    if(nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0){
+      this.setState({ value: [] })
+    }
+  };
+
+  /**
    * list控件因为select没有onClick事件，所以用onFocus代替
    * 每次focus后，用一个隐藏的input来取消聚焦
    */
@@ -60,12 +81,12 @@ class Chooser extends React.Component {
         value: item
       })
     });
-    this.setState({ showListSelector: false, value });
     //手动调用onChange事件以与父级Form绑定
     const onChange = this.props.onChange;
     if (onChange) {
-      onChange(value);
+      onChange(result.result);
     }
+    this.setState({ showListSelector: false, value });
   };
 
   render() {
@@ -106,7 +127,8 @@ Chooser.propTypes = {
   labelKey: React.PropTypes.string,  //表单项的显示变量名
   listExtraParams: React.PropTypes.object,  //listSelector的额外参数
   onChange: React.PropTypes.func,  //进行选择后的回调
-  single: React.PropTypes.bool  //是否单选
+  single: React.PropTypes.bool,  //是否单选
+  value: React.PropTypes.array  //已选择的值，需要传入完整目标数组
 };
 
 Chooser.defaultProps = {
