@@ -2,16 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Select, message, Button } from 'antd'
+import { Form, Select, message, Button, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import debounce from 'lodash.debounce'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import NewAgencyRelation from 'containers/approve-setting/agency-setting/new-agency-relation'
-
-import 'styles/approve-setting/agency-setting/new-agency.scss'
 
 class NewAgency extends React.Component {
   constructor(props) {
@@ -19,29 +16,37 @@ class NewAgency extends React.Component {
     this.state = {
       loading: false,
       data: [],
-      principalValue: '孙七木 - 123999',
-      selectPrincipal: false,
-      agencySetting:  menuRoute.getRouteItem('agency-setting','key'),    //新建代理
+      principalValidateStatus: '',  //被代理人校验
+      principalHelp: '', //被代理人校验内容
+      fetching: false,
+      agencySetting:  menuRoute.getRouteItem('agency-setting','key'),    //代理设置
+      agencyDetail:  menuRoute.getRouteItem('agency-detail','key'),    //代理详情
     };
-    this.handleChange = debounce(this.handleChange, 250);
+    this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      values = {
-        "enabled":false,
-        "status":1001,
-        "principalOID":"53aabef8-340d-46fa-9765-d607a7296e12",
-        "leavingDate":null,
-        "billProxyRuleDTOs":[]
-      };
+      if (err) {
+        this.setState({
+          principalValidateStatus: 'error',
+          principalHelp: '请选择'
+        });
+        return;
+      }
+      values.billProxyRuleDTOs = [];
+      values.leavingDate = null;
+      values.status = 1001;
+      values.enabled = false;
+      values.principalOID = JSON.parse(values.principalObj).userOID;
       console.log(values);
-      if (!err) {
+      if (this.state.principalValidateStatus != 'error') {
         this.setState({loading: true});
         httpFetch.post(`${config.baseUrl}/api/bill/proxy/rules`, values).then((res)=>{
-          this.setState({ loading: false, selectPrincipal:false });
+          this.setState({ loading: false });
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
+          this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', values.principalOID));
         }).catch((e)=>{
           this.setState({loading: false});
           if(e.response.data.validationErrors){
@@ -54,13 +59,53 @@ class NewAgency extends React.Component {
     });
   };
 
-  handleChange = (value) => {
+  handleSearch = (value) => {
+    if (!value) {
+      this.setState({
+        principalValidateStatus: 'error',
+        principalHelp: '请选择'
+      });
+      return;
+    }
+    this.setState({
+      principalValidateStatus: '',
+      principalHelp: '',
+      fetching: true
+    });
     let url = `${config.baseUrl}/api/search/users/by/${value}`;
     value && httpFetch.get(url).then((response)=>{
-      this.setState({
-        data: response.data,
-        principalValue: value
-      })
+      let data = response.data;
+      this.setState({ data, fetching: false })
+    });
+  };
+
+  handleChange = (value) => {
+    console.log(value);
+
+  };
+
+  handleSelect = (obj) => {
+    obj = JSON.parse(obj);
+    let url = `${config.baseUrl}/api/bill/proxy/principals/check/${obj.userOID}`;
+    obj.userOID && httpFetch.get(url).then((response)=>{
+      if (response.data) {
+        this.setState({
+          principalValidateStatus: 'error',
+          principalHelp: '此员工已存在被代理信息，请返回至前一页面搜索该员工并编辑'
+        })
+      } else {
+        if (obj.status == 1002) {
+          this.setState({
+            principalValidateStatus: 'warning',
+            principalHelp: `该员工将于${obj.leavingDate}离职，离职后此代理将自动禁用`
+          })
+        } else {
+          this.setState({
+            principalValidateStatus: '',
+            principalHelp: ''
+          })
+        }
+      }
     });
   };
 
@@ -68,65 +113,48 @@ class NewAgency extends React.Component {
     this.context.router.replace(this.state.agencySetting.url);
   };
 
-  toSelectPrincipal = () => {
-    this.setState({ selectPrincipal: true })
-  };
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { loading, data, principalValue, selectPrincipal} = this.state;
-    const options = data.map(d => <Option key={d.userOID}>{d.fullName} - {d.employeeID}</Option>);
-    let principal;
-    let saveBtn;
-    let agencyRelation;
-    if (selectPrincipal) {
-      principal =
-        <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
-                mode="combobox"
-                onChange={this.handleChange}
-                style={{width:'300px'}}>
-          {options}
-        </Select>;
-      saveBtn =
-        <FormItem>
-          <Button type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  style={{marginRight:'10px'}}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
-          <Button onClick={this.handleCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
-        </FormItem>;
-      agencyRelation = ""
-    } else {
-      principal =
-        <div style={{fontSize:'14px'}}>
-          <span style={{color:'#333'}}>已选：</span>
-          <span style={{fontSize:'20px',color:'#000'}}>{principalValue}</span>
-          <a style={{color:'#108EE9',marginLeft:'20px'}} onClick={this.toSelectPrincipal}>修改</a>
-        </div>;
-      saveBtn = "";
-      agencyRelation = <NewAgencyRelation/>
-    }
+    const { loading, data, principalValidateStatus, principalHelp, fetching } = this.state;
+    // const options = data.map(d => <Option key={d.userOID} value={d.text}>{d.text}</Option>);
+    const options = data.map(d => <Option key={JSON.stringify(d)}>{d.fullName} - {d.employeeID}</Option>);
     return (
       <div className="new-agency">
         <h3 className="header-title">{formatMessage({id:'agencySetting.chose-principal'})}</h3>{/*请选择被代理人*/}
         <Form onSubmit={this.handleSave}>
-          <FormItem colon={false} label={
-            <span>{formatMessage({id:'agencySetting.principal'})} : <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>
-          }>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
-            {getFieldDecorator('principalOID', {
+          <FormItem colon={false}
+                    hasFeedback
+                    validateStatus={principalValidateStatus}
+                    help={principalHelp}
+                    style={{width:'300px'}}
+                    label={<span>{formatMessage({id:'agencySetting.principal'})} :
+                      <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>
+                    }>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
+            {getFieldDecorator('principalObj', {
               rules: [{
                 required: true,
                 message: formatMessage({id: 'common.please.select'})  //请选择
-              }],
-              initialValue: {principalValue}
-            })(
-             <div>{principal}</div>
+              }]})(
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
+                      mode="multiple"
+                      notFoundContent={fetching ? <Spin size="small" /> : '无数据'}
+                      onSearch={this.handleSearch}
+                      onChange={this.handleChange}
+                      onSelect={this.handleSelect}>
+                {options}
+              </Select>
             )}
           </FormItem>
-          {saveBtn}
+          <FormItem>
+            <Button type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    style={{marginRight:'10px'}}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
+            <Button onClick={this.handleCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
+          </FormItem>
         </Form>
-        {agencyRelation}
       </div>
     )
   }
