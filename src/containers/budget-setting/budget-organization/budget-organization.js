@@ -48,12 +48,13 @@ class BudgetOrganization extends React.Component {
       budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
       newBudgetOrganization:  menuRoute.getRouteItem('new-budget-organization','key'),    //新建组织定义的页面项
       searchForm: [
-        {type: 'select', id: 'setOfBooksId', label: formatMessage({id:"budget.set.of.books"}), options: []}, //账套
+        {type: 'select', id: 'setOfBooksId', label: formatMessage({id:"budget.set.of.books"}), options: [],
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id'}, //账套
         {type: 'input', id: 'organizationCode', label: formatMessage({id:"budget.organization.code"})},  //预算组织代码
         {type: 'input', id: 'organizationName', label: formatMessage({id:"budget.organization.name"})},  //预算组织名称
       ],
       searchParams: {
-        setOfBooksId: 1,
+        setOfBooksId: '',
         organizationCode: '',
         organizationName: ''
       },
@@ -124,7 +125,7 @@ class BudgetOrganization extends React.Component {
     this.setState({
       page: 0,
       searchParams: {
-        setOfBooksId: result.setOfBooksId ? result.setOfBooksId : 1,
+        setOfBooksId: result.setOfBooksId ? result.setOfBooksId : '',
         organizationCode: result.organizationCode ? result.organizationCode : '',
         organizationName: result.organizationName ? result.organizationName : ''
       }
