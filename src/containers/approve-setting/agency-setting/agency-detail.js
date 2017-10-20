@@ -169,17 +169,32 @@ class AgencyDetail extends React.Component {
     const { loading, data, principalOID, principalValue, selectPrincipal, principalEditNum , principalValidateStatus, principalHelp, billProxyRuleDTOs, principalInfo, fetching } = this.state;
     // const options = data.map(d => <Option key={d.userOID} value={d.text}>{d.text}</Option>);
     const options = data.map(d => <Option key={JSON.stringify(d)}>{d.fullName} - {d.employeeID}</Option>);
-    let principal;
+    let principalItem;
     let saveBtn;
     if (selectPrincipal) {  //选择被代理人
-      principal =
-        <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
-                mode="multiple"
-                notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
-                onSearch={this.handleSearch}
-                onSelect={this.handleSelect}>
-          {options}
-        </Select>;
+      principalItem =
+        <FormItem colon={false}
+                  hasFeedback
+                  validateStatus={principalValidateStatus}
+                  help={principalHelp}
+                  style={{width:'300px'}}
+                  label={<span>{formatMessage({id:'agencySetting.principal'})} : <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>}>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
+          {getFieldDecorator(`principalObj-${principalEditNum}`, {
+            rules: [{
+              required: true,
+              message: formatMessage({id: 'common.please.select'})  //请选择
+            }],
+            initialValue: principalValue
+          })(
+            <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
+                    mode="multiple"
+                    notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
+                    onSearch={this.handleSearch}
+                    onSelect={this.handleSelect}>
+              {options}
+            </Select>
+          )}
+        </FormItem>;
       saveBtn =
         <FormItem>
           <Button type="primary"
@@ -189,34 +204,21 @@ class AgencyDetail extends React.Component {
           <Button onClick={this.handleCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
         </FormItem>;
     } else {  //新建代理关系
-      principal =
-        <div style={{fontSize:'14px'}}>
-          <span style={{color:'#333'}}>已选：</span>
-          <span style={{fontSize:'20px',color:'#000'}}>{principalValue}</span>
-          <a style={{color:'#108EE9',marginLeft:'20px'}} onClick={this.toSelectPrincipal}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
-        </div>;
+      principalItem =
+        <FormItem>
+          <div style={{fontSize:'14px'}}>
+            <span style={{color:'#333'}}>已选：</span>
+            <span style={{fontSize:'20px',color:'#000'}}>{principalValue}</span>
+            <a style={{color:'#108EE9',marginLeft:'20px'}} onClick={this.toSelectPrincipal}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
+          </div>
+        </FormItem>;
       saveBtn = "";
     }
     return (
       <div className="agency-detail">
         <h3 className="header-title">{formatMessage({id:'agencySetting.principal'})}</h3>{/*被代理人*/}
         <Form onSubmit={this.handleSave}>
-          <FormItem colon={false}
-                    hasFeedback
-                    validateStatus={principalValidateStatus}
-                    help={principalHelp}
-                    style={{width:'300px'}}
-                    label={<span>{formatMessage({id:'agencySetting.principal'})} : <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>}>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
-            {getFieldDecorator(`principalObj-${principalEditNum}`, {
-              rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.select'})  //请选择
-              }],
-              initialValue: principalValue
-            })(
-              principal
-            )}
-          </FormItem>
+          {principalItem}
           {saveBtn}
         </Form>
         <AgencyRelation

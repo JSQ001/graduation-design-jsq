@@ -38,10 +38,9 @@ class AgencyRelation extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    this.state.uuid == 0 && this.setState({
+    !this.state.principalInfo.principalOID && this.setState({
       billProxyRuleDTOs: nextProps.billProxyRuleDTOs,
       principalInfo: nextProps.principalInfo,
-      uuid: nextProps.billProxyRuleDTOs.length
     })
   }
 
@@ -143,15 +142,17 @@ class AgencyRelation extends React.Component {
         message.success('操作成功');
         this.setState({
           loading: false,
-          billProxyRuleDTOs: principalInfo.billProxyRuleDTOs,
-          principalInfo
+          billProxyRuleDTOs: res.data.billProxyRuleDTOs,
+          principalInfo: res.data
         });
         key && this.remove(key)
+      } else {
+        message.error(`操作失败, ${res.data.message}`);
       }
     }).catch((e)=>{
       this.setState({loading: false});
-      if(e.response.data.validationErrors){
-        message.error(`操作失败, ${e.response.data.validationErrors[0].message}`);
+      if(e.response.data.message){
+        message.error(`操作失败, ${e.response.data.message}`);
       } else {
         message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
       }
@@ -176,12 +177,14 @@ class AgencyRelation extends React.Component {
           'status': proxyOID.status,
           'customFormDTOs': this.state.chosenOptions[key]
         };
-        let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
-        billProxyRuleDTOs.push(billProxyRuleDTO);
-        this.setState({ loading: true });
         let principalInfo = this.state.principalInfo;
+        let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
+        billProxyRuleDTOs.push(billProxyRuleDTO);
         principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
+        console.log(billProxyRuleDTOs);
         console.log(principalInfo);
+        console.log(this.state.principalInfo);
+        this.setState({ loading: true });
         this.handleSave(principalInfo, key);
       }
     });
@@ -242,7 +245,6 @@ class AgencyRelation extends React.Component {
 
   //删除某个代理关系
   handleDelete = (e, index) => {
-    console.log(index);
     let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
     let principalInfo = this.state.principalInfo;
     billProxyRuleDTOs = billProxyRuleDTOs.slice(0, index).concat(billProxyRuleDTOs.slice(index+1));
@@ -362,8 +364,6 @@ class AgencyRelation extends React.Component {
       border: 0,
       overflow: 'hidden',
     };
-
-    console.log(billProxyRuleDTOs);
     const panel = billProxyRuleDTOs.map((item, index) => {
       const menu = (
         <Menu>
@@ -401,7 +401,6 @@ class AgencyRelation extends React.Component {
         </Panel>
       )
     });
-    console.log(panel);
     return (
       <div className="agency-relation">
         <h3 className="header-title">{formatMessage({id:'agencySetting.agency-relation'})}</h3>{/*代理关系*/}
