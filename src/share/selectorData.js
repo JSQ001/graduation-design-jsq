@@ -80,7 +80,7 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
       {type: 'input', id: 'itemTypeCode', label: '预算项目类型代码'},
-      {type: 'input', id: 'itemTypeName', label: '预算项目类型代码'},
+      {type: 'input', id: 'itemTypeName', label: '预算项目类型名称'},
     ],
     columns: [
       {title: '预算项目类型代码', dataIndex: 'itemTypeCode'},
@@ -155,8 +155,17 @@ const selectorData = {
       {title: '预算场景名称', dataIndex: 'scenarioName'},
     ],
     key: 'id'
+  },
+  'budget_item_group':{
+    title:"预算项目组",
+    url:`${config.budgetUrl}/api/budget/groups/query`,
+    searchForm:[],
+    columns: [
+      {title: '预算项目组代码', dataIndex: 'itemGroupCode'},
+      {title: '预算项目组名称', dataIndex: 'itemGroupName'},
+    ],
+    key: 'id'
   }
-
 };
 
 export default selectorData;

@@ -4,9 +4,12 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { Form, Input, Switch, Button, Icon ,Tabs} from 'antd'
-const FormItem = Form.Item;
-const TabPane =Tabs.TabPane;
+import { injectIntl } from 'react-intl';
+
+import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message} from 'antd'
+import httpFetch from 'share/httpFetch'
+import config from 'config'
+import menuRoute from 'share/menuRoute'
 
 class BeepTimer extends React.Component{
   constructor(props) {
