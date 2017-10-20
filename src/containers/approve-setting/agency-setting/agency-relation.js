@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse } from 'antd';
+import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Menu, Dropdown, Popconfirm } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const CheckboxGroup = Checkbox.Group;
@@ -13,7 +13,7 @@ import config from 'config'
 
 import moment from 'moment';
 
-class NewAgencyRelation extends React.Component {
+class AgencyRelation extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -25,24 +25,27 @@ class NewAgencyRelation extends React.Component {
       keys: [],
       billOptions: {},    //代理单据选项
       chosenOptions: {},  //选中的代理单据选项
-      chosenOptions1OIDs: {},  //选中的报销单选项ID
-      chosenOptions2OIDs: {},  //选中的申请单选项ID
-      proxyVerify: {},    //代理人校验
+      chosenOptions1OIDs: {}, //选中的报销单选项ID
+      chosenOptions2OIDs: {}, //选中的申请单选项ID
+      proxyVerify: {},        //代理人校验
       billProxyRuleDTOs: [],
+      principalInfo: {},
       startAgencyDate: moment().locale('zh-cn').utcOffset(8),
       endAgencyDate: null,
+      fetching: false,
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.billProxyRuleDTOs);
     this.state.uuid == 0 && this.setState({
       billProxyRuleDTOs: nextProps.billProxyRuleDTOs,
+      principalInfo: nextProps.principalInfo,
       uuid: nextProps.billProxyRuleDTOs.length
     })
   }
 
+  //查询代理人下拉列表
   handleSearch = (value, key) => {
     let proxyVerify = this.state.proxyVerify;
     if (!value) {
@@ -56,17 +59,15 @@ class NewAgencyRelation extends React.Component {
       return;
     }
     proxyVerify[key] = {};
-    this.setState({ proxyVerify });
+    this.setState({ proxyVerify, fetching: true });
     let url = `${config.baseUrl}/api/search/users/by/${value}`;
     value && httpFetch.get(url).then((response)=>{
       let data = response.data;
-      data.map(item => {
-        item.text = item.fullName + '-' + item.employeeID;
-      });
-      this.setState({ data })
+      this.setState({ data, fetching: false })
     });
   };
 
+  //选择代理人 => 获取代理单据选项
   handleSelect = (item, key) => {
     item = JSON.parse(item);
     let proxyVerify = this.state.proxyVerify;
@@ -104,6 +105,7 @@ class NewAgencyRelation extends React.Component {
     });
   };
 
+  //代理关系状态更改
   handleStatusChange = (checked, key) => {
     const { formatMessage } = this.props.intl;
     let statusValue = this.state.statusValue;
@@ -111,6 +113,7 @@ class NewAgencyRelation extends React.Component {
     this.setState({ statusValue })
   };
 
+  //添加代理关系
   add = () => {
     this.setState((prevState) => {
       uuid: prevState.uuid++
@@ -124,6 +127,7 @@ class NewAgencyRelation extends React.Component {
     });
   };
 
+  //移除通过 add() 添加的代理关系
   remove = (k) => {
     const { form } = this.props;
     const keys = form.getFieldValue('keys');
@@ -132,58 +136,58 @@ class NewAgencyRelation extends React.Component {
     });
   };
 
+  //保存单个代理关系 - 接口
+  handleSave = (principalInfo, key) => {
+    httpFetch.post(`${config.baseUrl}/api/bill/proxy/rules`, principalInfo).then((res)=>{
+      if(res.status == 200){
+        message.success('操作成功');
+        this.setState({
+          loading: false,
+          billProxyRuleDTOs: principalInfo.billProxyRuleDTOs,
+          principalInfo
+        });
+        key && this.remove(key)
+      }
+    }).catch((e)=>{
+      this.setState({loading: false});
+      if(e.response.data.validationErrors){
+        message.error(`操作失败, ${e.response.data.validationErrors[0].message}`);
+      } else {
+        message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+      }
+    })
+  };
+
+  //保存单个代理关系 - 新增
   handleSubmit = (e, key) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
-        console.log(values);
         let proxyOID = JSON.parse(values[`proxyOID-${key}`]);
-        //console.log(proxyOID);
         let billProxyRuleDTO = {
-          'customFormDTOs': this.state.chosenOptions[key],
           'enabled': values[`enabled-${key}`],
-          'endDate': values[`endDate-${key}`] || null ,
+          'endDate': values[`endDate-${key}`] ? values[`endDate-${key}`].format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
-          //'principalOID': this.props.principalOID,
           'proxyName': proxyOID.fullName,
           'proxyOID': proxyOID.userOID,
           'proxyTimeRange': values[`endDate-${key}`] ? 102 : 101,
-          //'recordOID': null,
           'ruleOID': null,
-          'startDate': values[`startDate-${key}`],
-          'status': proxyOID.status
+          'startDate': values[`startDate-${key}`].format('YYYY-MM-DD'),
+          'status': proxyOID.status,
+          'customFormDTOs': this.state.chosenOptions[key]
         };
-        console.log(billProxyRuleDTO);
         let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
         billProxyRuleDTOs.push(billProxyRuleDTO);
-        this.setState({ billProxyRuleDTOs, loading: true });
-
-        // httpFetch.get(`${config.baseUrl}/api/bill/proxy/rules/${this.props.principalOID}`).then((res)=>{
-        httpFetch.get(`${config.baseUrl}/api/bill/proxy/rules/6980cd2b-72ff-4303-8b57-593c178e23e8`).then((res)=>{
-          let principalInfo = res.data;
-          principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
-          console.log(principalInfo);
-          httpFetch.post(`${config.baseUrl}/api/bill/proxy/rules`, principalInfo).then((res)=>{
-            if(res.status == 200){
-              this.setState({loading: false});
-              message.success('新建成功');
-            }
-          }).catch((e)=>{
-            this.setState({loading: false});
-            if(e.response.data.validationErrors){
-              message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            } else {
-              message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
-            }
-          })
-        }).catch((e)=>{
-
-        })
+        this.setState({ loading: true });
+        let principalInfo = this.state.principalInfo;
+        principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
+        console.log(principalInfo);
+        this.handleSave(principalInfo, key);
       }
     });
   };
 
+  //选择代理单据
   onOptionsChange = (values, key, type) => {
     let chosenOptions = this.state.chosenOptions;
     let bill1Options = this.state.billOptions[key].bill1Options;
@@ -208,6 +212,7 @@ class NewAgencyRelation extends React.Component {
     })
   };
 
+  //开始代理日期 < 结束代理日期
   disabledStartDate = (startAgencyDate) => {
     const endAgencyDate = this.state.endAgencyDate;
     if (!startAgencyDate || !endAgencyDate) {
@@ -216,10 +221,12 @@ class NewAgencyRelation extends React.Component {
     return startAgencyDate.valueOf() > endAgencyDate.valueOf();
   };
 
+  //修改开始代理日期时间
   onStartChange = (startAgencyDate) => {
     this.setState({ startAgencyDate })
   };
 
+  //结束代理日期 > 开始代理日期
   disabledEndDate = (endAgencyDate) => {
     const startAgencyDate = this.state.startAgencyDate;
     if (!endAgencyDate || !startAgencyDate) {
@@ -228,19 +235,35 @@ class NewAgencyRelation extends React.Component {
     return endAgencyDate.valueOf() <= startAgencyDate.valueOf();
   };
 
+  //修改结束代理日期时间
   onEndChange = (endAgencyDate) => {
     this.setState({ endAgencyDate })
+  };
+
+  //删除某个代理关系
+  handleDelete = (e, index) => {
+    console.log(index);
+    let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
+    let principalInfo = this.state.principalInfo;
+    billProxyRuleDTOs = billProxyRuleDTOs.slice(0, index).concat(billProxyRuleDTOs.slice(index+1));
+    principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
+    this.handleSave(principalInfo);
+  };
+
+  //编辑某个代理关系
+  handleEdit = () => {
+
   };
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { loading, data, statusValue, billOptions, proxyVerify } = this.state;
+    const { loading, data, statusValue, billOptions, proxyVerify, fetching, billProxyRuleDTOs } = this.state;
     const formItemLayout = {
       labelCol: { span: 1 },
       wrapperCol: { span: 23 },
     };
-    const options = data.map(d => <Option key={JSON.stringify(d)}>{d.text}</Option>);
+    const options = data.map(d => <Option key={JSON.stringify(d)}>{d.fullName} - {d.employeeID}</Option>);
     getFieldDecorator('keys',  { initialValue: [] });
     const keys = getFieldValue('keys');
     const forms = keys.map((key) => {
@@ -256,7 +279,8 @@ class NewAgencyRelation extends React.Component {
                 message: formatMessage({id: 'common.please.select'})  //请选择
               }]})(
               <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
-                      mode="combobox"
+                      mode="multiple"
+                      notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
                       onSearch={(value) => {this.handleSearch(value, key)}}
                       onSelect={(item) => {this.handleSelect(item, key)}}>
                 {options}
@@ -331,10 +355,58 @@ class NewAgencyRelation extends React.Component {
         </Form>
       );
     });
+    const customPanelStyle = {
+      background: '#f7f7f7',
+      borderRadius: 4,
+      marginTop: 10,
+      border: 0,
+      overflow: 'hidden',
+    };
+
+    console.log(billProxyRuleDTOs);
+    const panel = billProxyRuleDTOs.map((item, index) => {
+      const menu = (
+        <Menu>
+          <Menu.Item>
+            <Popconfirm onConfirm={(e) => this.handleDelete(e, index)} title="你确定要删除这条数据吗?">
+              <a>删除</a>
+            </Popconfirm>
+          </Menu.Item>
+          <Menu.Item><a>复制</a></Menu.Item>
+        </Menu>
+      );
+      const panelHeader = (
+        <div>
+          <span className="header-principal">代理人：{item.proxyName}</span>
+          <span className="header-more">
+            <a onClick={this.handleEdit}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
+            <span className="ant-divider"/>
+            <Dropdown overlay={menu}><a>更多 <Icon type="down"/></a></Dropdown>
+          </span>
+        </div>
+      );
+      return (
+        <Panel header={panelHeader} key={index} style={customPanelStyle}>
+          <div>
+            <Row style={{marginBottom:'10px'}}>
+              代理单据：{item.customFormDTOs.map((bill, index) => {
+                return index < item.customFormDTOs.length-1 ? bill.formName + '，' : bill.formName
+              })}
+            </Row>
+            <Row>
+              <Col span={8}>代理日期：{item.startDate} 至 {item.proxyTimeRange == 102 ? item.endDate : '无限制'}</Col>
+              <Col span={8}>状态：<Badge status={item.enabled ? 'success': 'error'} text={item.enabled ? '启用' : '禁用'} /></Col>
+            </Row>
+          </div>
+        </Panel>
+      )
+    });
+    console.log(panel);
     return (
-      <div className="new-agency-relation">
+      <div className="agency-relation">
         <h3 className="header-title">{formatMessage({id:'agencySetting.agency-relation'})}</h3>{/*代理关系*/}
         <p style={{color:'#999'}}>{formatMessage({id:'agencySetting.agency-relation-intro'})}</p>{/*选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配*/}
+        <Collapse bordered={false}>{panel}</Collapse>
         {forms}
         <Button type="dashed" className="new-relation-btn" onClick={this.add}>
           <Icon type="plus" /> {formatMessage({id:'common.add'})/* 添加 */}
@@ -349,6 +421,6 @@ function mapStateToProps() {
   return {}
 }
 
-const WrappedNewAgencyRelation = Form.create()(NewAgencyRelation);
+const WrappedAgencyRelation = Form.create()(AgencyRelation);
 
-export default connect(mapStateToProps)(injectIntl(WrappedNewAgencyRelation));
+export default connect(mapStateToProps)(injectIntl(WrappedAgencyRelation));

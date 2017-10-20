@@ -9,8 +9,20 @@
   }
   .relation-form {
     margin: 10px 0px;
-    background: rgb(247, 247, 247);
+    background: #f7f7f7;
     padding: 10px 20px;
     border-radius: 3px;
+  }
+  .agency-relation {
+    .ant-collapse-borderless > .ant-collapse-item > .ant-collapse-content {
+      border-top-color: #eaeaea;
+    }
+    .header-principal {
+      margin-left: 10px;
+    }
+    .header-more {
+      float: right;
+      margin-right: 20px;
+    }
   }
 }

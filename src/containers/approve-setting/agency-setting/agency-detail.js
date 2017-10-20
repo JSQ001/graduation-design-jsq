@@ -2,13 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Select, message, Button } from 'antd'
+import { Form, Select, message, Button, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import debounce from 'lodash.debounce'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import NewAgencyRelation from 'containers/approve-setting/agency-setting/new-agency-relation'
+import menuRoute from 'share/menuRoute'
+import AgencyRelation from 'containers/approve-setting/agency-setting/agency-relation'
 
 import 'styles/approve-setting/agency-setting/agency-detail.scss'
 
@@ -20,30 +21,39 @@ class AgencyDetail extends React.Component {
       data: [],
       principalOID: this.props.params.principalOID,
       principalValue: '',   //被代理人
+      principalEditNum: 0,  //被代理人点击"修改"次数
       selectPrincipal: false,
       principalValidateStatus: '',  //被代理人校验
       principalHelp: '', //被代理人校验内容
       billProxyRuleDTOs: [],
+      fetching: false,
+      principalInfo: {},
+      agencyDetail:  menuRoute.getRouteItem('agency-detail','key'),    //代理详情
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillMount() {
-    httpFetch.get(`${config.baseUrl}/api/bill/proxy/rules/${this.state.principalOID}`).then((res)=>{
+    this.getInfo(this.state.principalOID);
+  }
+
+  //获取被代理人及代理关系信息
+  getInfo= (principalOID) => {
+    httpFetch.get(`${config.baseUrl}/api/bill/proxy/rules/${principalOID}`).then((res)=>{
       if (res.status == 200) {
         res = res.data;
         this.setState({
           principalValue: res.userName + ' - ' + res.emplyeeId,
-          billProxyRuleDTOs: res.billProxyRuleDTOs
-        },()=>{
-
+          billProxyRuleDTOs: res.billProxyRuleDTOs,
+          principalInfo: res
         })
       }
     }).catch((e)=>{
 
     })
-  }
+  };
 
+  //修改被代理人
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -54,25 +64,37 @@ class AgencyDetail extends React.Component {
         });
         return;
       }
-      values.billProxyRuleDTOs = [];
-      values.leavingDate = null;
-      values.status = 1001;
-      values.enabled = false;
-      values.principalOID = JSON.parse(values.principalOID).userOID;
-      console.log(values);
       if (this.state.principalValidateStatus != 'error') {
+        let principalObj = values[`principalObj-${this.state.principalEditNum}`];
+        if (typeof principalObj == 'string'){
+          this.handleCancel();
+          return;
+        }
+        principalObj = JSON.parse(values[`principalObj-${this.state.principalEditNum}`]);
+        values  = this.state.principalInfo;
+        values.leavingDate = principalObj.leavingDate;
+        values.status = principalObj.status;
+        values.enabled = false;
+        values.principalOID = principalObj.userOID;
+        values.billProxyRuleDTOs = this.state.billProxyRuleDTOs;
+        values.billProxyRuleDTOs.length > 0 && values.billProxyRuleDTOs.map(item => { item.customFormDTOs=[] });
+        console.log(values);
         this.setState({loading: true});
+
         httpFetch.post(`${config.baseUrl}/api/bill/proxy/rules`, values).then((res)=>{
           this.setState({
             loading: false,
             selectPrincipal:false,
-            principalOID: values.principalOID
+            principalOID: res.data.principalOID
+          }, () => {
+            this.getInfo(this.state.principalOID);
+            message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: values.organizationName}));  //保存成功
+            this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', this.state.principalOID));
           });
-          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
         }).catch((e)=>{
           this.setState({loading: false});
           if(e.response.data.validationErrors){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`操作失败, ${e.response.data.validationErrors[0].message}`);
           } else {
             message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
@@ -81,6 +103,7 @@ class AgencyDetail extends React.Component {
     });
   };
 
+  //查询被代理人下拉列表
   handleSearch = (value) => {
     if (!value) {
       this.setState({
@@ -91,38 +114,34 @@ class AgencyDetail extends React.Component {
     }
     this.setState({
       principalValidateStatus: '',
-      principalHelp: ''
+      principalHelp: '',
+      fetching: true
     });
     let url = `${config.baseUrl}/api/search/users/by/${value}`;
     value && httpFetch.get(url).then((response)=>{
       let data = response.data;
-      data.map(item => {
-        item.text = item.fullName + '-' + item.employeeID;
-      });
-      this.setState({ data })
+      this.setState({ data, fetching: false })
     });
   };
 
+  //选择被代理人
   handleSelect = (obj) => {
     obj = JSON.parse(obj);
     let url = `${config.baseUrl}/api/bill/proxy/principals/check/${obj.userOID}`;
     obj.userOID && httpFetch.get(url).then((response)=>{
       if (response.data) {
         this.setState({
-          principalValue: obj.fullName + ' - ' + obj.employeeID,
           principalValidateStatus: 'error',
           principalHelp: '此员工已存在被代理信息，请返回至前一页面搜索该员工并编辑'
         })
       } else {
         if (obj.status == 1002) {
           this.setState({
-            principalValue: obj.fullName + ' - ' + obj.employeeID,
             principalValidateStatus: 'warning',
             principalHelp: `该员工将于${obj.leavingDate}离职，离职后此代理将自动禁用`
           })
         } else {
           this.setState({
-            principalValue: obj.fullName + ' - ' + obj.employeeID,
             principalValidateStatus: '',
             principalHelp: ''
           })
@@ -131,27 +150,32 @@ class AgencyDetail extends React.Component {
     });
   };
 
+  //取消新建代理
   handleCancel = () => {
     this.setState({ selectPrincipal: false })
   };
 
+  //修改代理人
   toSelectPrincipal = () => {
-    this.setState({ selectPrincipal: true })
+    this.setState({ selectPrincipal: true });
+    this.setState((prevState)=>{
+      principalEditNum: prevState.principalEditNum++
+    })
   };
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { loading, data, principalOID, principalValue, selectPrincipal, principalValidateStatus, principalHelp, billProxyRuleDTOs } = this.state;
+    const { loading, data, principalOID, principalValue, selectPrincipal, principalEditNum , principalValidateStatus, principalHelp, billProxyRuleDTOs, principalInfo, fetching } = this.state;
     // const options = data.map(d => <Option key={d.userOID} value={d.text}>{d.text}</Option>);
-    const options = data.map(d => <Option key={JSON.stringify(d)}>{d.text}</Option>);
+    const options = data.map(d => <Option key={JSON.stringify(d)}>{d.fullName} - {d.employeeID}</Option>);
     let principal;
     let saveBtn;
-    let agencyRelation;
-    if (selectPrincipal) {
+    if (selectPrincipal) {  //选择被代理人
       principal =
         <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
                 mode="multiple"
+                notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
                 onSearch={this.handleSearch}
                 onSelect={this.handleSelect}>
           {options}
@@ -164,16 +188,14 @@ class AgencyDetail extends React.Component {
                   style={{marginRight:'10px'}}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
           <Button onClick={this.handleCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
         </FormItem>;
-      agencyRelation = ""
-    } else {
+    } else {  //新建代理关系
       principal =
         <div style={{fontSize:'14px'}}>
           <span style={{color:'#333'}}>已选：</span>
           <span style={{fontSize:'20px',color:'#000'}}>{principalValue}</span>
-          <a style={{color:'#108EE9',marginLeft:'20px'}} onClick={this.toSelectPrincipal}>修改</a>
+          <a style={{color:'#108EE9',marginLeft:'20px'}} onClick={this.toSelectPrincipal}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
         </div>;
       saveBtn = "";
-      agencyRelation = <NewAgencyRelation principalOID={principalOID} billProxyRuleDTOs={billProxyRuleDTOs} />
     }
     return (
       <div className="agency-detail">
@@ -185,7 +207,7 @@ class AgencyDetail extends React.Component {
                     help={principalHelp}
                     style={{width:'300px'}}
                     label={<span>{formatMessage({id:'agencySetting.principal'})} : <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>}>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
-            {getFieldDecorator('principalOID', {
+            {getFieldDecorator(`principalObj-${principalEditNum}`, {
               rules: [{
                 required: true,
                 message: formatMessage({id: 'common.please.select'})  //请选择
@@ -197,7 +219,10 @@ class AgencyDetail extends React.Component {
           </FormItem>
           {saveBtn}
         </Form>
-        {agencyRelation}
+        <AgencyRelation
+          principalOID={principalOID}
+          billProxyRuleDTOs={billProxyRuleDTOs}
+          principalInfo={principalInfo} />
       </div>
     )
   }

@@ -139,7 +139,7 @@ class NewAgency extends React.Component {
               }]})(
               <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
                       mode="multiple"
-                      notFoundContent={fetching ? <Spin size="small" /> : '无数据'}
+                      notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
                       onSearch={this.handleSearch}
                       onChange={this.handleChange}
                       onSelect={this.handleSelect}>
