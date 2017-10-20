@@ -99,6 +99,7 @@ class BudgetControlRules extends React.Component {
   //获取控制规则数据
   getList(){
     let params = this.state.searchParams;
+    console.log(params)
     let url = `${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
@@ -159,7 +160,7 @@ class BudgetControlRules extends React.Component {
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
     budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
-  }
+  };
 
   render(){
     const { searchForm, loading, columns, pagination, data} = this.state;

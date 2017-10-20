@@ -117,18 +117,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'rule_params': {
-    title: "规则参数",
-    searchForm: [
-      {type: 'input', id: 'paramsCode', label: '参数代码'},
-      {type: 'input', id: 'paramsName', label: '参数描述'}
-    ],
-    columns: [
-      {title: '参数代码', dataIndex: 'paramsCode'},
-      {title: '参数描述', dataIndex: 'paramsName'}
-    ],
-    key: 'id'
-  },
   'budget_journal_type':{
     title: "预算日记账类型",
     url: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`,

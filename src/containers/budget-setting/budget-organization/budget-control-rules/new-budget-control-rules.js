@@ -119,7 +119,7 @@ class NewBudgetControlRules extends React.Component{
   };
 
   validateRuleCode = (item,value,callback)=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/queryAll?organizationId=${this.props.params.id}&controlRuleCode=${value}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.params.id}&controlRuleCode=${value}`).then((response)=>{
       console.log(response.data)
       let flag = false;
       if(response.data.length > 0 ){

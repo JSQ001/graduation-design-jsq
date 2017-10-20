@@ -155,8 +155,8 @@ class CallBackSetting extends React.Component{
     };
     const menu = (
       <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="isEnabled"><span className="status-options">启用</span><div className="status-options-icon"/> </Menu.Item>
-        <Menu.Item key="disabled"><span className="status-options">停用</span><div className="status-options-icon"/></Menu.Item>
+        <Menu.Item key="isEnabled"><span className="status-options">启用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
+        <Menu.Item key="disabled"><span className="status-options">停用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
       </Menu>
     );
     return(
