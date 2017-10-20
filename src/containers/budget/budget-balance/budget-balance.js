@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm } from 'antd'
+import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm, Modal, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -54,7 +54,11 @@ class BudgetBalance extends React.Component {
         'BGT_RULE_PARAMETER_ORG': 2016,
         'BGT_RULE_PARAMETER_DIM': 2017
       },
-      paramValueMap: {}
+      paramValueMap: {},
+      showSaveModal: false,
+      conditionCode: '',
+      conditionName: '',
+      saving: false
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -228,43 +232,78 @@ class BudgetBalance extends React.Component {
     this.setState({ params, paramsKey});
   };
 
-  //查询，将state.params的值包装至values统一保存为临时方案后跳转
+  //查询，统一保存为临时方案后跳转
   search = (e) => {
     e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    let searchForm = [].concat(this.state.searchForm);
-    searchForm.map(item => {
-      if(values[item.id] && item.entity){
-        if(item.type === 'combobox' || item.type === 'select' || item.type === 'value_list'){
-          values[item.id] = JSON.parse(values[item.id].title)
-        } else if(item.type === 'multiple') {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(JSON.parse(value.title));
-          });
-          values[item.id] = result;
-        }
-      }
+    this.validate((values) => {
+      console.log(values);
     });
-    const { paramValueMap } = this.state;
-    values.queryLineList = [];
-    this.state.params.map(param => {
-      let queryLine = {
-        parameterType: param.type,
-        parameterCode: param.params,
-        queryParameterList: []
-      };
-      param.value.map(value => {
-        queryLine.queryParameterList.push({
-          parameterValueId: value[paramValueMap[param.params].valueKey],
-          parameterValueCode: value[paramValueMap[param.params].codeKey],
-          parameterValueName: value[paramValueMap[param.params].labelKey]
-        })
-      });
-      values.queryLineList.push(queryLine)
-    });
-    console.log(values);
     // this.context.router.push(this.state.budgetBalanceResult.url);
+  };
+
+  //验证并打开方案保存窗口
+  showSaveModal = () => {
+    this.setState({ showSaveModal: true })
+    // this.validate((values) => {
+    //   console.log(values);
+    // });
+  };
+
+  //保存方案
+  handleSaveCondition = () => {
+    this.validate((values) => {
+      console.log(values);
+      values.conditionCode = this.state.conditionCode;
+      values.conditionName = this.state.conditionName;
+      values.companyId = this.props.company.id;
+      this.setState({ saving: true });
+      httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/header`, values).then(res => {
+        message.success('保存成功');
+        this.setState({ showSaveModal: false, saving: false})
+      })
+    });
+  };
+
+  //验证通过后将state.params的值包装至values
+  validate = (callback) => {
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if(!err){
+        let searchForm = [].concat(this.state.searchForm);
+        searchForm.map(item => {
+          if(values[item.id] && item.entity){
+            if(item.type === 'combobox' || item.type === 'select' || item.type === 'value_list'){
+              values[item.id] = JSON.parse(values[item.id].title)
+            } else if(item.type === 'multiple') {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(JSON.parse(value.title));
+              });
+              values[item.id] = result;
+            }
+          }
+        });
+        const { paramValueMap } = this.state;
+        values.queryLineList = [];
+        values.periodSummaryFlag = values.periodSummaryFlag === 'TRUE';
+        this.state.params.map(param => {
+          let queryLine = {
+            parameterType: param.type,
+            parameterCode: param.params,
+            queryParameterList: []
+          };
+          param.value.map(value => {
+            queryLine.queryParameterList.push({
+              parameterValueId: value[paramValueMap[param.params].valueKey],
+              parameterValueCode: value[paramValueMap[param.params].codeKey],
+              parameterValueName: value[paramValueMap[param.params].labelKey]
+            })
+          });
+          values.queryLineList.push(queryLine)
+        });
+        values.organizationId = this.state.organizationId;
+        callback(values);
+      }
+    })
   };
 
   clear = () => {
@@ -356,6 +395,7 @@ class BudgetBalance extends React.Component {
         let searchForm = this.state.searchForm;
         searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {year: value};
         searchForm[4].items[0].disabled =  searchForm[4].items[1].disabled = false;
+        searchForm[4].items[0].options = searchForm[4].items[1].options = [];
         this.setState({ searchForm })
     }
   };
@@ -501,11 +541,14 @@ class BudgetBalance extends React.Component {
     return children;
   }
 
+  handleChangeConditionCode = (e) => {
+    this.setState({ conditionCode: e.target.value })
+  };
+
   render(){
-    const { params, columns, showSlideFrame } = this.state;
+    const { params, columns, showSlideFrame, showSaveModal, saving } = this.state;
     return (
       <div className="budget-balance">
-
         <Form
           className="ant-advanced-search-form"
           onSubmit={this.search}
@@ -517,7 +560,7 @@ class BudgetBalance extends React.Component {
           <div className="footer-operate">
             <Button type="primary" htmlType="submit">查询</Button>
             <Button style={{ marginLeft: 10, marginRight: 20 }}>重置</Button>
-            <Button style={{ marginRight: 10}}>保存方案</Button>
+            <Button style={{ marginRight: 10}} onClick={this.showSaveModal}>保存方案</Button>
             <Button onClick={() => {this.setState({showSlideFrame : true})}}>应用现有方案</Button>
           </div>
           <div className="table-header">
@@ -535,6 +578,18 @@ class BudgetBalance extends React.Component {
                     title="我的查询方案"
                     show={showSlideFrame}
                     onClose={() => this.setState({showSlideFrame : false})}/>
+        <Modal title="保存方案"
+               visible={showSaveModal}
+               onCancel={() => {this.setState({ showSaveModal: false })}}
+               onOk={this.handleSaveCondition}
+               confirmLoading={saving}>
+          <div className="save-modal-content">
+            <div>方案代码</div>
+            <Input onChange={this.handleChangeConditionCode}/>
+            <div>方案名称</div>
+            <Input onChange={(e) => this.setState({ conditionName: e.target.value })}/>
+          </div>
+        </Modal>
       </div>
     )
   }
