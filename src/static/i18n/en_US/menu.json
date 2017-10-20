@@ -51,5 +51,6 @@
   "menu.callback-setting": "The callback is set",
   "menu.finance-setting":"Finance setting",
   "menu.beep-timer":"beep timer",
-  "menu.agency-detail":"Agency detail"
+  "menu.agency-detail":"Agency detail",
+  "menu.account-period-define": "Account period define"
 }

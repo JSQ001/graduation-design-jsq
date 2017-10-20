@@ -69,9 +69,7 @@ class UpdateBudgetOrganization extends React.Component {
               }],
               initialValue: this.props.params.setOfBooksId
             })(
-              <Select disabled>
-                <Option value="1" key='HEC_TEST_DATA_002'>HEC_TEST_DATA_002</Option>
-              </Select>
+              <Select disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.code'})/* 预算组织代码 */}>

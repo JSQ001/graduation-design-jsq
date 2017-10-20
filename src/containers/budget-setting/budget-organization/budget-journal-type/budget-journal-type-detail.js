@@ -23,7 +23,7 @@ class BudgetJournalTypeDetail extends React.Component {
       infoList: [
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', disabled: true},
         {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
-        {type: 'select', label: '预算业务类型', id: 'businessType', message: '请选择', options:[]},
+        {type: 'value_list', label: '预算业务类型', id: 'businessType', message: '请选择', options:[], valueListCode: 2018},
         {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       tabs: [

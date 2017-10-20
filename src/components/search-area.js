@@ -66,6 +66,7 @@ class SearchArea extends React.Component{
     let values = this.props.form.getFieldsValue();
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
+
       if(values[item.id] && item.entity) {
         if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
           values[item.id] = JSON.parse(values[item.id].title);
@@ -77,6 +78,24 @@ class SearchArea extends React.Component{
           values[item.id] = result;
         }
       }
+
+      if(item.type === 'list' && values[item.id]){
+        if(item.entity){
+          let result = [];
+          values[item.id].map(value => {
+            result.push(value.value);
+          });
+          values[item.id] = result;
+        } else {
+          let result = [];
+          values[item.id].map(value => {
+            result.push(value.key);
+          });
+          values[item.id] = result;
+        }
+      }
+
+
     });
     this.props.submitHandle(values)
   };
@@ -277,7 +296,7 @@ class SearchArea extends React.Component{
                         disabled={item.disabled}
                         type={item.listType}
                         labelKey={item.labelKey}
-                        valueKey={item.labelKey}
+                        valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
                         selectorItem={item.selectorItem}
                         single={item.single}/>

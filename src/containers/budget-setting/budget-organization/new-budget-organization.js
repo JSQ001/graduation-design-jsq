@@ -18,7 +18,7 @@ class NewBudgetOrganization extends React.Component {
     this.state = {
       budgetOrganization: menuRoute.getRouteItem('budget-organization','key'),    //组织定义的页面项
       loading: false,
-      setOfBooks: []
+      setOfBooks: [],
     };
   }
 
@@ -44,13 +44,15 @@ class NewBudgetOrganization extends React.Component {
   };
 
   componentWillMount(){
-
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant`).then(res => {
+      this.setState({ setOfBooks: res.data })
+    })
   }
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { setOfBooks } = this.state;
+    const { setOfBooks, budgetOrganization } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 10, offset: 1 },
@@ -110,7 +112,7 @@ class NewBudgetOrganization extends React.Component {
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
               <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
-              <Col span={3}><Button>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
+              <Col span={3}><Button onClick={() => {this.context.router.replace(budgetOrganization.url);}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
             </Row>
           </FormItem>
         </Form>
