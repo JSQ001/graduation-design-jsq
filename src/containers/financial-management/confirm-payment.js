@@ -50,6 +50,7 @@ class ConfirmPayment extends React.Component{
           labelKey: 'companyName',
           valueKey: 'companyReceiptedOID'
         }
+
       ],
       columns: [
         {title: '序号', dataIndex: 'index'},
