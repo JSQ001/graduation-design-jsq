@@ -50,5 +50,8 @@
   "menu.security-setting": "Security setting",
   "menu.callback-setting": "The callback is set",
   "menu.finance-setting":"Finance setting",
-  "menu.beep-timer":"beep timer"
+  "menu.beep-timer":"beep timer",
+  "menu.budget-journal-detail-submit":"budget journal detail submit",
+  "menu.budget-journal-re-check":"budget journal re-check",
+  "menu.budget-journal-re-check-detail":"budget journal re-check detail"
 }

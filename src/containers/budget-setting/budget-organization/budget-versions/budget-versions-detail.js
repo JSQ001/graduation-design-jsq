@@ -119,16 +119,36 @@ class BudgetVersionsDetail extends React.Component {
     this.setState({
       loading:true
     })
-    console.log("fdvdfvdsFGGGGGGGGGGGGGGGGGGg")
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
-      this.setState({loading: false ,data:res.data});
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response)=>{
+      this.setState({
+        data:response.data,
+        loading:false,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+          onChange: this.onChangePager,
+          pageSize: this.state.pageSize,
+          current: this.state.page + 1
+        }
+      })
     }).catch((e)=>{
       this.setState({
-        loading:false
+        loading:false,
+
       })
     })
 
   }
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getAssignCompanyList();
+      })
+  };
 
 
 
@@ -154,6 +174,9 @@ class BudgetVersionsDetail extends React.Component {
     console.log(values);
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
       message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+      this.setState({
+        newAssignCompanyDate:[]
+      })
       this.getAssignCompanyList;
     }).catch((e)=>{
       if(e.response){

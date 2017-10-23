@@ -14,9 +14,11 @@ class NewBudgetJournalType extends React.Component {
     super(props);
     this.state = {
       budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail','key'),    //项目组详情的页面项
-      loading: false
+      loading: false,
     };
   }
+
+
 
   handleSave = (e) => {
     e.preventDefault();
