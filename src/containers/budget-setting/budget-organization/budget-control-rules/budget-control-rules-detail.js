@@ -79,13 +79,12 @@ class BudgetControlRulesDetail extends React.Component{
         },
         {          /*失效日期*/
           title: formatMessage({id:"budget.invalidDate"}), key: "invalidDate", dataIndex: 'invalidDate',
-          render: description => (
-            <span>
-              {description ? description : '-'}
-              <Popover content={description}>
-                {description}
-              </Popover>
-            </span>)
+          render: description => {
+            console.log(description)
+            console.log(description===null)
+            return description === null ? '-' :
+              description.year+"-"+description.monthValue+"-"+description.dayOfMonth
+          }
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
@@ -109,12 +108,16 @@ class BudgetControlRulesDetail extends React.Component{
     //根据路径上的预算规则id查出完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
-        let endDate = response.data.endDate === "undefined" ? null : response.data.endDate.substring(0,10)
-        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ "+ endDate;
+        console.log(response.data)
+        let data = response.data;
+        //let endDate = JSON.parse(response.data.endDate) === {} ? null : response.data.endDate.year + "-" + response.data.endDate.monthValue + "-"+response.data.endDate.dayOfMonth;
+        data.effectiveDate = data.startDate.year + "-" + data.startDate.monthValue + "-"+ data.startDate.dayOfMonth + " ~ ";
+        console.log(data);
         this.setState({
           controlRule: response.data,
           createParams: response.data
         })
+
       }
     }).catch((e)=>{
       //console.log(e)

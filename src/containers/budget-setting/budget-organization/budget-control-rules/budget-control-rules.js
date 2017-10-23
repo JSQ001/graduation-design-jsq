@@ -65,11 +65,15 @@ class BudgetControlRules extends React.Component {
         {          /*控制策略*/
           title: "控制策略", key: "strategyGroupName", dataIndex: 'strategyGroupName'
         },
-        {          /*有效日期*/
-          title: formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate',
-          render:(recode,record)=>{
-            return record.startDate.substring(0,10)+ " ~ " +
-              record.endDate === "undefined" || record.endDate === '' ? '' :record.endDate.substring(0,10)
+        {
+          /*有效日期*/
+          title: formatMessage({id: "budget.controlRule.effectiveDate"}),
+          key: "effectiveDate",
+          dataIndex: 'effectiveDate',
+          render: (recode, record) => {
+            return record.startDate.year + "-" + record.startDate.monthValue + "-" + record.startDate.dayOfMonth + " ~ " +
+            //record.endDate === "undefined" || record.endDate === '' ? '' :
+              record.endDate.year + "-" + record.endDate.monthValue + "-" + record.endDate.dayOfMonth
           }
         },
       ]

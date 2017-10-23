@@ -32,15 +32,19 @@ class UpdateBudgetRulesDetail extends React.Component{
       filtrateMethodHelp: '',
       summaryOrDetailHelp: '',
       showParamsType: false,
-      listSelectedData: []
+      listSelectedData: [],
+      valueListMap:{
+        ruleParamType: 2012,
+        filtrateMethod: 2013,
+        summaryOrDetail: 2014,
+        'BGT_RULE_PARAMETER_BUDGET': 2015,
+        'BGT_RULE_PARAMETER_ORG': 2016,
+        'BGT_RULE_PARAMETER_DIM': 2017
+      },
     }
   }
 
   componentWillMount() {
-    this.getValueList(2012, this.state.ruleParameterTypeArray);
-    this.getValueList(2013, this.state.filtrateMethodArray);
-    this.getValueList(2014, this.state.summaryOrDetailArray)
-
     console.log(this.props)
     //编辑时接收的参数
     this.setState({
@@ -164,20 +168,14 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
+    const { loading, valueListMap, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
     const { formatMessage } = this.props.intl;
 
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
-    const paramsType = ruleParameterTypeArray.map((item)=><Option key={item.id}>{item.value}</Option>);
 
-    const filtrateMethodOption = filtrateMethodArray.map((item)=><Option key={item.id}>{item.value}</Option>);
-
-    const summaryOrDetailOptions = summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>);
-
-    const ruleParams = ruleParamsArray.map((item)=><Option key={item.id}>{item.value}</Option>);
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -198,9 +196,9 @@ class UpdateBudgetRulesDetail extends React.Component{
                     this.props.form.setFieldsValue({"ruleParameter":"","parameterLowerLimit":"","parameterUpperLimit":""});
                     let ruleParameterCode;
                     switch (value){
-                      case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = 2015; break;
-                      case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = 2016;break;
-                      case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = 2017;break
+                      case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET; break;
+                      case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;break;
+                      case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;break
                     }
                     this.getValueList(ruleParameterCode,ruleParamsArray);
                     callback();
@@ -208,8 +206,12 @@ class UpdateBudgetRulesDetail extends React.Component{
                 }
               ]
             })(
-              <Select  className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
-                {paramsType}
+              <Select
+                className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}
+                onFocus={()=>this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray)}>
+                {
+                  ruleParameterTypeArray.map((item)=><Option key={item.id}>{item.value}</Option>)
+                }
               </Select>
             )}
           </FormItem>
@@ -224,14 +226,11 @@ class UpdateBudgetRulesDetail extends React.Component{
               initialValue: ruleDetail.ruleParameter
             })(
               <Select
-                onFocus={()=>{
-                  this.setState({
-                    ruleParamsStatus: typeof this.props.form.getFieldValue("ruleParameterType") === "undefined" ? "warning": null,
-                    ruleParamsHelp: typeof this.props.form.getFieldValue("ruleParameterType") === "undefined" ? "请先选择规则参数类型" : null
-                  })
-                }}
+                onFocus={this.handleSelectParam}
                 className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
-                {ruleParams}
+                {
+                  ruleParamsArray.map((item)=><Option key={item.id}>{item.value}</Option>)
+                }
               </Select>
             )}
           </FormItem>
@@ -258,8 +257,10 @@ class UpdateBudgetRulesDetail extends React.Component{
               ],
               initialValue: ruleDetail.filtrateMethod
             })(
-              <Select placeholder={ formatMessage({id:"common.please.select"})}>
-                {filtrateMethodOption}
+              <Select
+                placeholder={ formatMessage({id:"common.please.select"})}
+                onFocus={()=>this.getValueList(valueListMap.filtrateMethod, filtrateMethodArray)}>
+                {filtrateMethodArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
               </Select>
             )}
           </FormItem>
@@ -289,8 +290,10 @@ class UpdateBudgetRulesDetail extends React.Component{
                 }
               ]
             })(
-              <Select placeholder={formatMessage({id:"common.please.select"})} >
-                {summaryOrDetailOptions}
+              <Select
+                placeholder={formatMessage({id:"common.please.select"})}
+                onFocus={()=>this.getValueList(valueListMap.summaryOrDetail, summaryOrDetailArray)}>
+                {summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
               </Select>
             )}
           </FormItem>
