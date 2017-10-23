@@ -8,7 +8,7 @@ const Option = Select.Option;
 import debounce from 'lodash.debounce';
 import Chooser from 'components/chooser'
 import SlideFrame from 'components/slide-frame'
-import BudgetBalanceScheme from 'containers/budget/budget-balance/budget-balance-scheme'
+import BudgetBalanceCondition from 'containers/budget/budget-balance/budget-balance-condition'
 import menuRoute from 'share/menuRoute'
 
 import 'styles/budget/budget-balance/budget-balance.scss'
@@ -238,7 +238,7 @@ class BudgetBalance extends React.Component {
     this.validate((values) => {
       console.log(values);
     });
-    // this.context.router.push(this.state.budgetBalanceResult.url);
+    // this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
   };
 
   //验证并打开方案保存窗口
@@ -267,6 +267,7 @@ class BudgetBalance extends React.Component {
   //验证通过后将state.params的值包装至values
   validate = (callback) => {
     this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log(values);
       if(!err){
         let searchForm = [].concat(this.state.searchForm);
         searchForm.map(item => {
@@ -306,30 +307,84 @@ class BudgetBalance extends React.Component {
     })
   };
 
+  //应用方案后设置表单值
+  setValues = (options) => {
+    Object.keys(options).map(key => {
+      let searchForm = this.state.searchForm;
+      searchForm.map((searchItem, index) => {
+        if(searchItem.id === key){
+          if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
+            this.onChangeSelect(searchItem, options[key]);
+          else{
+            let value = {};
+            value[key] = options[key] + '';
+            this.props.form.setFieldsValue(value)
+          }
+        } else if(searchItem.type === 'items'){
+          searchItem.items.map(subItem => {
+            if(subItem.id === key){
+              if((subItem.type === 'select' || subItem.type === 'value_list') && typeof options[key] === 'object')
+                this.onChangeSelect(subItem, options[key], index);
+              else {
+                let value = {};
+                value[key] = options[key] + '';
+                this.props.form.setFieldsValue(value)
+              }
+            }
+          })
+        }
+      });
+      searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {year: options.yearLimit};
+      searchForm[4].items[0].disabled =  searchForm[4].items[1].disabled = false;
+      searchForm[4].items[0].options = searchForm[4].items[1].options = [];
+      this.setState({ searchForm })
+    });
+  };
+
+  //应用方案
+  useCondition = (condition) => {
+    console.log(condition);
+    this.setState({showSlideFrame : false});
+    condition && this.setValues({
+      versionId: {key: condition.versionId, label: condition.versionName},
+      structureId: {key: condition.structureId, label: condition.structureName},
+      scenarioId: {key: condition.scenarioId, label: condition.scenarioName},
+      yearLimit: condition.yearLimit,
+      periodLowerLimit: {key: condition.periodLowerLimit, label: condition.periodLowerLimit},
+      periodUpperLimit: {key: condition.periodUpperLimit, label: condition.periodUpperLimit},
+      periodSummaryFlag: {key: condition.periodSummaryFlag, label: condition.periodSummaryFlag},
+      quarterLowerLimit: {key: condition.quarterLowerLimit, label: condition.quarterLowerLimit},
+      quarterUpperLimit: {key: condition.quarterUpperLimit, label: condition.quarterUpperLimit},
+      amountQuarterFlag: {key: condition.amountQuarterFlag, label: condition.amountQuarterFlag}
+    })
+  };
+
   clear = () => {
     this.props.form.resetFields();
   };
 
   //得到值列表的值增加options
   getValueListOptions = (item) => {
-    this.getSystemValueList(item.valueListCode).then(res => {
-      let options = [];
-      res.data.values.map(data => {
-        options.push({label: data.messageKey, value: data.code, data: data})
-      });
-      let searchForm = this.state.searchForm;
-      searchForm = searchForm.map(searchItem => {
-        if(searchItem.id === item.id)
-          searchItem.options = options;
-        if(searchItem.type === 'items')
-          searchItem.items.map(subItem => {
-            if(subItem.id === item.id)
-              subItem.options = options;
-          });
-        return searchItem;
-      });
-      this.setState({ searchForm });
-    })
+    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
+      this.getSystemValueList(item.valueListCode).then(res => {
+        let options = [];
+        res.data.values.map(data => {
+          options.push({label: data.messageKey, value: data.code, data: data})
+        });
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === item.id)
+            searchItem.options = options;
+          if(searchItem.type === 'items')
+            searchItem.items.map(subItem => {
+              if(subItem.id === item.id)
+                subItem.options = options;
+            });
+          return searchItem;
+        });
+        this.setState({ searchForm });
+      })
+    }
   };
 
   //根据接口返回数据重新设置options
@@ -400,9 +455,46 @@ class BudgetBalance extends React.Component {
     }
   };
 
+  onChangeSelect = (item, value, index) => {
+    let valueWillSet = {};
+    let searchForm = this.state.searchForm;
+    if(index !== undefined){
+      searchForm[index].items = searchForm[index].items.map(searchItem => {
+        if(searchItem.id === item.id){
+          valueWillSet[searchItem.id] = value.key + '';
+          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+            let dataOption = {};
+            dataOption[item.valueKey] = value.key;
+            dataOption[item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+          }
+        }
+        return searchItem;
+      });
+    } else {
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id){
+          valueWillSet[searchItem.id] = value.key + '';
+          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+            let dataOption = {};
+            dataOption[item.valueKey] = value.key;
+            dataOption[item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+          }
+        }
+        return searchItem;
+      });
+    }
+    this.setState({ searchForm }, () => {
+      this.props.form.setFieldsValue(valueWillSet);
+    });
+    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    handle();
+  };
+
   //渲染搜索表单组件
   renderFormItem(item){
-    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    let handle = item.event ? (event) => this.handleEvent(event, item.event) : ()=>{};
     switch(item.type){
       //输入组件
       case 'input':{
@@ -417,7 +509,7 @@ class BudgetBalance extends React.Component {
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
-              return <Option key={option.key} title={JSON.stringify(option.value)}>{option.label}</Option>
+              return <Option key={'' + option.key} title={JSON.stringify(option.value)}>{option.label}</Option>
             })}
           </Select>
         )
@@ -574,10 +666,11 @@ class BudgetBalance extends React.Component {
                  bordered
                  size="middle"/>
         </Form>
-        <SlideFrame content={BudgetBalanceScheme}
+        <SlideFrame content={BudgetBalanceCondition}
                     title="我的查询方案"
                     show={showSlideFrame}
-                    onClose={() => this.setState({showSlideFrame : false})}/>
+                    onClose={() => this.setState({showSlideFrame : false})}
+                    afterClose={this.useCondition}/>
         <Modal title="保存方案"
                visible={showSaveModal}
                onCancel={() => {this.setState({ showSaveModal: false })}}
