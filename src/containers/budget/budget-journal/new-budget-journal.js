@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Form,Input,Switch,Icon} from 'antd';
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 import Chooser from  'components/Chooser';
 import ListSelector from 'components/list-selector.js';
@@ -38,33 +39,11 @@ class NewBudgetJournalFrom extends React.Component {
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
     const data =value;
-    console.log(value);
-    let valueData ={
-      ...value,
-      'organizationId':this.state.organization.id,
-      'organizationName':this.state.organization.organizationName,
-      'employeeName':this.props.user.fullName,
-      'employeeId':this.props.user.userOID,
-      'companyOID':this.props.company.companyOID,
-      'companyName':this.props.user.companyName,
-      'journalTypeName':value.journalTypeName[0].value.journalTypeName,
-      'journalTypeId':value.journalTypeName[0].value.journalTypeId,
-      'structureId':value.structureId,
-      'structureName':undefined,
-      'versionId':value.versionName[0].value.versionName,
-      'versionName':value.versionName[0].value.id,
-      'scenarioId':value.scenarioName[0].value.scenarioName,
-      'scenarioName':value.scenarioName[0].value.id,
-
-
-    }
-    console.log(valueData);
-    console.log("123123")
 
     let userData ={
       "dto" :
         {
-          "companyId":this.props.company.companyOID,
+          "companyId":this.props.company.id,
           "companyName":this.props.user.fullName,
           "organizationId":this.state.organization.id,
           "organizationName":this.state.organization.organizationName,
@@ -80,7 +59,7 @@ class NewBudgetJournalFrom extends React.Component {
           "employeeId":this.state.organization.id,
           "employeeName":this.state.organization.organizationName,
           "periodNumber": "2",
-          "unitId": "683edfba-4e52-489e-8ce4-6e820d5478b2",
+          "unitId": "12345678",
           "unitName":"periodNumber",
           'versionId':value.versionName[0].value.id,
           'versionName':value.versionName[0].value.versionName,
@@ -94,20 +73,14 @@ class NewBudgetJournalFrom extends React.Component {
       ,
       "list":[]
     }
-    console.log(userData)
 
     this.saveHeard(userData);
-
-
-
-
 
   }
 
   //保存日记账头
   saveHeard=(value)=>{
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,value).then((request)=>{
-      console.log(request.data)
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",request.data.dto.journalCode);
       this.context.router.push(path);
     })
@@ -120,10 +93,6 @@ class NewBudgetJournalFrom extends React.Component {
   handleFrom=(e)=>{
     e.preventDefault();
     let value =this.props.form.getFieldsValue();
-
-    console.log("11111111111111111")
-    console.log(value);
-
     this.handleLastStep(value);
   }
 
@@ -133,7 +102,7 @@ class NewBudgetJournalFrom extends React.Component {
   //获得预算组织
   getOrganization=()=>{
     httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
+
       const data ={
         'organizationId':request.data.id
       }
@@ -152,7 +121,7 @@ class NewBudgetJournalFrom extends React.Component {
   handleFocus = (Type) => {
     this.refs.blur.focus();
     this.showList(Type)
-    console.log(Type)
+
   };
 
 
@@ -166,7 +135,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalTypeChange=(values)=>{
-     console.log(values)
     let value = values[0].value
 
     this.getStructure(value.journalTypeId)
@@ -187,7 +155,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得年度和期间段
   handleSelectChange=(values)=>{
-
+console.log(values);
     this.state.structureGroup.map((item)=>{
       if(item.id=values){
         this.props.form.setFieldsValue({
@@ -205,7 +173,7 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   scenarioChange=(value)=>{
-    console.log(value);
+    //console.log(value);
 
   }
 
@@ -219,7 +187,7 @@ class NewBudgetJournalFrom extends React.Component {
       wrapperCol: { span: 14, offset: 1 },
     };
 
-    let strategyOptions = structureGroup.map((item)=><Option key={item.id} >{item.structureName}</Option>);
+    let strategyOptions = structureGroup.map((item)=><Option key={item.id} value={item.id}>{item.structureName}</Option>);
 
     return (
       <div className="new-budget-journal">
@@ -301,18 +269,7 @@ class NewBudgetJournalFrom extends React.Component {
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.periodYear"})} >
-            {getFieldDecorator('periodYear', {
-              rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"年度"})
-              }],
 
-            })(
-
-              <Input disabled={true}/>
-            )}
-          </FormItem>
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.periodStrategy"})} >
             {getFieldDecorator('periodStrategy', {
@@ -323,7 +280,28 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Input disabled={true}/>
+              <Select>
+                <Option key="2017" value='年'>年</Option>
+                <Option key="2018" value='月'>月</Option>
+                <Option key="2019" value='季度'>季度</Option>
+              </Select>
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.periodYear"})} >
+            {getFieldDecorator('periodYear', {
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"年度"})
+              }],
+
+            })(
+
+              <Select>
+                <Option key="2017" value='2017'>2017</Option>
+                <Option key="2018" value='2018'>2018</Option>
+                <Option key="2019" value='2019'>2019</Option>
+              </Select>
             )}
           </FormItem>
 
