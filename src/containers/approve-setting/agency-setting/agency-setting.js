@@ -33,6 +33,7 @@ class AgencySetting extends React.Component {
         total: 0
       },
       newAgency:  menuRoute.getRouteItem('new-agency','key'),    //新建代理
+      agencyDetail:  menuRoute.getRouteItem('agency-detail','key'),    //代理详情
     };
   }
 
@@ -70,6 +71,10 @@ class AgencySetting extends React.Component {
     this.context.router.push(this.state.newAgency.url);
   };
 
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', record.principalOID));
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
     const { loading, columns, data, pagination } = this.state;
@@ -87,6 +92,7 @@ class AgencySetting extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
       </div>
