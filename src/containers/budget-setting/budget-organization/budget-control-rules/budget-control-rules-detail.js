@@ -36,7 +36,7 @@ class BudgetControlRulesDetail extends React.Component{
       slideFrameTitle: "",
       showSlideFrameCreate: false,
       showSlideFrameUpdate: false,
-      params: {},
+      ruleDetail: {},
       pagination: {
         current:0,
         page: 1,
@@ -177,9 +177,18 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
+  //编辑规则明细,左侧划出
+  showSlideUpdate = (flag) => {
+    this.setState({
+      showSlideFrameUpdate: flag,
+    })
+  };
+
   handleEdit = (record) =>{
-    let title = this.props.intl.formatMessage({id: 'budget.editRulesDetail'});
-    this.showSlide(true,title,record);
+    this.setState({
+      ruleDetail: record,
+      showSlideFrameUpdate: true
+    })
   };
 
   handleCloseSlideCreate = (params) => {
@@ -228,6 +237,7 @@ class BudgetControlRulesDetail extends React.Component{
           item.key = item.id
         });
         this.setState({
+          loading: false,
           data: response.data
         })
       }
@@ -237,7 +247,7 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   render(){
-    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrameCreate,showSlideFrameUpdate, params, controlRule, updateState } = this.state;
+    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrameCreate,showSlideFrameUpdate, ruleDetail, controlRule, updateState } = this.state;
     return(
       <div className="budget-control-rules-detail">
         <BasicInfo
@@ -252,6 +262,7 @@ class BudgetControlRulesDetail extends React.Component{
           </div>
         </div>
         <Table
+          loading={loading}
           dataSource={data}
           columns={columns}
           onRowClick={this.handleEdit}
@@ -265,12 +276,13 @@ class BudgetControlRulesDetail extends React.Component{
                     afterClose={this.handleCloseSlideCreate}
                     onClose={() => this.showSlideCreate(false)}
                     params={{ruleId:this.props.params.ruleId}}/>
-        <SlideFrame title= {slideFrameTitle}
+
+        <SlideFrame title= { this.props.intl.formatMessage({id: 'budget.editRulesDetail'})}
                     show={showSlideFrameUpdate}
                     content={UpdateBudgetRulesDetail}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}
-                    params={params}/>
+                    onClose={()=>this.showSlideUpdate(false)}
+                    params={ruleDetail}/>
       </div>
     )
   }

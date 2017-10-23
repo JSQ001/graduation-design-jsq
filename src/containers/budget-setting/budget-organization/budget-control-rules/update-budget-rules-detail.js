@@ -18,7 +18,7 @@ import "styles/budget-setting/budget-organization/budget-control-rules/new-budge
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-class NewBudgetRulesDetail extends React.Component{
+class UpdateBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
     this.state = {
@@ -29,7 +29,6 @@ class NewBudgetRulesDetail extends React.Component{
       filtrateMethodArray: [], //值列表：取值方式
       summaryOrDetailArray: [], //值列表：取值范围
       ruleParamsArray: [], //规则参数值列表
-      flag: 'create' ,
       filtrateMethodHelp: '',
       summaryOrDetailHelp: '',
       showParamsType: false,
@@ -42,11 +41,12 @@ class NewBudgetRulesDetail extends React.Component{
     this.getValueList(2013, this.state.filtrateMethodArray);
     this.getValueList(2014, this.state.summaryOrDetailArray)
 
+    console.log(this.props)
     //编辑时接收的参数
     this.setState({
       ruleDetail: this.props.params,
-      flag: "update"
     })
+
   }
   /**
    * 获取值列表
@@ -70,13 +70,12 @@ class NewBudgetRulesDetail extends React.Component{
     return
   }
 
-  componentWillReceiveProps(nextprops){
+ /* componentWillReceiveProps(nextprops){
     console.log(nextprops.params)
     this.setState({
       ruleDetail: nextprops.params,
-      flag: "create",
     })
-  }
+  }*/
 
   handleSubmit = (e)=>{
     e.preventDefault();
@@ -142,6 +141,20 @@ class NewBudgetRulesDetail extends React.Component{
 
   onCancel = () =>{
     this.props.form.resetFields();
+    this.setState({
+      filtrateMethodHelp:'',
+      summaryOrDetailHelp:'',
+      filtrateMethodStatus:'',
+      summaryOrDetailStatus:'',
+      ruleParamsStatus: null,
+      ruleParamsHelp: null,
+      UpperLimitStatus: null,
+      UpperLimitHelp: null,
+      LowerLimitStatus: null,
+      LowerLimitHelp: null,
+      ruleParamsTypeStatus: null,
+      ruleParamsTypeHelp: null
+    });
     this.props.close();
   };
 
@@ -182,9 +195,13 @@ class NewBudgetRulesDetail extends React.Component{
                       ruleParamsHelp: null
                     });
                     //规则参数类型修改后，规则参数，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"ruleParameter":""});
-
-                    let ruleParameterCode = value === 'BGT_RULE_PARAMETER_BUDGET' ? 2015 : value === 'BGT_RULE_PARAMETER_ORG' ? 2016 : 2017 ;
+                    this.props.form.setFieldsValue({"ruleParameter":"","parameterLowerLimit":"","parameterUpperLimit":""});
+                    let ruleParameterCode;
+                    switch (value){
+                      case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = 2015; break;
+                      case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = 2016;break;
+                      case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = 2017;break
+                    }
                     this.getValueList(ruleParameterCode,ruleParamsArray);
                     callback();
                   }
@@ -228,9 +245,12 @@ class NewBudgetRulesDetail extends React.Component{
               },
                 {
                   validator: (item,value,callback)=>{
+                    console.log(value)
                     this.setState({
-                      filtrateMethodHelp: value === "contain" ? formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
-                        : formatMessage({id:"budget.filtrateMethodHelp.exclude"}) /*值范围为开区间，不包含左右边界值*/
+                      filtrateMethodHelp: value === "INCLUDE" ?
+                        formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
+                        : value === "EXCLUDE" ? formatMessage({id:"budget.filtrateMethodHelp.exclude"}) : "请选择" ,/*值范围为开区间，不包含左右边界值*/
+                      filtrateMethodStatus: typeof value === 'undefined' ? "error" : null
                     });
                     callback();
                   }
@@ -256,11 +276,13 @@ class NewBudgetRulesDetail extends React.Component{
                 },
                 {
                   validator: (item,value,callback)=>{
+                    console.log(value)
                     this.setState({
-                      summaryOrDetailHelp: value === "all" ? formatMessage({id:"budget.summaryOrDetailHelp.all"}) /*在上下限值内的明细和汇总规则参数都包括在内*/
-                        : value === "summary"? formatMessage({id:"budget.summaryOrDetailHelp.summary"})
+                      summaryOrDetailHelp: value === "ALL" ? formatMessage({id:"budget.summaryOrDetailHelp.all"}) /*在上下限值内的明细和汇总规则参数都包括在内*/
+                        : value === "SUMMARY"? formatMessage({id:"budget.summaryOrDetailHelp.summary"})
                           /*只包括在上下限内的汇总规则参数*/ :
-                          formatMessage({id:"budget.summaryOrDetailHelp.detail"}) /*只包括在上下限内的明细规则参数*/
+                          value === "DETAIL" ? formatMessage({id:"budget.summaryOrDetailHelp.detail"}) : "请选择", /*只包括在上下限内的明细规则参数*/
+                      summaryOrDetailStatus: typeof value === 'undefined' ? "error" : null
                     });
                     callback();
                   }
@@ -309,5 +331,5 @@ function mapStateToProps(state) {
   }
 }
 
-const WrappedNewBudgetRulesDetail = Form.create()(NewBudgetRulesDetail);
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetRulesDetail));
+const WrappedUpdateBudgetRulesDetail = Form.create()(UpdateBudgetRulesDetail);
+export default connect(mapStateToProps)(injectIntl(WrappedUpdateBudgetRulesDetail));

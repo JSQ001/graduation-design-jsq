@@ -4,83 +4,55 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import moment from 'moment'
 
 import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, DatePicker, Select } from 'antd'
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import menuRoute from 'share/menuRoute'
+import ListSelector from 'components/list-selector.js'
 import Chooser from 'components/chooser.js'
 
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-class NewBudgetRulesDetail extends React.Component{
+class UpdateBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      ruleId: null,
+      ruleDetail: {},
       isEnabled: true,
       loading: false,
       ruleParameterTypeArray: [], //值列表：规则参数类型
-      filtrateMethodArray: [],    //值列表：取值方式
-      summaryOrDetailArray: [],   //值列表：取值范围
-      ruleParamsArray: [],        //规则参数值列表
-      organizationId: '908139656192442369', //TODO:默认组织ID
-      valueListMap:{
-        ruleParamType: 2012,
-      },
-      paramTypeMap: {
-        'BGT_RULE_PARAMETER_BUDGET': 2015,
-        'BGT_RULE_PARAMETER_ORG': 2016,
-        'BGT_RULE_PARAMETER_DIM': 2017
-      },
-      paramValueMap:{}
-
+      filtrateMethodArray: [], //值列表：取值方式
+      summaryOrDetailArray: [], //值列表：取值范围
+      ruleParamsArray: [], //规则参数值列表
+      filtrateMethodHelp: '',
+      summaryOrDetailHelp: '',
+      showParamsType: false,
+      listSelectedData: []
     }
   }
 
   componentWillMount() {
-    console.log(this.props.params)
-    let organizationIdParams = {organizationId : this.state.organizationId};
-    let paramValueMap = {
-      'BUDGET_ITEM_TYPE': {
-        listType: 'budget_item_type',
-        labelKey: 'id',
-        valueKey: 'itemTypeName',
-        codeKey: 'itemTypeCode',
-        listExtraParams: organizationIdParams,
-        selectorItem: undefined
-      },
+    this.getValueList(2012, this.state.ruleParameterTypeArray);
+    this.getValueList(2013, this.state.filtrateMethodArray);
+    this.getValueList(2014, this.state.summaryOrDetailArray)
 
-      'BUDGET_ITEM_GROUP': {
-        listType: 'budget_item_group',
-        labelKey: 'id',
-        valueKey: 'itemGroupName',
-        codeKey: 'itemGroupCode',
-        listExtraParams: organizationIdParams,
-        selectorItem: undefined
-      },
-      'BUDGET_ITEM': {},
-      'CURRENCY': {},
-
-      'COMPANY': {},
-      'COMPANY_GROUP': {},
-      'UNIT': {},
-      'UNIT_GROUP': {},
-      'EMPLOYEE': {},
-      'EMPLOYEE_GROUP': {}
-    };
+    console.log(this.props)
+    //编辑时接收的参数
     this.setState({
       ruleDetail: this.props.params,
-      paramValueMap: paramValueMap
     })
+
   }
   /**
    * 获取值列表
    * @param code :值列表代码
    * @param name :值列表名称
-  */
+   */
   getValueList(code, name){
     name.splice(0,name.length)
     this.getSystemValueList(code).then((response)=>{
@@ -99,43 +71,72 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillReceiveProps(nextprops){
+    console.log(nextprops.params)
     this.setState({
-      ruleId: nextprops.params,
+      ruleDetail: nextprops.params,
     })
   }
 
   handleSubmit = (e)=>{
     e.preventDefault();
-
-   /* this.setState({
-      loading: true,
-    });*/
+    /* this.setState({
+     loading: true
+     });*/
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values)
-        values.controlRuleId = this.props.params.ruleId;
-        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
-          console.log(res);
-          this.setState({
-            loading: false,
-            filtrateMethodHelp:'',
-            summaryOrDetailHelp:''
-          });
-          if(res.status == 200){
-            this.props.close(true);
-            message.success('操作成功');
-            this.props.form.resetFields();
-          }
-        }).catch((e)=>{
-          if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
-          }
-        })
+        console.log(this.state.ruleDetail)
+        console.log(this.state.flag)
+        //typeof this.state.ruleDetail.id === 'undefined' ? this.handleSave(values) : this.handleUpdate(values)
       }
     });
+  };
+
+  handleSave = (values) =>{
+    this.setState({loading: true});
+    values.controlRuleId = this.props.params.controlRuleId;
+    httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
+      console.log(res);
+      this.setState({
+        loading: false,
+        filtrateMethodHelp:'',
+        summaryOrDetailHelp:''
+      });
+      if(res.status == 200){
+        this.props.close(true);
+        message.success('操作成功');
+        this.props.form.resetFields();
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      } else {
+        console.log(e)
+      }
+    })
+  };
+
+  handleUpdate = (values) =>{
+    values.controlRuleId = this.state.ruleDetail.controlRuleId;
+    //values.id = this.state.ruleDetail.id;
+    values.versionNumber = this.state.ruleDetail.versionNumber;
+    httpFetch.put(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=> {
+      console.log(res);
+      if(res.status === 200){
+        message.success('操作成功');
+        this.props.form.resetFields();
+        this.props.close(true);
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+        this.setState({loading: false});
+      }
+      else {
+        console.log(e)
+      }
+    })
   };
 
   onCancel = () =>{
@@ -157,60 +158,42 @@ class NewBudgetRulesDetail extends React.Component{
     this.props.close();
   };
 
-  //选择规则参数
-  handleSelectParam = ()=>{
-    let ruleParameterType = this.props.form.getFieldValue("ruleParameterType");
-    //没有选择规则参数类型，提示：请先选择规则参数类型
-    if(typeof ruleParameterType === 'undefined'){
-      this.setState({
-        ruleParamsStatus:"warning",
-        ruleParamsHelp:  "请先选择规则参数类型"
-      })
-    }
-
-   /* this.setState({
-      ruleParamsStatus: typeof ruleParameterType === 'undefined' ? "warning" : null,
-      ruleParamsHelp: typeof ruleParameterType === 'undefined' ? "请先选择规则参数类型" : "null",
-
-    })*/
-    //this.getValueList(2013, this.state.filtrateMethodArray);
-  };
-
-  handleFormChange =()=>{
-    this.setState({
-      loading: false
-    })
+  ruleParamsChange = (values)=>{
+    console.log(values)
   };
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, valueListMap, ruleDetail, paramValueMap, ruleParamsTypeHelp, ruleParamsStatus, ruleParamsHelp, filtrateMethodHelp, filtrateMethodStatus, summaryOrDetailHelp, summaryOrDetailStatus, UpperLimitStatus, UpperLimitHelp,LowerLimitStatus, LowerLimitHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
+    const { loading, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
     const { formatMessage } = this.props.intl;
 
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+    const paramsType = ruleParameterTypeArray.map((item)=><Option key={item.id}>{item.value}</Option>);
 
+    const filtrateMethodOption = filtrateMethodArray.map((item)=><Option key={item.id}>{item.value}</Option>);
+
+    const summaryOrDetailOptions = summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>);
+
+    const ruleParams = ruleParamsArray.map((item)=><Option key={item.id}>{item.value}</Option>);
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}>
             {getFieldDecorator('ruleParameterType', {
+              initialValue: ruleDetail.ruleParameterType,
               rules: [{
                 required: true,
-                message: "请选择"
+                message: "请选择规则参数类型"
               },
                 {
                   validator: (item,value,callback)=>{
-                    console.log(value)
-                    if(typeof value != 'undefined' && ruleParamsStatus === "warning"){
-                      this.setState({
-                        ruleParamsStatus: null,
-                        ruleParamsHelp: null
-                      });
-                    }
-
+                    this.setState({
+                      ruleParamsStatus: null,
+                      ruleParamsHelp: null
+                    });
                     //规则参数类型修改后，规则参数，上限值，下限值自动清空
                     this.props.form.setFieldsValue({"ruleParameter":"","parameterLowerLimit":"","parameterUpperLimit":""});
                     let ruleParameterCode;
@@ -225,54 +208,30 @@ class NewBudgetRulesDetail extends React.Component{
                 }
               ]
             })(
-              <Select
-                className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray)}>
-                {
-                  ruleParameterTypeArray.map((item)=><Option key={item.id}>{item.value}</Option>)
-                }
+              <Select  className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
+                {paramsType}
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameter'})  /*规则参数类型*/}
-            validateStatus={ruleParamsStatus}
-            help={ruleParamsHelp}>
+          <FormItem {...formItemLayout} label={formatMessage({id:'budget.ruleParameter'})  /*规则参数*/}
+                    validateStatus={this.state.ruleParamsStatus}
+                    help={this.state.ruleParamsHelp}>
             {getFieldDecorator('ruleParameter', {
               rules: [{
                 required: true,
-              },
-                {
-                  validator: (item,value,callback)=>{
-                    console.log(value)
-                    this.setState({
-                      ruleParamsStatus: typeof value === 'undefined' ? "error" : "",
-                      ruleParamsHelp: typeof value === 'undefined' ?  "请选择"  : "",
-                      ruleParamValue: {
-                        type: this.props.form.getFieldValue("ruleParameterType"),
-                        name:value,
-
-                        listType: 'budget_item_type',
-                        labelKey: 'id',
-                        valueKey: 'itemTypeName',
-                        codeKey: 'itemTypeCode',
-                        listExtraParams: this.state.organizationId,
-                        selectorItem: undefined
-
-                      }
-                    });
-                    //规则参数修改后，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"parameterLowerLimit":"","parameterUpperLimit":""});
-                    callback();
-                  }
-                }
-              ]
+                message: formatMessage({id:"common.please.enter"})
+              }],
+              initialValue: ruleDetail.ruleParameter
             })(
               <Select
-                onFocus={this.handleSelectParam}
+                onFocus={()=>{
+                  this.setState({
+                    ruleParamsStatus: typeof this.props.form.getFieldValue("ruleParameterType") === "undefined" ? "warning": null,
+                    ruleParamsHelp: typeof this.props.form.getFieldValue("ruleParameterType") === "undefined" ? "请先选择规则参数类型" : null
+                  })
+                }}
                 className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
-                {
-                  ruleParamsArray.map((item)=><Option key={item.id}>{item.value}</Option>)
-                }
+                {ruleParams}
               </Select>
             )}
           </FormItem>
@@ -299,16 +258,15 @@ class NewBudgetRulesDetail extends React.Component{
               ],
               initialValue: ruleDetail.filtrateMethod
             })(
-              <Select
-                placeholder={ formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(2013, filtrateMethodArray)}>
-                {filtrateMethodArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
+              <Select placeholder={ formatMessage({id:"common.please.select"})}>
+                {filtrateMethodOption}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:'budget.summaryOrDetail'})  /*取值范围*/}
-            help={summaryOrDetailHelp}>
+                    label={formatMessage({id:'budget.summaryOrDetail'})  /*取值范围*/}
+                    help={summaryOrDetailHelp}
+          >
             {getFieldDecorator('summaryOrDetail', {
               initialValue: ruleDetail.summaryOrDetail,
               rules: [
@@ -331,10 +289,8 @@ class NewBudgetRulesDetail extends React.Component{
                 }
               ]
             })(
-              <Select
-                placeholder={formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(2014, summaryOrDetailArray)}>
-                {summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
+              <Select placeholder={formatMessage({id:"common.please.select"})} >
+                {summaryOrDetailOptions}
               </Select>
             )}
           </FormItem>
@@ -347,15 +303,9 @@ class NewBudgetRulesDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}>
             {getFieldDecorator('parameterUpperLimit', {
-              rules: [
-                {
-                  validator:(item,value,callback)=>{
-                    console.log(paramValueMap.listType)
-                  }
-                }
-              ]
+              initialValue: ruleDetail.parameterUpperLimit
             })(
-              <Chooser type={ paramValueMap ? paramValueMap.listType : null}/>
+              <Input placeholder={formatMessage({id:"common.please.enter"})} />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.invalidDate'})  /*失效日期*/}>
@@ -381,5 +331,5 @@ function mapStateToProps(state) {
   }
 }
 
-const WrappedNewBudgetRulesDetail = Form.create()(NewBudgetRulesDetail);
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetRulesDetail));
+const WrappedUpdateBudgetRulesDetail = Form.create()(UpdateBudgetRulesDetail);
+export default connect(mapStateToProps)(injectIntl(WrappedUpdateBudgetRulesDetail));
