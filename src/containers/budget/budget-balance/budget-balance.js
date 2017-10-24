@@ -170,7 +170,8 @@ class BudgetBalance extends React.Component {
                         valueKey={param ? param.valueKey : null}
                         listExtraParams={param ? param.listExtraParams : null}
                         selectorItem={param ? param.selectorItem : null}
-                        value={params[index].value}/>;
+                        value={params[index].value}
+                        showNumber/>;
       }
     }
   };
