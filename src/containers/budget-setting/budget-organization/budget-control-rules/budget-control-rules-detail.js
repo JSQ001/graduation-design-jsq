@@ -13,8 +13,9 @@ import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table
 import 'styles/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail.scss';
 import SlideFrame from 'components/slide-frame'
 import NewBudgetRulesDetail from 'containers/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail'
-import BasicInfo from 'components/basic-info'
+import UpdateBudgetRulesDetail from 'containers/budget-setting/budget-organization/budget-control-rules/update-budget-rules-detail'
 
+import BasicInfo from 'components/basic-info'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -33,8 +34,9 @@ class BudgetControlRulesDetail extends React.Component{
       startValue: null,
       endValue: null,
       slideFrameTitle: "",
-      showSlideFrame: false,
-      params: {},
+      showSlideFrameCreate: false,
+      showSlideFrameUpdate: false,
+      ruleDetail: {},
       pagination: {
         current:0,
         page: 1,
@@ -56,7 +58,9 @@ class BudgetControlRulesDetail extends React.Component{
       ],
       columns: [
         {          /*规则参数类型*/
-          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType'
+          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType',
+          render: recode =>{
+          }
         },
         {          /*规则参数*/
           title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameter", dataIndex: 'ruleParameter'
@@ -75,13 +79,7 @@ class BudgetControlRulesDetail extends React.Component{
         },
         {          /*失效日期*/
           title: formatMessage({id:"budget.invalidDate"}), key: "invalidDate", dataIndex: 'invalidDate',
-          render: description => (
-            <span>
-              {description ? description : '-'}
-              <Popover content={description}>
-                {description}
-              </Popover>
-            </span>)
+          render: description => (<span>{description === null ? "-" : description.substring(0,10)}</span>)
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
@@ -94,6 +92,11 @@ class BudgetControlRulesDetail extends React.Component{
       ]
     }
   }
+  editItem = (e, record) =>{
+    console.log(record)
+
+  };
+
   deleteItem = (e, record) => {
     httpFetch.delete(`${config.budgetUrl}/api/budget/control/rule/details/${record.id}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.organizationName})); // name删除成功
@@ -105,16 +108,19 @@ class BudgetControlRulesDetail extends React.Component{
     //根据路径上的预算规则id查出完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
-        let endDate = response.data.endDate === "undefined" ? null : response.data.endDate.substring(0,10)
-        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ "+ endDate;
+        console.log(response.data.startDate.substring(0,10))
+        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
+        console.log(response.data)
         this.setState({
           controlRule: response.data,
           createParams: response.data
         })
+
       }
     }).catch((e)=>{
       //console.log(e)
-    })
+    });
     //加载页面时，获取启用的控制策略
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
       if(response.status === 200){
@@ -158,7 +164,7 @@ class BudgetControlRulesDetail extends React.Component{
         })
       }
     })
-  }
+  };
 
   handleChange = (e)=>{
     this.setState({
@@ -167,30 +173,33 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   //新建规则明细,左侧划出
-  showSlide = (flag,title,params) => {
+  showSlideCreate = (flag) => {
     this.setState({
-      showSlideFrame: flag,
-      slideFrameTitle: title,
-      params: params
+      showSlideFrameCreate: flag,
     })
   };
 
-  handleCreate = () =>{
-    let title =  this.props.intl.formatMessage({id: 'budget.createRulesDetail'});
-    this.showSlide(true,title,{controlRuleId: this.props.params.ruleId});
+  //编辑规则明细,左侧划出
+  showSlideUpdate = (flag) => {
+    this.setState({
+      showSlideFrameUpdate: flag,
+    })
   };
 
   handleEdit = (record) =>{
-    let title = this.props.intl.formatMessage({id: 'budget.editRulesDetail'});
-    this.showSlide(true,title,record);
+    console.log(record)
+    this.setState({
+      ruleDetail: record,
+      showSlideFrameUpdate: true
+    })
   };
 
-  handleCloseSlide = (params) => {
+  handleCloseSlideCreate = (params) => {
     if(params) {
       this.getList();
     }
     this.setState({
-      showSlideFrame: false
+      showSlideFrameCreate: false
     })
   };
 
@@ -225,8 +234,13 @@ class BudgetControlRulesDetail extends React.Component{
   //获取规则明细
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}`).then((response)=>{
+      console.log(response)
       if(response.status === 200){
+        response.data.map((item)=>{
+          item.key = item.id
+        });
         this.setState({
+          loading: false,
           data: response.data
         })
       }
@@ -236,7 +250,7 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   render(){
-    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrame, params, controlRule, updateState } = this.state;
+    const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrameCreate,showSlideFrameUpdate, ruleDetail, controlRule, updateState } = this.state;
     return(
       <div className="budget-control-rules-detail">
         <BasicInfo
@@ -247,10 +261,11 @@ class BudgetControlRulesDetail extends React.Component{
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button onClick={this.handleCreate} type="primary" >{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+            <Button onClick={()=>this.showSlideCreate(true)} type="primary" >{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
           </div>
         </div>
         <Table
+          loading={loading}
           dataSource={data}
           columns={columns}
           onRowClick={this.handleEdit}
@@ -258,12 +273,19 @@ class BudgetControlRulesDetail extends React.Component{
           size="middle"
           bordered/>
 
-        <SlideFrame title= {slideFrameTitle}
-                    show={showSlideFrame}
+        <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
+                    show={showSlideFrameCreate}
                     content={NewBudgetRulesDetail}
+                    afterClose={this.handleCloseSlideCreate}
+                    onClose={() => this.showSlideCreate(false)}
+                    params={{ruleId:this.props.params.ruleId}}/>
+
+        <SlideFrame title= { this.props.intl.formatMessage({id: 'budget.editRulesDetail'})}
+                    show={showSlideFrameUpdate}
+                    content={UpdateBudgetRulesDetail}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}
-                    params={params}/>
+                    onClose={()=>this.showSlideUpdate(false)}
+                    params={ruleDetail}/>
       </div>
     )
   }
@@ -271,7 +293,7 @@ class BudgetControlRulesDetail extends React.Component{
 
 BudgetControlRulesDetail.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {

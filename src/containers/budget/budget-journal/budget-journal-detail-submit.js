@@ -50,7 +50,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       },
-      organization: {},
+
       infoDate: [],
       infoList: [
         {
@@ -206,35 +206,27 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
   componentWillMount=()=>{
-    this.getOrganization();
+
     this.getDataByBudgetJournalCode();
   }
 
-  //获取预算组织
-  getOrganization=()=> {
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request) => {
-      console.log(request.data)
-      this.setState({
-        organization: request.data
-      })
-    })
-  }
+
 
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
     const budgetJournalCode =this.props.params.journalTypeCode;
     console.log(budgetJournalCode);
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
-      console.log(request.data)
-      let listData = request.data.list;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((response)=>{
+      console.log(response.data)
+      let listData = response.data.list;
       console.log(listData);
-      let headerData =request.data.dto;
+      let headerData =response.data.dto;
       this.setState({
-        headerAndListData:request.data,
+        headerAndListData:response.data,
         infoDate:headerData,
         data:listData,
         pagination: {
-          total:request.data.list.length ,
+          total:response.data.list.length ,
           onChange: this.onChangePager,
           pageSize: this.state.pageSize,
           current: this.state.page + 1
@@ -278,8 +270,10 @@ class BudgetJournalDetailSubmit extends React.Component {
 
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.login.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalDetailSubmit));

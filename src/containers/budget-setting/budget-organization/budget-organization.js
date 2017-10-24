@@ -85,6 +85,7 @@ class BudgetOrganization extends React.Component {
 
   //得到列表数据
   getList(){
+    this.setState({ loading: true });
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/organizations/query?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in params){

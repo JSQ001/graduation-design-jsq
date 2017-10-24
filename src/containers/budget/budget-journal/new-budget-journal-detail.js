@@ -15,12 +15,14 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
+let companyId ='';
+
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading:false,
-      organization:{},
+      companyId:'',
       searchForm: [
         /*公司*/
         {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
@@ -28,7 +30,10 @@ class NewBudgetJournalDetail extends React.Component {
           url: `${config.baseUrl}/api/company/available`
         },
         /*部门*/
-        {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
+        {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
+          labelKey: 'name', valueKey: 'id',event:'unitId',
+          url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
+        },
         /*预算项目*/
         {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
           labelKey:'itemName',valueKey:'id',
@@ -82,6 +87,16 @@ class NewBudgetJournalDetail extends React.Component {
   handleEvent(event,e){
     switch (e){
       case 'company':{
+        event =JSON.parse(event);
+        console.log(event);
+        companyId = event.id;
+        let url=`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=${event.id}` ;
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === 'unitId')
+            searchItem.url = url;
+          return searchItem;
+        });
         return;
       }
       case 'periodName':{
@@ -90,8 +105,10 @@ class NewBudgetJournalDetail extends React.Component {
         let searchForm =this.state.searchForm;
         console.log(searchForm);
         this.props.form.setFieldsValue({
-          periodQuarter:1,
           periodYear:event.periodYear
+        });
+        this.props.form.setFieldsValue({
+          periodQuarter:event.periodQuarter,
         });
 
        /* searchForm = searchForm.map(searchItem => {
@@ -121,11 +138,8 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'amount':{
-        const data = this.state.rate;
-        console.log(data)
-        const FieldsValue =  this.props.getFieldsValue();
-        let functionalAmount = (data)*Number(FieldsValue.rate);
-        console.log(functionalAmount);
+
+        let functionalAmount =  event;
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
@@ -148,29 +162,14 @@ class NewBudgetJournalDetail extends React.Component {
     console.log(this.props.params);
   }
 
-  //获取预算组织
-  getOrganization(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        organization:request.data
-      })
-    })
-  }
+
 
   componentWillMount(){
     this.setState({
       params:this.props.params
     })
     console.log(this.props.params);
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request);
-      this.setState({
-        organization:request.data
-      })
-    }).catch((e)=>{
-      console.log("失败")
-    })
+
   }
 
 
@@ -245,13 +244,12 @@ class NewBudgetJournalDetail extends React.Component {
 
   //获select得值列表里面的数据
   setOptionsToFormItemSelect=(item,url)=>{
-    console.log(this.state.organization)
     console.log(item);
     let params = {};
     let path = item.url;
     let organizationId ;
     if(item.id=="item"){
-      path = path+`?organizationId=1`
+      path = path+`?organizationId=${this.props.organization.id}`
     }
 
     url=path;
@@ -607,8 +605,11 @@ class NewBudgetJournalDetail extends React.Component {
 
 const WrappedNewBudgetJournalDetail = Form.create()(NewBudgetJournalDetail);
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.login.organization
+
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetJournalDetail));

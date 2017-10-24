@@ -3,7 +3,7 @@
  */
 import {combineReducers} from 'redux';
 import {cr} from 'share/utils'
-import {SET_USER, SET_PROFILE, SET_COMPANY} from 'actions/login'
+import {SET_USER, SET_PROFILE, SET_COMPANY, SET_ORGANIZATION} from 'actions/login'
 
 export default combineReducers({
   user: cr({}, {
@@ -14,5 +14,8 @@ export default combineReducers({
   }),
   company: cr({}, {
     [SET_COMPANY](state, {company}){return company}
-  })
+  }),
+  organization: cr({}, {
+    [SET_ORGANIZATION](state, {organization}){return organization}
+  }),
 })

@@ -68,11 +68,11 @@ class BudgetItem extends React.Component {
         {          /*变动属性*/
           title: formatMessage({id:"budget.item.variationAttribute"}), key: "variationAttribute", dataIndex: 'variationAttribute',
           render: (recode)=>{
-            if(recode === "immobilization")
+            if(recode === "FIXED")
               return formatMessage({id:"variationAttribute.immobilization"}) /*固定*/
-            if(recode === "mix")
+            if(recode === "MIXED")
               return formatMessage({id:"variationAttribute.mix"}) /*混合*/
-            if(recode === "alteration")
+            if(recode === "VARIABLE")
               return formatMessage({id:"variationAttribute.alteration"}) /*变动*/
           }
         },
@@ -98,13 +98,12 @@ class BudgetItem extends React.Component {
   //获取预算项目数据
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`).then((response)=>{
-      console.log(response)
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
           value: item.itemCode,
           label: item.itemCode+" ( "+item.itemName+" ) "
-        }
+        };
         itemCode.push(budgetItem);
       });
       this.setState({
@@ -205,11 +204,22 @@ class BudgetItem extends React.Component {
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetItem.url.replace(':id', this.props.id));
   };
 
-  //批量分配公司
-  handleBatchCompany = () =>{
+
+  //控制是否弹出公司列表
+  showListSelector = (flag) =>{
     this.setState({
-      companyListSelector: true,
-    });
+      companyListSelector: flag
+    })
+  };
+
+  //处理公司弹框点击ok
+  handleListOk = (result) => {
+    console.log(result)
+
+    //调用分配公司接口
+
+    this.showListSelector(false)
+
   };
 
   //点击行，进入该行详情页面
@@ -234,7 +244,7 @@ class BudgetItem extends React.Component {
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
-            <Button onClick={this.handleBatchCompany} disabled={batchCompany}>{formatMessage({id:"budget.item.batchCompany"})}</Button>
+            <Button onClick={()=>this.showListSelector(true)} disabled={batchCompany}>{formatMessage({id:"budget.item.batchCompany"})}</Button>
           </div>
         </div>
         <Table
@@ -248,7 +258,9 @@ class BudgetItem extends React.Component {
           size="middle"
           bordered/>
         <ListSelector type="company"
-                      visible={companyListSelector}/>
+                      visible={companyListSelector}
+                      onOk={this.handleListOk}
+                      onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
   }
