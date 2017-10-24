@@ -87,8 +87,8 @@ class NewBudgetRulesDetail extends React.Component{
     this.getSystemValueList(code).then((response)=>{
       response.data.values.map((item)=>{
         let option = {
-          id: item.code,
-          value: item.messageKey
+          key: item.code,
+          label: item.messageKey
         };
         name.push(option);
       });
@@ -243,7 +243,7 @@ class NewBudgetRulesDetail extends React.Component{
                 className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}
                 onFocus={()=>this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray)}>
                 {
-                  ruleParameterTypeArray.map((item)=><Option key={item.id}>{item.value}</Option>)
+                  ruleParameterTypeArray.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
@@ -281,7 +281,7 @@ class NewBudgetRulesDetail extends React.Component{
                 onFocus={this.handleSelectParam}
                 className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
                 {
-                  ruleParamsArray.map((item)=><Option key={item.id}>{item.value}</Option>)
+                  ruleParamsArray.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
@@ -312,7 +312,7 @@ class NewBudgetRulesDetail extends React.Component{
               <Select
                 placeholder={ formatMessage({id:"common.please.select"})}
                 onFocus={()=>this.getValueList(valueListMap.filtrateMethod, filtrateMethodArray)}>
-                {filtrateMethodArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
+                {filtrateMethodArray.map((item)=><Option key={item.key}>{item.label}</Option>)}
               </Select>
             )}
           </FormItem>
@@ -344,7 +344,7 @@ class NewBudgetRulesDetail extends React.Component{
               <Select
                 placeholder={formatMessage({id:"common.please.select"})}
                 onFocus={()=>this.getValueList(valueListMap.summaryOrDetail, summaryOrDetailArray)}>
-                {summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
+                {summaryOrDetailArray.map((item)=><Option key={item.key}>{item.label}</Option>)}
               </Select>
             )}
           </FormItem>
@@ -379,7 +379,7 @@ class NewBudgetRulesDetail extends React.Component{
                     valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
                     single={true}
                     onChange={(value)=>this.handleValueChange(value,"lower")}
-                    value={typeof ruleParam.lowerValue === 'undefined' ? [] : ruleParam.lowerValue}/>}
+                  />}
               </div>
             )}
           </FormItem>
@@ -415,7 +415,7 @@ class NewBudgetRulesDetail extends React.Component{
                     valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
                     single={true}
                     onChange={(value)=>this.handleValueChange(value,"upper")}
-                    value={typeof ruleParam.upperValue === 'undefined' ? [] : ruleParam.upperValue}/>}
+                  />}
               </div>
             )}
           </FormItem>
@@ -427,7 +427,7 @@ class NewBudgetRulesDetail extends React.Component{
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
-            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
+            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/>  隐藏的input标签，用来取消list控件的focus事件
           </div>
         </Form>
       </div>

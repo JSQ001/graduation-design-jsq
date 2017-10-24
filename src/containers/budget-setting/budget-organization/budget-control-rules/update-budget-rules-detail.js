@@ -199,11 +199,11 @@ class UpdateBudgetRulesDetail extends React.Component{
   handleSelectType = () =>{
     let ruleParameterType = this.props.form.getFieldValue("ruleParameterType");
     //规则参数类型修改后，规则参数，上限值，下限值自动清空
-    this.props.form.setFieldsValue({
+   /* this.props.form.setFieldsValue({
       "ruleParameter": "",
       "parameterLowerLimit": "",
       "parameterUpperLimit": ""
-    });
+    });*/
 
   };
 
@@ -368,7 +368,8 @@ class UpdateBudgetRulesDetail extends React.Component{
                 valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
                 single={true}
                 onChange={(value)=>this.handleValueChange(value,"lower")}
-                value={typeof ruleParam.lowerValue === 'undefined' ? [] : ruleParam.lowerValue}/>
+             //   value={typeof ruleParam.lowerValue === 'undefined' ? [] : ruleParam.lowerValue}
+              />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
@@ -401,7 +402,8 @@ class UpdateBudgetRulesDetail extends React.Component{
                 valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
                 single={true}
                 onChange={(value)=>this.handleValueChange(value,"upper")}
-                value={typeof ruleParam.upperValue === 'undefined' ? [] : ruleParam.upperValue}/>
+              //  value={typeof ruleParam.upperValue === 'undefined' ? [] : ruleParam.upperValue}
+              />
 
             )}
           </FormItem>
