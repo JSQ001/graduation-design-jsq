@@ -123,8 +123,8 @@ class NewBudgetJournalDetail extends React.Component {
       case 'amount':{
         const data = this.state.rate;
         console.log(data)
-        const FieldsValue =  this.props.getFieldsValue();
-        let functionalAmount = (data)*Number(FieldsValue.rate);
+        const FieldsValue =  this.props.getFieldValue('rate');
+        let functionalAmount = (data)*Number(FieldsValue);
         console.log(functionalAmount);
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
