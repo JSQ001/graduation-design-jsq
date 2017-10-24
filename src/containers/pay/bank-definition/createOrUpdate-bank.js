@@ -195,7 +195,6 @@ class CreateOrUpdateBank extends React.Component{
             })(
                 <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}
                 onChange={(value)=>{
-                  console.log(value)
                   this.setState({
                     flag: 'y',
                     isEnabled: value

@@ -33,7 +33,7 @@ class BudgetStructureDetail extends React.Component{
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
-      companyListSelector: false,
+      companyListSelector: false,  //控制公司选则弹框
       updateState: false,
       structure:{},
       showSlideFrame: false,
@@ -41,7 +41,14 @@ class BudgetStructureDetail extends React.Component{
       statusCode: formatMessage({id:"common.status.enable"}) /*启用*/,
       total:0,
       data:[],
-      pagination:{},
+      pagination: {
+        current: 1,
+        page: 0,
+        total:0,
+        pageSize:10,
+        showSizeChanger:true,
+        showQuickJumper:true,
+      },
       status:"",
       columns:[],
       infoList: [
@@ -57,14 +64,16 @@ class BudgetStructureDetail extends React.Component{
           {                        /*公司代码*/
             title:formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode'
           },
-          {                        /*公司代码*/
-            title:formatMessage({id:"structure.companyDescription"}), key: "description", dataIndex: 'description'
+          {                        /*公司名称*/
+            title:formatMessage({id:"structure.companyName"}), key: "name", dataIndex: 'name'
           },
           {                        /*公司类型*/
-            title:formatMessage({id:"structure.companyType"}), key: "companyType", dataIndex: 'companyType'
+            title:formatMessage({id:"structure.companyType"}), key: "companyTypeName", dataIndex: 'companyTypeName',
+            render:recode=> <span>{recode ? recode : '-'}</span>
           },
           {                        /*启用*/
-            title:formatMessage({id:"structure.enablement"}), key: "enablement", dataIndex: 'enablement',width:'10%'
+            title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
+            render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />
           },
         ],
         dimension:[
@@ -95,7 +104,7 @@ class BudgetStructureDetail extends React.Component{
         name: '',
         enabled: true
       },
-    }
+    };
     this.queryDimension = debounce(this.queryDimension,1000)
   }
   componentWillMount(){
@@ -123,11 +132,16 @@ class BudgetStructureDetail extends React.Component{
     value.organizationId = this.state.structure.organizationId;
     httpFetch.put(`${config.budgetUrl}/api/budget/structures`,value).then((response)=>{
       if(response) {
-        message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-        this.setState({
-          structure: response.data,
-          updateState: true
-        });
+        if(response.status === 200) {
+          message.success(this.props.intl.formatMessage({id: "structure.saveSuccess"}));
+          /*保存成功！*/
+          this.setState({
+            structure: response.data,
+            updateState: true
+          },
+            //调用维度查询接口
+          );
+        }
       }
     }).catch((e)=>{
       if(e.response){
@@ -154,6 +168,7 @@ class BudgetStructureDetail extends React.Component{
     this.setState({
       loading: true,
       page: 0,
+      data:[],
       status: key,
       columns: key === 'company' ? this.state.columnGroup.company : this.state.columnGroup.dimension
     },()=>{
@@ -169,11 +184,6 @@ class BudgetStructureDetail extends React.Component{
     this.state.status ==="company" ? this.showListSelector(true) : this.showSlide(true)
   };
 
-  showListSelector = (flag) =>{
-    this.setState({
-      companyListSelector: flag
-    })
-  };
 
   //分配公司
   distributeCompany(){
@@ -205,6 +215,23 @@ class BudgetStructureDetail extends React.Component{
     this.setState({
       showSlideFrame: false
     })
+  };
+
+  //控制是否弹出公司列表
+  showListSelector = (flag) =>{
+    this.setState({
+      companyListSelector: flag
+    })
+  };
+
+  //处理公司弹框点击ok
+  handleListOk = (result) => {
+    console.log(result)
+    this.setState({
+        data: result.result
+    },
+      this.showListSelector(false)
+    );
   };
 
   render(){
@@ -253,7 +280,9 @@ class BudgetStructureDetail extends React.Component{
                     onClose={() => this.showSlideUpdate(false)}/>
 
         <ListSelector type="company"
-                        visible={companyListSelector}/>
+                      visible={companyListSelector}
+                      onOk={this.handleListOk}
+                      onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
   }

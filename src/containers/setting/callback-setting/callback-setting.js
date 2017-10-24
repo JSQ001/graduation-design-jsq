@@ -14,6 +14,8 @@ import menuRoute from 'share/menuRoute'
 
 import SlideFrame from 'components/slide-frame'
 import UpdateCallbackSetting from 'containers/setting/callback-setting/update-callback-setting'
+import createApiCallbackSetting from 'containers/setting/callback-setting/create-api-callback-setting'
+
 import 'styles/setting/callback-setting/callback-setting.scss'
 
 const FormItem = Form.Item;
@@ -27,7 +29,8 @@ class CallBackSetting extends React.Component{
       tabsKey:"api",
       data: [],
       columns: [],
-      showSlideFrame: false,
+      showSlideFrame: false, //控制全局设置弹出
+      showSlideFrameAPI: false, //控制api设置弹出
       tabs: [
         {key: 'api', name: "API列表"}, /*维度分配*/
         {key: 'apiSetting', name: "API回调设置"}  /*公司分配*/
@@ -119,6 +122,12 @@ class CallBackSetting extends React.Component{
     })
   };
 
+  showSlideApi = (flag) =>{
+    this.setState({
+      showSlideFrameAPI: flag
+    })
+  };
+
   handleCreate = () =>{};
 
   renderTableHeader(){
@@ -132,13 +141,13 @@ class CallBackSetting extends React.Component{
         <div className="table-header-apiSetting">
           <div className="table-header-apiSetting-tips">API设置</div>
           <div className="table-header-apiSetting-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.pagination.total}`})}</div>  {/*共搜索到*条数据*/}
-          <Button type="primary" className="table-header-button" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+          <Button type="primary" className="table-header-button" onClick={()=> this.showSlideApi(true)}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
         </div>
     )
   }
 
   render(){
-    const { pagination, columns, data, showSlideFrame} = this.state;
+    const { pagination, columns, data, showSlideFrame, showSlideFrameAPI} = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 5 },
@@ -146,8 +155,8 @@ class CallBackSetting extends React.Component{
     };
     const menu = (
       <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="isEnabled">启用   <span/> </Menu.Item>
-        <Menu.Item key="disabled">停用     <span/></Menu.Item>
+        <Menu.Item key="isEnabled"><span className="status-options">启用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
+        <Menu.Item key="disabled"><span className="status-options">停用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
       </Menu>
     );
     return(
@@ -293,6 +302,12 @@ class CallBackSetting extends React.Component{
                     content={UpdateCallbackSetting}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
+                    params={{}}/>
+        <SlideFrame title="新建API回调设置"
+                    show={showSlideFrameAPI}
+                    content={createApiCallbackSetting}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.showSlideApi(false)}
                     params={{}}/>
       </div>
     )

@@ -10,6 +10,8 @@ import { Button, Form, Select,Input, Col, Row, Switch, message, Icon, DatePicker
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+import debounce from 'lodash.debounce';
+
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules.scss"
 
 const FormItem = Form.Item;
@@ -24,7 +26,7 @@ class NewBudgetControlRules extends React.Component{
      startValue: null,
      endValue: null,
    }
-
+   this.validateRuleCode = debounce(this.validateRuleCode,1000)
  }
 
  componentWillMount(){
@@ -116,6 +118,22 @@ class NewBudgetControlRules extends React.Component{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
 
+  validateRuleCode = (item,value,callback)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.params.id}&controlRuleCode=${value}`).then((response)=>{
+      console.log(response.data)
+      let flag = false;
+      if(response.data.length > 0 ){
+        response.data.map((item)=>{
+          if(item.structureCode === value) {
+            flag = true;
+          }
+        })
+      }
+      flag >0 ? callback(this.props.intl.formatMessage({id:"budget.structureCode.exist"})) : callback();
+
+    });
+  };
+
  render(){
    const { getFieldDecorator } = this.props.form;
    const { strategyGroup, startValue, endValue} = this.state;
@@ -133,19 +151,9 @@ class NewBudgetControlRules extends React.Component{
                   {getFieldDecorator('controlRuleCode', {
                     rules:[
                       {required:true,message: formatMessage({id:"common.please.enter"})},
-                      /*{
-                        validator:(item,value,callback)=>{
-                          if(value === "undefined" || value === ""){
-                            callback();
-                            return
-                          }
-                          httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?controlRuleCode=${value}`).then((response)=>{
-                            console.log(response)
-                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.controlRuleExist"})) : callback()
-                          })
-
-                        }
-                      }*/
+                      {
+                        validator:(item,value,callback)=>this.validateRuleCode(item,value,callback)
+                      }
                     ]
                   })(
                     <Input placeholder={ formatMessage({id:"common.please.enter"})}/>)
