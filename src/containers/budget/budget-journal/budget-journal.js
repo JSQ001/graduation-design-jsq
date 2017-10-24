@@ -71,14 +71,14 @@ class BudgetJournal extends React.Component {
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
-        /*  render(recode){
+         render(recode){
               switch (recode){
                 case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
-                case '':{ return  <Tag color="#f50">等待</Tag>}
+                case 'SUBMIT':{ return  <Tag color="#f50">等待</Tag>}
                 case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
                 case 'CHECKED':{return <Tag color="#87d068">通过</Tag>}
               }
-      }*/
+      }
     },
   ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项
@@ -92,15 +92,7 @@ class BudgetJournal extends React.Component {
     this.getList();
   }
 
-  //获取预算组织
- /* getOrganization(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        organization:request.data
-      })
-    })
-  }*/
+
 
   //获取预算日记账数据
   getList(){

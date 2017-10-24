@@ -23,7 +23,6 @@ class NewBudgetJournalDetail extends React.Component {
     this.state = {
       loading:false,
       companyId:'',
-      organization:{},
       searchForm: [
         /*公司*/
         {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
@@ -163,29 +162,14 @@ class NewBudgetJournalDetail extends React.Component {
     console.log(this.props.params);
   }
 
-  //获取预算组织
-  getOrganization(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        organization:request.data
-      })
-    })
-  }
+
 
   componentWillMount(){
     this.setState({
       params:this.props.params
     })
     console.log(this.props.params);
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request);
-      this.setState({
-        organization:request.data
-      })
-    }).catch((e)=>{
-      console.log("失败")
-    })
+
   }
 
 
@@ -260,13 +244,12 @@ class NewBudgetJournalDetail extends React.Component {
 
   //获select得值列表里面的数据
   setOptionsToFormItemSelect=(item,url)=>{
-    console.log(this.state.organization)
     console.log(item);
     let params = {};
     let path = item.url;
     let organizationId ;
     if(item.id=="item"){
-      path = path+`?organizationId=1`
+      path = path+`?organizationId=${this.props.organization.id}`
     }
 
     url=path;
@@ -622,8 +605,11 @@ class NewBudgetJournalDetail extends React.Component {
 
 const WrappedNewBudgetJournalDetail = Form.create()(NewBudgetJournalDetail);
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.login.organization
+
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetJournalDetail));
