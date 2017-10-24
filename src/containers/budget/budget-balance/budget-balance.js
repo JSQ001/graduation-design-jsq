@@ -692,7 +692,8 @@ class BudgetBalance extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    company: state.login.company
+    company: state.login.company,
+    organization: state.login.organization
   }
 }
 
