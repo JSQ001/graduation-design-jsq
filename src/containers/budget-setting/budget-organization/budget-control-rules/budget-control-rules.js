@@ -71,9 +71,9 @@ class BudgetControlRules extends React.Component {
           key: "effectiveDate",
           dataIndex: 'effectiveDate',
           render: (recode, record) => {
-            return record.startDate.year + "-" + record.startDate.monthValue + "-" + record.startDate.dayOfMonth + " ~ " +
-            //record.endDate === "undefined" || record.endDate === '' ? '' :
-              record.endDate.year + "-" + record.endDate.monthValue + "-" + record.endDate.dayOfMonth
+            console.log(record)
+            let endDate = record.endDate === null ? null : record.endDate.substring(0,10);
+            return record.startDate.substring(0,10)+" ~ "+endDate
           }
         },
       ]

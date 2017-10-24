@@ -115,6 +115,8 @@ class NewBudgetRulesDetail extends React.Component{
       if (!err) {
         console.log(values)
         values.controlRuleId = this.props.params.ruleId;
+        values.parameterLowerLimit = this.state.ruleParam.lowerValue[0].id;
+        values.parameterUpperLimit = this.state.ruleParam.upperValue[0].id
         httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
           console.log(res);
           this.setState({
@@ -199,7 +201,6 @@ class NewBudgetRulesDetail extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
-    console.log(ruleParam)
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -355,6 +356,15 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator:(item,value,callback)=>{
                     console.log(value);
+                    if(typeof value !== 'undefined'){
+                      this.setState({
+                        ruleParam:{
+                          type: this.state.ruleParam.type,
+                          name: this.state.ruleParam.name,
+                          lowerValue: value,
+                        }
+                      })
+                    }
                     callback();
                   }
                 }
@@ -381,6 +391,16 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator:(item,value,callback)=>{
                     console.log(value)
+                    if(typeof value !== 'undefined'){
+                      this.setState({
+                        ruleParam:{
+                          type: this.state.ruleParam.type,
+                          name: this.state.ruleParam.name,
+                          lowerValue: this.state.ruleParam.lowerValue,
+                          upperValue: value,
+                        }
+                      })
+                    }
                     callback();
                   }
                 }

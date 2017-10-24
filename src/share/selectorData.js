@@ -165,7 +165,8 @@ const selectorData = {
       {title: '预算项目组名称', dataIndex: 'itemGroupName'},
     ],
     key: 'id'
-  }
+  },
+
 };
 
 export default selectorData;
