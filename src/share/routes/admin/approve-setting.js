@@ -1,11 +1,20 @@
 import AgencySetting from 'containers/approve-setting/agency-setting/agency-setting'
 import NewAgency from 'containers/approve-setting/agency-setting/new-agency'
+import AgencyDetail from 'containers/approve-setting/agency-setting/agency-detail'
 
 //新建代理
 const newAgency = {
   key:'new-agency',
   url:'/main/approve-setting/agency-setting/new-agency',
   components: NewAgency,
+  parent: 'agency-setting'
+};
+
+//代理详情
+const agencyDetail = {
+  key:'agency-detail',
+  url:'/main/approve-setting/agency-setting/agency-detail/:principalOID',
+  components: AgencyDetail,
   parent: 'agency-setting'
 };
 
@@ -16,7 +25,7 @@ const agencySetting = {
   components: AgencySetting,
   parent: 'approve-setting',
   children: {
-    newAgency
+    newAgency, agencyDetail
   }
 };
 

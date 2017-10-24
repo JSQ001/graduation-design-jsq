@@ -51,5 +51,6 @@
   "menu.callback-setting": "回调设置",
   "menu.finance-setting":"财务设置",
   "menu.beep-timer":"单据提醒管理",
+  "menu.agency-detail":"代理详情",
   "menu.account-period-define": "会计期间定义"
 }
