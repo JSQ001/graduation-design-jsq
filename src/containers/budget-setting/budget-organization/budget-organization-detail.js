@@ -46,6 +46,11 @@ class BudgetOrganizationDetail extends React.Component {
     )
   }
 
+  componentWillMount(){
+    if(this.props.location.query.tab)
+      this.setState({nowStatus: this.props.location.query.tab})
+  }
+
   onChangeTabs = (key) =>{
     this.setState({
       nowStatus: key
@@ -83,13 +88,13 @@ class BudgetOrganizationDetail extends React.Component {
         content = BudgetJournalType;
         break;
     }
-    return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));
+    return this.props.organization.id ? React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization})) : null;
   };
 
   render(){
     return (
       <div>
-        <Tabs onChange={this.onChangeTabs}>
+        <Tabs onChange={this.onChangeTabs} defaultActiveKey={this.state.nowStatus}>
           {this.renderTabs()}
         </Tabs>
         {this.renderContent()}

@@ -44,6 +44,7 @@ class BudgetGroup extends React.Component {
   }
 
   getList(){
+    this.setState({loading: true});
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/groups/query?page=${this.state.page}&size=${this.state.pageSize}&organizationId=${this.props.organization.id}`;
     for(let paramsName in params){
@@ -75,16 +76,15 @@ class BudgetGroup extends React.Component {
   };
 
   search = (result) => {
-    console.log(result)
-    // this.setState({
-    //   page: 0,
-    //   searchParams: {
-    //     itemGroupCode: result.itemGroupCode ? result.itemGroupCode : '',
-    //     itemGroupName: result.itemGroupName ? result.itemGroupName : ''
-    //   }
-    // }, ()=>{
-    //   this.getList();
-    // })
+    this.setState({
+      page: 0,
+      searchParams: {
+        itemGroupCode: result.itemGroupCode ? result.itemGroupCode : '',
+        itemGroupName: result.itemGroupName ? result.itemGroupName : ''
+      }
+    }, ()=>{
+      this.getList();
+    })
   };
 
   handleNew = () => {

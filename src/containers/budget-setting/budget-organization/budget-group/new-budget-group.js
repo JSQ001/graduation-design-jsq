@@ -14,7 +14,7 @@ class NewBudgetGroup extends React.Component {
     super(props);
     this.state = {
       budgetGroupDetail: menuRoute.getRouteItem('budget-group-detail','key'),    //项目组详情的页面项
-      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面想
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
       loading: false
     };
   }
@@ -23,7 +23,6 @@ class NewBudgetGroup extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
         values.organizationId =  this.props.organization.id;
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
@@ -32,7 +31,7 @@ class NewBudgetGroup extends React.Component {
           this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", res.data.id));
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`新建失败, ${e.response.data.message}`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -101,7 +100,7 @@ class NewBudgetGroup extends React.Component {
             <Row>
               <Col span={8}>
                 <Button htmlType="submit" type="primary">保存</Button>
-                <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id));}}>取消</Button>
+                <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=GROUP');}}>取消</Button>
               </Col>
             </Row>
           </Form>
