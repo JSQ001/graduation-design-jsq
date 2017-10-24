@@ -52,14 +52,30 @@ class BasicInfo extends React.Component{
     }
   }
   getInfos() {
-    const children = [];
-    this.props.infoList.map((item)=>{
+    let children = [];
+    let rows = [];
+    this.props.infoList.map((item, index)=>{
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
           <div style={{color: '#989898'}}>{item.label}</div>
           {this.renderGetInfo(item)}
         </Col>
       );
+      if ((index+1) % 3 == 0) {
+        rows.push(
+          <Row key={index}>
+            {children}
+          </Row>
+        );
+        children = [];
+      }
+      if ((index+1) == this.props.infoList.length && (index+1) % 3 != 0) {
+        rows.push(
+          <Row key={index}>
+            {children}
+          </Row>
+        );
+      }
       //获取默认值，用于search-area组件
       item.defaultValue = this.state.params[item.id];
 
@@ -75,7 +91,7 @@ class BasicInfo extends React.Component{
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
       }
     });
-    return children;
+    return rows;
   }
 
   handleUpdate = (params) => {

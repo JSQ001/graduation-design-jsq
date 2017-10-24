@@ -44,8 +44,7 @@ class NewAgency extends React.Component {
 
   //选中被代理人后查询该被代理人状态（是否已存在、是否将离职）
   handleSelect = (values) => {
-    console.log(values);
-    let principalInfo = JSON.parse(values.key);
+    let principalInfo = JSON.parse(values);
     let url = `${config.baseUrl}/api/bill/proxy/principals/check/${principalInfo.userOID}`;
     principalInfo.userOID && httpFetch.get(url).then((response)=>{
       if (response.data) {
@@ -80,7 +79,7 @@ class NewAgency extends React.Component {
         });
         return;
       }
-      let principalInfo = JSON.parse(values.principalInfo.key);
+      let principalInfo = JSON.parse(values.principalInfo);
       principalInfo.billProxyRuleDTOs = [];
       principalInfo.enabled = false;
       principalInfo.principalOID = principalInfo.userOID;
@@ -88,12 +87,12 @@ class NewAgency extends React.Component {
         this.setState({loading: true});
         httpFetch.post(`${config.baseUrl}/api/bill/proxy/rules`, principalInfo).then((res)=>{
           this.setState({ loading: false });
-          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: '代理'}));  //代理新建成功
+          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //代理新建成功
           this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', res.data.principalOID));
         }).catch((e)=>{
           this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response.data.message){
+            message.error(`新建失败, ${e.response.data.message}`);
           } else {
             message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
           }
@@ -112,7 +111,6 @@ class NewAgency extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const { loading, data, principalValidateStatus, principalHelp, fetching } = this.state;
     const options = data.map(d => <Option key={JSON.stringify(d)}>{d.text}</Option>);
-    console.log(options);
     return (
       <div className="new-agency">
         <h3 className="header-title">{formatMessage({id:'agencySetting.chose-principal'})}</h3>{/*请选择被代理人*/}
@@ -132,10 +130,10 @@ class NewAgency extends React.Component {
               }]})(
               <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
                       showSearch
-                      labelInValue
                       optionFilterProp='children'
                       notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
-                      onSearch={this.handleSearch} onSelect={this.handleSelect}>
+                      onSearch={this.handleSearch}
+                      onSelect={this.handleSelect}>
                 {options}
               </Select>
             )}

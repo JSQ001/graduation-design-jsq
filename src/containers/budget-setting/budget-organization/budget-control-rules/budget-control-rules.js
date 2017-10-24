@@ -65,11 +65,15 @@ class BudgetControlRules extends React.Component {
         {          /*控制策略*/
           title: "控制策略", key: "strategyGroupName", dataIndex: 'strategyGroupName'
         },
-        {          /*有效日期*/
-          title: formatMessage({id:"budget.controlRule.effectiveDate"}), key: "effectiveDate", dataIndex: 'effectiveDate',
-          render:(recode,record)=>{
-            return record.startDate.substring(0,10)+ " ~ " +
-              record.endDate === "undefined" || record.endDate === '' ? '' :record.endDate.substring(0,10)
+        {
+          /*有效日期*/
+          title: formatMessage({id: "budget.controlRule.effectiveDate"}),
+          key: "effectiveDate",
+          dataIndex: 'effectiveDate',
+          render: (recode, record) => {
+            console.log(record)
+            let endDate = record.endDate === null ? null : record.endDate.substring(0,10);
+            return record.startDate.substring(0,10)+" ~ "+endDate
           }
         },
       ]
@@ -82,7 +86,6 @@ class BudgetControlRules extends React.Component {
   }
 
   handleSearch = (values) =>{
-    console.log(values)
     let searchParams = {
       controlRulesFrom: values.controlRulesFrom,
       controlRuleTo: values.controlRuleTo,
@@ -161,7 +164,7 @@ class BudgetControlRules extends React.Component {
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
     budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
-  }
+  };
 
   render(){
     const { searchForm, loading, columns, pagination, data} = this.state;
