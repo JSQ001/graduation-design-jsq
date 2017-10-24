@@ -14,6 +14,7 @@ class NewBudgetJournalType extends React.Component {
     super(props);
     this.state = {
       budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail','key'),    //项目组详情的页面项
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
       loading: false,
       businessTypeOptions: []
     };
@@ -114,7 +115,7 @@ class NewBudgetJournalType extends React.Component {
             <Row>
               <Col span={8}>
                 <Button htmlType="submit" type="primary">保存</Button>
-                <Button style={{ marginLeft: 8 }}>取消</Button>
+                <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');}}>取消</Button>
               </Col>
             </Row>
           </Form>

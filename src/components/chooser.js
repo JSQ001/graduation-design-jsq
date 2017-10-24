@@ -91,9 +91,9 @@ class Chooser extends React.Component {
 
   render() {
     const { showListSelector, listSelectedData, value } = this.state;
-    const { placeholder, disabled, selectorItem, type, listExtraParams, single } = this.props;
+    const { placeholder, disabled, selectorItem, type, listExtraParams, single, showNumber } = this.props;
     return (
-      <div className="chooser">
+      <div className={showNumber ? 'chooser number-only' : 'chooser'}>
         <Select
           value={value}
           mode="multiple"
@@ -104,6 +104,9 @@ class Chooser extends React.Component {
           disabled={disabled}
         >
         </Select>
+        <div className="chooser-number" onClick={this.showList}>
+          已选择 {value.length} 条
+        </div>
         <ListSelector visible={showListSelector}
                       type={type}
                       onCancel={this.handleListCancel}
@@ -112,7 +115,7 @@ class Chooser extends React.Component {
                       extraParams={listExtraParams}
                       selectorItem={selectorItem}
                       single={single}/>
-        <input ref="chooserBlur" style={{ position: 'absolute', top: '-100vh' }}/>
+        <input ref="chooserBlur" style={{ position: 'absolute', top: '-100vh', zIndex: -1 }}/>
       </div>
     );
   }
@@ -128,14 +131,16 @@ Chooser.propTypes = {
   listExtraParams: React.PropTypes.object,  //listSelector的额外参数
   onChange: React.PropTypes.func,  //进行选择后的回调
   single: React.PropTypes.bool,  //是否单选
-  value: React.PropTypes.array  //已选择的值，需要传入完整目标数组
+  value: React.PropTypes.array,  //已选择的值，需要传入完整目标数组
+  showNumber: React.PropTypes.bool  //是否只显示已选XX条
 };
 
 Chooser.defaultProps = {
   placeholder: "请选择",
   disabled: false,
   listExtraParams: {},
-  single: false
+  single: false,
+  showNumber: false
 };
 
 export default Chooser;

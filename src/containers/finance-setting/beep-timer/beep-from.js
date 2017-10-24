@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message,Checkbox} from 'antd'
+import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message,Checkbox,InputNumber} from 'antd'
 const CheckboxGroup = Checkbox.Group;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -45,6 +45,13 @@ class BeepFrom extends React.Component{
     this.props.close();
   };
 
+  //保存控制
+  handSubmit=(e)=>{
+    e.preventDefault();
+   const value = this.props.getFieldsValue();
+    console.log(value)
+  }
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
@@ -60,14 +67,14 @@ class BeepFrom extends React.Component{
     return (
       <div className="beep-from">
         <div className="beep-from-in">
-          <Form >
+          <Form onSubmit={this.handSubmit}>
             <Row>
               <Col span={8}>
               <FormItem {...formItemLayout} label="提醒标题" >
-                {getFieldDecorator('journalCodeffr', {
+                {getFieldDecorator('code1', {
                   rules: [{
                   }],
-                  initialValue: '-'
+                  initialValue: '提醒标题'
                 })(
                   <Input  />
                 )}
@@ -78,22 +85,26 @@ class BeepFrom extends React.Component{
 
               <Col span={8}>
               <FormItem {...formItemLayout} label="提醒内容" >
-                {getFieldDecorator('journalCodwefwee', {
+                {getFieldDecorator('code2', {
                   rules: [{
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text"  />
+                  <Input type="提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容" />
                 )}
               </FormItem>
               </Col>
+            </Row>
+            <Row>
+              <hr/>
+              <br/>
             </Row>
             <Row>
               <Col span={8}>
 
                 <FormItem {...formItemLayout} label="发送日期" >
                   <span>预计还款日期前</span>
-                  {getFieldDecorator('journalCode2', {
+                  {getFieldDecorator('code3', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -107,7 +118,7 @@ class BeepFrom extends React.Component{
 
               <Col span={8}>
                 <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('jou', {
+                  {getFieldDecorator('code4', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -123,7 +134,7 @@ class BeepFrom extends React.Component{
               <Col>
 
                 <FormItem {...formItemLayout} label="适用单据" >
-                  {getFieldDecorator('cdcsd', {
+                  {getFieldDecorator('code5', {
                     rules: [{
                     }],
                     initialValue: ''
