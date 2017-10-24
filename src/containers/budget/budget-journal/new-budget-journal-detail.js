@@ -15,11 +15,14 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
+let companyId ='';
+
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading:false,
+      companyId:'',
       organization:{},
       searchForm: [
         /*公司*/
@@ -28,7 +31,10 @@ class NewBudgetJournalDetail extends React.Component {
           url: `${config.baseUrl}/api/company/available`
         },
         /*部门*/
-        {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: []},
+        {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
+          labelKey: 'name', valueKey: 'id',event:'unitId',
+          url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
+        },
         /*预算项目*/
         {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
           labelKey:'itemName',valueKey:'id',
@@ -82,6 +88,16 @@ class NewBudgetJournalDetail extends React.Component {
   handleEvent(event,e){
     switch (e){
       case 'company':{
+        event =JSON.parse(event);
+        console.log(event);
+        companyId = event.id;
+        let url=`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=${event.id}` ;
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === 'unitId')
+            searchItem.url = url;
+          return searchItem;
+        });
         return;
       }
       case 'periodName':{
@@ -90,8 +106,10 @@ class NewBudgetJournalDetail extends React.Component {
         let searchForm =this.state.searchForm;
         console.log(searchForm);
         this.props.form.setFieldsValue({
-          periodQuarter:1,
           periodYear:event.periodYear
+        });
+        this.props.form.setFieldsValue({
+          periodQuarter:event.periodQuarter,
         });
 
        /* searchForm = searchForm.map(searchItem => {
@@ -121,11 +139,8 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'amount':{
-        const data = this.state.rate;
-        console.log(data)
-        const FieldsValue =  this.props.getFieldValue('rate');
-        let functionalAmount = (data)*Number(FieldsValue);
-        console.log(functionalAmount);
+
+        let functionalAmount =  event;
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });

@@ -423,10 +423,6 @@ class NewBudgetJournalFrom extends React.Component {
             </div>
           </FormItem>
 
-
-
-
-
           <FormItem wrapperCol={{ offset: 7 }}>
             <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
             <Button>取消</Button>
