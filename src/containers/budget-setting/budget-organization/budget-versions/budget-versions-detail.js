@@ -24,10 +24,10 @@ class BudgetVersionsDetail extends React.Component {
       columns: [
         {title: '公司代码', dataIndex: 'companyCode', key: 'companyCode',},
         {title: '公司名称', dataIndex: 'companyName', key: 'companyName',},
-        {title: '公司类型', dataIndex: 'companyType', key: 'companyType',},
+        {title: '公司类型', dataIndex: 'companyTypeName', key: 'companyTypeName',},
         {title: '启用', key: 'isEnabled', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
       ],
-      infoDate:[],
+      infoDate:{},
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'organizationName', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'versionCode', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
@@ -78,15 +78,16 @@ class BudgetVersionsDetail extends React.Component {
 
 
   componentWillMount(){
-    console.log(this.props)
-
-    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
+    console.log(this.props);
+    /*httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
       response.data.organizationName = this.props.organization.organizationName;
       let date =response.data.versionDate;
       this.setState({ formData:response.data,infoDate: response.data});
-    }).catch(e=>{});
+    }).catch(e=>{});*/
+    this.getDetail();
     this.getAssignCompanyList();
     console.log(this.state.infoDate)
+
   }
 
 
@@ -94,21 +95,19 @@ class BudgetVersionsDetail extends React.Component {
 
   }
 
+
+
   //获得详情数据
-  getDetail(){
+  getDetail=()=>{
+    console.log("123123123")
     console.log(this.props)
     let data ={}
     httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
       data = response.data;
-      const dataValue={
-        ...data,
-        'organizationName':this.prototype.organization.organizationName,
-        'versionDate':data.versionDate?data.versionDate.format('YYYY-MM-DD'):''
-      }
-
+      response.data.organizationName = this.props.organization.organizationName;
       this.setState({
-        formData:response.data,
-        infoDate:dataValue
+        formData:data,
+        infoDate:data
       })
     }).catch(e=>{
     });
@@ -117,13 +116,39 @@ class BudgetVersionsDetail extends React.Component {
 
   //查询分配公司表
   getAssignCompanyList=()=>{
-    console.log(this.props);
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((res)=>{
-      this.setState({loading: false ,data:res.data});
+    this.setState({
+      loading:true
+    })
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response)=>{
+      this.setState({
+        data:response.data,
+        loading:false,
+        pagination: {
+          total: Number(response.headers['x-total-count']),
+          onChange: this.onChangePager,
+          pageSize: this.state.pageSize,
+          current: this.state.page + 1
+        }
+      })
     }).catch((e)=>{
+      this.setState({
+        loading:false,
+
+      })
     })
 
   }
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getAssignCompanyList();
+      })
+  };
 
 
 
@@ -146,8 +171,13 @@ class BudgetVersionsDetail extends React.Component {
 
   //保存新建分配公司
   versionAssignCompany=(values)=>{
+    console.log(values);
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
       message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+      this.setState({
+        newAssignCompanyDate:[]
+      })
+      this.getAssignCompanyList;
     }).catch((e)=>{
       if(e.response){
         message.error(`${this.props.intl.formatMessage({id:"common.operate.error"})},${e.response.data.validationErrors[0].message}`);
@@ -167,10 +197,11 @@ class BudgetVersionsDetail extends React.Component {
     for(let a=0;a<data.length;a++){
       const newData ={
         "companyCode":data[a].companyCode,
-        "companyName":data[a].companyName,
-        "companyId": data[a].companyId,
+        "companyName":data[a].name,
+        "companyId": data[a].id,
         "versionId":this.props.params.id,
-        "isEnabled":isEnabled
+        "isEnabled":isEnabled,
+        "companyTypeName":data[a].companyTypeName,
       }
       dataValue.push(newData)
       this.state.data.push(newData)
@@ -191,10 +222,10 @@ class BudgetVersionsDetail extends React.Component {
 
   //修改预算版本
   updateHandleInfo=(value)=>{
-    console.log(value);
      let valueDate = value.versionDate?value.versionDate.format('YYYY-MM-DD'):'';
     const infoData={
       ...this.state.infoDate,
+      'versionName':value.versionName,
       'versionDate':valueDate,
       'status':value.status,
       'description':value.description,
@@ -202,6 +233,7 @@ class BudgetVersionsDetail extends React.Component {
     }
     httpFetch.put(`${config.budgetUrl}/api/budget/versions`,infoData).then((response)=>{
      const data = response.data;
+     console.log(response.data);
      const valueData={
        ...data,
        'organizationName':this.props.organization.organizationName
@@ -212,6 +244,7 @@ class BudgetVersionsDetail extends React.Component {
         updateState: true,
       })
       message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+     this.getDetail();
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
