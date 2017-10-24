@@ -1,3 +1,4 @@
+
 /**
  * Created by 13576 on 2017/10/16.
  */
@@ -14,38 +15,32 @@ const TabPane =Tabs.TabPane;
 
 import WrappedBeepFrom from 'containers/finance-setting/beep-timer/beep-from.js'
 import BeepInfo from 'containers/finance-setting/beep-timer/beep-info.js'
-import ApplyTraver from 'containers/finance-setting/beep-timer/apply-traver.js'
-import ApplyBorrow from 'containers/finance-setting/beep-timer/apply-borrow.js'
+
+import 'styles/finance-setting/beep-timer/apply-traver.scss'
 
 
 
-
-class BeepTimer extends React.Component{
+class ApplyTraver extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      tabs: [
-        {key: 'TRAVEL', name:'差旅申请'},
-        {key: 'BORROW', name:'借款申请'}],
-      status: 'TRAVEL',
-      data: [],
-
+      data:[]
     };
   }
 
-  //获得已经有的差旅申请或者借款申请数据
+  componentWillMount(){
+    this.getData();
+  }
+
+  //获得已经有的借款申请数据
   getData(){
-
+    httpFetch.get(`${config.baseUrl}/api/custom/forms/company/travel/application/all`).then((req)=>{
+      console.log(req);
+    })
   }
 
-  //渲染Tabs
-  renderTabs(){
-    return (
-      this.state.tabs.map(tab => {
-        return <TabPane tab={tab.name} key={tab.key}/>
-      })
-    )
-  }
+
+
 
   //Tabs点击
   onChangeTabs = (key) => {
@@ -75,17 +70,18 @@ class BeepTimer extends React.Component{
 
     return (
       <div className="beep-timer">
-          <Tabs type="line" tabPosition="left"  onChange={this.onChangeTabs}>
-            <TabPane tab="差旅申请" key="TRAVEL">
-              <ApplyTraver/>
-            </TabPane>
 
-            <TabPane tab="借款申请" key="BORROW">
+        <div>
+          <BeepInfo/>
+        </div>
+        <div>
+          <Button type="dashed"  style={{ width: '100%', high:40}}>
+            <Icon type="plus" /> 添加
+          </Button>
+        </div>
 
-            </TabPane>
+        <WrappedBeepFrom/>
 
-
-          </Tabs>
 
       </div>
 
@@ -97,4 +93,4 @@ function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(BeepTimer);
+export default connect(mapStateToProps)(ApplyTraver);

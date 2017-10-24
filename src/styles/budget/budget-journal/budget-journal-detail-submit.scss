@@ -1,0 +1,28 @@
+
+
+
+.budget-journal-detail-submit{
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 74px;
+  .base-info{
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #EBEBEB;
+    .base-info-header{
+      padding-left: 16px;
+      background: #F7F7F7;
+      height: 40px;
+      width: 100%;
+      line-height: 40px;
+      border-bottom: 1px solid #EEEEEE;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .base-info-cent{
+      padding: 16px;
+    }
+  }
+
+}

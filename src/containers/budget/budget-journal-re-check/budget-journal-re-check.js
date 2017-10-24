@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/10/20.
+ */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
@@ -8,12 +11,12 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area.js';
 
-import "styles/budget/budget-journal/budget-journal.scss"
+import "styles/budget/budget-journal-re-check/budget-journal-re-check.scss"
 
 
 const journalTypeCode = [];
 
-class BudgetJournal extends React.Component {
+class BudgetJournalReCheck extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,9 +31,13 @@ class BudgetJournal extends React.Component {
         pageSize:10,
 
       },
-      showUpdateSlideFrame:false,
-      showCreateSlideFrame:false,
+
       searchForm: [
+
+        {type: 'input', id: 'journalCode',
+          label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
+        },
+
         {type: 'list', id: 'journalTypeName',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
@@ -38,9 +45,7 @@ class BudgetJournal extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
           listExtraParams:{organizationId:1}
         },
-        {type: 'input', id: 'journalCode',
-          label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
-        },
+
         {type: 'select', id: 'periodStrategy',
           label:  this.props.intl.formatMessage({id: 'budget.journal'})+this.props.intl.formatMessage({id: 'budget.periodStrategy'}),
           options:
@@ -51,6 +56,21 @@ class BudgetJournal extends React.Component {
 
             ]
         },
+
+        {type: 'select', id:'versionId', label: '预算版本', options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:1},
+          labelKey: 'versionName', valueKey: 'id'},
+        {type: 'select', id:'structureId', label: '预算表',  options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:1},
+          labelKey: 'structureName', valueKey: 'id'},
+        {type: 'select', id:'scenarioId', label: '预算场景', options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:1},
+          labelKey: 'scenarioName', valueKey: 'id'},
+        {type: 'select', id:'employeeId', label: '申请人', options: [], method: 'get',
+          getUrl: ``, getParams: {},
+          labelKey: 'name', valueKey: 'id'},
+        {type:'date',id:'createData', label: '创建时间' }
+
       ],
 
       columns: [
@@ -73,9 +93,8 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status'
         },
       ],
-      newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项
-      budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail','key'),    //预算日记账详情
-      budgetJournalDetailSubmit: menuRoute.getRouteItem('budget-journal-detail-submit','key'),
+
+      budgetJournalDetailReCheckDetailPage: menuRoute.getRouteItem('budget-journal-re-check-detail','key'),    //预算日记账复核详情
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
   }
@@ -97,7 +116,7 @@ class BudgetJournal extends React.Component {
 
   //获取预算日记账数据
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}&structureId=${this.state.params.structureId||''}&versionId=${this.state.params.versionId||''}&scenarioId=${this.state.params.scenarioId||''}&createDate=${this.state.params.createData||''}&empId=${this.state.params.employeeId||''}`).then((response)=>{
       this.setState({
         loading: false,
         data: response.data,
@@ -130,6 +149,7 @@ class BudgetJournal extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) =>{
+    console.log(values);
     this.setState({
       params:values,
     },()=>{
@@ -147,14 +167,9 @@ class BudgetJournal extends React.Component {
   HandleRowClick=(value)=>{
     console.log(value);
     const journalCode =value.journalCode;
-    if(value.status=="NEW"){
-      let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
-      this.context.router.push(path);
-    }else {
-      let path=this.state.budgetJournalDetailSubmit.url.replace(":journalCode",journalCode);
-      this.context.router.push(path);
-    }
 
+    let path=this.state.budgetJournalDetailReCheckDetailPage.url.replace(":journalCode",journalCode);
+    this.context.router.push(path);
     //budgetJournalDetailSubmit
 
   }
@@ -166,9 +181,6 @@ class BudgetJournal extends React.Component {
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
-          <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
-          </div>
         </div>
         <Table
           loading={loading}
@@ -185,7 +197,7 @@ class BudgetJournal extends React.Component {
 
 }
 
-BudgetJournal.contextTypes ={
+BudgetJournalReCheck.contextTypes ={
   router: React.PropTypes.object
 }
 
@@ -193,4 +205,4 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetJournal));
+export default connect(mapStateToProps)(injectIntl(BudgetJournalReCheck));
