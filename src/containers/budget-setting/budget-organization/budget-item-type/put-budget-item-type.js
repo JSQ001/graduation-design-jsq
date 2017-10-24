@@ -96,11 +96,11 @@ class PutBudgetItemType extends React.Component {
             })(
               <div>
                 <Switch  defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ?this.props.intl.formatMessage({id:"common.statusEnable"}) : this.props.intl.formatMessage({id:"common.statusDisable"}) }</span>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ?this.props.intl.formatMessage({id:"common.enabled"}) : this.props.intl.formatMessage({id:"common.disabled"}) }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout}      label={this.props.intl.formatMessage({id:"budget.organizationName"})}>
+          <FormItem {...formItemLayout}      label={this.props.intl.formatMessage({id:"budget.organization"})}>
             {getFieldDecorator('organizationName', {
               initialValue:this.props.organization.organizationName
 
