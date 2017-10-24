@@ -49,23 +49,17 @@ class BudgetStructure extends React.Component {
         {          /*编制期段*/
           title: formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
           render: (recode)=>{
-            if(recode === "month")
+            if(recode === "MONTH")
               return formatMessage({id:"periodStrategy.month"}) /*月度*/
-            if(recode === "quarter")
+            if(recode === "QUARTER")
               return formatMessage({id:"periodStrategy.quarter"}) /*季度*/
-            if(recode === "year")
+            if(recode === "YEAR")
               return formatMessage({id:"periodStrategy.year"}) /*年度*/
           }
         },
         {           /*备注*/
           title: formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description',
-          render: description => (
-            <span>
-              {description ? description : '-'}
-              <Popover content={description}>
-                {description}
-              </Popover>
-            </span>)
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}),
@@ -92,10 +86,9 @@ class BudgetStructure extends React.Component {
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
     httpFetch.get(url).then((response)=>{
-      console.log(response)
       response.data.map((item,index)=>{
         item.key = item.structureCode;
-      })
+      });
       this.setState({
         data: response.data,
         pagination: {

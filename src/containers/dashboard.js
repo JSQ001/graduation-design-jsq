@@ -30,9 +30,10 @@ class Dashboard extends React.Component{
   }
 
   componentDidMount(){
-    let sprites = document.getElementsByClassName('sprite')
+    let sprites = document.getElementsByClassName('sprite');
+    let cards = document.getElementsByClassName('ant-card');
     for(let i = 0; i < sprites.length; i++)
-      spriteAnimation(sprites[i], this.state.spriteMap['aliyun' + (i + 1)], 75, 75, 60);
+      spriteAnimation(sprites[i], this.state.spriteMap['aliyun' + (i + 1)], 75, 75, 60, 500, cards[i]);
   }
 
   render() {

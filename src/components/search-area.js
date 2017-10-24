@@ -64,8 +64,10 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
+    console.log(values)
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
+
       if(values[item.id] && item.entity) {
         if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
           values[item.id] = JSON.parse(values[item.id].title);
@@ -77,6 +79,24 @@ class SearchArea extends React.Component{
           values[item.id] = result;
         }
       }
+
+      if(item.type === 'list' && values[item.id]){
+        if(item.entity){
+          let result = [];
+          values[item.id].map(value => {
+            result.push(value);
+          });
+          values[item.id] = result;
+        } else {
+          let result = [];
+          values[item.id].map(value => {
+            result.push(value.key);
+          });
+          values[item.id] = result;
+        }
+      }
+
+
     });
     this.props.submitHandle(values)
   };
@@ -94,7 +114,7 @@ class SearchArea extends React.Component{
 
   //给select增加options
   getOptions = (item) => {
-    if(item.options.length === 0){
+    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
       let url = item.getUrl;
       if(item.method === 'get' && item.getParams){
         url += '?';
@@ -126,29 +146,30 @@ class SearchArea extends React.Component{
 
   //得到值列表的值增加options
   getValueListOptions = (item) => {
-    this.getSystemValueList(item.valueListCode).then(res => {
-      let options = [];
-      res.data.values.map(data => {
-        options.push({label: data.messageKey, value: data.code, data: data})
-      });
-      let searchForm = this.state.searchForm;
-      searchForm = searchForm.map(searchItem => {
-        if(searchItem.id === item.id)
-          searchItem.options = options;
-        if(searchItem.type === 'items')
-          searchItem.items.map(subItem => {
-            if(subItem.id === item.id)
-              subItem.options = options;
-          });
-        return searchItem;
-      });
-      this.setState({ searchForm });
-    })
+    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
+      this.getSystemValueList(item.valueListCode).then(res => {
+        let options = [];
+        res.data.values.map(data => {
+          options.push({label: data.messageKey, value: data.code, data: data})
+        });
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === item.id)
+            searchItem.options = options;
+          if(searchItem.type === 'items')
+            searchItem.items.map(subItem => {
+              if(subItem.id === item.id)
+                subItem.options = options;
+            });
+          return searchItem;
+        });
+        this.setState({ searchForm });
+      })
+    }
   };
 
   //根据接口返回数据重新设置options
-  setOptionsToFormItem = (item, url, key, handle) => {
-    handle && handle();
+  setOptionsToFormItem = (item, url, key) => {
     let params = {};
     if(key){
       params[item.searchKey] = key;
@@ -170,6 +191,106 @@ class SearchArea extends React.Component{
         this.setState({ searchForm });
       })
     }
+  };
+
+  /**
+   * 如果是select的设置值，如果options内没有值时应先增加一个默认的对应option
+   * @param item  对应searchForm的表单项
+   * @param value 需要设置的值 {label: '', key: ''}
+   * @param index 当type为items时的序列
+   */
+  onSetSelectValue = (item, value, index) => {
+    let valueWillSet = {};
+    let searchForm = this.state.searchForm;
+    if(index === undefined)
+      searchForm = searchForm.map(searchItem => {
+        if(searchItem.id === item.id){
+          valueWillSet[searchItem.id] = value.key + '';
+          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+            let dataOption = {};
+            dataOption[item.valueKey] = value.key;
+            dataOption[item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+          }
+        }
+        return searchItem;
+      });
+    else
+      searchForm[index].items = searchForm[index].items.map(searchItem => {
+        if(searchItem.id === item.id){
+          valueWillSet[searchItem.id] = value.key + '';
+          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+            let dataOption = {};
+            dataOption[item.valueKey] = value.key;
+            dataOption[item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+          }
+        }
+        return searchItem;
+      });
+    this.setState({ searchForm }, () => {
+      this.props.form.setFieldsValue(valueWillSet);
+    });
+    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    handle();
+  };
+
+  /**
+   * 设置searchForm的值
+   * @param options 需要设置的值，与form.setFieldsValue值格式一致
+   * input、switch、data、radio、big_radio、checkbox直接传入对应字符串value即可
+   * select、value_list 所需的默认值需要哦为 {label: '', key: ''}
+   * list 所需格式为包含显示值与数据值的对象数组，根据valueKey与labelKey对应
+   * TODO: combobox 与 multiple 模式待开发
+   *
+   * example：
+   *
+   * <SearchArea wrappedComponentRef={(inst) => this.formRef = inst} {...props} />
+   *
+   * this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+      listId: [{user: '', userOID: ''}, ...],
+      selectId: {label: '', key: ''},
+      inputId: 'value',
+      value_listId: {label: '', key: ''}
+    });
+   *
+   */
+  setValues = (options) => {
+    console.log(options);
+    Object.keys(options).map(key => {
+      let searchForm = this.state.searchForm;
+      searchForm.map((searchItem, index) => {
+        if(searchItem.id === key){
+          if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
+            this.onSetSelectValue(searchItem, options[key]);
+          else if(searchItem.type === 'list'){
+            let value = {};
+            value[key] = options[key];
+            this.props.form.setFieldsValue(value)
+          } else {
+            let value = {};
+            value[key] = options[key] + '';
+            this.props.form.setFieldsValue(value)
+          }
+        } else if(searchItem.type === 'items'){
+          searchItem.items.map(subItem => {
+            if(subItem.id === key){
+              if((subItem.type === 'select' || subItem.type === 'value_list') && typeof options[key] === 'object')
+                this.onSetSelectValue(subItem, options[key], index);
+              else if(subItem.type === 'list'){
+                let value = {};
+                value[key] = options[key];
+                this.props.form.setFieldsValue(value)
+              } else {
+                let value = {};
+                value[key] = options[key] + '';
+                this.props.form.setFieldsValue(value)
+              }
+            }
+          })
+        }
+      })
+    });
   };
 
   //渲染搜索表单组件
@@ -245,8 +366,9 @@ class SearchArea extends React.Component{
           placeholder={item.placeholder}
           filterOption={!item.searchUrl}
           optionFilterProp='children'
+          onChange={handle}
           onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
+          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key) : () => {}}
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
@@ -262,8 +384,9 @@ class SearchArea extends React.Component{
           placeholder={item.placeholder}
           filterOption={!item.searchUrl}
           optionFilterProp='children'
+          onChange={handle}
           onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
+          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key) : () => {}}
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
@@ -277,7 +400,7 @@ class SearchArea extends React.Component{
                         disabled={item.disabled}
                         type={item.listType}
                         labelKey={item.labelKey}
-                        valueKey={item.labelKey}
+                        valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
                         selectorItem={item.selectorItem}
                         single={item.single}/>
@@ -410,6 +533,6 @@ SearchArea.defaultProps = {
   clearText: <FormattedMessage id='common.clear'/>  //重置
 };
 
-const WrappedSearchArea= Form.create()(injectIntl(SearchArea));
+const WrappedSearchArea = Form.create()(injectIntl(SearchArea));
 
 export default WrappedSearchArea;

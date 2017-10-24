@@ -20,8 +20,36 @@ class NewStrategyControlDetail extends React.Component{
       valueValue: '',
       periodStrategyValue: '',
       updateParams: {},
-      loading: false
+      loading: false,
+      controlObjectOptions: [], //控制对象
+      rangeOptions: [], //比较
+      mannerOptions: [], //方式
+      operatorOptions: [], //运算符号(+,-,*,/)
+      periodStrategyOptions: [], //控制期段
     };
+  }
+
+  componentWillMount(){
+    this.getSystemValueList(2008).then(res => { //控制对象
+      let controlObjectOptions = res.data.values;
+      this.setState({ controlObjectOptions })
+    });
+    this.getSystemValueList(2007).then(res => { //比较
+      let rangeOptions = res.data.values;
+      this.setState({ rangeOptions })
+    });
+    this.getSystemValueList(2009).then(res => { //方式
+      let mannerOptions = res.data.values;
+      this.setState({ mannerOptions })
+    });
+    this.getSystemValueList(2010).then(res => { //运算符号(+,-,*,/)
+      let operatorOptions = res.data.values;
+      this.setState({ operatorOptions })
+    });
+    this.getSystemValueList(2011).then(res => { //控制期段
+      let periodStrategyOptions = res.data.values;
+      this.setState({ periodStrategyOptions })
+    });
   }
 
   componentWillReceiveProps(nextProps){
@@ -31,7 +59,6 @@ class NewStrategyControlDetail extends React.Component{
         updateParams: nextProps.params
       })
     } else if(nextProps.params.id != this.state.updateParams.id){ //更新
-      console.log(456)
       this.setState({
         updateParams: nextProps.params,
         objectValue: nextProps.params.object,
@@ -99,22 +126,23 @@ class NewStrategyControlDetail extends React.Component{
   };
 
   handlePeriodStrategy = (value) => {
+    console.log(value);
     const config = {
       '年度': '全年预算额',
-      '年初至今': '年初至今预算额',
+      '年度至今': '年初至今预算额',
       '累计季度': '年初至当季度预算额',
-      '滚动季度': '当月至后两个月共3个月合计预算额',
+      '季度滚动': '当月至后两个月共3个月合计预算额',
       '季度': '当季预算额',
-      '季初至今': '季度初至今预算额',
-      '月度': '当月录入预算额'
+      '季度至今': '季度初至今预算额',
+      '期间': '当月录入预算额'
     };
-    this.setState({ periodStrategyValue:config[value] })
-    return config[value];
+    this.setState({ periodStrategyValue: config[value] });
+    return config[value]
   };
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams, loading } = this.state;
+    const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams, loading, controlObjectOptions, rangeOptions, mannerOptions, operatorOptions, periodStrategyOptions } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -179,11 +207,10 @@ class NewStrategyControlDetail extends React.Component{
               }],
               initialValue: updateParams.operator
             })(
-              <Select placeholder="请选择" onChange={(value)=>{this.setState({ operatorValue:value })}}>
-                <Option value="加">加</Option>
-                <Option value="减">减</Option>
-                <Option value="乘">乘</Option>
-                <Option value="除">除</Option>
+              <Select onChange={(value)=>{this.setState({ operatorValue:value })}} placeholder="请选择">
+                {operatorOptions.map((option)=>{
+                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                })}
               </Select>
             )}
           </FormItem>
@@ -208,11 +235,10 @@ class NewStrategyControlDetail extends React.Component{
               }],
               initialValue: updateParams.object
             })(
-              <Select placeholder="请选择" onChange={(value)=>{this.setState({ objectValue: value })}}>
-                <Option value="金额">金额</Option>
-                <Option value="金额进度">金额进度</Option>
-                <Option value="数量">数量</Option>
-                <Option value="数量进度">数量进度</Option>
+              <Select onChange={(value)=>{this.setState({ objectValue: value })}} placeholder="请选择">
+                {controlObjectOptions.map((option)=>{
+                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                })}
               </Select>
             )}
           </FormItem>
@@ -224,13 +250,10 @@ class NewStrategyControlDetail extends React.Component{
               }],
               initialValue: updateParams.range
             })(
-              <Select placeholder="请选择" onChange={(value)=>{this.setState({ rangeValue: value })}}>
-                <Option value="小于">小于</Option>
-                <Option value="小于等于">小于等于</Option>
-                <Option value="大于">大于</Option>
-                <Option value="大于等于">大于等于</Option>
-                <Option value="等于">等于</Option>
-                <Option value="不等于">不等于</Option>
+              <Select onChange={(value)=>{this.setState({ rangeValue: value })}} placeholder="请选择">
+                {rangeOptions.map((option)=>{
+                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                })}
               </Select>
             )}
           </FormItem>
@@ -244,9 +267,10 @@ class NewStrategyControlDetail extends React.Component{
                   }],
                   initialValue: updateParams.manner
                 })(
-                  <Select placeholder="请选择" onChange={(value)=>{this.setState({ mannerValue: value })}}>
-                    <Option value="绝对额">绝对额</Option>
-                    <Option value="百分比">百分比</Option>
+                  <Select onChange={(value)=>{this.setState({ mannerValue: value })}} placeholder="请选择">
+                    {mannerOptions.map((option)=>{
+                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -264,14 +288,10 @@ class NewStrategyControlDetail extends React.Component{
                   }],
                   initialValue: updateParams.periodStrategy
                 })(
-                  <Select placeholder="请选择" onChange={this.handlePeriodStrategy}>
-                    <Option value="月度">月度</Option>
-                    <Option value="季度">季度</Option>
-                    <Option value="年度">年度</Option>
-                    <Option value="季初至今">季初至今</Option>
-                    <Option value="年初至今">年初至今</Option>
-                    <Option value="滚动季度">滚动季度</Option>
-                    <Option value="累计季度">累计季度</Option>
+                  <Select onChange={this.handlePeriodStrategy} placeholder="请选择">
+                    {periodStrategyOptions.map((option)=>{
+                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -284,7 +304,7 @@ class NewStrategyControlDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
-              <div>{objectValue}{rangeValue}{periodStrategyValue}{mannerValue == '百分比' && valueValue ? valueValue + '%' : operatorValue + valueValue}</div>
+              <div>{objectValue} {rangeValue} {periodStrategyValue}{mannerValue == '百分比' && valueValue ? valueValue + '%' : operatorValue + valueValue}</div>
             )}
           </FormItem>
           <div className="slide-footer">

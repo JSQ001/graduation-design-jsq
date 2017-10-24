@@ -80,7 +80,7 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/itemType/query`,
     searchForm:[
       {type: 'input', id: 'itemTypeCode', label: '预算项目类型代码'},
-      {type: 'input', id: 'itemTypeName', label: '预算项目类型代码'},
+      {type: 'input', id: 'itemTypeName', label: '预算项目类型名称'},
     ],
     columns: [
       {title: '预算项目类型代码', dataIndex: 'itemTypeCode'},
@@ -114,18 +114,6 @@ const selectorData = {
       {title: '维度名称', dataIndex: 'dimensionName', width: '25%'},
       {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
       {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
-    ],
-    key: 'id'
-  },
-  'rule_params': {
-    title: "规则参数",
-    searchForm: [
-      {type: 'input', id: 'paramsCode', label: '参数代码'},
-      {type: 'input', id: 'paramsName', label: '参数描述'}
-    ],
-    columns: [
-      {title: '参数代码', dataIndex: 'paramsCode'},
-      {title: '参数描述', dataIndex: 'paramsName'}
     ],
     key: 'id'
   },
@@ -167,7 +155,17 @@ const selectorData = {
       {title: '预算场景名称', dataIndex: 'scenarioName'},
     ],
     key: 'id'
-  }
+  },
+  'budget_item_group':{
+    title:"预算项目组",
+    url:`${config.budgetUrl}/api/budget/groups/query`,
+    searchForm:[],
+    columns: [
+      {title: '预算项目组代码', dataIndex: 'itemGroupCode'},
+      {title: '预算项目组名称', dataIndex: 'itemGroupName'},
+    ],
+    key: 'id'
+  },
 
 };
 

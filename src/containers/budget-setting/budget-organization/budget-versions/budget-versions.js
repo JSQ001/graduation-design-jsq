@@ -23,7 +23,7 @@ class BudgetVersions extends React.Component {
         {title: this.props.intl.formatMessage({id:"budget.versionCode"}), dataIndex: 'versionCode', key: 'versionCode',},
         {title:  this.props.intl.formatMessage({id:"budget.versionName"}), dataIndex: 'versionName', key: 'versionName',},
         {title:  this.props.intl.formatMessage({id:"budget.versionDate"}), dataIndex: 'versionDate', key: 'versionDate',},
-        {title: this.props.intl.formatMessage({id:"budget.description"}), dataIndex: 'description', key: 'description',render:(recode)=>{return <span>{recode?recode:'-'}</span>}},
+        {title: this.props.intl.formatMessage({id:"budget.versionDescription"}), dataIndex: 'description', key: 'description',render:(recode)=>{return <span>{recode?recode:'-'}</span>}},
         {title:  this.props.intl.formatMessage({id:"budget.status"}), dataIndex: 'status', key: 'status', render: (recode) => { return <div>{ recode=="NEW"?this.props.intl.formatMessage({id:"budget.new"}):(recode="CURRENT"?this.props.intl.formatMessage({id:"budget.current"}):this.props.intl.formatMessage({id:"budget.history"}))}</div>}},
         {title:  this.props.intl.formatMessage({id:"budget.isEnabled"}),dataIndex: 'isEnabled', key: 'isEnabled',
           render: (recode,text) => {

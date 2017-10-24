@@ -25,7 +25,7 @@ Array.prototype.addIfNotExist = function(item){
 };
 
 //金额过滤
-React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
+React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{Number(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
 
 //检查用户操作权限
 React.Component.prototype.checkAuthorities = auth => {
@@ -56,6 +56,15 @@ Date.prototype.format = function (fmt) {
 
 /**
  * 得到系统值列表
+ * 1001 人员类型
+ * 1002 职务
+ * 1003 携程子账户
+ * 1004 银行名称
+ * 1005 国籍
+ * 1006 证件类型
+ * 1007 性别
+ * 1008 员工级别
+ * 1010 会计期间名称附加
  * 2001 版本状态
  * 2002 编制期段
  * 2003 布局位置
@@ -100,12 +109,13 @@ React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config
  * @param width  单个frame的宽
  * @param total  总共帧数
  * @param duration 动画持续时间
+ * @param hoverDom hover所需要的dom
  */
-window.spriteAnimation = function(dom, img, height, width, total, duration = 500){
+window.spriteAnimation = function(dom, img, height, width, total, duration = 500, hoverDom = dom){
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
-  dom.onmouseenter = function(){
+  hoverDom.onmouseenter = function(){
     let enterInterval = setInterval(() => {
       clearInterval(dom.leaveInterval);
       dom.enterInterval = enterInterval;
@@ -115,7 +125,7 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
         clearInterval(enterInterval);
     }, duration / total)
   };
-  dom.onmouseleave = function(){
+  hoverDom.onmouseleave = function(){
     let leaveInterval = setInterval(() => {
       clearInterval(dom.enterInterval);
       dom.leaveInterval = leaveInterval;

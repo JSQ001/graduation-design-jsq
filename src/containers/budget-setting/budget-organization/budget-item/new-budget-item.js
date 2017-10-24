@@ -19,11 +19,25 @@ class NewBudgetItem extends React.Component{
       loading: true,
       organization: {},
       showItemType: false ,
-      listSelectedData:[],
+      variationAttribute:[],
       statusCode: this.props.intl.formatMessage({id:"common.status.enable"}),  /*启用*/
     };
   }
   componentWillMount(){
+    //获取值列表：变动属性
+    this.getSystemValueList(2004).then((response)=>{
+      let variationAttribute = [];
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        variationAttribute.push(option);
+      });
+      this.setState({
+        variationAttribute: variationAttribute
+      })
+    });
     typeof this.props.organization.organizationName === "undefined" ?
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then((response) =>{
         this.setState({
@@ -77,8 +91,10 @@ class NewBudgetItem extends React.Component{
       listSelectedData
     })
   };
+
   handleListOk = (result) => {
     console.log(result)
+
     let values = [];
     result.result.map(item => {
       values.push({
@@ -92,20 +108,17 @@ class NewBudgetItem extends React.Component{
     this.props.form.setFieldsValue(value);
     this.showList(false)
   };
+
   handleCancel = (e) =>{
     e.preventDefault();
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { organization, statusCode, showItemType , listSelectedData} = this.state;
+    const { organization, statusCode, showItemType , variationAttribute} = this.state;
     const { formatMessage } = this.props.intl;
-    const attribute = [
-      {id:"immobilization",value: formatMessage({id:"variationAttribute.immobilization"})},  /*固定*/
-      {id:"mix",value: formatMessage({id:"variationAttribute.mix"})}, /*混合*/
-      {id:"alteration",value: formatMessage({id:"variationAttribute.alteration"})} /*变动*/
-    ];
-    const variationAttribute = attribute.map((item)=><Option key={item.id}>{item.value}</Option>)
+
+    const options = variationAttribute.map((item)=><Option key={item.id}>{item.value}</Option>)
     return (
       <div className="new-budget-item">
         <div className="budget-item-form">
@@ -191,7 +204,7 @@ class NewBudgetItem extends React.Component{
                     ]
                   })(
                     <Select placeholder={formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
-                      {variationAttribute}
+                      {options}
                     </Select>)
                   }
                 </FormItem>
@@ -243,7 +256,7 @@ class NewBudgetItem extends React.Component{
           type="budget_item_type"
           onCancel={()=>this.showList(false)}
           onOk={this.handleListOk}
-          selectedData={listSelectedData}
+          //selectedData={listSelectedData}
           extraParams={{organizationId: this.props.params.id}}/>
       </div>
     )

@@ -27,7 +27,7 @@ class BudgetOrganization extends React.Component {
               {organizationName}
             </Popover>)
         },
-        {title: formatMessage({id:"budget.set.of.books"}), dataIndex: 'setOfBooksId', width: '20%'},  //账套
+        {title: formatMessage({id:"budget.set.of.books"}), dataIndex: 'setOfBooksCode', width: '20%'},  //账套
         {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
@@ -85,6 +85,7 @@ class BudgetOrganization extends React.Component {
 
   //得到列表数据
   getList(){
+    this.setState({ loading: true });
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/organizations/query?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in params){

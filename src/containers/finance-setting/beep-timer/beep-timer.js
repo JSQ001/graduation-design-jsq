@@ -3,9 +3,21 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Form, Input, Switch, Button, Icon ,Tabs} from 'antd'
+import { injectIntl } from 'react-intl';
+
+import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message} from 'antd'
+import httpFetch from 'share/httpFetch'
+import config from 'config'
+import menuRoute from 'share/menuRoute'
 const FormItem = Form.Item;
 const TabPane =Tabs.TabPane;
+
+import WrappedBeepFrom from 'containers/finance-setting/beep-timer/beep-from.js'
+import BeepInfo from 'containers/finance-setting/beep-timer/beep-info.js'
+import ApplyTraver from 'containers/finance-setting/beep-timer/apply-traver.js'
+import ApplyBorrow from 'containers/finance-setting/beep-timer/apply-borrow.js'
+
+
 
 
 class BeepTimer extends React.Component{
@@ -17,7 +29,13 @@ class BeepTimer extends React.Component{
         {key: 'BORROW', name:'借款申请'}],
       status: 'TRAVEL',
       data: [],
+
     };
+  }
+
+  //获得已经有的差旅申请或者借款申请数据
+  getData(){
+
   }
 
   //渲染Tabs
@@ -33,9 +51,12 @@ class BeepTimer extends React.Component{
   onChangeTabs = (key) => {
     this.setState({
 
-
     },()=>{
-
+      this.setState({
+        status: key
+      },()=>{
+        this.getData()
+      });
     });
   };
 
@@ -51,16 +72,23 @@ class BeepTimer extends React.Component{
 
   render(){
     const {} = this.state;
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14, offset: 1 },
-    };
+
     return (
       <div className="beep-timer">
-          <Tabs type="line" tabPosition="left" >
-            {this.renderTabs()}
+          <Tabs type="line" tabPosition="left"  onChange={this.onChangeTabs}>
+            <TabPane tab="差旅申请" key="TRAVEL">
+              <ApplyTraver/>
+            </TabPane>
+
+            <TabPane tab="借款申请" key="BORROW">
+
+            </TabPane>
+
+
           </Tabs>
+
       </div>
+
     )
   }
 }

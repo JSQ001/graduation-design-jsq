@@ -14,6 +14,7 @@ class NewBudgetGroup extends React.Component {
     super(props);
     this.state = {
       budgetGroupDetail: menuRoute.getRouteItem('budget-group-detail','key'),    //项目组详情的页面项
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
       loading: false
     };
   }
@@ -22,7 +23,6 @@ class NewBudgetGroup extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
         values.organizationId =  this.props.organization.id;
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
@@ -31,7 +31,7 @@ class NewBudgetGroup extends React.Component {
           this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", res.data.id));
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`新建失败, ${e.response.data.message}`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -43,6 +43,7 @@ class NewBudgetGroup extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
+    const { formatMessage } = this.props.intl;
     return (
       <div onSubmit={this.handleSave}>
         <h3 className="header-title">新建预算项目组</h3>
@@ -60,14 +61,26 @@ class NewBudgetGroup extends React.Component {
               </Col>
               <Col span={8}>
                 <FormItem label="预算项目组代码">
-                  {getFieldDecorator("itemGroupCode")(
+                  {getFieldDecorator("itemGroupCode", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.enter'}),  //请输入
+                    }],
+                    initialValue: ''
+                  })(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem label="预算项目组描述">
-                  {getFieldDecorator("itemGroupName")(
+                  {getFieldDecorator("itemGroupName", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.enter'}),  //请输入
+                    }],
+                    initialValue: ''
+                  })(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
@@ -87,7 +100,7 @@ class NewBudgetGroup extends React.Component {
             <Row>
               <Col span={8}>
                 <Button htmlType="submit" type="primary">保存</Button>
-                <Button style={{ marginLeft: 8 }}>取消</Button>
+                <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=GROUP');}}>取消</Button>
               </Col>
             </Row>
           </Form>

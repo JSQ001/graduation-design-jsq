@@ -22,8 +22,7 @@ class StrategyControlDetail extends React.Component {
       infoList: [
         {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
         {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
-        {type: 'select', label: '控制策略：', id: 'controlMethod', isRequired: true,
-          options: [{label: '禁止', value: '禁止'},{label: '警告', value: '警告'},{label: '通过', value: '通过'}]},
+        {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005},
         {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
         {type: 'input', label: '消息：', id: 'messageCode'},
         {type: 'input', label: '事件：', id: 'expWfEvent'},
@@ -36,7 +35,7 @@ class StrategyControlDetail extends React.Component {
         {title: '比较', dataIndex: 'range', key: 'range'},
         {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy'},
         {title: '方式', dataIndex: 'manner', key: 'manner'},
-        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value)=>{return value ? value : '-'}},
+        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner=='绝对额' ? value : '-'}},
         {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner=='百分比' ? value+'%' : value}},
       ],
       data: [],

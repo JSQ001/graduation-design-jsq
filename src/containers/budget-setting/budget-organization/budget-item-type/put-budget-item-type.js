@@ -28,6 +28,7 @@ class PutBudgetItemType extends React.Component {
     };
   }
 
+  //获取数据
   componentWillMount(){
     console.log(this.state.params)
     this.setState({
@@ -35,6 +36,20 @@ class PutBudgetItemType extends React.Component {
       isEnabled: this.props.params.isEnabled,
     })
   }
+
+//状态变化时,获取默认值数据
+  componentWillReceiveProps = (nextProps) => {
+    if(nextProps.params && nextProps.params.length > 0)
+      this.setState({
+        params: this.props.params,
+        isEnabled: this.props.params.isEnabled,
+      })
+    else
+      this.setState({ params : [] });
+
+  };
+
+
 
 //修改
   handlePut= (e) =>{
@@ -44,10 +59,11 @@ class PutBudgetItemType extends React.Component {
         this.setState({loading: true});
         console.log(values);
         const data ={
-          'isEnabled':this.state.isEnabled,
+          'isEnabled':values.isEnabled,
           'itemTypeName':values.itemTypeName,
-          'id':this.state.params.id,
-          'versionNumber':this.state.params.versionNumber,
+          'id':this.props.params.id,
+          'itemTypeCode':this.props.params.itemTypeCode,
+          'versionNumber':this.props.params.versionNumber,
         }
         console.log(data);
         httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res)=>{
@@ -96,11 +112,11 @@ class PutBudgetItemType extends React.Component {
             })(
               <div>
                 <Switch  defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ?this.props.intl.formatMessage({id:"common.statusEnable"}) : this.props.intl.formatMessage({id:"common.statusDisable"}) }</span>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ?this.props.intl.formatMessage({id:"common.enabled"}) : this.props.intl.formatMessage({id:"common.disabled"}) }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout}      label={this.props.intl.formatMessage({id:"budget.organizationName"})}>
+          <FormItem {...formItemLayout}      label={this.props.intl.formatMessage({id:"budget.organization"})}>
             {getFieldDecorator('organizationName', {
               initialValue:this.props.organization.organizationName
 

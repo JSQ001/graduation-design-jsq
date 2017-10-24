@@ -80,7 +80,7 @@ class BudgetStrategyDetail extends React.Component {
         }
       })
     }).catch((e) => {
-
+      this.setState({ loading: false })
     })
   }
 
@@ -118,6 +118,7 @@ class BudgetStrategyDetail extends React.Component {
   handleUpdate = (params) => {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
+    if(!params.controlStrategyCode || !params.controlStrategyName) return;
     httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
       if(response.status == 200) {
         message.success('保存成功');
@@ -132,7 +133,7 @@ class BudgetStrategyDetail extends React.Component {
         console.log(e)
       }
     })
-  }
+  };
 
   render(){
     const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
