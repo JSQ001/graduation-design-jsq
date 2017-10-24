@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
+import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -33,7 +33,7 @@ class NewBudgetOrganization extends React.Component {
           this.context.router.replace(this.state.budgetOrganization.url);
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`新建失败, ${e.response.data.message}`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -73,7 +73,7 @@ class NewBudgetOrganization extends React.Component {
                 message: formatMessage({id: 'common.please.select'})  //请选择
               }]
             })(
-              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}>
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}  notFoundContent={<Spin size="small" />}>
                 {setOfBooks.map((option)=>{
                   return <Option key={option.id}>{option.setOfBooksCode}</Option>
                 })}
@@ -104,7 +104,7 @@ class NewBudgetOrganization extends React.Component {
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: this.props.params.isEnabled
+              initialValue: false
             })(
               <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
