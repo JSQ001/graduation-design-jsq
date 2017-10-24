@@ -301,20 +301,28 @@ class BudgetJournalDetail extends React.Component {
 
       let data = this.state.data;
       let headerAndListData = this.state.headerAndListData;
+      let fla =1;
       if(value.hasOwnProperty("id")){
 
+        console.log("id+6666666666666666")
          let list = headerAndListData.list;
          for(let a=0;a<list.length;a++){
             if(list[a].id==value.id){
               list[a]=value;
+              fla=0;
             }
          }
           headerAndListData.list=list;
         console.log(list);
-      }else {
+      }
+
+      if(fla==1){
+        console.log("value");
+        console.log(value)
         headerAndListData.list.addIfNotExist(value);
         data.addIfNotExist(value);
       }
+
 
     this.setState({
       data:data,

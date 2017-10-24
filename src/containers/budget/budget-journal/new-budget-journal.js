@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Form,Input,Switch,Icon} from 'antd';
+import { Button, Table, Select,Form,Input,Switch,Icon,Upload} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -13,7 +13,6 @@ import ListSelector from 'components/list-selector.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-
 import "styles/budget/budget-journal/new-budget-journal.scss"
 
 class NewBudgetJournalFrom extends React.Component {
@@ -28,7 +27,9 @@ class NewBudgetJournalFrom extends React.Component {
       listExtraParams: {},
       budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail','key'),    //预算日记账详情
       structureGroup:[],
-      fromData:{ periodYear:'',}
+      fromData:{ periodYear:'',},
+      idSelectJournal:false,
+      isStructureIn:false,
 
 
     };
@@ -49,7 +50,7 @@ class NewBudgetJournalFrom extends React.Component {
           "organizationName":this.state.organization.organizationName,
           "structureId":value.structureId,
           "structureName":"structureName",
-          "periodYear": "2017",
+          "periodYear":value.periodYear,
           "periodQuarter": "1",
           "periodName": "11",
           "description": "1111",
@@ -103,6 +104,7 @@ class NewBudgetJournalFrom extends React.Component {
   getOrganization=()=>{
     httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
 
+      console.log(request.data)
       const data ={
         'organizationId':request.data.id
       }
@@ -135,9 +137,13 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalTypeChange=(values)=>{
-    let value = values[0].value
-
+    let value = values[0];
+    console.log(value);
+    this.setState({
+      idSelectJournal:true
+    })
     this.getStructure(value.journalTypeId)
+
 
   }
 
@@ -155,14 +161,23 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得年度和期间段
   handleSelectChange=(values)=>{
-console.log(values);
+    console.log(values);
     this.state.structureGroup.map((item)=>{
       if(item.id=values){
         this.props.form.setFieldsValue({
-          periodYear:item.periodYear ,
+        //  periodYear:item.periodYear ,
+
           periodStrategy:item.periodStrategy
 
         });
+
+        this.props.form.setFieldsValue({
+          periodYear:2017
+        })
+
+        this.props.form.setFieldsValue({
+          periodQuarter:item.periodQuarter
+        })
       }
     });
 
@@ -177,6 +192,22 @@ console.log(values);
 
   }
 
+  normFile = (e) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  }
+
+
+  //鼠标移动到预算表选择时，
+  handleStructure=()=>{
+    this.state.setState({
+      isStructureIn:true
+    })
+  }
+
 
 
   render(){
@@ -187,7 +218,31 @@ console.log(values);
       wrapperCol: { span: 14, offset: 1 },
     };
 
-    let strategyOptions = structureGroup.map((item)=><Option key={item.id} value={item.id}>{item.structureName}</Option>);
+    const props = {
+      name: 'file',
+      multiple: true,
+      showUploadList: false,
+      action: '//jsonplaceholder.typicode.com/posts/',
+      onChange(info) {
+        const status = info.file.status;
+        if (status !== 'uploading') {
+          console.log(info.file, info.fileList);
+        }
+        if (status === 'done') {
+          message.success(`${info.file.name} file uploaded successfully.`);
+        } else if (status === 'error') {
+          message.error(`${info.file.name} file upload failed.`);
+        }
+      },
+    };
+
+
+  //let strategyOptions = structureGroup.map((item)=> <Option  value={item.id}>{item.structureName}</Option>);
+
+    const strategyOptions = [];
+    for (let i = 0; i < structureGroup.length ; i++) {
+      strategyOptions.push(<Option key={i} value={structureGroup[i].id} >  {structureGroup[i].structureName}</Option>);
+    }
 
     return (
       <div className="new-budget-journal">
@@ -247,6 +302,7 @@ console.log(values);
               type='budget_journal_type'
               labelKey='journalTypeName'
               valueKey='journalTypeId'
+              single="true"
               listExtraParams={this.state.organizationId}
               onChange={this.handleJournalTypeChange}
               />
@@ -254,7 +310,10 @@ console.log(values);
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.structureId"})} >
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.structureId"})}
+                    validateStatus={(!this.state.idSelectJournal )?'warning':''}
+                    help={(!this.state.idSelectJournal )?'请先选择预算日记账':''}
+          >
             {getFieldDecorator('structureId', {
               rules: [{
                 required: true,
@@ -281,9 +340,9 @@ console.log(values);
             })(
 
               <Select>
-                <Option key="2017" value='年'>年</Option>
-                <Option key="2018" value='月'>月</Option>
-                <Option key="2019" value='季度'>季度</Option>
+                <Option key="YEAR" value='年'>年</Option>
+                <Option key="MONTH" value='月'>月</Option>
+                <Option key="QUARTER" value='季度'>季度</Option>
               </Select>
             )}
           </FormItem>
@@ -317,6 +376,7 @@ console.log(values);
                 type='budget_versions'
                 labelKey='versionName'
                 valueKey='id'
+                single="true"
                 listExtraParams={this.state.organizationId}
               />
             )}
@@ -335,11 +395,36 @@ console.log(values);
               type='budget_scenarios'
               labelKey='scenarioName'
               valueKey='id'
+              single="true"
               listExtraParams={this.state.organizationId}
              />
 
             )}
           </FormItem>
+
+
+          <FormItem
+            {...formItemLayout}
+            label="附件"
+          >
+            <div className="dropbox">
+              {getFieldDecorator('dragger', {
+                valuePropName: 'fileList',
+                getValueFromEvent: this.normFile,
+              })(
+                <Upload.Dragger name="files" action="/upload.do">
+                  <p className="ant-upload-drag-icon">
+                    <Icon type="cloud-upload-o" />
+                  </p>
+                  <p className="ant-upload-text">点击或将文件拖拽到这里上传</p>
+                  <p className="ant-upload-hint">支持扩展名：.rar .zip .doc .docx .pdf .jpg...</p>
+                </Upload.Dragger>
+              )}
+            </div>
+          </FormItem>
+
+
+
 
 
           <FormItem wrapperCol={{ offset: 7 }}>

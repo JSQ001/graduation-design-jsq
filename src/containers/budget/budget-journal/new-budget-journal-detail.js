@@ -53,7 +53,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*标价方法*/
         {type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), options: []},
         /*汇率*/
-        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,},
+        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate'},
         /*金额*/
         {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
         /*本位金额*/
@@ -70,6 +70,7 @@ class NewBudgetJournalDetail extends React.Component {
       ],
       typeOptions: [],
       params:{},
+      rate:12,
 
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
@@ -79,20 +80,18 @@ class NewBudgetJournalDetail extends React.Component {
 
   //表单的联动事件处理
   handleEvent(event,e){
-    console.log( JSON.parse(event));
-    event =JSON.parse(event);
-
-    console.log(event);
     switch (e){
       case 'company':{
         return;
       }
       case 'periodName':{
+        event =JSON.parse(event);
+
         let searchForm =this.state.searchForm;
         console.log(searchForm);
         this.props.form.setFieldsValue({
           periodQuarter:1,
-          periodYear:event.periodYear ,
+          periodYear:event.periodYear
         });
 
        /* searchForm = searchForm.map(searchItem => {
@@ -111,9 +110,33 @@ class NewBudgetJournalDetail extends React.Component {
         this.setState({
           searchForm:searchForm
         })*/
-
+        return;
       }
       case 'currency':{
+        event =JSON.parse(event);
+        this.props.form.setFieldsValue({
+          rate:event.rate
+        });
+
+        return;
+      }
+      case 'amount':{
+        const data = this.state.rate;
+        console.log(data)
+        const FieldsValue =  this.props.getFieldsValue();
+        let functionalAmount = (data)*Number(FieldsValue.rate);
+        console.log(functionalAmount);
+        this.props.form.setFieldsValue({
+          functionalAmount:functionalAmount,
+        });
+
+
+        return;
+      }
+      case 'rate':{
+        this.setState({
+          rate:String(event)
+        })
         return;
       }
     }

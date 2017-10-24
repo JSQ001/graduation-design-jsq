@@ -155,9 +155,9 @@ class ListSelector extends React.Component {
       this.setState({ selectedData : nextProps.selectedData });
     else
       this.setState({ selectedData : [] });
-    if(nextProps.type !== this.state.type && !nextProps.selectorItem)
+    if(nextProps.type !== this.state.type && !nextProps.selectorItem && nextProps.visible)
       this.checkType(nextProps.type);
-    else if(nextProps.selectorItem)
+    else if(nextProps.selectorItem && nextProps.visible)
       this.checkSelectorItem(nextProps.selectorItem)
   };
 
@@ -225,9 +225,9 @@ class ListSelector extends React.Component {
     const { searchForm, columns, title } = selectorItem;
     return (
       <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
-        <SearchArea searchForm={searchForm}
-                    submitHandle={this.search}
-                    clearHandle={this.clear}/>
+        { searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
+                                              submitHandle={this.search}
+                                              clearHandle={this.clear}/> : null}
         <div className="table-header">
           <div className="table-header-title">
             {this.props.intl.formatMessage({id: "common.total"}, {total: pagination.total})}{/* 共 total 条数据 */}

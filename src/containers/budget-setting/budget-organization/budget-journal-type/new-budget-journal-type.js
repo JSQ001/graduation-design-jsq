@@ -15,10 +15,9 @@ class NewBudgetJournalType extends React.Component {
     this.state = {
       budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail','key'),    //项目组详情的页面项
       loading: false,
+      businessTypeOptions: []
     };
   }
-
-
 
   handleSave = (e) => {
     e.preventDefault();
@@ -42,8 +41,15 @@ class NewBudgetJournalType extends React.Component {
     });
   };
 
+  componentWillMount(){
+    this.getSystemValueList(2018).then(res => {
+      this.setState({ businessTypeOptions: res.data.values })
+    })
+  }
+
   render(){
     const { getFieldDecorator } = this.props.form;
+    const { formatMessage } = this.props.intl;
     return (
       <div onSubmit={this.handleSave}>
         <h3 className="header-title">新建预算日记账类型</h3>
@@ -52,22 +58,44 @@ class NewBudgetJournalType extends React.Component {
             <Row gutter={40}>
               <Col span={8}>
                 <FormItem label="预算日记账类型代码">
-                  {getFieldDecorator("journalTypeCode")(
+                  {getFieldDecorator("journalTypeCode", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.enter'}),  //请输入
+                    }],
+                    initialValue: ''
+                  })(
                     <Input />
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem label="业务日记账类型描述">
-                  {getFieldDecorator("journalTypeName")(
+                  {getFieldDecorator("journalTypeName", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.enter'}),  //请输入
+                    }],
+                    initialValue: ''
+                  })(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
               </Col>
               <Col span={8}>
                 <FormItem label="预算业务类型">
-                  {getFieldDecorator("businessType")(
-                    <Input placeholder="请输入"/>
+                  {getFieldDecorator("businessType", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.select'}),  //请选择
+                    }],
+                    initialValue: ''
+                  })(
+                    <Select placeholder="请选择">
+                      {this.state.businessTypeOptions.map((option)=>{
+                        return <Option key={option.code}>{option.messageKey}</Option>
+                      })}
+                    </Select>
                   )}
                 </FormItem>
               </Col>
