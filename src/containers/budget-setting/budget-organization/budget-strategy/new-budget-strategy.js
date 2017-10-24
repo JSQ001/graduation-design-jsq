@@ -16,6 +16,7 @@ class NewBudgetStrategy extends React.Component {
       loading: false,
       isEnabled: true,
       budgetOrganizationDetail:  menuRoute.getRouteItem('budget-organization-detail','key'),    //预算组织详情
+      budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
     };
   }
 
@@ -24,20 +25,19 @@ class NewBudgetStrategy extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        values.organizationId = '908139656192442369';
+        values.organizationId = this.props.params.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
-          console.log(res);
           if(res.status == 200){
             this.setState({loading: false});
             message.success('操作成功');
-            this.handleCancle();
+            this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', res.data.id));
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
+          if(e.response){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e)
           }
         })
       }
@@ -45,7 +45,7 @@ class NewBudgetStrategy extends React.Component {
   };
 
   handleCancle = () => {
-    this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id) + '?tab=STRATEGY');
   };
 
   switchChange = () => {

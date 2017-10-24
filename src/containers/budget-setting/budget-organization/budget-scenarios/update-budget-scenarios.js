@@ -50,11 +50,11 @@ class UpdateBudgetScenarios extends React.Component{
             message.success('保存成功');
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e);
           }
         })
       }
