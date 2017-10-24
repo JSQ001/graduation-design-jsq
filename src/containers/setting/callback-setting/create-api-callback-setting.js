@@ -151,12 +151,51 @@ class NewBudgetRulesDetail extends React.Component{
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
+          <FormItem {...formItemLayout}
+                    label={formatMessage({id:"common.column.status"})+" :"}>
+            {getFieldDecorator('isEnabled',{
+              initialValue: defaultStatus,
+              valuePropName: 'checked'
+            })(
+              <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}
+                      onChange={(value)=>{
+                        this.setState({
+                          flag: 'y',
+                          isEnabled: value
+                        })
+                      }}
+              />
+            )}
+          </FormItem>
+          <span className="enabled-type" style={{marginLeft:15,width:100}}>{(this.state.flag === 'y'? this.state.isEnabled : defaultStatus ) ? "启用" : "禁用"}</span>
+          <FormItem {...formItemLayout} label="API_CPDE">
+            {getFieldDecorator('apiCode', {
+              rules: [{
+                required: true,
+                message: formatMessage({id:"common.please.enter"})
+              }],
+              initialValue: ruleDetail.ruleParameter
+            })(
+              <Select placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="API版本">
+            {getFieldDecorator('apiVersion', {
+              rules: [{
+                required: true,
+                message: formatMessage({id:"common.please.enter"})
+              }],
+              initialValue: "-"
+            })(
+              <Input disabled />
+            )}
+          </FormItem>
           <FormItem {...formItemLayout} label="数据格式">
             {getFieldDecorator('ruleParameterType', {
             })(
-             <div>
-               JSON
-             </div>
+              <div>
+                JSON
+              </div>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="encodingAeskey" >
@@ -172,6 +211,28 @@ class NewBudgetRulesDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="encodingToken" >
             {getFieldDecorator('encodingToken', {
+              rules: [{
+                required: true,
+                message: formatMessage({id:"common.please.enter"})
+              }],
+              initialValue: ruleDetail.ruleParameter
+            })(
+              <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="回调地址" >
+            {getFieldDecorator('systemName', {
+              rules: [{
+                required: true,
+                message: formatMessage({id:"common.please.enter"})
+              }],
+              initialValue: ruleDetail.ruleParameter
+            })(
+              <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="回调类型" >
+            {getFieldDecorator('systemName', {
               rules: [{
                 required: true,
                 message: formatMessage({id:"common.please.enter"})

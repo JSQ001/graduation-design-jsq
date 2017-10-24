@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select } from 'antd';
+import { Button, Table, Select ,Tag} from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -70,9 +70,17 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
         },
         {          /*状态*/
-          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status'
-        },
-      ],
+          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
+         render(recode){
+              switch (recode){
+                case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
+                case 'SUBMIT':{ return  <Tag color="#f50">等待</Tag>}
+                case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
+                case 'CHECKED':{return <Tag color="#87d068">通过</Tag>}
+              }
+      }
+    },
+  ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项
       budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail','key'),    //预算日记账详情
       budgetJournalDetailSubmit: menuRoute.getRouteItem('budget-journal-detail-submit','key'),
@@ -82,18 +90,9 @@ class BudgetJournal extends React.Component {
 
   componentWillMount(){
     this.getList();
-    this.getOrganization();
   }
 
-  //获取预算组织
-  getOrganization(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        organization:request.data
-      })
-    })
-  }
+
 
   //获取预算日记账数据
   getList(){
@@ -160,7 +159,8 @@ class BudgetJournal extends React.Component {
   }
 
   render(){
-    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany,organization} = this.state;
+    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany} = this.state;
+    const organization =this.props.organization;
     return (
       <div className="budget-journal">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
@@ -189,8 +189,10 @@ BudgetJournal.contextTypes ={
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.login.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournal));

@@ -172,6 +172,7 @@ class BudgetVersionsDetail extends React.Component {
   //保存新建分配公司
   versionAssignCompany=(values)=>{
     console.log(values);
+    console.log("保存新建分配公司");
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
       message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
       this.setState({

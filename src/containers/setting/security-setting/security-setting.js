@@ -86,7 +86,7 @@ class SecuritySetting extends React.Component{
         <Form onSubmit={this.handleSubmit}>
           <div className="security-setting-Rule">基础规则</div>
             <FormItem {...formItemLayout} >
-              {getFieldDecorator('passwordLengthMin')(
+              {getFieldDecorator('passwordMinLengthArr')(
                 <div className="security-setting-formItem">
                   <span className="formItem-label">密码长度：</span>
                   <InputNumber className="formItem-value" min={6} max={20} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/> 到20位
@@ -95,7 +95,7 @@ class SecuritySetting extends React.Component{
               }
             </FormItem>
             <FormItem {...formItemLayout}>
-              {getFieldDecorator('passwordLength')(
+              {getFieldDecorator('passwordRule')(
                 <div className="security-setting-formItem">
                   <span className="formItem-label-2">密码中必须包含：</span>
                   <CheckboxGroup  options={passwordRule} className="formItem-value-2" defaultValue={['digital']} />
@@ -104,7 +104,7 @@ class SecuritySetting extends React.Component{
               }
             </FormItem>
             <FormItem {...formItemLayout}>
-              {getFieldDecorator('passwordLength')(
+              {getFieldDecorator('passwordExpireDays')(
                 <div className="security-setting-formItem">
                   <span className="formItem-label">密码有效期：</span>
                   <InputNumber className="formItem-value" min={0}  max={1095}  placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/><span> 天（最多1095天，0表示永不过期，过期后不可以登录）</span>
@@ -134,7 +134,7 @@ class SecuritySetting extends React.Component{
             )}
           </FormItem>
             <FormItem {...formItemLayout}>
-            {getFieldDecorator('passwordLength')(
+            {getFieldDecorator('noticeType')(
               <div className="security-setting-formItem">
                 <span className="formItem-label-info">信息通知渠道：</span>
                 <span className="formItem-value-info">
@@ -145,7 +145,7 @@ class SecuritySetting extends React.Component{
             )}
           </FormItem>
             <FormItem {...formItemLayout}>
-            {getFieldDecorator('passwordLength')(
+            {getFieldDecorator('createDataType')(
               <div className="security-setting-formItem">
                 <span className="formItem-label-group">员工和组织架构信息创建：</span>
                 <div className="formItem-value-group-tips">为确保信息的准确性，信息的同步方式只能选择一种，切换后会覆盖相同账号的信息</div><br/>
@@ -168,6 +168,17 @@ class SecuritySetting extends React.Component{
     )
   }
 }
+
+/*
+ * noticeType：绑定类型:1001-邮箱,1002-手机,1003-手机+邮箱(目前暂时没有1002,因为邮箱是必选)
+ dimissionDelayDays：延迟离职天数
+ passwordExpireDays：密码有效期
+ passwordRule：密码规则:小写字母，大写字母，数字，特殊字符，包含为1，不包含为0
+ passwordLengthMin：密码最小长度
+ passwordLengthMax：密码最大长度
+ passwordRepeatTimes：禁止使用前几次密码
+ createDataType：1001 手工创建和excle导入 1002 接口导入
+ * */
 
 SecuritySetting.contextTypes = {
   router: React.PropTypes.object
