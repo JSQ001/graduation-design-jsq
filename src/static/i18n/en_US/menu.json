@@ -54,5 +54,7 @@
   "menu.account-period-define": "Account period define",
   "menu.budget-journal-detail-submit":"budget journal detail submit",
   "menu.budget-journal-re-check":"budget journal re-check",
-  "menu.budget-journal-re-check-detail":"budget journal re-check detail"
+  "menu.budget-journal-re-check-detail":"budget journal re-check detail",
+  "menu.agency-detail":"Agency detail"
+
 }

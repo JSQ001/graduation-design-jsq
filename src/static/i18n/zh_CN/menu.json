@@ -54,5 +54,7 @@
   "menu.account-period-define": "会计期间定义",
   "menu.budget-journal-detail-submit":"预算日记账详情",
   "menu.budget-journal-re-check":"预算日记账复核",
-  "menu.budget-journal-re-check-detail":"预算日记账复核详情"
+  "menu.budget-journal-re-check-detail":"预算日记账复核详情",
+  "menu.agency-detail":"代理详情"
+
 }
