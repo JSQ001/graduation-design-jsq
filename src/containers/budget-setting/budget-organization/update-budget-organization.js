@@ -29,13 +29,22 @@ class UpdateBudgetOrganization extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.put(`${config.budgetUrl}/api/budget/organizations`, Object.assign(this.props.params, values)).then((res)=>{
+        let params = {
+          id: this.props.params.id,
+          isEnabled: values.isEnabled,
+          organizationCode: this.props.params.organizationCode,
+          organizationName: values.organizationName,
+          tenantId: this.props.params.tenantId,
+          setOfBooksId: this.props.params.setOfBooksId,
+          versionNumber: this.props.params.versionNumber
+        };
+        httpFetch.put(`${config.budgetUrl}/api/budget/organizations`,params).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: values.organizationName}));  //保存成功
           this.props.close(true);
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`保存失败, ${e.response.data.message}`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -63,11 +72,11 @@ class UpdateBudgetOrganization extends React.Component {
         />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label={formatMessage({id: 'budget.set.of.books'})/* 账套 */}>
-            {getFieldDecorator('setOfBooksId', {
+            {getFieldDecorator('setOfBooksName', {
               rules: [{
                 required: true
               }],
-              initialValue: this.props.params.setOfBooksId
+              initialValue: this.props.params.setOfBooksName
             })(
               <Select disabled/>
             )}
