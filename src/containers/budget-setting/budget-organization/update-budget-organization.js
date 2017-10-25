@@ -7,7 +7,6 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
