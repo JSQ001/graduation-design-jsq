@@ -50,8 +50,8 @@ class NewBudgetJournalDetail extends React.Component {
         {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,},
         /*币种*/
         {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],
-          labelKey:'currencyName',valueKey:'currency',
-          url:`http://uat.huilianyi.com/api/company/standard/currency?language=chineseName&page=0&size=10`
+          labelKey:'attribute5',valueKey:'attribute4',
+          url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
         },
         /*汇率类型*/
         {type: 'value_list', id:'rateType', label:  this.props.intl.formatMessage({id:"budget.rateType"}),  options: [],valueListCode:2101},
@@ -130,9 +130,10 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'currency':{
+        console.log(event)
         event =JSON.parse(event);
         this.props.form.setFieldsValue({
-          rate:event.rate
+          rate:event.attribute11
         });
 
         return;
@@ -178,39 +179,12 @@ class NewBudgetJournalDetail extends React.Component {
     if(nextProps.params && nextProps.params!=={} )
       this.setState({ params : nextProps.params });
     else
-      this.setState({ selectedData : {} });
+      this.setState({ params : {} });
 
   };
 
 
 
-
-  search = (e) => {
-    e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    for(let id in values){
-      this.state.searchForm.map(item => {
-        if(item.id === id){
-          if(item.type === 'multiple'){
-            values[id].map(value => {
-              value.value = JSON.parse(value.key);
-              value.key = value.value[item.valueKey];
-              delete value.title;
-              return value
-            })
-          }
-          if(item.type === 'combobox'){
-            if(values[id]){
-              values[id].value = JSON.parse(values[id].key);
-              values[id].key = values[id].value[item.valueKey];
-              delete values[id].title;
-            }
-          }
-        }
-      });
-    }
-    console.log(values);
-  };
 
   clear = () => {
     this.props.form.resetFields();
@@ -249,7 +223,9 @@ class NewBudgetJournalDetail extends React.Component {
     let path = item.url;
     let organizationId ;
     if(item.id=="item"){
-      path = path+`?organizationId=${this.props.organization.id}`
+     // path = path+`?organizationId=${this.props.organization.id}`    //真实的代码
+
+      path = path+`?organizationId=1`  //暂时写死
     }
 
     url=path;
@@ -332,13 +308,7 @@ class NewBudgetJournalDetail extends React.Component {
           </Select>
         )
       }
-      //日期组件
-      case 'date':{
-        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}/>
-      }
-      case 'switch':{
-        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle} disabled={item.disabled}/>
-      }
+
 
       //数字选择InputNumber
 
@@ -346,75 +316,7 @@ class NewBudgetJournalDetail extends React.Component {
         return <InputNumber disabled={item.disabled} onChange={handle} min={0} step={item.step}/>
       }
 
-      //带搜索的选择组件
-      case 'combobox':{
-        return <Select
-          labelInValue
-          showSearch
-          allowClear
-          placeholder={item.placeholder}
-          filterOption={!item.searchUrl}
-          optionFilterProp='children'
-          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
-          disabled={item.disabled}
-        >
-          {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
-          })}
-        </Select>
-      }
-      //带搜索的多选组件
-      case 'multiple':{
-        return <Select
-          mode="multiple"
-          labelInValue
-          placeholder={item.placeholder}
-          filterOption={!item.searchUrl}
-          optionFilterProp='children'
-          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
-          disabled={item.disabled}
-        >
-          {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
-          })}
-        </Select>
-      }
-      //弹出框列表选择组件
-      case 'list':{
-        return <Chooser placeholder={item.placeholder}
-                        disabled={item.disabled}
-                        type={item.listType}
-                        labelKey={item.labelKey}
-                        valueKey={item.labelKey}
-                        listExtraParams={item.listExtraParams}
-                        selectorItem={item.selectorItem}/>
-      }
-      //同一单元格下多个表单项组件
-      case 'items':{
-        return (
-          <Row gutter={10} key={item.id}>
-            {item.items.map(searchItem => {
-              return (
-                <Col span={parseInt(24 / item.items.length)} key={searchItem.id}>
-                  <FormItem label={searchItem.label} colon={false}>
-                    {this.props.form.getFieldDecorator(searchItem.id, {
-                      initialValue: searchItem.defaultValue,
-                      rules: [{
-                        required: searchItem.isRequired,
-                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: searchItem.label}),  //name 不可为空
-                      }]
-                    })(
-                      this.renderFormItem(searchItem)
-                    )}
-                  </FormItem>
-                </Col>
-              )}
-            )}
-          </Row>
-        )
-      }
+
     }
   }
 
@@ -459,6 +361,7 @@ class NewBudgetJournalDetail extends React.Component {
       let itemId;
       let itemName;
       let periodName;
+      let unitId;
 
 
       if(value.company.indexOf(":")>1){
@@ -492,12 +395,19 @@ class NewBudgetJournalDetail extends React.Component {
         periodName=params.periodName;
       }
 
+      if(value.unitId.indexOf(":">1)){
+        let unit =JSON.parse(value.unitId);
+        unitId = unit.id;
+      }else {
+        unitId = params.unitId;
+      }
+
       // let currency =JSON.parse(value.currency);
 
       let  valueData = {
           "companyId": companyId,
           "companyName":companyName,
-          "unitId": "12232",
+          "unitId":unitId,
           "departmentCode": "department1code",
           "costCenter": "我是测试成本中心",
           "itemId": itemId,
@@ -577,12 +487,7 @@ class NewBudgetJournalDetail extends React.Component {
     })
   }
 
-  //获得预算项目
-  getItem=()=>{
-    httpFetch.get().then((req)=>{
 
-    })
-  }
 
   render(){
     return (

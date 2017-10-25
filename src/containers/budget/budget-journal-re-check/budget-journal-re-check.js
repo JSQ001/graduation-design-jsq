@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select } from 'antd';
+import { Button, Table, Select,Tag  } from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -23,7 +23,6 @@ class BudgetJournalReCheck extends React.Component {
       loading: true,
       data: [],
       params:{},
-      organization:{},
       pagination: {
         current:0,
         page:0,
@@ -90,7 +89,12 @@ class BudgetJournalReCheck extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
         },
         {          /*状态*/
-          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status'
+          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
+          render(recode){
+            switch (recode){
+
+            }
+          }
         },
       ],
 
@@ -101,18 +105,9 @@ class BudgetJournalReCheck extends React.Component {
 
   componentWillMount(){
     this.getList();
-    this.getOrganization();
   }
 
-  //获取预算组织
-  getOrganization(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-      console.log(request.data)
-      this.setState({
-        organization:request.data
-      })
-    })
-  }
+
 
   //获取预算日记账数据
   getList(){
@@ -175,7 +170,8 @@ class BudgetJournalReCheck extends React.Component {
   }
 
   render(){
-    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany,organization} = this.state;
+    const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany} = this.state;
+    const {organization} =this.props.organization;
     return (
       <div className="budget-journal">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
@@ -201,8 +197,10 @@ BudgetJournalReCheck.contextTypes ={
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.login.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalReCheck));

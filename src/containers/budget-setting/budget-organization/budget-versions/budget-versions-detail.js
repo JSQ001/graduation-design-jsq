@@ -43,7 +43,7 @@ class BudgetVersionsDetail extends React.Component {
 
         },
         {type:'date',label:this.props.intl.formatMessage({id:"budget.versionDate"}),id:'versionDate'},
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.description"}), id: 'description', message:this.props.intl.formatMessage({id:"common.please.enter"})},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionDescription"}), id: 'description', message:this.props.intl.formatMessage({id:"common.please.enter"})},
         {type: 'switch', label:this.props.intl.formatMessage({id:"budget.isEnabled"}), id: 'isEnabled'}
       ],
       pagination: {

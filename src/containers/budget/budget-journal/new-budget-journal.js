@@ -61,7 +61,7 @@ class NewBudgetJournalFrom extends React.Component {
           "employeeId":this.props.user.id,
           "employeeName":this.props.user.fullName,
           "periodNumber": "2",
-          "unitId": "12345678",
+          "unitId": "1",
           "unitName":"periodNumber",
           'versionId':value.versionName[0].id,
           'versionName':value.versionName[0].versionName,
@@ -392,7 +392,7 @@ class NewBudgetJournalFrom extends React.Component {
             label="附件"
           >
             <div className="dropbox">
-              {getFieldDecorator('dragger', {
+              {getFieldDecorator('file', {
                 valuePropName: 'fileList',
                 getValueFromEvent: this.normFile,
               })(

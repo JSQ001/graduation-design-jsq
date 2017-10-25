@@ -151,6 +151,9 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark'
         },
       ],
+
+      budgetJournalPage: menuRoute.getRouteItem('budget-journal','key'),    //预算日记账
+
     };
   }
 
@@ -194,6 +197,7 @@ class BudgetJournalDetail extends React.Component {
      })
     console.log(selectedData);
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,selectedData).then((res)=>{
+      this.getDataByBudgetJournalCode();
         message.success("删除成功");
     }).catch(e=>{
       message.error("删除失败");
@@ -203,10 +207,7 @@ class BudgetJournalDetail extends React.Component {
 
   componentWillMount(){
     //根据编制期代码拿数据
-
-    const journalCode =this.props.params.journalCode;
-
-    this.getDataByBudgetJournalCode(journalCode)
+    this.getDataByBudgetJournalCode();
 
   }
 
@@ -214,14 +215,18 @@ class BudgetJournalDetail extends React.Component {
 
 
  //根据预算日记账编码查询预算日记账头行
-  getDataByBudgetJournalCode=(budgetJournalCode)=>{
-
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((response)=>{
+  getDataByBudgetJournalCode=()=>{
+    this.setState({
+      loading:true
+    })
+    const journalCode =this.props.params.journalCode;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
     console.log(response.data)
       let listData = response.data.list;
     console.log(listData);
       let headerData =response.data.dto;
     this.setState({
+      loading:false,
       headerAndListData:response.data,
       infoDate:headerData,
       data:listData,
@@ -351,7 +356,11 @@ class BudgetJournalDetail extends React.Component {
     const id = this.state.headerAndListData.dto.id;
     console.log(id);
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/${id}`).then((req) => {
-      message.success("成功删除该预算日记账")
+      message.success("成功删除该预算日记账");
+
+      //删除完该预算日记账，跳转
+      let path=this.state.budgetJournalPage.url;
+      this.context.router.push(path);
     }).catch(e => {
       message.error("失败")
     })
@@ -365,7 +374,7 @@ class BudgetJournalDetail extends React.Component {
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
       console.log(req.data)
       message.success("成功");
-      this.getDataByBudgetJournalCode;
+      this.getDataByBudgetJournalCode();
     }).catch(e => {
       message.error("失败")
     })
@@ -382,7 +391,11 @@ class BudgetJournalDetail extends React.Component {
       httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${headerId}`).then((req) => {
         console.log(req.data)
         message.success("提交成功");
-        this.getDataByBudgetJournalCode;
+       // this.getDataByBudgetJournalCode();
+
+        let path=this.state.budgetJournalPage.url;
+        this.context.router.push(path);
+
       }).catch(e => {
         message.error("提交失败")
       })
@@ -462,7 +475,7 @@ class BudgetJournalDetail extends React.Component {
 
   render(){
 
-    const { data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut,rowSelection} = this.state;
+    const {loading, data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,showSlideFramePut,rowSelection} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-versions-detail">
@@ -489,11 +502,12 @@ class BudgetJournalDetail extends React.Component {
                  size="middle"
                  onRowClick={this.handlePutData}
                  rowSelection={rowSelection}
+                 loading={loading}
 
           />
           <div className="footer-operate">
             <Button type="primary" onClick={this.handlePut}>提交</Button>
-            <Button type="primary" onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button  type="primary"  onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
             <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
             <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
             </Popconfirm>
@@ -522,7 +536,9 @@ class BudgetJournalDetail extends React.Component {
 
 }
 
-
+BudgetJournalDetail.contextTypes ={
+  router: React.PropTypes.object
+}
 
 function mapStateToProps(state) {
   return {
