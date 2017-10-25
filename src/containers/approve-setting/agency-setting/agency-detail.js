@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Select, message, Button, Spin } from 'antd'
+import { Form, Select, message, Button, Spin, Alert } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import debounce from 'lodash.debounce'
@@ -213,8 +213,22 @@ class AgencyDetail extends React.Component {
         </FormItem>;
       saveBtn = "";
     }
+    let alertMessage;
+    console.log(principalInfo);
+    if(principalInfo.status == 1001) {
+      alertMessage = (
+        <Alert message="请注意"
+               description="员工 七木-12304 已于 2017-12-31日离职，代理关系已于该日期内自动禁用"
+               type="warning"
+               showIcon
+               style={{marginBottom:'20px'}} />
+      )
+    } else {
+      alertMessage = ""
+    }
     return (
       <div className="agency-detail">
+        {alertMessage}
         <h3 className="header-title">{formatMessage({id:'agencySetting.principal'})}</h3>{/*被代理人*/}
         <Form onSubmit={this.handleSave}>
           {principalItem}
