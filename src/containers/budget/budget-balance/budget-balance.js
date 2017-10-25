@@ -239,9 +239,10 @@ class BudgetBalance extends React.Component {
   //查询，统一保存为临时方案后跳转
   search = (e) => {
     e.preventDefault();
-    this.validate((values) => {
-      this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
-    });
+    this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
+    // this.validate((values) => {
+    //   this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
+    // });
   };
 
   //验证并打开方案保存窗口
