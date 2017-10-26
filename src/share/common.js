@@ -136,7 +136,15 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
         clearInterval(leaveInterval);
     }, duration / total)
   };
-}
+};
+
+//公用接口
+React.Component.prototype.service = {
+  //获取货币
+  getCurrencyList : () => {
+    return httpFetch.get(`${config.baseUrl}/api/standardCurrency/getCurrency?base=CNY`)
+  }
+};
 
 
 

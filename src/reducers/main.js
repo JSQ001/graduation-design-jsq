@@ -5,7 +5,7 @@ import {combineReducers} from 'redux';
 import {SET_CURRENT_PAGE, SET_LANGUAGE} from 'actions/main'
 import {cr} from 'share/utils'
 
-import zh from 'static/i18n/zh_CN'
+import zh from 'share/i18n/zh_CN'
 
 export default combineReducers({
   currentPage: cr([{name: 'Dashboard', key:'dashboard', url:'/main'}], {
