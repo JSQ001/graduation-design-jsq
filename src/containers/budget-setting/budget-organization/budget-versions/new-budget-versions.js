@@ -164,7 +164,7 @@ class NewBudgetVersions extends React.Component {
 
 
               <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label={this.props.intl.formatMessage({id:"budget.description"})}
+                <FormItem label={this.props.intl.formatMessage({id:"budget.versionDescription"})}
 
                 >
                   {getFieldDecorator('description',{
