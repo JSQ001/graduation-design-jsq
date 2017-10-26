@@ -82,6 +82,7 @@ class NewStrategyControlDetail extends React.Component{
       if (!err) {
         this.setState({loading: true});
         values.controlStrategyDetailId = this.props.params.strategyControlId;
+        values.value = Number(values.value).toFixed(4);
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
@@ -89,10 +90,9 @@ class NewStrategyControlDetail extends React.Component{
             message.success('保存成功');
           }
         }).catch((e)=>{
-          this.setState({loading: false});
           if(e.response){
             message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({ updateState: false })
+            this.setState({loading: false});
           } else {
             console.log(e)
           }
@@ -105,18 +105,21 @@ class NewStrategyControlDetail extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        this.setState({loading: true});
         values.id = this.state.updateParams.id;
         values.controlStrategyDetailId = this.props.params.strategyControlId;
-        values.versionNumber = this.state.updateParams.versionNumber;
+        values.versionNumber = this.state.updateParams.versionNumber++;
+        values.value = Number(values.value).toFixed(4);
         httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           if(res.status == 200){
+            this.setState({loading: false});
             this.props.close(true);
             message.success('保存成功');
           }
         }).catch((e)=>{
           if(e.response){
             message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({ updateState: false })
+            this.setState({ loading: false })
           } else {
             console.log(e)
           }
@@ -126,7 +129,6 @@ class NewStrategyControlDetail extends React.Component{
   };
 
   handlePeriodStrategy = (value) => {
-    console.log(value);
     const config = {
       '年度': '全年预算额',
       '年度至今': '年初至今预算额',
@@ -174,9 +176,10 @@ class NewStrategyControlDetail extends React.Component{
               }],
               initialValue: updateParams.value
             })(
-              <InputNumber formatter={value => `${value}%`}
+              <InputNumber min={0}
+                           formatter={value => `${value}%`}
                            parser={value => value.replace('%', '')}
-                           onChange={(value)=>{this.setState({ valueValue:value })}}/>
+                           onChange={value => {this.setState({ valueValue:value })}}/>
             )}
           </FormItem>
         </Col>
@@ -192,7 +195,8 @@ class NewStrategyControlDetail extends React.Component{
               }],
               initialValue: updateParams.value
             })(
-              <InputNumber onChange={(value)=>{this.setState({ valueValue:value })}}/>
+              <InputNumber min={0}
+                           onChange={(value)=>{this.setState({ valueValue:value })}}/>
             )}
           </FormItem>
         </Col>
@@ -304,7 +308,8 @@ class NewStrategyControlDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
-              <div>{objectValue} {rangeValue} {periodStrategyValue}{mannerValue == '百分比' && valueValue ? valueValue + '%' : operatorValue + valueValue}</div>
+              <div>{objectValue} {rangeValue} {periodStrategyValue}
+              {mannerValue == '百分比' && valueValue ? Number(valueValue).toFixed(4) + '%' : operatorValue + Number(valueValue).toFixed(4)}</div>
             )}
           </FormItem>
           <div className="slide-footer">
