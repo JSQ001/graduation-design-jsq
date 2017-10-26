@@ -27,5 +27,6 @@
   "common.can.not.be.empty": "{name} can't be empty",
   "common.more": "More",
   "common.fold": "Fold",
-  "common.help": "Help"
+  "common.help": "Help",
+  "common.baseInfo": "Base Info"
 }

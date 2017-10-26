@@ -17,5 +17,6 @@
   "agencySetting.application-form": "申请单",
   "agencySetting.agency-relation-intro": "选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配",
   "agencySetting.leave-info": "该员工将于 {time} 离职，离职后此代理将自动禁用",
-  "agencySetting.search.hint": "请输入姓名/工号"
+  "agencySetting.search.hint": "请输入姓名/工号",
+  "agencySetting.dimission-info": "员工 {name}-{emplyeeId} 已于 {date}日离职，代理关系已于该日期内自动禁用"
 }

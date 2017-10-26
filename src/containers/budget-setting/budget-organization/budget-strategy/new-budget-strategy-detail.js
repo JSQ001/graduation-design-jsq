@@ -23,9 +23,13 @@ class NewBudgetStrategyDetail extends React.Component {
   }
 
   componentWillMount(){
-    this.getSystemValueList(2005).then(res => {
+    this.getSystemValueList(2005).then(res => { //预算控制方法
       let controlMethodOptions = res.data.values;
       this.setState({ controlMethodOptions })
+    });
+    this.getSystemValueList(2022).then(res => { //预算控制消息
+      let messageCodeOptions = res.data.values;
+      this.setState({ messageCodeOptions })
     });
   }
 
@@ -39,15 +43,15 @@ class NewBudgetStrategyDetail extends React.Component {
           console.log(res);
           if(res.status == 200){
             this.setState({loading: false});
-            message.success('操作成功');
+            message.success(this.props.intl.formatMessage({id: 'common.create.success'},{name: ''}) /* 新建成功 */);
             this.handleCancle();
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response){
+            this.setState({loading: false});
+            message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.validationErrors[0].message}`);
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e)
           }
         })
       }
@@ -141,7 +145,7 @@ class NewBudgetStrategyDetail extends React.Component {
                   initialValue: ''
                 })(
                   <Select onChange={this.handleMethodChange} placeholder="请选择">
-                    {messageCodeOptions.map((option)=>{
+                    {messageCodeOptions && messageCodeOptions.map((option)=>{
                       return <Option key={option.id}>{option.messageKey}</Option>
                     })}
                   </Select>

@@ -86,6 +86,7 @@ Date.prototype.format = function (fmt) {
  * 2019 金额／数量
  * 2020 期间汇总标志
  * 2021 预算季度
+ * 2022 预算控制消息
  * 2101 汇率方法
  * 2102 汇率标价方法
  * 2103 银行类型
@@ -136,7 +137,15 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
         clearInterval(leaveInterval);
     }, duration / total)
   };
-}
+};
+
+//公用接口
+React.Component.prototype.service = {
+  //获取货币
+  getCurrencyList : () => {
+    return httpFetch.get(`${config.baseUrl}/api/standardCurrency/getCurrency?base=CNY`)
+  }
+};
 
 
 
