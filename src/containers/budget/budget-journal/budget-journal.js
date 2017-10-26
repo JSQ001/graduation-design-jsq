@@ -31,7 +31,7 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-        {type: 'list', id: 'journalTypeName',
+        {type: 'list', id: 'journalTypeId',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
           valueKey: 'id',
@@ -41,16 +41,8 @@ class BudgetJournal extends React.Component {
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
-        {type: 'select', id: 'periodStrategy',
-          label:  this.props.intl.formatMessage({id: 'budget.journal'})+this.props.intl.formatMessage({id: 'budget.periodStrategy'}),
-          options:
-            [
-              {value:'Y',label:this.props.intl.formatMessage({id:"budget.year"})},
-              {value:'Q',label:this.props.intl.formatMessage({id:"budget.quarter"})},
-              {value:'M',label:this.props.intl.formatMessage({id:"budget.month"})}
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
 
-            ]
-        },
       ],
 
       columns: [
@@ -132,6 +124,12 @@ class BudgetJournal extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) =>{
+    console.log(values);
+    const valueData={
+      ...values,
+      "journalTypeId":values.journalTypeId.id
+    }
+
     this.setState({
       params:values,
     },()=>{

@@ -56,9 +56,21 @@ class BudgetJournalDetail extends React.Component {
       },
       infoDate:[],
       infoList: [
+        /*状态*/
+        {type:'badge',label:this.props.intl.formatMessage({id:"budget.status"}),id:'status',status:'error'},
+        /*预算日记账编号*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        /*总金额*/
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        /*申请人*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+       /*岗位*/
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.positionId"}), id: 'positionId', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        /*创建时间*/
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
+
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'list', id: 'journalType',
           listType: 'budget_journal_type',
@@ -69,7 +81,9 @@ class BudgetJournalDetail extends React.Component {
         },
         {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
-          labelKey: 'structureName', valueKey: 'structureCode'},
+          labelKey: 'structureName', valueKey: 'structureCode'
+        },
+
 
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -90,26 +104,20 @@ class BudgetJournalDetail extends React.Component {
         {type: 'select', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
 
 
-        {type:'select',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',
-
-        },
-
-
-
-
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
 
 
       ],
 
       columns: [
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyId", dataIndex: 'companyId'
+          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyId'
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitId", dataIndex: 'unitId'
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitName", dataIndex: 'unitId'
         },
         {          /*预算项目*/
-          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemId", dataIndex: 'itemId'
+          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemId'
         },
         {          /*期间*/
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
