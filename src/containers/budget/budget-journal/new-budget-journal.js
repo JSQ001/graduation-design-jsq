@@ -121,7 +121,6 @@ class NewBudgetJournalFrom extends React.Component {
   //选择预算日记账类型，设置对应的预算表选
   handleJournalTypeChange=(values)=>{
     let value = values[0];
-    console.log(value);
     this.setState({
       idSelectJournal:true
     })
@@ -146,18 +145,13 @@ class NewBudgetJournalFrom extends React.Component {
   handleSelectChange=(values)=>{
     console.log(values);
     this.state.structureGroup.map((item)=>{
-      if(item.id=values){
+      if(item.id==values){
         this.props.form.setFieldsValue({
-        //  periodYear:item.periodYear ,
-
           periodStrategy:item.periodStrategy
-
         });
-
         this.props.form.setFieldsValue({
           periodYear:2017
         })
-
         this.props.form.setFieldsValue({
           periodQuarter:item.periodQuarter
         })

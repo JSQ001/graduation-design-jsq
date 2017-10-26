@@ -60,7 +60,7 @@ class BudgetJournalDetail extends React.Component {
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
-        {type: 'list', id: 'journalTypeName',
+        {type: 'list', id: 'journalType',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
           valueKey: 'id',
@@ -70,20 +70,6 @@ class BudgetJournalDetail extends React.Component {
         {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
           labelKey: 'structureName', valueKey: 'structureCode'},
-
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
-
-        {type:'select',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',
-          options:
-            [
-              {value:'Y',label:this.props.intl.formatMessage({id:"budget.year"})},
-              {value:'Q',label:this.props.intl.formatMessage({id:"budget.quarter"})},
-              {value:'M',label:this.props.intl.formatMessage({id:"budget.month"})}
-
-            ]
-
-        },
-
 
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -99,6 +85,17 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{'organizationId':1}
         },
+
+
+        {type: 'select', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
+
+
+        {type:'select',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',
+
+        },
+
+
+
 
 
 
@@ -225,10 +222,63 @@ class BudgetJournalDetail extends React.Component {
       let listData = response.data.list;
     console.log(listData);
       let headerData =response.data.dto;
+      console.log("!!!!!!!!!!!!!!!!!!!!");
+      console.log(headerData);
+
+      const journalType=[]
+      const journalType1={
+        "journalTypeName":headerData.journalTypeName,
+        "journalTypeId":headerData.journalTypeId,
+      }
+      journalType.push(journalType1);
+
+
+      const versionName=[]
+      const versionName1={
+        "versionName":headerData.versionName,
+        "versionId":headerData.versionId
+      }
+      versionName.push(versionName1);
+
+      const scenarioName=[]
+      const scenarioName1={
+        "scenarioName":headerData.scenarioName,
+        "scenarioId":headerData.scenarioId
+      }
+      scenarioName.push(scenarioName1);
+
+      const budgetStructure={
+        "label":headerData.structureName,
+        "key":headerData.structureId
+      }
+
+      const periodYear={
+        "label":headerData.periodYear,
+        "key":headerData.periodYear
+      }
+
+      const periodStrategy={
+        "label":headerData.periodStrategy,
+        "key":headerData.periodStrategy
+      }
+
+      const infoData={
+        ...headerData,
+        "journalType":journalType,
+        "versionName":versionName,
+        "scenarioName":scenarioName,
+        "budgetStructure":budgetStructure,
+        "periodYear":periodYear,
+        "periodStrategy":periodStrategy
+      }
+
+      console.log(infoData)
+
+
     this.setState({
       loading:false,
       headerAndListData:response.data,
-      infoDate:headerData,
+      infoDate:infoData,
       data:listData,
       pagination: {
         total:response.data.list.length ,

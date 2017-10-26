@@ -85,6 +85,7 @@ class NewBudgetJournalDetail extends React.Component {
 
   //表单的联动事件处理
   handleEvent(event,e){
+    console.log(event);
     switch (e){
       case 'company':{
         event =JSON.parse(event);
