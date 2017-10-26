@@ -103,9 +103,10 @@ class UpdateBudgetOrganization extends React.Component {
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: this.props.params.isEnabled
+              initialValue: this.props.params.isEnabled,
+              valuePropName: 'checked'
             })(
-              <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <div className="slide-footer">
