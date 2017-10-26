@@ -242,7 +242,7 @@ class BudgetJournalDetail extends React.Component {
 
       const scenarioName=[]
       const scenarioName1={
-        "scenarioName":headerData.scenarioName,
+        "scenarioName":headerData.scenario,
         "scenarioId":headerData.scenarioId
       }
       scenarioName.push(scenarioName1);
