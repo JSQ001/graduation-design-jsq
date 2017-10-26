@@ -27,5 +27,6 @@
   "common.can.not.be.empty": "{name} 不能为空",
   "common.more": "更多",
   "common.fold": "收起",
-  "common.help": "帮助提示"
+  "common.help": "帮助提示",
+  "common.baseInfo": "基本信息"
 }

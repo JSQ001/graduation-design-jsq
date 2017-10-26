@@ -68,7 +68,16 @@ class NewStrategyControlDetail extends React.Component{
         valueValue: nextProps.params.value,
         periodStrategyValue: this.handlePeriodStrategy(nextProps.params.periodStrategy)
       });
-      this.props.form.setFieldsValue(nextProps.params)
+      let params = {
+        object: nextProps.params.object,
+        range: nextProps.params.range,
+        manner: nextProps.params.manner,
+        operator: nextProps.params.operator,
+        value: nextProps.params.value,
+        periodStrategy: nextProps.params.periodStrategy
+      };
+      console.log(nextProps.params);
+      this.props.form.setFieldsValue(params)
     }
   }
 

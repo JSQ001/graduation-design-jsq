@@ -224,7 +224,6 @@ class AgencyRelation extends React.Component {
   handleEditSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
       if (!err) {
         let proxyOID;
         try {
@@ -232,7 +231,6 @@ class AgencyRelation extends React.Component {
         } catch(e) {
           proxyOID = this.state.editItem;
         }
-        console.log(proxyOID);
         let billProxyRuleDTO = {
           'enabled': values.enabled,
           'endDate': values.endDate ? values.endDate.format('YYYY-MM-DD') : null ,
@@ -246,7 +244,6 @@ class AgencyRelation extends React.Component {
           'customFormDTOs': this.state.chosenOptions[-1],
           'emplyeeId': proxyOID.emplyeeId || proxyOID.employeeID
         };
-        console.log(billProxyRuleDTO);
         let principalInfo = this.state.principalInfo;
         let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
         billProxyRuleDTOs.map((item, index) => {
@@ -330,7 +327,8 @@ class AgencyRelation extends React.Component {
   };
 
   //编辑某个代理关系，key==-1表示编辑的代理关系，key>0表示新增的代理关系
-  handleEdit = (index, isEdit, editItem) => {
+  handleEdit = (e, index, isEdit, editItem) => {
+    e.stopPropagation();
     let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
     let edit_tag = false;
     isEdit && billProxyRuleDTOs.map(item => {
@@ -499,9 +497,9 @@ class AgencyRelation extends React.Component {
         <div>
           <span className="header-principal">代理人：{item.proxyName} - {item.emplyeeId}</span>
           <span className="header-more">
-            <a onClick={() => {this.handleEdit(index, true, item)}}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
+            <a onClick={(e) => {this.handleEdit(e, index, true, item)}}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
             <span className="ant-divider"/>
-            <Dropdown overlay={menu}><a>更多 <Icon type="down"/></a></Dropdown>
+            <Dropdown overlay={menu}><a onClick={(e)=>{e.stopPropagation()}}>更多 <Icon type="down"/></a></Dropdown>
           </span>
         </div>
       );
@@ -614,7 +612,7 @@ class AgencyRelation extends React.Component {
                     htmlType="submit"
                     loading={loading}
                     style={{marginRight:'10px'}}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
-            <Button onClick={() => this.handleEdit(index, false)}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
+            <Button onClick={(e) => this.handleEdit(e, index, false)}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
           </FormItem>
         </Form>
       );
