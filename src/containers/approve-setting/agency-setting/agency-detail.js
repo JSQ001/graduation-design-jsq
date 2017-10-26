@@ -11,6 +11,8 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 import AgencyRelation from 'containers/approve-setting/agency-setting/agency-relation'
 
+import moment from 'moment';
+
 import 'styles/approve-setting/agency-setting/agency-detail.scss'
 
 class AgencyDetail extends React.Component {
@@ -214,14 +216,14 @@ class AgencyDetail extends React.Component {
       saveBtn = "";
     }
     let alertMessage;
-    console.log(principalInfo);
-    if(principalInfo.status == 1001) {
+    if(principalInfo.status == 1002) {
       alertMessage = (
         <Alert message="请注意"
-               description="员工 七木-12304 已于 2017-12-31日离职，代理关系已于该日期内自动禁用"
+               description={formatMessage({id: 'agencySetting.dimission-info'},
+                 {name: principalInfo.userName, emplyeeId: principalInfo.emplyeeId, date: moment(principalInfo.leavingDate).format("YYYY-MM-DD")})}
                type="warning"
                showIcon
-               style={{marginBottom:'20px'}} />
+               style={{marginBottom:'20px'}}/>
       )
     } else {
       alertMessage = ""

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Form, Card, Row, Col, Badge } from 'antd'
+import { injectIntl } from 'react-intl';
 
 import SearchArea from 'components/search-area'
 import moment from 'moment'
@@ -19,7 +20,7 @@ class BasicInfo extends React.Component{
     super(props);
     this.state = {
       infoList: [],
-      params: {},
+      infoData: {},
       cardShow: true,
     };
   }
@@ -29,32 +30,82 @@ class BasicInfo extends React.Component{
   };
 
   componentWillReceiveProps(nextProps){
-    this.setState({ params: nextProps.infoData });
+    this.setState({ infoData: nextProps.infoData });
     if(nextProps.updateState) {
       this.handelCancel();
     }
   }
+
   //点击 "编辑"
   editInfo = () => {
-    this.setState({ cardShow: false })
+    this.setState({ cardShow: false }, () => {
+      let values = {};
+      this.state.infoList.map(item => {
+        if (item.type == 'list') {  //设置编辑时 type==list 的默认值
+          values[item.id] = [];
+          this.state.infoData[item.id].map(list => {
+            let value_obj = {};
+            value_obj[item.labelKey] = list[item.labelKey];
+            value_obj[item.valueKey] = list[item.valueKey];
+            values[item.id].push(value_obj);
+          });
+        }
+      });
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
+    })
   };
+
   //渲染基本信息显示页
   renderGetInfo(item) {
     if (item.type == 'switch') {
-      return <Badge status={this.state.params[item.id] ? 'success' : 'error'} text={this.state.params[item.id] ? '启用' : '禁用'} />;
-    } else {
+      return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} />;
+    } else if (item.type == 'select') {
       item.options && item.options.map((option)=>{  //有options选项时显示label值
-        if(this.state.params[item.id] == option.value) {
-          this.state.params[item.id] = option.label;
+        if(this.state.infoData[item.id] == option.value) {
+          this.state.infoData[item.id] = option.label;
         }
       });
-      return <div style={{wordWrap:'break-word'}}>{this.state.params[item.id]}</div>;
+      return item.defaultValue && <div style={{wordWrap:'break-word'}}>{item.defaultValue.label || '-'}</div>;
+    } else if (item.type == 'list') {
+      if(!item.defaultValue) return;
+      let returnRender;
+      let returnList = [];
+      if (item.defaultValue.length <= 5) {
+        item.defaultValue.map(list => {
+          returnList.push(list[item.labelKey])
+        });
+        returnRender = <div style={{wordWrap:'break-word'}}>{returnList.join() || '-'}</div>
+      } else {
+        returnRender =
+          <div style={{wordWrap:'break-word'}}>
+            {this.props.intl.formatMessage({id: 'common.total.selected'}, {total: item.defaultValue.length}) /* 已选 {total} 条 */}
+          </div>
+      }
+      return returnRender;
+    } else {
+      return <div style={{wordWrap:'break-word'}}>{this.state.infoData[item.id] || '-'}</div>;
     }
   }
+
   getInfos() {
     let children = [];
     let rows = [];
     this.props.infoList.map((item, index)=>{
+      //获取默认值，用于search-area组件
+      item.defaultValue = this.state.infoData[item.id];
+
+      //规则定义的有效时间
+      if(item.items){
+        item.items.map((index)=>{
+          index.defaultValue = moment( this.state.infoData[index.id], 'YYYY-MM-DD');
+        });
+      }
+
+      //格式化日期的默认值
+      if(item.type == 'date') {
+        item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
+      }
+
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
           <div style={{color: '#989898'}}>{item.label}</div>
@@ -76,20 +127,6 @@ class BasicInfo extends React.Component{
           </Row>
         );
       }
-      //获取默认值，用于search-area组件
-      item.defaultValue = this.state.params[item.id];
-
-      //规则定义的有效时间
-      if(item.items){
-        item.items.map((index)=>{
-          index.defaultValue = moment( this.state.params[index.id], 'YYYY-MM-DD');
-        });
-      }
-
-      //格式化日期的默认值
-      if(item.type == 'date') {
-        item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
-      }
     });
     return rows;
   }
@@ -104,15 +141,15 @@ class BasicInfo extends React.Component{
 
   handelEvent=(event,e)=>{
     this.props.eventHandle(event,e);
-  }
+  };
 
   render() {
     const { cardShow, infoList } = this.state;
     let domRender;
     if(cardShow) {
       domRender = (
-        <Card title="基本信息"
-              extra={<a onClick={this.editInfo}>编辑</a>}
+        <Card title={this.props.intl.formatMessage({id: 'common.baseInfo'}) /* 基本信息 */}
+              extra={<a onClick={this.editInfo}>{this.props.intl.formatMessage({id: 'common.edit'}) /* 编辑 */}</a>}
               noHovering >
           <Row>{this.getInfos()}</Row>
         </Card>
@@ -123,7 +160,9 @@ class BasicInfo extends React.Component{
                     submitHandle={this.handleUpdate}
                     clearHandle={this.handelCancel}
                     eventHandle={this.handelEvent}
-                    okText="保存" clearText="取消"/>
+                    wrappedComponentRef={(inst) => this.formRef = inst}
+                    okText={this.props.intl.formatMessage({id: 'common.save'}) /* 保存 */}
+                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */} />
       )
     }
     return (
@@ -146,6 +185,6 @@ BasicInfo.defaultProps={
   eventHandle:()=>{}
 }
 
-const WrappedBasicInfo= Form.create()(BasicInfo);
+const WrappedBasicInfo= Form.create()(injectIntl(BasicInfo));
 
 export default WrappedBasicInfo;
