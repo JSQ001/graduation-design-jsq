@@ -74,9 +74,12 @@ class BudgetJournal extends React.Component {
          render(recode){
               switch (recode){
                 case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
-                case 'SUBMIT':{ return  <Tag color="#f50">等待</Tag>}
+                case 'SUBMIT':{ return  <Tag color="#f50">提交</Tag>}
                 case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
-                case 'CHECKED':{return <Tag color="#87d068">通过</Tag>}
+                case 'CHECKED':{return <Tag color="#234234">审核</Tag>}
+                case 'POSTED':{return <Tag color="#87d068">复核</Tag>}
+                case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
+                case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
               }
       }
     },
