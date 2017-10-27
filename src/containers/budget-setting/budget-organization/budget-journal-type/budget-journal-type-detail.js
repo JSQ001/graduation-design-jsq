@@ -109,37 +109,10 @@ class BudgetJournalTypeDetail extends React.Component {
     });
     this.getList(this.state.nowStatus);
     if(this.props.organization.id){
-      httpFetch.get(`${config.budgetUrl}/api/budget/structures/queryAllStructure?organizationId=${this.props.organization.id}`).then(response => {
-        let tabsData = this.state.tabsData;
-        let options = [];
-        if(response.data.length && response.data.length > 0){
-          response.data.map(item => {
-            options.push({
-              value: item.structureCode,
-              label: item.structureCode
-            })
-          })
-        }
-        tabsData['STRUCTURE'].selectorItem.searchForm[2].options = options;
-        tabsData['STRUCTURE'].selectorItem.searchForm[3].options = options;
-        this.setState({ tabsData })
-      });
-
-      httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`).then(response => {
-        let tabsData = this.state.tabsData;
-        let options = [];
-        if(response.data.length && response.data.length > 0){
-          response.data.map(item => {
-            options.push({
-              value: item.itemCode,
-              label: item.itemCode
-            })
-          })
-        }
-        tabsData['ITEM'].selectorItem.searchForm[2].options = options;
-        tabsData['ITEM'].selectorItem.searchForm[3].options = options;
-        this.setState({ tabsData })
-      })
+      let tabsData = this.state.tabsData;
+      tabsData['ITEM'].selectorItem.searchForm[2].getParams = tabsData['ITEM'].selectorItem.searchForm[3].getParams = { organizationId: this.props.organization.id };
+      tabsData['STRUCTURE'].selectorItem.searchForm[2].getParams = tabsData['STRUCTURE'].selectorItem.searchForm[3].getParams = { organizationId: this.props.organization.id };
+      this.setState({ tabsData });
     }
   }
 

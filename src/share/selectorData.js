@@ -17,7 +17,7 @@ const selectorData = {
     key: 'userOID'
   },
   'budget_journal_structure': {
-    title: '选择预算表',
+    title: '选择预算日记账所需的预算表',
     url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructure`,
     searchForm: [
       {type: 'input', id: 'structureCode', label: '预算表代码'},
@@ -32,7 +32,7 @@ const selectorData = {
     key: 'structureCode'
   },
   'budget_journal_item': {
-    title: '选择预算项目',
+    title: '选择预算日记账所需的预算项目',
     url: `${config.budgetUrl}/api/budget/journal/type/assign/items/queryItem`,
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
@@ -45,6 +45,20 @@ const selectorData = {
       {title: '预算项目描述', dataIndex: 'itemName', width: '55%'}
     ],
     key: 'itemCode'
+  },
+  'budget_item': {
+    title: '选择预算项目',
+    url: `${config.budgetUrl}/api/budget/items/query`,
+    searchForm: [
+      {type: 'input', id: 'itemCode', label: '预算项目代码'},
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
+    ],
+    columns: [
+      {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
+      {title: '预算项目描述', dataIndex: 'itemName', width: '55%'}
+    ],
+    key: 'id'
   },
   'company': {
     title: '添加公司',
@@ -178,6 +192,16 @@ const selectorData = {
       {title: '预算项目名称', dataIndex: 'itemName'},
     ],
     key: 'id'
+  },
+  'currency': {
+    title: "币种",
+    url: `${config.baseUrl}/api/company/standard/currency`,
+    searchForm: [],
+    columns: [
+      {title: '币种名', dataIndex: 'currencyName'},
+      {title: '代码', dataIndex: 'currency'},
+      {title: '生效汇率', dataIndex: 'rate'}
+    ]
   }
 
 };

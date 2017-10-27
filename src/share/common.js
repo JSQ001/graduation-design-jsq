@@ -145,6 +145,10 @@ React.Component.prototype.service = {
   //获取货币
   getCurrencyList : () => {
     return httpFetch.get(`${config.baseUrl}/api/standardCurrency/getCurrency?base=CNY`)
+  },
+  //获取部门组
+  getDepartmentGroup: () => {
+    return httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectByInput`)
   }
 };
 
