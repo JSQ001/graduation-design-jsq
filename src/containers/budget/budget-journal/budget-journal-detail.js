@@ -55,61 +55,54 @@ class BudgetJournalDetail extends React.Component {
         onSelectAll: this.onSelectAll
       },
       infoDate:[],
-      infoList: [
-        /*状态*/
-        {type:'badge',label:this.props.intl.formatMessage({id:"budget.status"}),id:'status',status:'error'},
+      infoList:[
         /*预算日记账编号*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         /*总金额*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         /*申请人*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
-       /*岗位*/
+        /*岗位*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.positionId"}), id: 'positionId', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         /*创建时间*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
-
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.organization"}), id: 'organizationName', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
-
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyId', message:this.props.intl.formatMessage({id:"common.please.enter"}),disabled: true},
+        /*预算日记账类型*/
         {type: 'list', id: 'journalType',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
-          valueKey: 'id',
-          label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{'organizationId':1}
+          valueKey: 'journalTypeId',
+          label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),
+          listExtraParams:{organizationId:1},
+          disabled: true
         },
         {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
-          labelKey: 'structureName', valueKey: 'structureCode'
-        },
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:1},
+          labelKey: 'structureName', valueKey: 'id'},
 
-
+        /*预算版本*/
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
           labelKey: 'versionName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.version'}),  /*预算版本*/
-          listExtraParams:{'organizationId':1}
+          listExtraParams:{organizationId:1}
         },
+        /*预算场景*/
         {type: 'list', id: 'scenarioName',
           listType: 'budget_scenarios',
           labelKey: 'scenarioName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
-          listExtraParams:{'organizationId':1}
+          listExtraParams:{organizationId:1}
         },
-
-
-        {type: 'select', label: this.props.intl.formatMessage({id:"budget.periodYear"}), id: 'periodYear', message:this.props.intl.formatMessage({id:"common.please.enter"})}, /*预算年度*/
-
-
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002, disabled: true},
 
 
       ],
 
       columns: [
+
+
         {          /*公司*/
           title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyId'
         },
@@ -244,14 +237,14 @@ class BudgetJournalDetail extends React.Component {
       const versionName=[]
       const versionName1={
         "versionName":headerData.versionName,
-        "versionId":headerData.versionId
+        "id":headerData.versionId
       }
       versionName.push(versionName1);
 
       const scenarioName=[]
       const scenarioName1={
         "scenarioName":headerData.scenario,
-        "scenarioId":headerData.scenarioId
+        "id":headerData.scenarioId
       }
       scenarioName.push(scenarioName1);
 
@@ -260,15 +253,29 @@ class BudgetJournalDetail extends React.Component {
         "key":headerData.structureId
       }
 
+
       const periodYear={
         "label":headerData.periodYear,
         "key":headerData.periodYear
       }
 
-      const periodStrategy={
+     /* const periodStrategy={
         "label":headerData.periodStrategy,
         "key":headerData.periodStrategy
       }
+*/
+      const periodStrategy={
+        "label":"年",
+        "key":"YEAR"
+      }
+
+      const file={
+        "fileName": "捕获.PNG",
+        "fileType": "IMAGE",
+        "fileURL": "https://huilianyi-uat.oss-cn-shanghai.aliyuncs.com/e4b4a421-0355-4449-a610-26ff99322ab1/pdf/%E6%8D%95%E8%8E%B7.PNG?Expires=1509020077&OSSAccessKeyId=zmKqYB24JQrTqfiH&Signature=M%2BhSLTAjdrEtfgn%2Fe9GosXSyFGQ%3D",
+      }
+      const fileData =[];
+      fileData.push(file);
 
       const infoData={
         ...headerData,
@@ -277,7 +284,7 @@ class BudgetJournalDetail extends React.Component {
         "scenarioName":scenarioName,
         "budgetStructure":budgetStructure,
         "periodYear":periodYear,
-        "periodStrategy":periodStrategy
+        "file":fileData,
       }
 
       console.log(infoData)

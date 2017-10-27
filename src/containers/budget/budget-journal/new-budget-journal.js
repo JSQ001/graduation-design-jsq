@@ -44,7 +44,7 @@ class NewBudgetJournalFrom extends React.Component {
     const data =value;
     console.log(value);
 
-
+    console.log(this.props.user);
 
     let userData ={
       "dto" :
@@ -74,6 +74,7 @@ class NewBudgetJournalFrom extends React.Component {
           "status":"NEW",
           "journalTypeId":value.journalTypeName[0].journalTypeId,
           "journalTypeName":value.journalTypeName[0].journalTypeName,
+          "periodStrategy":value.periodStrategy,
           "versionNumber":"1",
           "attachmentOID":'',
         }
@@ -94,6 +95,7 @@ class NewBudgetJournalFrom extends React.Component {
   //获取编制期段
   getPeriodStrategy=()=>{
     this.getSystemValueList(2002).then((response)=>{
+      console.log(response.data);
       let periodStrategy = [];
       response.data.values.map((item)=>{
         let option = {
@@ -298,7 +300,11 @@ class NewBudgetJournalFrom extends React.Component {
       name: 'file',
       multiple: true,
       showUploadList: false,
-      action: '//jsonplaceholder.typicode.com/posts/',
+      action:`${config.baseUrl}/api/upload/attachment`,
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
+      },
       onChange(info) {
         const status = info.file.status;
         if (status !== 'uploading') {
@@ -516,7 +522,9 @@ class NewBudgetJournalFrom extends React.Component {
               })(
 
 
-                <Upload.Dragger name="files" action="http://139.224.220.217:11013/api/upload/attachment">
+                <Upload.Dragger  {...props}
+
+                >
                   <p className="ant-upload-drag-icon">
                     <Icon type="cloud-upload-o" />
                   </p>

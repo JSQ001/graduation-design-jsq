@@ -31,13 +31,11 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-        {type: 'list', id: 'journalTypeId',
-          listType: 'budget_journal_type',
-          labelKey: 'journalTypeName',
-          valueKey: 'id',
-          label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{organizationId:1}
-        },
+
+        {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:1},
+          labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
+
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
