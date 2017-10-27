@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { injectIntl } from 'react-intl';
 
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
@@ -49,7 +50,7 @@ class NewBudgetStrategyDetail extends React.Component {
         }).catch((e)=>{
           if(e.response){
             this.setState({loading: false});
-            message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.message}`);
           } else {
             console.log(e)
           }
@@ -146,7 +147,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 })(
                   <Select onChange={this.handleMethodChange} placeholder="请选择">
                     {messageCodeOptions && messageCodeOptions.map((option)=>{
-                      return <Option key={option.id}>{option.messageKey}</Option>
+                      return <Option key={option.messageKey}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
@@ -186,5 +187,5 @@ function mapStateToProps(state) {
 
 const WrappedNewBudgetStrategyDetail = Form.create()(NewBudgetStrategyDetail);
 
-export default connect(mapStateToProps)(WrappedNewBudgetStrategyDetail);
+export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetStrategyDetail));
 

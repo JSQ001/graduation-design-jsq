@@ -36,14 +36,14 @@ class UpdateBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.organizationId = this.state.params.organizationId;
-        values.id = this.state.params.id;
-        values.versionNumber = this.state.params.versionNumber++;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);
         if (values.defaultFlag && !values.isEnabled) {
           message.error('默认预算场景的状态必须为启用');
           return;
         }
+        values.organizationId = this.state.params.organizationId;
+        values.id = this.state.params.id;
+        values.versionNumber = this.state.params.versionNumber++;
         this.setState({loading: true});
         httpFetch.put(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           this.setState({loading: false});
