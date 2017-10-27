@@ -22,7 +22,6 @@ class AgencyRelation extends React.Component {
       data: [],
       statusValue: {'0': formatMessage({id:'common.enabled'})}, //启用
       uuid: 0,
-      keys: [],
       billOptions: {},    //代理单据选项
       chosenOptions: {},  //选中的代理单据选项
       chosenOptions1OIDs: {}, //选中的报销单选项ID
@@ -130,11 +129,24 @@ class AgencyRelation extends React.Component {
     this.setState((prevState) => {
       uuid: prevState.uuid++
     },()=>{
-      const { form } = this.props;
-      const keys = form.getFieldValue('keys');
-      const nextKeys = keys.concat(this.state.uuid);
-      form.setFieldsValue({
-        keys: nextKeys,
+      this.setState({
+        startAgencyDate: moment().locale('zh-cn').utcOffset(8),
+        endAgencyDate: null
+      },() =>{
+        const { form } = this.props;
+        const keys = form.getFieldValue('keys');
+        let edit_tag = false;
+        this.state.billProxyRuleDTOs.map(item => {
+          if (item.isEdit || keys.length > 0) edit_tag = true
+        });
+        if(edit_tag) {
+          message.warning('你有一个编辑中的代理关系未保存');
+          return;
+        }
+        const nextKeys = keys.concat(this.state.uuid);
+        form.setFieldsValue({
+          keys: nextKeys,
+        });
       });
     });
   };
@@ -198,7 +210,7 @@ class AgencyRelation extends React.Component {
 
         let proxyOID = JSON.parse(values[`proxyOID-${key}`]);
         let billProxyRuleDTO = {
-          'enabled': values[`enabled-${key}`],
+          'enabled': (values[`endDate-${key}`] && (new Date(values[`endDate-${key}`]) < new Date())) ? false : values[`enabled-${key}`],
           'endDate': values[`endDate-${key}`] ? values[`endDate-${key}`].format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
           'proxyName': proxyOID.fullName,
@@ -214,6 +226,12 @@ class AgencyRelation extends React.Component {
         let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
         billProxyRuleDTOs.push(billProxyRuleDTO);
         principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
+        principalInfo.enabled = false;
+        billProxyRuleDTOs.map(item => {
+          if(item.enabled) {
+            principalInfo.enabled = true;
+          }
+        });
         this.setState({ loading: true });
         this.handleSave(principalInfo, key);
       }
@@ -232,7 +250,7 @@ class AgencyRelation extends React.Component {
           proxyOID = this.state.editItem;
         }
         let billProxyRuleDTO = {
-          'enabled': values.enabled,
+          'enabled': (values.endDate && (new Date(values.endDate) < new Date())) ? false : values.enabled,
           'endDate': values.endDate ? values.endDate.format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
           'proxyName': proxyOID.fullName || proxyOID.proxyName,
@@ -246,9 +264,13 @@ class AgencyRelation extends React.Component {
         };
         let principalInfo = this.state.principalInfo;
         let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
+        principalInfo.enabled = false;
         billProxyRuleDTOs.map((item, index) => {
           if (item.ruleOID == billProxyRuleDTO.ruleOID) {
             billProxyRuleDTOs[index] = billProxyRuleDTO
+          }
+          if(item.enabled) {
+            principalInfo.enabled = true;
           }
         });
         principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
@@ -333,11 +355,13 @@ class AgencyRelation extends React.Component {
     let edit_tag = false;
     isEdit && billProxyRuleDTOs.map(item => {
       if(item.isEdit) {
-        message.warning('你有一个编辑中的代理关系未保存');
         edit_tag = true;
       }
     });
-    if(edit_tag) return;
+    if(edit_tag || this.props.form.getFieldValue('keys').length > 0) {
+      message.warning('你有一个编辑中的代理关系未保存');
+      return;
+    }
     let statusValue = this.state.statusValue;
     statusValue[-1] = undefined;
 
@@ -363,6 +387,11 @@ class AgencyRelation extends React.Component {
         this.setState({ billOptions })
       });
     }
+
+    this.setState({
+      startAgencyDate: moment().locale('zh-cn').utcOffset(8),
+      endAgencyDate: null
+    });
 
     billProxyRuleDTOs[index].isEdit = isEdit;
     let chosenOptions = this.state.chosenOptions;
@@ -503,24 +532,43 @@ class AgencyRelation extends React.Component {
           </span>
         </div>
       );
+      let alertEndDateMessage;
+      let alertLeavingDateMessage;
+      if(item.proxyTimeRange == 102 && new Date(item.endDate) < new Date()) {  //proxyTimeRange:102 自定义结束时间
+        item.enabled = false;
+        alertEndDateMessage = (
+          <Alert message={`该代理关系在 ${moment(item.endDate).format("YYYY-MM-DD")}号 失效`}
+                 type="warning" showIcon
+                 style={{marginTop:'3px'}} />)
+      }
+      if(item.status == 1003) { //status:1003 已离职
+        alertLeavingDateMessage = (
+          <Alert message={`员工 ${item.proxyName}-${item.emplyeeId} 已于 ${moment(item.leavingDate).format("YYYY-MM-DD")}日离职，该代理关系已于该日期内自动禁用`}
+                 type="warning" showIcon
+                 style={{marginTop:'3px'}} />)
+      }
       const panelItem = (
-        <Collapse bordered={false} key={index}>
-          <Panel header={panelHeader} style={customPanelStyle}>
-            <div>
-              <Row style={{marginBottom:'10px'}}>
-                代理单据：{item.customFormDTOs.map((bill, index) => {
-                return index < item.customFormDTOs.length-1 ? bill.formName + '，' : bill.formName
-              })}
-              </Row>
-              <Row>
-                <Col span={8}>代理日期：
-                  {moment(item.startDate).format("YYYY-MM-DD")} 至 {item.proxyTimeRange == 102 ? moment(item.endDate).format("YYYY-MM-DD") : '无限制'}
-                </Col>
-                <Col span={8}>状态：<Badge status={item.enabled ? 'success': 'error'} text={item.enabled ? '启用' : '禁用'} /></Col>
-              </Row>
-            </div>
-          </Panel>
-        </Collapse>
+        <div key={index}>
+          <Collapse bordered={false} key={index}>
+            <Panel header={panelHeader} style={customPanelStyle}>
+              <div>
+                <Row style={{marginBottom:'10px'}}>
+                  代理单据：{item.customFormDTOs.map((bill, index) => {
+                  return index < item.customFormDTOs.length-1 ? bill.formName + '，' : bill.formName
+                })}
+                </Row>
+                <Row>
+                  <Col span={8}>代理日期：
+                    {moment(item.startDate).format("YYYY-MM-DD")} 至 {item.proxyTimeRange == 102 ? moment(item.endDate).format("YYYY-MM-DD") : '无限制'}
+                  </Col>
+                  <Col span={8}>状态：<Badge status={item.enabled ? 'success': 'error'} text={item.enabled ? '启用' : '禁用'} /></Col>
+                </Row>
+              </div>
+            </Panel>
+          </Collapse>
+          {alertEndDateMessage}
+          {alertLeavingDateMessage}
+        </div>
       );
       const editItem = (
         <Form className="relation-form" onSubmit={(e) => {this.handleEditSubmit(e)}} key={index}>
