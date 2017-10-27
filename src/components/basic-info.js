@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Card, Row, Col, Badge } from 'antd'
+import { Form, Card, Row, Col, Badge, Icon } from 'antd'
 import { injectIntl } from 'react-intl';
 
 import SearchArea from 'components/search-area'
@@ -41,14 +41,8 @@ class BasicInfo extends React.Component{
     this.setState({ cardShow: false }, () => {
       let values = {};
       this.state.infoList.map(item => {
-        if (item.type == 'list') {  //设置编辑时 type==list 的默认值
-          values[item.id] = [];
-          this.state.infoData[item.id].map(list => {
-            let value_obj = {};
-            value_obj[item.labelKey] = list[item.labelKey];
-            value_obj[item.valueKey] = list[item.valueKey];
-            values[item.id].push(value_obj);
-          });
+        if (item.type != 'badge' && item.type != 'file') {
+          values[item.id] = this.state.infoData[item.id]
         }
       });
       this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
@@ -58,7 +52,7 @@ class BasicInfo extends React.Component{
   //渲染基本信息显示页
   renderGetInfo(item) {
     if (item.type == 'switch') {
-      return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} />;
+      return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} text={this.state.infoData[item.id] ? '启用' : '禁用'} />;
     } else if (item.type == 'select') {
       console.log(item.options)
       item.options && item.options.map((option)=>{  //有options选项时显示label值
@@ -83,6 +77,14 @@ class BasicInfo extends React.Component{
           </div>
       }
       return returnRender;
+    } else if (item.type == 'badge') {  //状态
+      return this.state.infoData[item.id] ? <Badge status={this.state.infoData[item.id].status} text={this.state.infoData[item.id].value} /> : '-';
+    } else if (item.type == 'file') {   //附件
+      let file_arr = [];
+      this.state.infoData[item.id] && this.state.infoData[item.id].map(link => {
+        file_arr.push(<div><a src={link.fileURL}><Icon type="paper-clip" /> {link.fileName}</a></div>)
+      });
+      return file_arr.length > 0 ? file_arr : '-';
     } else {
       return <div style={{wordWrap:'break-word'}}>{this.state.infoData[item.id] || '-'}</div>;
     }

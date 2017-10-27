@@ -10,6 +10,7 @@ import Chooser from 'components/chooser'
 import SlideFrame from 'components/slide-frame'
 import BudgetBalanceCondition from 'containers/budget/budget-balance/budget-balance-condition'
 import menuRoute from 'share/menuRoute'
+import selectorData from 'share/selectorData'
 
 import 'styles/budget/budget-balance/budget-balance.scss'
 import httpFetch from 'share/httpFetch'
@@ -107,6 +108,11 @@ class BudgetBalance extends React.Component {
       ]},
       {type: 'value_list', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: [], valueListCode: 2019}
     ];
+
+    let itemSelectorItem = selectorData['budget_item'];
+    itemSelectorItem.listExtraParams = organizationIdParams;
+    itemSelectorItem.searchForm[1].getParams = itemSelectorItem.searchForm[2].getParams = organizationIdParams;
+
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
         listType: 'budget_item_type',
@@ -124,8 +130,22 @@ class BudgetBalance extends React.Component {
         listExtraParams: organizationIdParams,
         selectorItem: undefined
       },
-      'BUDGET_ITEM': {},
-      'CURRENCY': {},
+      'BUDGET_ITEM': {
+        listType: 'budget_item',
+        labelKey: 'itemName',
+        valueKey: 'id',
+        codeKey: 'itemCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: itemSelectorItem
+      },
+      'CURRENCY': {
+        listType: 'currency',
+        labelKey: 'currencyName',
+        valueKey: 'companyCurrencyOID',
+        codeKey: 'currency',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
 
       'COMPANY': {},
       'COMPANY_GROUP': {},
