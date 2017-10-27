@@ -84,6 +84,7 @@ class NewBudgetRulesDetail extends React.Component{
   getValueList(code, name){
     name.splice(0,name.length)
     this.getSystemValueList(code).then((response)=>{
+      console.log(response)
       response.data.values.map((item)=>{
         let option = {
           key: item.code,
@@ -211,6 +212,7 @@ class NewBudgetRulesDetail extends React.Component{
               },
                 {
                   validator: (item,value,callback)=>{
+                    console.log(value)
                     if(typeof value != 'undefined'){
                       this.setState({
                         loading: false
@@ -222,15 +224,16 @@ class NewBudgetRulesDetail extends React.Component{
                         ruleParamsHelp: null,
                       });
                     }
-
                     //规则参数类型修改后，规则参数，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"ruleParameter":"","parameterLowerLimit":"","parameterUpperLimit":""});
+                    this.props.form.setFieldsValue({"ruleParameter":""});
+                    //this.props.form.resetFields("parameterLowerLimit");
                     let ruleParameterCode;
                     switch (value){
                       case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET; break;
                       case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;break;
                       case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;break
                     }
+                    console.log(ruleParameterCode)
                     this.getValueList(ruleParameterCode,ruleParamsArray);
                     callback();
                   }
@@ -255,6 +258,7 @@ class NewBudgetRulesDetail extends React.Component{
               },
                 {
                   validator: (item,value,callback)=>{
+                    console.log(value)
                     this.setState({
                       ruleParamsStatus: typeof value === 'undefined' ? "error" : "",
                       ruleParamsHelp: typeof value === 'undefined' ?  "请选择"  : "",
@@ -351,12 +355,10 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator:(item,value,callback)=>{
                     if(typeof value !== 'undefined'){
+                      let ruleParam = this.state.ruleParam;
+                      ruleParam.lowerValue = value;
                       this.setState({
-                        ruleParam:{
-                          type: this.state.ruleParam.type,
-                          name: this.state.ruleParam.name,
-                          lowerValue: value,
-                        }
+                        ruleParam
                       })
                     }
                     callback();
@@ -385,13 +387,10 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator:(item,value,callback)=>{
                     if(typeof value !== 'undefined'){
+                      let ruleParam = this.state.ruleParam;
+                      ruleParam.upperValue = value;
                       this.setState({
-                        ruleParam:{
-                          type: this.state.ruleParam.type,
-                          name: this.state.ruleParam.name,
-                          lowerValue: this.state.ruleParam.lowerValue,
-                          upperValue: value,
-                        }
+                        ruleParam
                       })
                     }
                     callback();
