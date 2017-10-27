@@ -1,11 +1,3 @@
-const en_US = {
-  "budget.structure":"Budget structure",
-  "budget.structureCode": "Budget structure code",
-  "budget.structureName": "Budget structure name",
-  "periodStrategy":"Period strategy",
-  "budget.structureDescription": "Budget structure description"
-};
-
 import common from 'static/i18n/en_US/common.json'
 import menu from 'static/i18n/en_US/menu.json'
 import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
@@ -15,7 +7,7 @@ import budgetItem from 'static/i18n/en_US/budget-setting/budget-organization/bud
 import budgetControlRules from 'static/i18n/en_US/budget-setting/budget-organization/budget-control-rules.json'
 import payWorkbench from 'static/i18n/en_US/pay/pay-workbench.json'
 import budgetVersion from 'static/i18n/en_US/budget-setting/budget-organization/budget-version.json'
-import budgetItemType from  'static/i18n/en_US/budget-setting/budget-organization/budget-item-type.json'
+import budgetItemType from 'static/i18n/en_US/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/en_US/budget-journal/budget-journal.json'
 import bankDefinition from 'static/i18n/en_US/pay/bank-definition.json'
 import agencySetting from 'static/i18n/en_US/approve-setting/agency-setting.json'

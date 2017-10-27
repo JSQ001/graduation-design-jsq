@@ -19,7 +19,6 @@ class UpdateBudgetScenarios extends React.Component{
   }
 
   componentWillMount(){
-    console.log(this.props.params);
     this.setState({
       params: this.props.params,
       isEnabled: this.props.params.isEnabled
@@ -27,8 +26,7 @@ class UpdateBudgetScenarios extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.params);
-    this.setState({
+    !this.state.params && this.setState({
       params: nextProps.params,
       isEnabled: nextProps.params.isEnabled
     })
@@ -38,11 +36,15 @@ class UpdateBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading: true});
         values.organizationId = this.state.params.organizationId;
         values.id = this.state.params.id;
-        values.versionNumber = this.state.params.versionNumber;
+        values.versionNumber = this.state.params.versionNumber++;
         values.defaultFlag = (values.defaultFlag == null ? false : values.defaultFlag);
+        if (values.defaultFlag && !values.isEnabled) {
+          message.error('默认预算场景的状态必须为启用');
+          return;
+        }
+        this.setState({loading: true});
         httpFetch.put(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
@@ -50,11 +52,11 @@ class UpdateBudgetScenarios extends React.Component{
             message.success('保存成功');
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e);
           }
         })
       }
@@ -69,7 +71,7 @@ class UpdateBudgetScenarios extends React.Component{
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
     }))
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -80,7 +82,9 @@ class UpdateBudgetScenarios extends React.Component{
     };
     return (
       <div className="update-budget-scenarios">
-        <Alert message="帮助提示" description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。" type="info" showIcon />
+        <Alert message="帮助提示"
+               description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。"
+               type="info" showIcon />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="预算组织">
             {getFieldDecorator('organizationName', {
@@ -125,7 +129,10 @@ class UpdateBudgetScenarios extends React.Component{
               initialValue: isEnabled
             })(
               <div>
-                <Switch defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <Switch defaultChecked={params.isEnabled}
+                        checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross" />}
+                        onChange={this.switchChange}/>
                 <span className="enabled-type">{ isEnabled ? '启用' : '禁用' }</span>
               </div>
             )}

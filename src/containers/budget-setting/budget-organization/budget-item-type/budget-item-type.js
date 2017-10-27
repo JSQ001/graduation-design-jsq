@@ -119,6 +119,7 @@ class BudgetItemType extends React.Component {
     })
   };
 
+
   handleCloseUpdateSlide = (params) => {
       this.getList();
 

@@ -30,6 +30,8 @@ class NewBudgetItemType extends React.Component {
   }
 
 
+
+
   //新建
   handleSave= (e) =>{
     e.preventDefault();
@@ -106,7 +108,8 @@ class NewBudgetItemType extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeCode"})} >
             {getFieldDecorator('itemTypeCode', {
               rules: [{
-                required: true
+                required: true,
+                message: this.props.intl.formatMessage({id:"common.please.enter"})
               }],
             })(
               <Input/>

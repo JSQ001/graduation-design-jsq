@@ -8,6 +8,8 @@ const FormItem = Form.Item;
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
+import SlideFrame from 'components/slide-frame'
+import BudgetBalanceAmountDetail from 'containers/budget/budget-balance/budget-balance-amount-detail'
 
 class BudgetBalanceResult extends React.Component {
   constructor(props) {
@@ -16,21 +18,21 @@ class BudgetBalanceResult extends React.Component {
       loading: true,
       data: [],
       columns: [
-        {title: '公司', dataIndex: 'companyName', width: '10%'},
-        {title: '预算项目类型', dataIndex: 'itemTypeName', width: '10%'},
-        {title: '预算项目', dataIndex: 'itemName', width: '10%'},
-        {title: '年', dataIndex: 'periodYear', width: '10%'},
-        {title: '季度', dataIndex: 'periodQuarter', width: '10%'},
-        {title: '期间', dataIndex: 'periodName', width: '10%'},
-        {title: '币种', dataIndex: 'currency', width: '10%'},
-        {title: '预算额', dataIndex: 'bgtAmount', width: '10%'},
-        {title: '保留额', dataIndex: 'expReserveAmount', width: '10%'},
-        {title: '发生额', dataIndex: 'expUsedAmount', width: '10%'},
-        {title: '可用额', dataIndex: 'expAvailableAmount', width: '10%'},
-        {title: '部门', dataIndex: 'unitName', width: '10%'},
-        {title: '部门组', dataIndex: 'unitGroupName', width: '10%'},
-        {title: '员工', dataIndex: 'employeeName', width: '10%'},
-        {title: '员工组', dataIndex: 'employeeGroupName', width: '10%'}
+        {title: '公司', dataIndex: 'companyName'},
+        {title: '预算项目类型', dataIndex: 'itemTypeName'},
+        {title: '预算项目', dataIndex: 'itemName'},
+        {title: '年', dataIndex: 'periodYear'},
+        {title: '季度', dataIndex: 'periodQuarter'},
+        {title: '期间', dataIndex: 'periodName'},
+        {title: '币种', dataIndex: 'currency'},
+        {title: '预算额', dataIndex: 'bgtAmount', render: (bgtAmount, record) => <a onClick={() => this.showSlideFrame(record, 'J')}>{this.filterMoney(bgtAmount)}</a>},
+        {title: '保留额', dataIndex: 'expReserveAmount', render: (expReserveAmount, record) => <a onClick={() => this.showSlideFrame(record, 'R')}>{this.filterMoney(expReserveAmount)}</a>},
+        {title: '发生额', dataIndex: 'expUsedAmount', render: (expUsedAmount, record) => <a onClick={() => this.showSlideFrame(record, 'U')}>{this.filterMoney(expUsedAmount)}</a>},
+        {title: '可用额', dataIndex: 'expAvailableAmount', render: expAvailableAmount => this.filterMoney(expAvailableAmount)},
+        {title: '部门', dataIndex: 'unitName'},
+        {title: '部门组', dataIndex: 'unitGroupName'},
+        {title: '员工', dataIndex: 'employeeName'},
+        {title: '员工组', dataIndex: 'employeeGroupName'}
       ],
       condition: {
         companyNumber: 0,
@@ -48,7 +50,14 @@ class BudgetBalanceResult extends React.Component {
         expAvailableAmount: '总可用额'
       },
       page: 0,
-      pageSize: 10
+      pageSize: 10,
+      showSlideFrameFlag: false,
+      slideFrameParam: {},
+      titleMap: {
+        J: '预算额明细',
+        R: '保留额明细',
+        U: '发生额明细'
+      }
     };
   }
 
@@ -73,11 +82,26 @@ class BudgetBalanceResult extends React.Component {
 
   getList = () => {
     return httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/results/${this.props.params.id}?page=${this.state.page}&size=${this.state.pageSize}`).then(res => {
+      let data = res.data.queryResultList.map((item, index) => {
+        item.key = this.state.page * this.state.pageSize + index;
+        return item;
+      });
       this.setState({
         loading: false,
-        data: res.data.queryResultList,
+        data,
         total: res.data.queryResultCurrencyList
       })
+    })
+  };
+
+  showSlideFrame = (record, type) => {
+    this.setState({
+      showSlideFrameFlag: true,
+      slideFrameParam: {
+        type: type,
+        data: record,
+        title: this.state.titleMap[type]
+      }
     })
   };
 
@@ -103,7 +127,7 @@ class BudgetBalanceResult extends React.Component {
   };
 
   render(){
-    const { columns, data, condition, loading } = this.state;
+    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam } = this.state;
     return (
       <div className="budget-balance-result">
         <h3 className="header-title">查询结果</h3>
@@ -141,7 +165,13 @@ class BudgetBalanceResult extends React.Component {
                loading={loading}
                size="middle"
                bordered
+               rowKey="key"
                scroll={{ x: '150%' }}/>
+        <SlideFrame content={BudgetBalanceAmountDetail}
+                    show={showSlideFrameFlag}
+                    onClose={() => this.setState({ showSlideFrameFlag: false })}
+                    params={slideFrameParam}
+                    title={slideFrameParam.title} width="70%"/>
       </div>
     )
   }

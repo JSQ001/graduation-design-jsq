@@ -54,7 +54,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value){
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
-      message.success(this.props.intl.formatMessage({id:"common.operate.success"}), 2);
+      message.success(this.props.intl.formatMessage({id:"common.save.success"}), 2);
       setTimeout(() => {
         this.setState({loading:false }, () => this.context.router.push(path))
       },200)
@@ -63,7 +63,7 @@ class NewBudgetVersions extends React.Component {
       this.setState({loading:false});
       if(e.response){
 
-        message.error(this.props.intl.formatMessage({id:"common.operate.error"}),` ${e.response.data.validationErrors[0].message}`)
+        message.error(this.props.intl.formatMessage({id:"common.save.filed"}),` ${e.response.data.validationErrors[0].message}`)
 
       }
     });
@@ -71,8 +71,10 @@ class NewBudgetVersions extends React.Component {
 
 
 
-  CancelHandle = () =>{
-
+//取消
+  CancelHandle = (e) =>{
+    e.preventDefault();
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
 
 
@@ -162,7 +164,7 @@ class NewBudgetVersions extends React.Component {
 
 
               <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label={this.props.intl.formatMessage({id:"budget.description"})}
+                <FormItem label={this.props.intl.formatMessage({id:"budget.versionDescription"})}
 
                 >
                   {getFieldDecorator('description',{

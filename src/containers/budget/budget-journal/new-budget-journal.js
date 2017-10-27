@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Form,Input,Switch,Icon,Upload} from 'antd';
+import { Button, Table, Select,Form,Input,Switch,Icon,Upload,message} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -40,35 +40,36 @@ class NewBudgetJournalFrom extends React.Component {
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
     const data =value;
+    console.log(value);
 
     let userData ={
       "dto" :
         {
           "companyId":this.props.company.id,
-          "companyName":this.props.user.fullName,
-          "organizationId":this.state.organization.id,
-          "organizationName":this.state.organization.organizationName,
+          "companyName":this.props.company.name,
+          "organizationId":this.props.organization.id,
+          "organizationName":this.props.organization.organizationName,
           "structureId":value.structureId,
           "structureName":"structureName",
           "periodYear":value.periodYear,
-          "periodQuarter": "1",
+          "periodQuarter":value.periodQuarter,
           "periodName": "11",
           "description": "1111",
           "reversedFlag":"N",
           "sourceBudgetHeaderId":undefined,
           "sourceType":undefined,
-          "employeeId":this.state.organization.id,
-          "employeeName":this.state.organization.organizationName,
+          "employeeId":this.props.user.id,
+          "employeeName":this.props.user.fullName,
           "periodNumber": "2",
-          "unitId": "12345678",
+          "unitId": "1",
           "unitName":"periodNumber",
-          'versionId':value.versionName[0].value.id,
-          'versionName':value.versionName[0].value.versionName,
-          'scenarioId':value.scenarioName[0].value.id,
-          'scenarioName':value.scenarioName[0].value.scenarioName,
+          'versionId':value.versionName[0].id,
+          'versionName':value.versionName[0].versionName,
+          'scenarioId':value.scenarioName[0].id,
+          'scenarioName':value.scenarioName[0].scenarioName,
           "status":"NEW",
-          "journalTypeId":value.journalTypeName[0].value.journalTypeId,
-          "journalTypeName":value.journalTypeName[0].value.journalTypeName,
+          "journalTypeId":value.journalTypeName[0].journalTypeId,
+          "journalTypeName":value.journalTypeName[0].journalTypeName,
           "versionNumber":"1"
         }
       ,
@@ -81,8 +82,8 @@ class NewBudgetJournalFrom extends React.Component {
 
   //保存日记账头
   saveHeard=(value)=>{
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals`,value).then((request)=>{
-      let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",request.data.dto.journalCode);
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals`,value).then(( response)=>{
+      let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",response.data.dto.journalCode);
       this.context.router.push(path);
     })
   }
@@ -98,25 +99,7 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-
-
-  //获得预算组织
-  getOrganization=()=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request)=>{
-
-      console.log(request.data)
-      const data ={
-        'organizationId':request.data.id
-      }
-      this.setState({
-        organization:request.data,
-        organizationId:data,
-      })
-    })
-  }
-
   componentWillMount(){
-    this.getOrganization()
 
   }
 
@@ -138,7 +121,6 @@ class NewBudgetJournalFrom extends React.Component {
   //选择预算日记账类型，设置对应的预算表选
   handleJournalTypeChange=(values)=>{
     let value = values[0];
-    console.log(value);
     this.setState({
       idSelectJournal:true
     })
@@ -150,10 +132,10 @@ class NewBudgetJournalFrom extends React.Component {
 
   //根据账套类型，获得预算表
   getStructure(value){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${value}`).then(req=>{
-      console.log(req.data);
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${value}`).then(response=>{
+      console.log(response.data);
       this.setState(
-        {structureGroup:req.data}
+        {structureGroup:response.data}
       )
     })
   }
@@ -163,18 +145,13 @@ class NewBudgetJournalFrom extends React.Component {
   handleSelectChange=(values)=>{
     console.log(values);
     this.state.structureGroup.map((item)=>{
-      if(item.id=values){
+      if(item.id==values){
         this.props.form.setFieldsValue({
-        //  periodYear:item.periodYear ,
-
           periodStrategy:item.periodStrategy
-
         });
-
         this.props.form.setFieldsValue({
           periodYear:2017
         })
-
         this.props.form.setFieldsValue({
           periodQuarter:item.periodQuarter
         })
@@ -212,7 +189,8 @@ class NewBudgetJournalFrom extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled,organization, listSelectedData,showListSelector,listType,listExtraParams,selectorItem,structureGroup} = this.state;
+    const organization =this.props.organization;
+    const { isEnabled, listSelectedData,showListSelector,listType,listExtraParams,selectorItem,structureGroup} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -303,7 +281,7 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='journalTypeName'
               valueKey='journalTypeId'
               single="true"
-              listExtraParams={this.state.organizationId}
+              listExtraParams={{"organizationId":1}}
               onChange={this.handleJournalTypeChange}
               />
 
@@ -377,7 +355,7 @@ class NewBudgetJournalFrom extends React.Component {
                 labelKey='versionName'
                 valueKey='id'
                 single="true"
-                listExtraParams={this.state.organizationId}
+                listExtraParams={{"organizationId":1}}
               />
             )}
           </FormItem>
@@ -396,7 +374,7 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='scenarioName'
               valueKey='id'
               single="true"
-              listExtraParams={this.state.organizationId}
+              listExtraParams={{"organizationId":1}}
              />
 
             )}
@@ -408,7 +386,7 @@ class NewBudgetJournalFrom extends React.Component {
             label="附件"
           >
             <div className="dropbox">
-              {getFieldDecorator('dragger', {
+              {getFieldDecorator('file', {
                 valuePropName: 'fileList',
                 getValueFromEvent: this.normFile,
               })(
@@ -422,10 +400,6 @@ class NewBudgetJournalFrom extends React.Component {
               )}
             </div>
           </FormItem>
-
-
-
-
 
           <FormItem wrapperCol={{ offset: 7 }}>
             <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
@@ -454,6 +428,8 @@ function mapStateToProps(state) {
   return {
     user: state.login.user,
     company: state.login.company,
+    organization: state.login.organization
+
   }
 
 }

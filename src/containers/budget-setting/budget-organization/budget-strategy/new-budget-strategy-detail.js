@@ -16,8 +16,21 @@ class NewBudgetStrategyDetail extends React.Component {
     this.state = {
       loading: false,
       controlMethodNotice: '',
+      controlMethodOptions: [],
+      messageCodeOptions: [],
       budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //控制策略详情
     }
+  }
+
+  componentWillMount(){
+    this.getSystemValueList(2005).then(res => { //预算控制方法
+      let controlMethodOptions = res.data.values;
+      this.setState({ controlMethodOptions })
+    });
+    this.getSystemValueList(2022).then(res => { //预算控制消息
+      let messageCodeOptions = res.data.values;
+      this.setState({ messageCodeOptions })
+    });
   }
 
   handleSave = (e) =>{
@@ -30,15 +43,15 @@ class NewBudgetStrategyDetail extends React.Component {
           console.log(res);
           if(res.status == 200){
             this.setState({loading: false});
-            message.success('操作成功');
+            message.success(this.props.intl.formatMessage({id: 'common.create.success'},{name: ''}) /* 新建成功 */);
             this.handleCancle();
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response){
+            this.setState({loading: false});
+            message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.validationErrors[0].message}`);
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e)
           }
         })
       }
@@ -50,23 +63,20 @@ class NewBudgetStrategyDetail extends React.Component {
   };
 
   handleMethodChange = (value) => {
-    console.log(value);
-    let notice = '';
-    if(value == '禁止') {
-      notice = '如果满足触发条件，当单据提交时，禁止提交';
-    } else if(value=='警告') {
-      notice = '如果满足触发条件，当单据提交时，进行提示';
+    let controlMethodNotice = '';
+    if(value == '1502553') {
+      controlMethodNotice = '如果满足触发条件，当单据提交时，禁止提交';
+    } else if(value == '1502552') {
+      controlMethodNotice = '如果满足触发条件，当单据提交时，进行提示';
     } else {
-      notice = '不做任何控制';
+      controlMethodNotice = '不做任何控制';
     }
-    this.setState({
-      controlMethodNotice: notice
-    })
-  }
+    this.setState({ controlMethodNotice })
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { controlMethod, controlMethodNotice } = this.state;
+    const { controlMethodNotice, controlMethodOptions, messageCodeOptions } = this.state;
     return (
       <div className="new-budget-strategy-detail">
         <Form onSubmit={this.handleSave}>
@@ -104,10 +114,10 @@ class NewBudgetStrategyDetail extends React.Component {
                     required: true,
                     message: '请选择'
                   }]})(
-                  <Select placeholder="请选择" onChange={this.handleMethodChange}>
-                    <Option value="禁止">禁止</Option>
-                    <Option value="警告">警告</Option>
-                    <Option value="通过">通过</Option>
+                  <Select onChange={this.handleMethodChange} placeholder="请选择">
+                    {controlMethodOptions.map((option)=>{
+                      return <Option key={option.id}>{option.messageKey}</Option>
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -128,13 +138,17 @@ class NewBudgetStrategyDetail extends React.Component {
             <Col span={8} style={{ display: 'inline-block'}}>
               <FormItem label="消息">
                 {getFieldDecorator('messageCode', {
-                  /*rules: [{
+                  rules: [{
                     required: true,
-                    message: '请输入'
-                  }],*/
+                    message: '请选择'
+                  }],
                   initialValue: ''
                 })(
-                  <Input placeholder="请输入" />
+                  <Select onChange={this.handleMethodChange} placeholder="请选择">
+                    {messageCodeOptions && messageCodeOptions.map((option)=>{
+                      return <Option key={option.id}>{option.messageKey}</Option>
+                    })}
+                  </Select>
                 )}
               </FormItem>
             </Col>

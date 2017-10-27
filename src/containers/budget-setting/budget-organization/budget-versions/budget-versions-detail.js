@@ -43,7 +43,7 @@ class BudgetVersionsDetail extends React.Component {
 
         },
         {type:'date',label:this.props.intl.formatMessage({id:"budget.versionDate"}),id:'versionDate'},
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.description"}), id: 'description', message:this.props.intl.formatMessage({id:"common.please.enter"})},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionDescription"}), id: 'description', message:this.props.intl.formatMessage({id:"common.please.enter"})},
         {type: 'switch', label:this.props.intl.formatMessage({id:"budget.isEnabled"}), id: 'isEnabled'}
       ],
       pagination: {
@@ -172,6 +172,7 @@ class BudgetVersionsDetail extends React.Component {
   //保存新建分配公司
   versionAssignCompany=(values)=>{
     console.log(values);
+    console.log("保存新建分配公司");
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
       message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
       this.setState({
