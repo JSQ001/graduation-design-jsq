@@ -140,7 +140,7 @@ class SecuritySetting extends React.Component{
     return (
       this.state.enterpriseKey ?
         <span className="security-setting-display">
-          fafadsfa<Button onClick={()=>this.handleEnterpriseKey(false)}>点击隐藏</Button>
+          K2QzPPz3fqQNEnsbwupD1b1IDPPg0RfkdWalXysL7wd<Button onClick={()=>this.handleEnterpriseKey(false)}>点击隐藏</Button>
         </span>
         :
         <span className="security-setting-hide">
@@ -210,7 +210,7 @@ class SecuritySetting extends React.Component{
         { flag ? null :
           <div className="security-setting">
           <div id="3" className="security-setting-company">
-            企业ID： 1231231231232
+            企业ID： DING37484930239458493922-2-8472283
           </div>
         <div className="security-setting-company">
           企业密钥：{this.renderEnterpriseKey()}

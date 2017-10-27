@@ -61,7 +61,14 @@ class NewBudgetRulesDetail extends React.Component{
         listExtraParams: organizationIdParams,
         selectorItem: undefined
       },
-      'BUDGET_ITEM': {},
+      'BUDGET_ITEM': {
+        listType: 'budget_item',
+        labelKey: 'id',
+        valueKey: 'itemName',
+        codeKey: 'itemCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
       'CURRENCY': {},
 
       'COMPANY': {},

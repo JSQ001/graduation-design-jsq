@@ -166,6 +166,19 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'budget_item':{
+    title:"预算项目",
+    url: `${config.budgetUrl}/api/budget/items/query`,
+    searchForm:[
+      {type: 'input', id: 'itemCode', label: '预算项目代码'},
+      {type: 'input', id: 'itemName', label: '预算项目名称'},
+    ],
+    columns: [
+      {title: '预算项目代码', dataIndex: 'itemCode'},
+      {title: '预算项目名称', dataIndex: 'itemName'},
+    ],
+    key: 'id'
+  }
 
 };
 
