@@ -8,16 +8,17 @@ import { Button,Form,Row,Col,Input,Select,DatePicker,Switch,Icon,Table,Popconfir
 const FormItem = Form.Item;
 const Option = Select.Option;
 import debounce from 'lodash.debounce';
-
 import Chooser from  'components/Chooser'
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-
 let companyId ='';
+<<<<<<< HEAD
 let rateData=1;
 
+=======
+>>>>>>> develop
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -71,19 +72,13 @@ class NewBudgetJournalDetail extends React.Component {
         /*备注*/
         {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"}), isRequired: true, options: []},
         /*维度*/
-
-
       ],
       typeOptions: [],
       params:{},
       rate:12,
-
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
-
   }
-
-
   //表单的联动事件处理
   handleEvent(event,e){
     console.log(event);
@@ -103,7 +98,6 @@ class NewBudgetJournalDetail extends React.Component {
       }
       case 'periodName':{
         event =JSON.parse(event);
-
         let searchForm =this.state.searchForm;
         console.log(searchForm);
         this.props.form.setFieldsValue({
@@ -112,23 +106,22 @@ class NewBudgetJournalDetail extends React.Component {
         this.props.form.setFieldsValue({
           periodQuarter:event.periodQuarter,
         });
-
-       /* searchForm = searchForm.map(searchItem => {
-          if(searchItem.id === 'periodQuarter'){
-            searchItem.defaultValue = event.quarterNum;
-            console.log(event.quarterNum)
-            return searchItem;
-          }
-          if(searchItem.id === 'periodYear'){
-            searchItem.defaultValue = event.periodYear;
-            console.log(event.periodYear);
-            return searchItem;
-          }
-        });
-        console.log(searchForm);
-        this.setState({
-          searchForm:searchForm
-        })*/
+        /* searchForm = searchForm.map(searchItem => {
+         if(searchItem.id === 'periodQuarter'){
+         searchItem.defaultValue = event.quarterNum;
+         console.log(event.quarterNum)
+         return searchItem;
+         }
+         if(searchItem.id === 'periodYear'){
+         searchItem.defaultValue = event.periodYear;
+         console.log(event.periodYear);
+         return searchItem;
+         }
+         });
+         console.log(searchForm);
+         this.setState({
+         searchForm:searchForm
+         })*/
         return;
       }
       case 'currency':{
@@ -138,17 +131,18 @@ class NewBudgetJournalDetail extends React.Component {
         this.props.form.setFieldsValue({
           rate:event.attribute11
         });
-
         return;
       }
       case 'amount':{
+<<<<<<< HEAD
 
         let functionalAmount =  event*rateData;
+=======
+        let functionalAmount =  event;
+>>>>>>> develop
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
-
-
         return;
       }
       case 'rate':{
@@ -158,41 +152,26 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
     }
-
   }
-
   getParams(){
     console.log(this.state.params);
     console.log(this.props.params);
   }
-
-
-
   componentWillMount(){
     this.setState({
       params:this.props.params
     })
     console.log(this.props.params);
-
   }
-
-
-
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && nextProps.params!=={} )
       this.setState({ params : nextProps.params });
     else
       this.setState({ params : {} });
-
   };
-
-
-
-
   clear = () => {
     this.props.form.resetFields();
   };
-
   //根据接口返回数据重新设置options
   setOptionsToFormItem = (item, url, key) => {
     let params = {};
@@ -217,8 +196,6 @@ class NewBudgetJournalDetail extends React.Component {
       })
     }
   };
-
-
   //获select得值列表里面的数据
   setOptionsToFormItemSelect=(item,url)=>{
     console.log(item);
@@ -226,33 +203,26 @@ class NewBudgetJournalDetail extends React.Component {
     let path = item.url;
     let organizationId ;
     if(item.id=="item"){
-     // path = path+`?organizationId=${this.props.organization.id}`    //真实的代码
-
+      // path = path+`?organizationId=${this.props.organization.id}`    //真实的代码
       path = path+`?organizationId=1`  //暂时写死
     }
-
     url=path;
     httpFetch.get(url, params).then((res) => {
       let options = [];
       res.data.map(data => {
         options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
       });
-
       console.log(options)
-
-   let searchForm = this.state.searchForm;
+      let searchForm = this.state.searchForm;
       searchForm = searchForm.map(searchItem => {
         if(searchItem.id === item.id)
           searchItem.options = options;
         return searchItem;
       });
       console.log(searchForm);
-
       this.setState({ searchForm });
     })
   }
-
-
   //得到值列表的值增加options
   getValueListOptions = (item) => {
     this.getSystemValueList(item.valueListCode).then(res => {
@@ -274,9 +244,6 @@ class NewBudgetJournalDetail extends React.Component {
       this.setState({ searchForm });
     })
   };
-
-
-
   //渲染搜索表单组件
   renderFormItem(item){
     let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
@@ -291,7 +258,7 @@ class NewBudgetJournalDetail extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
                   onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
-             // let a  = [option.key,option.label]
+              // let a  = [option.key,option.label]
               return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
             })}
           </Select>
@@ -311,18 +278,12 @@ class NewBudgetJournalDetail extends React.Component {
           </Select>
         )
       }
-
-
       //数字选择InputNumber
-
       case 'inputNumber':{
         return <InputNumber disabled={item.disabled} onChange={handle} min={0} step={item.step}/>
       }
-
-
     }
   }
-
   getFields(){
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
@@ -351,12 +312,9 @@ class NewBudgetJournalDetail extends React.Component {
     });
     return children;
   }
-
   //提交保存
   HandleSubmit=(e)=>{
-
     const params =this.state.params;
-
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
       let companyId;
@@ -365,21 +323,16 @@ class NewBudgetJournalDetail extends React.Component {
       let itemName;
       let periodName;
       let unitId;
-
-
       if(value.company.indexOf(":")>1){
-         let company = JSON.parse(value.company);
+        let company = JSON.parse(value.company);
         companyId=company.id;
         companyName=company.name;
-
       }
       else {
         companyId=params.companyId;
         companyName=params.companyName;
       }
-
       console.log(companyId+companyName);
-
       if(value.item.indexOf(":")>1 ){
         let item = JSON.parse(value.item);
         itemId=item.id;
@@ -389,7 +342,6 @@ class NewBudgetJournalDetail extends React.Component {
         itemId=params.itemId;
         itemName=params.itemName;
       }
-
       if(value.periodName.indexOf(":")>1 ){
         let periodName = JSON.parse(value.periodName);
         periodName=periodName.periodName;
@@ -397,17 +349,15 @@ class NewBudgetJournalDetail extends React.Component {
       else {
         periodName=params.periodName;
       }
-
       if(value.unitId.indexOf(":">1)){
         let unit =JSON.parse(value.unitId);
         unitId = unit.id;
       }else {
         unitId = params.unitId;
       }
-
       // let currency =JSON.parse(value.currency);
-
       let  valueData = {
+<<<<<<< HEAD
           "companyId": companyId,
           "companyName":companyName,
           "unitId":unitId,
@@ -450,74 +400,100 @@ class NewBudgetJournalDetail extends React.Component {
           "versionNumber": params.versionNumber||"1",
           "createdBy": "1",
           "lastUpdatedBy": "1"
+=======
+        "companyId": companyId,
+        "companyName":companyName,
+        "unitId":unitId,
+        "departmentCode": "department1code",
+        "costCenter": "我是测试成本中心",
+        "itemId": itemId,
+        "itemName": itemName,
+        "currency": "RNB",
+        "rateType": "1",
+        "rateQuotation": "1",
+        "rate": value.rate,
+        "amount": value.amount,
+        "functionalAmount": value.functionalAmount,
+        "quantity": value.quantity,
+        "unit": "1",
+        "remark": "1",
+        "periodYear": value.periodYear,
+        "periodQuarter": "2",
+        "periodName": "201701",
+        "dimension1Id": "1111",
+        "dimension2Id": "2222",
+        "dimension3Id": null,
+        "dimension4Id": null,
+        "dimension5Id": null,
+        "dimension6Id": null,
+        "dimension7Id": null,
+        "dimension8Id": null,
+        "dimension9Id": null,
+        "dimension10Id": null,
+        "dimension11Id": null,
+        "dimension12Id": null,
+        "dimension13Id": null,
+        "dimension14Id": null,
+        "dimension15Id": null,
+        "dimension16Id": null,
+        "dimension17Id": null,
+        "dimension18Id": null,
+        "dimension19Id": null,
+        "dimension20Id": null,
+        "versionNumber": params.versionNumber||"1",
+        "createdBy": "1",
+        "lastUpdatedBy": "1"
+      }
+      let data;
+      if(params=={}){
+        data={
+          ...valueData
+>>>>>>> develop
         }
-
-        let data;
-        if(params=={}){
-            data={
-              ...valueData
-            }
-        }else {
-          data={
-            ...valueData,
-            "id":params.id
-          }
+      }else {
+        data={
+          ...valueData,
+          "id":params.id
         }
-
-
+      }
       this.props.close(data);
     })
-
     this.props.form.resetFields();
-
-
   }
-
   onCancel=()=>{
     this.props.form.resetFields();
     this.props.close();
   }
-
   componentWillMount(){
     this.getCurrency
   }
-
   //获得币种
   getCurrency=()=>{
     httpFetch.get(`http://uat.huilianyi.com/api/company/standard/currency?language=chineseName&page=0&size=30`).then((req)=>{
-        console.log(req.data);
-        console.log(121321312)
+      console.log(req.data);
+      console.log(121321312)
     })
   }
-
-
-
   render(){
     return (
-     <div>
-      <Form onSubmit={this.HandleSubmit}>
-      <div className="base-condition">
-        <Row gutter={40} className="base-condition-content">{this.getFields()}</Row>
+      <div>
+        <Form onSubmit={this.HandleSubmit}>
+          <div className="base-condition">
+            <Row gutter={40} className="base-condition-content">{this.getFields()}</Row>
+          </div>
+          <div className="slide-footer">
+            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
+          </div>
+        </Form>
       </div>
-        <div className="slide-footer">
-          <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-          <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
-        </div>
-      </Form>
-     </div>
-
     )
   }
-
 }
-
 const WrappedNewBudgetJournalDetail = Form.create()(NewBudgetJournalDetail);
-
 function mapStateToProps(state) {
   return {
     organization: state.login.organization
-
   }
 }
-
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetJournalDetail));

@@ -82,7 +82,7 @@ class BasicInfo extends React.Component{
     } else if (item.type == 'file') {   //附件
       let file_arr = [];
       this.state.infoData[item.id] && this.state.infoData[item.id].map(link => {
-        file_arr.push(<div><a src={link.fileURL}><Icon type="paper-clip" /> {link.fileName}</a></div>)
+        file_arr.push(<div><a href={link.fileURL}><Icon type="paper-clip" /> {link.fileName}</a></div>)
       });
       return file_arr.length > 0 ? file_arr : '-';
     } else {
