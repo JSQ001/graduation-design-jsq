@@ -75,9 +75,7 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
-       /* {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:1},
-          labelKey: 'structureName', valueKey: 'id'},*/
+
 
         /*预算版本*/
         {type: 'list', id: 'versionName',
@@ -95,8 +93,7 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{organizationId:1}
         },
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002, disabled: true},
-        {type:'file',label: this.props.intl.formatMessage({id:"budget.attachment"}),id:'file'}
+     
 
       ],
 
@@ -107,7 +104,7 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName'
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitName", dataIndex: 'unitName'
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitId", dataIndex: 'unitId'
         },
         {          /*预算项目*/
           title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName'
@@ -124,12 +121,12 @@ class BudgetJournalDetail extends React.Component {
         {          /*币种*/
           title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        {          /*汇率类型*/
+      /*  {          /!*汇率类型*!/
           title: this.props.intl.formatMessage({id:"budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-        },
-        {          /*标价方法*/
+        },*/
+      /*  {          /!*标价方法*!/
           title: this.props.intl.formatMessage({id:"budget.rateQuotation"}), key: "rateQuotation", dataIndex: 'rateQuotation'
-        },
+        },*/
         {          /*汇率*/
           title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate'
         },
@@ -142,9 +139,9 @@ class BudgetJournalDetail extends React.Component {
         {          /*数字*/
           title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity'
         },
-        {          /*单位*/
+       /* {          /!*单位*!/
           title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
-        },
+        },*/
         {          /*备注*/
           title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark'
         },
@@ -232,6 +229,8 @@ class BudgetJournalDetail extends React.Component {
         "journalTypeId":headerData.journalTypeId,
       }
       journalType.push(journalType1);
+
+
 
 
       const versionName=[]
