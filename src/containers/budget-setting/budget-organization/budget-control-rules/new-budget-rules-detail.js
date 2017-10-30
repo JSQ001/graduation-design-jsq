@@ -91,7 +91,6 @@ class NewBudgetRulesDetail extends React.Component{
   getValueList(code, name){
     name.splice(0,name.length)
     this.getSystemValueList(code).then((response)=>{
-      console.log(response)
       response.data.values.map((item)=>{
         let option = {
           key: item.code,
@@ -122,7 +121,8 @@ class NewBudgetRulesDetail extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values)
-        values.controlRuleId = this.props.params.ruleId;
+        values.controlRuleId = this.props.ruleId;
+        console.log(this.state.ruleParam)
         values.parameterLowerLimit = this.state.ruleParam.lowerValue[0].id;
         values.parameterUpperLimit = this.state.ruleParam.upperValue[0].id
         httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
@@ -189,13 +189,11 @@ class NewBudgetRulesDetail extends React.Component{
         upperLimitStatus: "warning",
       })
     }
+    console.log(key === "lower")
+    let ruleParam = this.state.ruleParam;
+    key === "lower" ? ruleParam.lowerValue = value : ruleParam.upperValue =value
     this.setState({
-      ruleParam:{
-        type: this.state.ruleParam.type,
-        name: this.state.ruleParam.name,
-        lowerValue: key === "lower" ? value : this.state.ruleParam.lowerValue,
-        upperValue: key === "upper" ? value : this.state.ruleParam.upperValue
-      }
+      ruleParam
     })
   };
 
@@ -357,22 +355,7 @@ class NewBudgetRulesDetail extends React.Component{
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
             validateStatus={lowerLimitStatus}
             help={lowerLimitHelp}>
-            {getFieldDecorator('parameterLowerLimit', {
-              rules: [
-                {
-                  validator:(item,value,callback)=>{
-                    if(typeof value !== 'undefined'){
-                      let ruleParam = this.state.ruleParam;
-                      ruleParam.lowerValue = value;
-                      this.setState({
-                        ruleParam
-                      })
-                    }
-                    callback();
-                  }
-                }
-              ]
-            })(
+            {getFieldDecorator('parameterLowerLimit')(
               <div>
                 {typeof ruleParam.name === 'undefined' ? <Select onFocus={this.handleValueChange}/> :
                   <Chooser
@@ -389,22 +372,7 @@ class NewBudgetRulesDetail extends React.Component{
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
             validateStatus={upperLimitStatus}
             help={upperLimitHelp}>
-            {getFieldDecorator('parameterUpperLimit', {
-              rules: [
-                {
-                  validator:(item,value,callback)=>{
-                    if(typeof value !== 'undefined'){
-                      let ruleParam = this.state.ruleParam;
-                      ruleParam.upperValue = value;
-                      this.setState({
-                        ruleParam
-                      })
-                    }
-                    callback();
-                  }
-                }
-              ]
-            })(
+            {getFieldDecorator('parameterUpperLimit')(
               <div>
                 {typeof ruleParam.name === 'undefined' ? <Select onFocus={this.handleValueChange}/> :
                   <Chooser

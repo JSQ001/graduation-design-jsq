@@ -35,8 +35,7 @@ class CallBackSetting extends React.Component{
         {key: 'apiSetting', name: "API回调设置"}  /*公司分配*/
       ],
       pagination: {
-        current: 1,
-        page: 0,
+        page: 1,
         total:0,
         pageSize:10,
         showSizeChanger:true,
@@ -44,20 +43,23 @@ class CallBackSetting extends React.Component{
       },
       columnGroup:{
         api:[
-          {                        /*公司代码*/
-            title:"ID", key: "id", dataIndex: 'id'
+          {                        /*api代码*/
+            title:"ID", key: "id", dataIndex: 'id',width:'10%'
           },
-          {                        /*公司代码*/
-            title:"API_CODE", key: "Code", dataIndex: 'Code'
+          {                        /*API_CODE*/
+            title:"API_CODE", key: "apiCode", dataIndex: 'apiCode'
           },
-          {                        /*公司类型*/
-            title:"API版本", key: "companyType", dataIndex: 'companyType'
+          {                        /*API版本*/
+            title:"API版本", key: "apiVersion", dataIndex: 'apiVersion',width:'10%'
           },
-          {                        /*启用*/
-            title:"API描述", key: "description", dataIndex: 'description',width:'10%'
+          {                        /*API描述*/
+            title:"API描述", key: "apiDesc", dataIndex: 'apiDesc'
           },
-          {                        /*启用*/
-            title:"状态", key: "enablement", dataIndex: 'enablement',width:'10%'
+          {                        /*状态*/
+            title:"状态", key: "status", dataIndex: 'status',width:'10%',
+            render:recode=>{
+              return recode ? <span className="call-back-setting-status">运行中</span> : <span>已禁用</span>
+            }
           },
         ],
         apiSetting:[
@@ -100,15 +102,37 @@ class CallBackSetting extends React.Component{
 
   //获取数据
   getList(){
-    let api = this.state.tabsKey === "api" ? "/api/customizedApi" : `/push/api/customizedApiCallback?companyOid=${this.props.company.companyOID}`;
-    let url =  `${config.baseUrl}`+api+`?page=${this.state.pagination.current}`+`&size=${this.state.pagination.pageSize}`;
+    let api = this.state.tabsKey === "api" ? "/push/api/customizedApi" : `/push/api/customizedApiCallback?companyOid=${this.props.company.companyOID}`;
+    let url =  `${config.baseUrl}`+api+`?page=${this.state.pagination.page}`+`&size=${this.state.pagination.pageSize}`;
     console.log(url)
     httpFetch.get(url).then((response)=>{
       console.log(response)
-
-
+      response.data.map((item)=>{
+        response.data.key = response.data.id;
+      });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
+      this.setState({
+        loading: false,
+        data: response.data,
+        pagination
+      })
     })
   }
+
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    console.log(pagination)
+    let p = this.state.pagination;
+    p.page = pagination.current;
+    p.pageSize = pagination.pageSize;
+    console.log(p)
+    this.setState({
+      pagination:p
+    }, ()=>{
+      this.getList();
+    })
+  };
 
   //Tabs点击
   onChangeTabs = (key) => {
@@ -281,21 +305,6 @@ class CallBackSetting extends React.Component{
                  </Row>
                </Form>
             </div>
-
-           {/* <Form>
-              <FormItem {...formItemLayout}>
-                {getFieldDecorator('passwordLength')(
-                  <div className="security-setting-formItem">
-                    <span className="formItem-label-info">信息通知渠道：</span>
-                    <span className="formItem-value-info">
-                  <Checkbox defaultChecked disabled /> 邮箱（邮箱将用于含附件消息如报销单电子件的推送）<br/>
-                  <Checkbox />&nbsp;&nbsp;&nbsp;手机（海外手机不支持短消息推送）
-                </span>
-                  </div>
-                )}
-              </FormItem>
-
-            </Form>*/}
           </span>
         </div>
         <div className="call-back-setting-tabs">
@@ -311,6 +320,7 @@ class CallBackSetting extends React.Component{
           dataSource={data}
           columns={columns}
           pagination={pagination}
+          onChange={this.onChangePager}
           size="middle"
           bordered/>
         <SlideFrame title="全局设置"
