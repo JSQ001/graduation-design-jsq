@@ -582,6 +582,7 @@ class BudgetBalance extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
                   disabled={item.disabled}
+                  allowClear
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
@@ -596,6 +597,7 @@ class BudgetBalance extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
                   disabled={item.disabled}
+                  allowClear
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
