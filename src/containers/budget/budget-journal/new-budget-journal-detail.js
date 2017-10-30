@@ -14,11 +14,10 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 let companyId ='';
-<<<<<<< HEAD
+
 let rateData=1;
 
-=======
->>>>>>> develop
+
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -134,12 +133,9 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'amount':{
-<<<<<<< HEAD
 
         let functionalAmount =  event*rateData;
-=======
-        let functionalAmount =  event;
->>>>>>> develop
+
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
@@ -357,7 +353,7 @@ class NewBudgetJournalDetail extends React.Component {
       }
       // let currency =JSON.parse(value.currency);
       let  valueData = {
-<<<<<<< HEAD
+
           "companyId": companyId,
           "companyName":companyName,
           "unitId":unitId,
@@ -400,55 +396,13 @@ class NewBudgetJournalDetail extends React.Component {
           "versionNumber": params.versionNumber||"1",
           "createdBy": "1",
           "lastUpdatedBy": "1"
-=======
-        "companyId": companyId,
-        "companyName":companyName,
-        "unitId":unitId,
-        "departmentCode": "department1code",
-        "costCenter": "我是测试成本中心",
-        "itemId": itemId,
-        "itemName": itemName,
-        "currency": "RNB",
-        "rateType": "1",
-        "rateQuotation": "1",
-        "rate": value.rate,
-        "amount": value.amount,
-        "functionalAmount": value.functionalAmount,
-        "quantity": value.quantity,
-        "unit": "1",
-        "remark": "1",
-        "periodYear": value.periodYear,
-        "periodQuarter": "2",
-        "periodName": "201701",
-        "dimension1Id": "1111",
-        "dimension2Id": "2222",
-        "dimension3Id": null,
-        "dimension4Id": null,
-        "dimension5Id": null,
-        "dimension6Id": null,
-        "dimension7Id": null,
-        "dimension8Id": null,
-        "dimension9Id": null,
-        "dimension10Id": null,
-        "dimension11Id": null,
-        "dimension12Id": null,
-        "dimension13Id": null,
-        "dimension14Id": null,
-        "dimension15Id": null,
-        "dimension16Id": null,
-        "dimension17Id": null,
-        "dimension18Id": null,
-        "dimension19Id": null,
-        "dimension20Id": null,
-        "versionNumber": params.versionNumber||"1",
-        "createdBy": "1",
-        "lastUpdatedBy": "1"
+
       }
       let data;
       if(params=={}){
         data={
           ...valueData
->>>>>>> develop
+
         }
       }else {
         data={
