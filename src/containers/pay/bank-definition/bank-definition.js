@@ -15,12 +15,7 @@ import 'styles/pay/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
 import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
 
-let bankType = [
-  {value:"cashBank", label:"现金银行"},
-  {value:"clearingBank", label:"清算银行"},
-  {value:"innerBank", label:"内部银行"},
-  {value:"commonBank", label:"一般银行"}
-];
+let bankType = [];
 
 class BankDefinition extends React.Component{
   constructor(props){
@@ -93,6 +88,11 @@ class BankDefinition extends React.Component{
   }
 
   componentWillMount(){
+    this.getSystemValueList(2103).then((response)=>{
+      response.data.values.map((item)=>{
+        bankType.push({value:item.code, label:item.messageKey})
+      })
+    });
     this.getList();
   }
 
