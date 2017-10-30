@@ -301,6 +301,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
+                  allowClear
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
@@ -315,6 +316,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
+                  allowClear
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
