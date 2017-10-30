@@ -2,6 +2,7 @@ import ValueList from 'containers/setting/value-list/value-list'
 import NewValueList from 'containers/setting/value-list/new-value-list'
 import SecuritySetting from 'containers/setting/security-setting/security-setting'
 import CallbackSetting from  'containers/setting/callback-setting/callback-setting'
+import CodingRule from 'containers/setting/coding-rule/coding-rule'
 
 //新建值列表
 const newValueList = {
@@ -40,10 +41,19 @@ const callbackSetting = {
   children:{}
 };
 
+//编码规则定义
+const codingRule = {
+  key:'coding-rule',
+  url:'/main/setting/coding-rule',
+  components:CodingRule,
+  parent: 'setting',
+  children:{}
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRule],
   icon: 'setting',
   admin: true
 };

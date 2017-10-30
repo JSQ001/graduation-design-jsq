@@ -22,7 +22,12 @@ class BudgetItem extends React.Component {
       loading: true,
       data: [],
       companyListSelector: false,
-      params:{},
+      searchParams:{
+        itemCode: "",
+        itemCodeFrom: "",
+        itemCodeTo: "",
+        itemTypeCode: "",
+      },
       selectedRowKeys: [],
       batchCompany: true,
       pagination: {
@@ -47,6 +52,7 @@ class BudgetItem extends React.Component {
           listType: 'budget_item_type',
           labelKey: 'itemTypeName',
           valueKey: 'id',
+          single: true,
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id}
         },
@@ -69,9 +75,9 @@ class BudgetItem extends React.Component {
           title: formatMessage({id:"budget.item.variationAttribute"}), key: "variationAttribute", dataIndex: 'variationAttribute',
           render: (recode)=>{
             if(recode === "FIXED")
-              return formatMessage({id:"variationAttribute.immobilization"}) /*固定*/
+              return formatMessage({id:"variationAttribute.immobilization"}); /*固定*/
             if(recode === "MIXED")
-              return formatMessage({id:"variationAttribute.mix"}) /*混合*/
+              return formatMessage({id:"variationAttribute.mix"}); /*混合*/
             if(recode === "VARIABLE")
               return formatMessage({id:"variationAttribute.alteration"}) /*变动*/
           }
@@ -92,12 +98,8 @@ class BudgetItem extends React.Component {
   }
 
   componentWillMount(){
-    this.getList();
-  }
-
-  //获取预算项目数据
-  getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`).then((response)=>{
+    //查出所有预算项目，以方便预算项目的查询中可以选择
+    httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.id}`).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
@@ -105,6 +107,34 @@ class BudgetItem extends React.Component {
           label: item.itemCode+" ( "+item.itemName+" ) "
         };
         itemCode.push(budgetItem);
+      });
+      this.setState({
+        loading: false,
+        data: response.data,
+        pagination: {
+          page: this.state.pagination.page,
+          current: this.state.pagination.current,
+          pageSize: this.state.pagination.pageSize,
+          showSizeChanger:true,
+          showQuickJumper:true,
+          total: response.data.length,
+        }
+      },()=>{
+        this.refreshRowSelection()
+      })
+    })
+  }
+
+  //获取预算项目数据
+  getList(){
+    let params = this.state.searchParams;
+    let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    for(let paramsName in params){
+      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    }
+    httpFetch.get(url).then((response)=>{
+      response.data.map((item,index)=>{
+        item.key = item.id;
       });
       this.setState({
         loading: false,
@@ -124,8 +154,14 @@ class BudgetItem extends React.Component {
   }
 
   handleSearch = (values) =>{
+    console.log(values)
     this.setState({
-      params:values,
+      searchParams:{
+        itemCode: values.itemCode,
+        itemCodeFrom: values.itemCodeFrom,
+        itemCodeTo: values.itemCodeTo,
+        itemTypeId: typeof values.itemTypeName === "undefined" ? "" : values.itemTypeName[0],
+      },
     },()=>{
       this.getList()
     })
@@ -268,7 +304,7 @@ class BudgetItem extends React.Component {
 }
 BudgetItem.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps() {
   return {

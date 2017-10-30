@@ -60,6 +60,7 @@ class BudgetControlRulesDetail extends React.Component{
         {          /*规则参数类型*/
           title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType',
           render: recode =>{
+            return recode
           }
         },
         {          /*规则参数*/

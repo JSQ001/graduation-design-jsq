@@ -331,3 +331,20 @@ function mapStateToProps(state) {
 
 const WrappedNewBudgetRulesDetail = Form.create()(NewBudgetRulesDetail);
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetRulesDetail));
+
+
+
+/*
+"id": 1,
+  "apiID": 1,
+  //"api_code":"api_code",
+  //"api_version":"api_version",
+  "callbackUrl": "",
+  "callbackDatatype": "",
+  "sysName": "",
+  "sysAdmin": "",
+  "sysAdminTel": "",
+  "connectTimeout": 0,
+  "connectionRequestTimeout": 0,
+  "sysinfo_hide": false
+  */
