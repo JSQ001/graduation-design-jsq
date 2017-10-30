@@ -28,6 +28,7 @@ class BudgetJournalDetail extends React.Component {
       edit:false,
       loading: true,
       data: [],
+      listData:[],
       params:{},
       organization:{},
       headerAndListData:{},
@@ -93,7 +94,8 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{organizationId:1}
         },
-     
+        {type:'file',label: this.props.intl.formatMessage({id:"budget.attachment"}),id:'file'}
+
 
       ],
 
@@ -222,16 +224,12 @@ class BudgetJournalDetail extends React.Component {
       let headerData =response.data.dto;
       console.log("!!!!!!!!!!!!!!!!!!!!");
       console.log(headerData);
-
-      const journalType=[]
+      const journalType=[];
       const journalType1={
         "journalTypeName":headerData.journalTypeName,
         "journalTypeId":headerData.journalTypeId,
       }
       journalType.push(journalType1);
-
-
-
 
       const versionName=[]
       const versionName1={
@@ -313,8 +311,17 @@ class BudgetJournalDetail extends React.Component {
 
   //保存编辑
   updateHandleInfo=(value)=>{
-    console.log(value)
+    console.log(value);
+    console.log()
+    const headerAndListData =this.state.headerAndListData;
+    this.handleSaveJournal();
+    this.setState({
+      updateState:true,
+    })
+
   }
+
+
 
 
 
@@ -358,7 +365,9 @@ class BudgetJournalDetail extends React.Component {
 
     console.log(value);
 
-      let data = this.state.data;
+       let data=[]
+       data = this.state.data;
+       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
       let fla =1;
       if(value.hasOwnProperty("id")){
@@ -380,18 +389,24 @@ class BudgetJournalDetail extends React.Component {
         console.log(value)
         headerAndListData.list.addIfNotExist(value);
         data.addIfNotExist(value);
+        listData.addIfNotExist(value);
+
       }
 
 
     this.setState({
       data:data,
-      headerAndListData: headerAndListData
+      headerAndListData: headerAndListData,
+      listData:listData
     });
 
 
       console.log(headerAndListData)
       console.log(this.state.data);
+      console.log(listData);
       console.log(55555555555555555555555)
+
+
 
   }
 
@@ -439,6 +454,7 @@ class BudgetJournalDetail extends React.Component {
       console.log(req.data)
       message.success("成功");
       this.getDataByBudgetJournalCode();
+
     }).catch(e => {
       message.error("失败")
     })
@@ -456,6 +472,9 @@ class BudgetJournalDetail extends React.Component {
         console.log(req.data)
         message.success("提交成功");
        // this.getDataByBudgetJournalCode();
+        this.setState({
+          listData:[],
+        })
 
         let path=this.state.budgetJournalPage.url;
         this.context.router.push(path);

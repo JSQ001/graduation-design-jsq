@@ -51,7 +51,16 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
+          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy',
+          render(recode,text){
+            switch (text.periodStrategy){
+              case 'MONTH':{ return "期间"}
+              case 'QUARTER':{ return `年`}
+              case 'YEAR':{ return `季度`}
+
+            }
+          }
+
         },
         {          /*预算表*/
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
@@ -131,10 +140,6 @@ class BudgetJournal extends React.Component {
   //点击搜搜索
   handleSearch = (values) =>{
     console.log(values);
-    const valueData={
-      ...values,
-      "journalTypeId":values.journalTypeId.id
-    }
 
     this.setState({
       params:values,

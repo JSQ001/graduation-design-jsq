@@ -303,6 +303,9 @@ class NewBudgetJournalFrom extends React.Component {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.token
       },
+      data:{
+        attachmentType:"PDF"
+      },
       onChange(info) {
         const status = info.file.status;
         if (status !== 'uploading') {
