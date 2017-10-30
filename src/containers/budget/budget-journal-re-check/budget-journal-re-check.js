@@ -55,9 +55,9 @@ class BudgetJournalReCheck extends React.Component {
           getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:1},
           labelKey: 'scenarioName', valueKey: 'id'},
         {type: 'select', id:'employeeId', label: '申请人', options: [], method: 'get',
-          getUrl: ``, getParams: {},
-          labelKey: 'name', valueKey: 'id'},
-        {type:'date',id:'createData', label: '创建时间' }
+          getUrl: `${config.budgetUrl}/api/budget/journals/selectCheckedEmp`, getParams: {},
+          labelKey: 'empName', valueKey: 'empOid'},
+        {type:'date',id:'createData', label: '创建时间'}
 
       ],
 
