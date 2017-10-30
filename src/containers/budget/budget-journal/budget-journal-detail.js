@@ -104,13 +104,13 @@ class BudgetJournalDetail extends React.Component {
 
 
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyId'
+          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName'
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitName", dataIndex: 'unitId'
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitName", dataIndex: 'unitName'
         },
         {          /*预算项目*/
-          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemId'
+          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName'
         },
         {          /*期间*/
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
@@ -140,7 +140,7 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount'
         },
         {          /*数字*/
-          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "status", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity'
         },
         {          /*单位*/
           title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'

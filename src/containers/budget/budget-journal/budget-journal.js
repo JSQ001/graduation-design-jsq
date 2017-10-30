@@ -48,16 +48,24 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeId'
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
         },
         {          /*预算表*/
-          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureId'
+          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*预算期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: "时间", key: "periodName", dataIndex: 'periodName',
+          render(recode,text){
+            switch (text.periodStrategy){
+              case 'MONTH':{ return ``}
+              case 'QUARTER':{ return `${text.periodYear}/${text.periodQuarter}`}
+              case 'YEAR':{ return `${text.periodYear}`}
+
+            }
+          }
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
