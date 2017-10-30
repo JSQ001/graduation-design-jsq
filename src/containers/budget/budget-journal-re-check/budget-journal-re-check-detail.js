@@ -353,11 +353,11 @@ class BudgetJournalReCheckDetail extends React.Component {
           </Col>
             <Col span={8}>
               <div className="base-info-title">编制期段：</div>{/*编制期段*/}
-              <div className="beep-info-text">{infoData.journalCode}</div>
+              <div className="beep-info-text">{infoData.periodStrategy}</div>
             </Col>
             <Col span={8}>
               <div className="base-info-title">附件：</div>{/*附件*/}
-              <div className="beep-info-text">{infoData.journalCode}</div>
+              <div className="beep-info-text">{infoData.file}</div>
             </Col>
 
           </Row>
