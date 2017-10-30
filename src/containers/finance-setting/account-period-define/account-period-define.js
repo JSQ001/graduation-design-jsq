@@ -6,6 +6,7 @@ import { Table, Button } from 'antd'
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
 import NewAccountPeriod from 'containers/finance-setting/account-period-define/new-account-period'
+import NewAccountRule from 'containers/finance-setting/account-period-define/new-account-rule'
 
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
@@ -46,7 +47,8 @@ class AccountPeriodDefine extends React.Component {
       },
       slideFrameTitle: '',
       showSlideFrame: false,
-      selectedPeriod: null
+      selectedPeriod: null,
+      showRuleSlideFrame: false,
     }
   }
 
@@ -61,7 +63,11 @@ class AccountPeriodDefine extends React.Component {
 
   //会计期规则
   ruleItem = (e, record) => {
-
+    console.log(record);
+    this.setState({
+      showRuleSlideFrame: true,
+      selectedPeriod: record
+    })
   };
 
   //声成期间
@@ -130,7 +136,7 @@ class AccountPeriodDefine extends React.Component {
 
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading, columns, data, pagination, searchForm, slideFrameTitle, showSlideFrame, selectedPeriod } = this.state;
+    const { loading, columns, data, pagination, searchForm, slideFrameTitle, showSlideFrame, selectedPeriod, showRuleSlideFrame } = this.state;
     return (
       <div>
         <h3 className="header-title">会计期间定义</h3>
@@ -155,6 +161,11 @@ class AccountPeriodDefine extends React.Component {
                     show={showSlideFrame}
                     params={{period: selectedPeriod}}
                     onClose={() => {this.setState({ showSlideFrame: false })}}/>
+        <SlideFrame title="会计期规则"
+                    content={NewAccountRule}
+                    show={showRuleSlideFrame}
+                    params={{periodDetail: selectedPeriod}}
+                    onClose={() => {this.setState({ showRuleSlideFrame: false })}}/>
       </div>
     )
   }
