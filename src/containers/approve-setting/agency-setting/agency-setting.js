@@ -20,7 +20,9 @@ class AgencySetting extends React.Component {
           <span>{this.state.pageSize * this.state.page + index + 1}</span>
         )},  //序号
         {title: formatMessage({id:"agencySetting.employeeId"}), dataIndex: 'emplyeeId'},  //工号
-        {title: formatMessage({id:"agencySetting.userName"}), dataIndex: 'userName'},  //姓名
+        {title: formatMessage({id:"agencySetting.userName"}), dataIndex: 'userName', render: (name, record) => {
+          return record.status == 1003 ? <div><span style={{color:'#108EE9'}}>离职</span> - {name}</div>  : name; //record.status:1003 已离职
+        }},  //姓名
         {title: formatMessage({id:"agencySetting.departmentName"}), dataIndex: 'departmentName'},  //部门
         {title: formatMessage({id:"agencySetting.dutyName"}), dataIndex: 'dutyName'},  //职务
         {title: formatMessage({id:"common.column.status"}), dataIndex: 'enabled', width: '10%', render: isEnabled => (

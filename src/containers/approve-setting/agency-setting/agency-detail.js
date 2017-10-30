@@ -95,11 +95,11 @@ class AgencyDetail extends React.Component {
             this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', this.state.principalOID));
           });
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.message){
-            message.error(`操作失败, ${e.response.data.message}`);
+          if(e.response){
+            message.error(`${this.props.intl.formatMessage({id: 'common.save.filed'})/*保存失败*/}, ${e.response.data.message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e);
           }
         })
       }
@@ -216,7 +216,7 @@ class AgencyDetail extends React.Component {
       saveBtn = "";
     }
     let alertMessage;
-    if(principalInfo.status == 1002) {
+    if(principalInfo.status == 1003) {
       alertMessage = (
         <Alert message="请注意"
                description={formatMessage({id: 'agencySetting.dimission-info'},

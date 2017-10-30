@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Menu, Dropdown, Popconfirm, Alert } from 'antd';
+import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Popconfirm, Alert } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const CheckboxGroup = Checkbox.Group;
@@ -35,6 +35,8 @@ class AgencyRelation extends React.Component {
       editBillSelectedOID: {}, //代理关系选中的代理单据formOID数组集合, { index: ['', ''] }
       editBillSelectedItems: {}, //编辑代理关系时选中的代理单据, { index: [{}, {}] }
       editItem: {}, //编辑代理关系数据
+      editItemIndex: null, //编辑代理关系的index
+      switchDisabled: false, //状态是否可修改，false:可修改
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
@@ -83,7 +85,7 @@ class AgencyRelation extends React.Component {
   handleSelect = (item, key) => {
     item = JSON.parse(item);
     let proxyVerify = this.state.proxyVerify;
-    if (item.status == 1002) {
+    if (item.status == 1002) {  //item.status:1002 待离职
       proxyVerify[key] = {
         status: 'warning',
         help: this.props.intl.formatMessage({ id: 'agencySetting.leave-info', time: item.leavingDate }) //该员工将于 {time} 离职，离职后此代理将自动禁用
@@ -131,7 +133,8 @@ class AgencyRelation extends React.Component {
     },()=>{
       this.setState({
         startAgencyDate: moment().locale('zh-cn').utcOffset(8),
-        endAgencyDate: null
+        endAgencyDate: null,
+        editItemIndex: null,
       },() =>{
         const { form } = this.props;
         const keys = form.getFieldValue('keys');
@@ -176,11 +179,11 @@ class AgencyRelation extends React.Component {
         message.error(`${formatMessage({id: 'common.save.filed'})/* 保存失败 */}, ${res.data.message}`);
       }
     }).catch((e)=>{
-      this.setState({loading: false});
-      if(e.response.data.message){
+      if(e.response){
         message.error(`${formatMessage({id: 'common.save.filed'})/* 保存失败 */}, ${e.response.data.message}`);
+        this.setState({loading: false});
       } else {
-        message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+        console.log(e);
       }
     })
   };
@@ -249,15 +252,17 @@ class AgencyRelation extends React.Component {
         } catch(e) {
           proxyOID = this.state.editItem;
         }
+        let startDate = this.state.startAgencyDate;
+        let endDate = this.state.endAgencyDate;
         let billProxyRuleDTO = {
-          'enabled': (values.endDate && (new Date(values.endDate) < new Date())) ? false : values.enabled,
-          'endDate': values.endDate ? values.endDate.format('YYYY-MM-DD') : null ,
+          'enabled': (endDate && (new Date(endDate) < new Date())) ? false : values.enabled,
+          'endDate': endDate ? moment(endDate).format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
           'proxyName': proxyOID.fullName || proxyOID.proxyName,
           'proxyOID': proxyOID.userOID || proxyOID.proxyOID,
-          'proxyTimeRange': values.endDate ? 102 : 101,
+          'proxyTimeRange': endDate ? 102 : 101,
           'ruleOID': this.state.editItem.ruleOID,
-          'startDate': values.startDate.format('YYYY-MM-DD'),
+          'startDate': moment(startDate).format('YYYY-MM-DD'),
           'status': proxyOID.status,
           'customFormDTOs': this.state.chosenOptions[-1],
           'emplyeeId': proxyOID.emplyeeId || proxyOID.employeeID
@@ -281,8 +286,8 @@ class AgencyRelation extends React.Component {
   };
 
   //选择代理单据，key==-1表示编辑的代理关系，key>0表示新增的代理关系
-  onOptionsChange = (values, key, type, index) => {
-    console.log(key, index);
+  onOptionsChange = (values, key, type) => {
+    let index = this.state.editItemIndex;
     let chosenOptions = this.state.chosenOptions;
     let bill1Options = this.state.billOptions[key].bill1Options;
     let bill2Options = this.state.billOptions[key].bill2Options;
@@ -304,9 +309,9 @@ class AgencyRelation extends React.Component {
       });
       let editBillSelectedItems = this.state.editBillSelectedItems;
       let editBillSelectedOID = this.state.editBillSelectedOID;
-      index && (editBillSelectedItems[index] = chosenOptions[-1]);
-      index && (editBillSelectedOID[index].bill1 = chosenOptions1OIDs[-1]);
-      index && (editBillSelectedOID[index].bill2 = chosenOptions2OIDs[-1]);
+      (index || index == 0) && (editBillSelectedItems[index] = chosenOptions[-1]);
+      (index || index == 0) && (editBillSelectedOID[index].bill1 = chosenOptions1OIDs[-1]);
+      (index || index == 0) && (editBillSelectedOID[index].bill2 = chosenOptions2OIDs[-1]);
       this.setState({ chosenOptions, editBillSelectedItems, editBillSelectedOID })
     })
   };
@@ -336,11 +341,21 @@ class AgencyRelation extends React.Component {
 
   //修改结束代理日期时间
   onEndChange = (endAgencyDate) => {
+    if (endAgencyDate) {
+      const endDate = new Date(new Date(endAgencyDate).getTime() + 86400000);
+      if(endDate < new Date()) {
+        this.setState({ switchDisabled: true })
+      } else {
+        this.setState({ switchDisabled: false })
+      }
+    } else {
+      this.setState({ switchDisabled: false })
+    }
     this.setState({ endAgencyDate })
   };
 
   //删除某个代理关系
-  handleDelete = (e, index) => {
+  handleDelete = (index) => {
     let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
     let principalInfo = this.state.principalInfo;
     billProxyRuleDTOs = billProxyRuleDTOs.slice(0, index).concat(billProxyRuleDTOs.slice(index+1));
@@ -384,14 +399,19 @@ class AgencyRelation extends React.Component {
           bill1Options: bill1Options,
           bill2Options: bill2Options
         };
-        this.setState({ billOptions })
+        this.setState({
+          billOptions,
+          startAgencyDate: moment(editItem.startDate),
+          endAgencyDate: editItem.proxyTimeRange == '102' ? moment(editItem.endDate) : null
+        });
+        const endDate = new Date(new Date(editItem.endDate).getTime() + 86400000);
+        if(editItem.proxyTimeRange == 102 && endDate < new Date()) {  //proxyTimeRange:102 自定义结束时间
+          this.setState({ switchDisabled: true })
+        } else {
+          this.setState({ switchDisabled: false })
+        }
       });
     }
-
-    this.setState({
-      startAgencyDate: moment().locale('zh-cn').utcOffset(8),
-      endAgencyDate: null
-    });
 
     billProxyRuleDTOs[index].isEdit = isEdit;
     let chosenOptions = this.state.chosenOptions;
@@ -400,13 +420,14 @@ class AgencyRelation extends React.Component {
     chosenOptions[-1] = this.state.editBillSelectedItems[index];
     chosenOptions1OIDs[-1] = this.state.editBillSelectedOID[index].bill1;
     chosenOptions2OIDs[-1] = this.state.editBillSelectedOID[index].bill2;
-    this.setState({ billProxyRuleDTOs, statusValue, chosenOptions, chosenOptions1OIDs, chosenOptions2OIDs, editItem })
+    let editItemIndex = index;
+    this.setState({ billProxyRuleDTOs, statusValue, chosenOptions, chosenOptions1OIDs, chosenOptions2OIDs, editItem, editItemIndex })
   };
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { loading, data, statusValue, billOptions, proxyVerify, fetching, billProxyRuleDTOs, editBillSelectedOID } = this.state;
+    const { loading, data, statusValue, billOptions, proxyVerify, fetching, billProxyRuleDTOs, editBillSelectedOID, switchDisabled } = this.state;
     const formItemLayout = {
       labelCol: { span: 1 },
       wrapperCol: { span: 23 },
@@ -512,36 +533,30 @@ class AgencyRelation extends React.Component {
       overflow: 'hidden',
     };
     const agencyInfo = billProxyRuleDTOs.map((item, index) => {
-      const menu = (
-        <Menu>
-          <Menu.Item>
-            <Popconfirm onConfirm={(e) => this.handleDelete(e, index)} title="你确定要删除这条数据吗?">
-              <a>删除</a>
-            </Popconfirm>
-          </Menu.Item>
-          <Menu.Item><a>复制</a></Menu.Item>
-        </Menu>
-      );
       const panelHeader = (
         <div>
           <span className="header-principal">代理人：{item.proxyName} - {item.emplyeeId}</span>
           <span className="header-more">
             <a onClick={(e) => {this.handleEdit(e, index, true, item)}}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
             <span className="ant-divider"/>
-            <Dropdown overlay={menu}><a onClick={(e)=>{e.stopPropagation()}}>更多 <Icon type="down"/></a></Dropdown>
+            <Popconfirm onConfirm={() => {this.handleDelete(index)}} onClick={e => e.stopPropagation()} title="你确定要删除这条数据吗?">
+              <a>{formatMessage({id: 'common.delete'})/* 删除 */}</a>
+            </Popconfirm>
           </span>
         </div>
       );
       let alertEndDateMessage;
       let alertLeavingDateMessage;
-      if(item.proxyTimeRange == 102 && new Date(item.endDate) < new Date()) {  //proxyTimeRange:102 自定义结束时间
+      const endDate = new Date(new Date(item.endDate).getTime() + 86400000);
+      if(item.proxyTimeRange == 102 && endDate < new Date()) {  //proxyTimeRange:102 自定义结束时间
         item.enabled = false;
         alertEndDateMessage = (
-          <Alert message={`该代理关系在 ${moment(item.endDate).format("YYYY-MM-DD")}号 失效`}
+          <Alert message={`该代理关系在 ${endDate.format("yyyy-MM-dd")}号 失效`}
                  type="warning" showIcon
                  style={{marginTop:'3px'}} />)
       }
       if(item.status == 1003) { //status:1003 已离职
+        item.enabled = false;
         alertLeavingDateMessage = (
           <Alert message={`员工 ${item.proxyName}-${item.emplyeeId} 已于 ${moment(item.leavingDate).format("YYYY-MM-DD")}日离职，该代理关系已于该日期内自动禁用`}
                  type="warning" showIcon
@@ -604,6 +619,7 @@ class AgencyRelation extends React.Component {
               <Switch defaultChecked={item.enabled}
                       checkedChildren={<Icon type="check" />}
                       unCheckedChildren={<Icon type="cross" />}
+                      disabled={switchDisabled}
                       onChange={(checked) => {this.handleStatusChange(checked, -1)}}/>
             )}
           </FormItem>
@@ -618,7 +634,7 @@ class AgencyRelation extends React.Component {
                     initialValue: editBillSelectedOID[index].bill1
                   })(
                     <CheckboxGroup options={billOptions[-1] ? billOptions[-1].bill1Options: []}
-                                   onChange={(value) => {this.onOptionsChange(value, -1, 'bill1Options', index)}} />
+                                   onChange={(value) => {this.onOptionsChange(value, -1, 'bill1Options')}} />
                   )}
                 </FormItem>
                 <FormItem {...formItemLayout}
@@ -627,7 +643,7 @@ class AgencyRelation extends React.Component {
                     initialValue: editBillSelectedOID[index].bill2
                   })(
                     <CheckboxGroup options={billOptions[-1] ? billOptions[-1].bill2Options: []}
-                                   onChange={(value) => {this.onOptionsChange(value, -1, 'bill2Options', index)}} />
+                                   onChange={(value) => {this.onOptionsChange(value, -1, 'bill2Options')}} />
                   )}
                 </FormItem>
               </div>
