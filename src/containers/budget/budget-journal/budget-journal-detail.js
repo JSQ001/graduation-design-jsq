@@ -75,9 +75,9 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
-        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+       /* {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:1},
-          labelKey: 'structureName', valueKey: 'id'},
+          labelKey: 'structureName', valueKey: 'id'},*/
 
         /*预算版本*/
         {type: 'list', id: 'versionName',
@@ -450,7 +450,7 @@ class BudgetJournalDetail extends React.Component {
   handlePut=()=>{
     let headerAndListData = this.state.headerAndListData;
     console.log(headerAndListData.list.length);
-    if(headerAndListData.list.length>0) {
+    if(headerAndListData.list.length>0 ) {
       let headerId = headerAndListData.dto.id;
       console.log(headerId)
       httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${headerId}`).then((req) => {

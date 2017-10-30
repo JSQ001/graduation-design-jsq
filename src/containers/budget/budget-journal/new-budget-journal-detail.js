@@ -16,6 +16,7 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 
 let companyId ='';
+let rateData=1;
 
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class NewBudgetJournalDetail extends React.Component {
           url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
         },
         /*预算项目*/
-        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
           labelKey:'itemName',valueKey:'id',
           url:`${config.budgetUrl}/api/budget/items/find/all`,
         },
@@ -49,7 +50,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*年度*/
         {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,},
         /*币种*/
-        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],
+        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
           labelKey:'attribute5',valueKey:'attribute4',
           url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
         },
@@ -133,6 +134,7 @@ class NewBudgetJournalDetail extends React.Component {
       case 'currency':{
         console.log(event)
         event =JSON.parse(event);
+        rateData =event.attribute11;
         this.props.form.setFieldsValue({
           rate:event.attribute11
         });
@@ -141,7 +143,7 @@ class NewBudgetJournalDetail extends React.Component {
       }
       case 'amount':{
 
-        let functionalAmount =  event;
+        let functionalAmount =  event*rateData;
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
@@ -421,7 +423,7 @@ class NewBudgetJournalDetail extends React.Component {
           "functionalAmount": value.functionalAmount,
           "quantity": value.quantity,
           "unit": "1",
-          "remark": "1",
+          "remark": value.remark,
           "periodYear": value.periodYear,
           "periodQuarter": "2",
           "periodName": "201701",

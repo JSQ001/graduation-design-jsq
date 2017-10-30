@@ -57,11 +57,11 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*预算期间*/
-          title: "时间", key: "periodName", dataIndex: 'periodName',
+          title: "期间", key: "periodName", dataIndex: 'periodName',
           render(recode,text){
             switch (text.periodStrategy){
-              case 'MONTH':{ return ``}
-              case 'QUARTER':{ return `${text.periodYear}/${text.periodQuarter}`}
+              case 'MONTH':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
+              case 'QUARTER':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
               case 'YEAR':{ return `${text.periodYear}`}
 
             }
