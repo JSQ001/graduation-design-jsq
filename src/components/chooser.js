@@ -104,7 +104,7 @@ class Chooser extends React.Component {
           disabled={disabled}
         >
         </Select>
-        <div className="chooser-number" onClick={this.showList}>
+        <div className="chooser-number" onClick={() => { !this.props.disabled && this.showList() }}>
           已选择 {value.length} 条
         </div>
         <ListSelector visible={showListSelector}
