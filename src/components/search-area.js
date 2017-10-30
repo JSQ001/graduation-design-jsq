@@ -64,7 +64,6 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
-    console.log(values)
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
 
@@ -79,7 +78,6 @@ class SearchArea extends React.Component{
           values[item.id] = result;
         }
       }
-
       if(item.type === 'list' && values[item.id]){
         if(item.entity){
           let result = [];
@@ -90,13 +88,11 @@ class SearchArea extends React.Component{
         } else {
           let result = [];
           values[item.id].map(value => {
-            result.push(value.key);
+            result.push(value[item.valueKey]);
           });
           values[item.id] = result;
         }
       }
-
-
     });
     this.props.submitHandle(values)
   };
@@ -256,7 +252,6 @@ class SearchArea extends React.Component{
    *
    */
   setValues = (options) => {
-    console.log(options);
     Object.keys(options).map(key => {
       let searchForm = this.state.searchForm;
       searchForm.map((searchItem, index) => {
@@ -306,6 +301,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
+                  allowClear
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
@@ -320,6 +316,7 @@ class SearchArea extends React.Component{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
+                  allowClear
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
