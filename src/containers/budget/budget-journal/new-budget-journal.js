@@ -193,8 +193,6 @@ class NewBudgetJournalFrom extends React.Component {
         this.props.form.setFieldsValue({
           periodStrategy:item.periodStrategy
         });
-
-
       }
     });
 

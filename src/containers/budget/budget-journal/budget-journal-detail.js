@@ -96,7 +96,7 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1}
         },
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002, disabled: true},
-
+        {type:'file',label: this.props.intl.formatMessage({id:"budget.attachment"}),id:'file'}
 
       ],
 

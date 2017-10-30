@@ -303,7 +303,6 @@ class SearchArea extends React.Component{
       }
       //选择组件
       case 'select':{
-        console.log(item.options)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
