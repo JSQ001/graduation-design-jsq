@@ -7,15 +7,13 @@ import { injectIntl } from 'react-intl';
 
 import { Tabs, Button, Table, Form, InputNumber, Checkbox, Row, Col, Dropdown, Menu, message} from 'antd'
 
-import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
 
 import SlideFrame from 'components/slide-frame'
 import UpdateCallbackSetting from 'containers/setting/callback-setting/update-callback-setting'
 import createApiCallbackSetting from 'containers/setting/callback-setting/create-api-callback-setting'
-
+import callbackSetting from 'images/callback-setting.jpg'
 import 'styles/setting/callback-setting/callback-setting.scss'
 
 const FormItem = Form.Item;
@@ -25,6 +23,7 @@ class CallBackSetting extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      loading: true,
       status:"启用",
       tabsKey:"api",
       data: [],
@@ -49,13 +48,13 @@ class CallBackSetting extends React.Component{
             title:"ID", key: "id", dataIndex: 'id'
           },
           {                        /*公司代码*/
-            title:"API_CODE", key: "description", dataIndex: 'description'
+            title:"API_CODE", key: "Code", dataIndex: 'Code'
           },
           {                        /*公司类型*/
             title:"API版本", key: "companyType", dataIndex: 'companyType'
           },
           {                        /*启用*/
-            title:"API描述", key: "enablement", dataIndex: 'enablement',width:'10%'
+            title:"API描述", key: "description", dataIndex: 'description',width:'10%'
           },
           {                        /*启用*/
             title:"状态", key: "enablement", dataIndex: 'enablement',width:'10%'
@@ -83,16 +82,32 @@ class CallBackSetting extends React.Component{
       },
     }
   }
+  componentDidMount(){
+    spriteAnimation(document.getElementsByClassName("picture"),callbackSetting, 75, 75, 60)
+
+  };
 
   componentWillMount(){
     this.setState({
       columns: this.state.columnGroup.api
-    })
+    }, this.getList())
   }
 
   handleMenuClick(e) {
     message.info('Click on menu item.');
     console.log('click', e);
+  }
+
+  //获取数据
+  getList(){
+    let api = this.state.tabsKey === "api" ? "/api/customizedApi" : `/push/api/customizedApiCallback?companyOid=${this.props.company.companyOID}`;
+    let url =  `${config.baseUrl}`+api+`?page=${this.state.pagination.current}`+`&size=${this.state.pagination.pageSize}`;
+    console.log(url)
+    httpFetch.get(url).then((response)=>{
+      console.log(response)
+
+
+    })
   }
 
   //Tabs点击
@@ -104,7 +119,7 @@ class CallBackSetting extends React.Component{
       tabsKey: key,
       columns: key === 'api' ? this.state.columnGroup.api : this.state.columnGroup.apiSetting
     },()=>{
-      key === "company" ? this.queryCompany : this.queryDimension ;
+     this.getList();
     });
   };
 
@@ -147,7 +162,7 @@ class CallBackSetting extends React.Component{
   }
 
   render(){
-    const { pagination, columns, data, showSlideFrame, showSlideFrameAPI} = this.state;
+    const { loading, pagination, columns, data, showSlideFrame, showSlideFrameAPI} = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 5 },
@@ -155,7 +170,7 @@ class CallBackSetting extends React.Component{
     };
     const menu = (
       <Menu onClick={this.handleMenuClick}>
-        <Menu.Item key="isEnabled"><span className="status-options">启用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
+        <Menu.Item key="isEnabled"><span className="status-options">启用<span className="status-options-icon"/></span></Menu.Item>
         <Menu.Item key="disabled"><span className="status-options">停用&nbsp;&nbsp;&nbsp;&nbsp;</span><div className="status-options-icon"/></Menu.Item>
       </Menu>
     );
@@ -292,6 +307,7 @@ class CallBackSetting extends React.Component{
           {this.renderTableHeader()}
         </div>
         <Table
+          loading={loading}
           dataSource={data}
           columns={columns}
           pagination={pagination}
@@ -318,8 +334,11 @@ CallBackSetting.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    organization: state.budget.organization,
+    company: state.login.company
+  }
 }
 const WrappedCallBackSetting = Form.create()(CallBackSetting);
 

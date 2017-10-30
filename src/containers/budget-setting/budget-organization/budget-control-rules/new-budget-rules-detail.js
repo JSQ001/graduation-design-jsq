@@ -26,7 +26,7 @@ class NewBudgetRulesDetail extends React.Component{
       filtrateMethodArray: [],    //值列表：取值方式
       summaryOrDetailArray: [],   //值列表：取值范围
       ruleParamsArray: [],        //规则参数值列表
-      organizationId: '908139656192442369', //TODO:默认组织ID
+      organizationId: "",
       valueListMap:{
         ruleParamType: 2012,
         filtrateMethod: 2013,
@@ -42,7 +42,6 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillMount() {
-    console.log(this.props.params)
     let organizationIdParams = {organizationId : this.state.organizationId};
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -62,7 +61,14 @@ class NewBudgetRulesDetail extends React.Component{
         listExtraParams: organizationIdParams,
         selectorItem: undefined
       },
-      'BUDGET_ITEM': {},
+      'BUDGET_ITEM': {
+        listType: 'budget_item',
+        labelKey: 'id',
+        valueKey: 'itemName',
+        codeKey: 'itemCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
       'CURRENCY': {},
 
       'COMPANY': {},
@@ -85,6 +91,7 @@ class NewBudgetRulesDetail extends React.Component{
   getValueList(code, name){
     name.splice(0,name.length)
     this.getSystemValueList(code).then((response)=>{
+      console.log(response)
       response.data.values.map((item)=>{
         let option = {
           key: item.code,
@@ -102,6 +109,7 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillReceiveProps(nextprops){
     this.setState({
       ruleId: nextprops.params,
+      organizationId: this.props.organization.id
     })
   }
 
@@ -173,7 +181,6 @@ class NewBudgetRulesDetail extends React.Component{
   };
 
   handleValueChange = (value,key)=>{
-    console.log(value)
     if(typeof value === 'undefined'){
       this.setState({
         lowerLimitHelp: "请先选择规则参数",
@@ -224,15 +231,16 @@ class NewBudgetRulesDetail extends React.Component{
                         ruleParamsHelp: null,
                       });
                     }
-
                     //规则参数类型修改后，规则参数，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"ruleParameter":"","parameterLowerLimit":"","parameterUpperLimit":""});
+                    this.props.form.setFieldsValue({"ruleParameter":""});
+                    //this.props.form.resetFields("parameterLowerLimit");
                     let ruleParameterCode;
                     switch (value){
                       case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET; break;
                       case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;break;
                       case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;break
                     }
+                    console.log(ruleParameterCode)
                     this.getValueList(ruleParameterCode,ruleParamsArray);
                     callback();
                   }
@@ -296,7 +304,6 @@ class NewBudgetRulesDetail extends React.Component{
               },
                 {
                   validator: (item,value,callback)=>{
-                    console.log(value)
                     this.setState({
                       filtrateMethodHelp: value === "INCLUDE" ?
                         formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
@@ -328,7 +335,6 @@ class NewBudgetRulesDetail extends React.Component{
                 },
                 {
                   validator: (item,value,callback)=>{
-                    console.log(value)
                     this.setState({
                       summaryOrDetailHelp: value === "ALL" ? formatMessage({id:"budget.summaryOrDetailHelp.all"}) /*在上下限值内的明细和汇总规则参数都包括在内*/
                         : value === "SUMMARY"? formatMessage({id:"budget.summaryOrDetailHelp.summary"})
@@ -355,14 +361,11 @@ class NewBudgetRulesDetail extends React.Component{
               rules: [
                 {
                   validator:(item,value,callback)=>{
-                    console.log(value);
                     if(typeof value !== 'undefined'){
+                      let ruleParam = this.state.ruleParam;
+                      ruleParam.lowerValue = value;
                       this.setState({
-                        ruleParam:{
-                          type: this.state.ruleParam.type,
-                          name: this.state.ruleParam.name,
-                          lowerValue: value,
-                        }
+                        ruleParam
                       })
                     }
                     callback();
@@ -390,15 +393,11 @@ class NewBudgetRulesDetail extends React.Component{
               rules: [
                 {
                   validator:(item,value,callback)=>{
-                    console.log(value)
                     if(typeof value !== 'undefined'){
+                      let ruleParam = this.state.ruleParam;
+                      ruleParam.upperValue = value;
                       this.setState({
-                        ruleParam:{
-                          type: this.state.ruleParam.type,
-                          name: this.state.ruleParam.name,
-                          lowerValue: this.state.ruleParam.lowerValue,
-                          upperValue: value,
-                        }
+                        ruleParam
                       })
                     }
                     callback();
@@ -427,7 +426,7 @@ class NewBudgetRulesDetail extends React.Component{
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
-            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/>  隐藏的input标签，用来取消list控件的focus事件
+            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/>
           </div>
         </Form>
       </div>

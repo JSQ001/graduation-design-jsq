@@ -29,12 +29,22 @@ class CreateOrUpdateBank extends React.Component{
       bankTypeHelp: "",
       bank:{},
       isEditor: false,
+      bankType:[],
     };
     this.validateBankCode = debounce(this.validateBankCode,1000)
   }
 
   componentWillMount(){
     console.log(this.props)
+    let bankType = [];
+    this.getSystemValueList(2103).then((response)=>{
+      response.data.values.map((item)=>{
+        bankType.push({key:item.code, label:item.messageKey})
+      })
+    });
+    this.setState({
+      bankType: bankType
+    })
   }
 
 
@@ -169,7 +179,7 @@ class CreateOrUpdateBank extends React.Component{
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
 
-    const { defaultStatus, loading, bankTypeHelp, bank, isEditor} = this.state;
+    const { defaultStatus, loading, bankTypeHelp, bank, bankType, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -177,12 +187,6 @@ class CreateOrUpdateBank extends React.Component{
 
     console.log(this.state.defaultStatus)
 
-    const bankType = [
-      {id:"cashBank", value:"现金银行"},
-      {id:"clearingBank", value:"清算银行"},
-      {id:"innerBank", value:"内部银行"},
-      {id:"commonBank", value:"一般银行"}
-    ];
     const bankTypeOptions = bankType.map((item)=><Option key={item.id}>{item.value}</Option>)
     return(
       <div className="new-bank-definition">
@@ -267,8 +271,9 @@ class CreateOrUpdateBank extends React.Component{
                 },
                 {
                   validator: (item,value,callback)=>{
+                    console.log(value)
                     this.setState({
-                      bankTypeHelp: value === "innerBank" ? formatMessage({id:"bank.innerBankInfo"}) : null
+                      bankTypeHelp: value === "INTERNAL" ? formatMessage({id:"bank.innerBankInfo"}) : null
                     });
                     callback()
                   }
@@ -276,7 +281,9 @@ class CreateOrUpdateBank extends React.Component{
               ],
             })(
               <Select placeholder={ formatMessage({id:"common.please.select"})}>
-                {bankTypeOptions}
+                {
+                  bankType.map((item)=><Option key={item.key}>{item.label}</Option>)
+                }
               </Select>
             )}
           </FormItem>

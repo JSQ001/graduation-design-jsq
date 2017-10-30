@@ -46,10 +46,15 @@
       display:-moz-inline-box;
       display:inline-block;
     }
+    .formItem-label-group{
+      line-height: 18px;
+      margin-top: 6px;
+    }
     .formItem-value-info{
       margin-left:33px;
       display:-moz-inline-box;
       display:inline-block;
+      width: 340px;
     }
     .formItem-label-group{
       width: 100px;
