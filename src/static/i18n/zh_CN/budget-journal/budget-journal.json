@@ -65,7 +65,9 @@
   "budget.leading.susses":"导入成功:",
   "budget.leading.filed":"导入失败:",
   "budget.lastStep":"下一步",
-  "budget.Item":"预算项目"
+  "budget.item":"预算项目",
+  "budget.createdDate":"创建时间",
+  "budget.attachment":"附件"
 
 
 }

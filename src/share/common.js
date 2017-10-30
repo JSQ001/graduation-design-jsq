@@ -86,6 +86,7 @@ Date.prototype.format = function (fmt) {
  * 2019 金额／数量
  * 2020 期间汇总标志
  * 2021 预算季度
+ * 2022 预算控制消息
  * 2101 汇率方法
  * 2102 汇率标价方法
  * 2103 银行类型
@@ -112,6 +113,7 @@ React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config
  * @param hoverDom hover所需要的dom
  */
 window.spriteAnimation = function(dom, img, height, width, total, duration = 500, hoverDom = dom){
+  console.log(img);
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
@@ -136,6 +138,19 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
     }, duration / total)
   };
 };
+
+//公用接口
+React.Component.prototype.service = {
+  //获取货币
+  getCurrencyList : () => {
+    return httpFetch.get(`${config.baseUrl}/api/standardCurrency/getCurrency?base=CNY`)
+  },
+  //获取部门组
+  getDepartmentGroup: () => {
+    return httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectByInput`)
+  }
+};
+
 
 
 

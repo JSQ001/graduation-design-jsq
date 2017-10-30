@@ -30,7 +30,8 @@ class NewBudgetJournalFrom extends React.Component {
       fromData:{ periodYear:'',},
       idSelectJournal:false,
       isStructureIn:false,
-
+      periodStrategy:[],
+      periodPeriodQuarter:[]
 
     };
   }
@@ -39,8 +40,11 @@ class NewBudgetJournalFrom extends React.Component {
 
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
+
     const data =value;
     console.log(value);
+
+    console.log(this.props.user);
 
     let userData ={
       "dto" :
@@ -53,15 +57,15 @@ class NewBudgetJournalFrom extends React.Component {
           "structureName":"structureName",
           "periodYear":value.periodYear,
           "periodQuarter":value.periodQuarter,
-          "periodName": "11",
+          "periodName":value.periodName,
           "description": "1111",
           "reversedFlag":"N",
           "sourceBudgetHeaderId":undefined,
           "sourceType":undefined,
           "employeeId":this.props.user.id,
           "employeeName":this.props.user.fullName,
-          "periodNumber": "2",
-          "unitId": "12345678",
+          "periodNumber":"2",
+          "unitId": "1",
           "unitName":"periodNumber",
           'versionId':value.versionName[0].id,
           'versionName':value.versionName[0].versionName,
@@ -70,7 +74,9 @@ class NewBudgetJournalFrom extends React.Component {
           "status":"NEW",
           "journalTypeId":value.journalTypeName[0].journalTypeId,
           "journalTypeName":value.journalTypeName[0].journalTypeName,
-          "versionNumber":"1"
+          "periodStrategy":value.periodStrategy,
+          "versionNumber":"1",
+          "attachmentOID":'',
         }
       ,
       "list":[]
@@ -78,6 +84,47 @@ class NewBudgetJournalFrom extends React.Component {
 
     this.saveHeard(userData);
 
+  }
+
+
+  componentWillMount(){
+    this.getPeriodStrategy();
+  }
+
+
+  //获取编制期段
+  getPeriodStrategy=()=>{
+    this.getSystemValueList(2002).then((response)=>{
+      console.log(response.data);
+      let periodStrategy = [];
+      response.data.values.map((item)=>{
+        let option = {
+          key: item.code,
+          label: item.messageKey
+        };
+        periodStrategy.push(option);
+      });
+      this.setState({
+        periodStrategy: periodStrategy
+      })
+    });
+  }
+
+//获取季度
+  getPeriodStrategy=()=>{
+    this.getSystemValueList(2021).then((response)=>{
+      let periodPeriodQuarter = [];
+      response.data.values.map((item)=>{
+        let option = {
+          key: item.code,
+          label: item.messageKey
+        };
+        periodPeriodQuarter.push(option);
+      });
+      this.setState({
+        periodPeriodQuarter: periodPeriodQuarter
+      })
+    });
   }
 
   //保存日记账头
@@ -99,9 +146,6 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-  componentWillMount(){
-
-  }
 
   handleFocus = (Type) => {
     this.refs.blur.focus();
@@ -121,7 +165,6 @@ class NewBudgetJournalFrom extends React.Component {
   //选择预算日记账类型，设置对应的预算表选
   handleJournalTypeChange=(values)=>{
     let value = values[0];
-    console.log(value);
     this.setState({
       idSelectJournal:true
     })
@@ -146,27 +189,55 @@ class NewBudgetJournalFrom extends React.Component {
   handleSelectChange=(values)=>{
     console.log(values);
     this.state.structureGroup.map((item)=>{
-      if(item.id=values){
+      if(item.id==values){
         this.props.form.setFieldsValue({
-        //  periodYear:item.periodYear ,
-
           periodStrategy:item.periodStrategy
-
         });
-
-        this.props.form.setFieldsValue({
-          periodYear:2017
-        })
-
-        this.props.form.setFieldsValue({
-          periodQuarter:item.periodQuarter
-        })
       }
     });
 
+  }
 
 
+  //选择期间编制期间段，的时候获取年度，季度，和期间
 
+  handSelectPeriodStrategy=(values)=>{
+    console.log(values);
+    const data =new Date();
+    const year = data.getFullYear();
+    const month =data.getMonth()+1;
+    const po=(month<2?2:month);
+    const quarter =(po-1)/3+1;
+
+
+    if(values=="YEAR"){
+      this.props.form.setFieldsValue({
+        periodYear:year
+      })
+
+    }else if(values=="QUARTER"){
+      this.props.form.setFieldsValue({
+        periodYear:year
+      })
+
+      this.props.form.setFieldsValue({
+        periodQuarter:quarter
+      })
+
+    }else {
+      this.props.form.setFieldsValue({
+        periodYear:year
+      })
+
+      this.props.form.setFieldsValue({
+        periodQuarter:quarter
+      })
+
+      this.props.form.setFieldsValue({
+        periodName:month
+      })
+
+    }
   }
 
 
@@ -196,17 +267,42 @@ class NewBudgetJournalFrom extends React.Component {
   render(){
     const { getFieldDecorator } = this.props.form;
     const organization =this.props.organization;
-    const { isEnabled, listSelectedData,showListSelector,listType,listExtraParams,selectorItem,structureGroup} = this.state;
+    const { structureGroup,periodStrategy,periodPeriodQuarter} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
 
+    /*  const strategyOptions = [];
+     for (let i = 0; i < structureGroup.length ; i++) {
+     strategyOptions.push(<Option key={i} value={structureGroup[i].id} >  {structureGroup[i].structureName}</Option>);
+     }
+     */
+
+    const strategyOptions = structureGroup.map((item)=> <Option key={item.id} value={item.id}>{item.structureName}</Option>);
+    const periodStrategyOptions = periodStrategy.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
+    const periodPeriodQuarterOptions = periodPeriodQuarter.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
+    let nowYear = new Date().getFullYear();
+    let yearOptions = [];
+    for(let i = nowYear - 20; i <= nowYear + 20; i++)
+      yearOptions.push({label: i, key: i})
+    const yearOptionsData = yearOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
+
+    let monthOptions = [];
+    for(let i = 1; i <= 12; i++)
+      monthOptions.push({label: i, key: i})
+    const monthOptionsData = monthOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
+
+
     const props = {
       name: 'file',
       multiple: true,
       showUploadList: false,
-      action: '//jsonplaceholder.typicode.com/posts/',
+      action:`${config.baseUrl}/api/upload/attachment`,
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
+      },
       onChange(info) {
         const status = info.file.status;
         if (status !== 'uploading') {
@@ -220,13 +316,6 @@ class NewBudgetJournalFrom extends React.Component {
       },
     };
 
-
-  //let strategyOptions = structureGroup.map((item)=> <Option  value={item.id}>{item.structureName}</Option>);
-
-    const strategyOptions = [];
-    for (let i = 0; i < structureGroup.length ; i++) {
-      strategyOptions.push(<Option key={i} value={structureGroup[i].id} >  {structureGroup[i].structureName}</Option>);
-    }
 
     return (
       <div className="new-budget-journal">
@@ -266,7 +355,7 @@ class NewBudgetJournalFrom extends React.Component {
             {getFieldDecorator('companyId', {
               rules: [{
                 required: true,
-                message: '',
+                message: 'this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"journalTypeName"}',
               }],
               initialValue: this.props.company.name
             })(
@@ -286,7 +375,7 @@ class NewBudgetJournalFrom extends React.Component {
               type='budget_journal_type'
               labelKey='journalTypeName'
               valueKey='journalTypeId'
-              single="true"
+              single={true}
               listExtraParams={{"organizationId":1}}
               onChange={this.handleJournalTypeChange}
               />
@@ -318,15 +407,13 @@ class NewBudgetJournalFrom extends React.Component {
             {getFieldDecorator('periodStrategy', {
               rules: [{
                 required: true,
-                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"期段"})
+                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"编制期段"})
               }],
 
             })(
 
-              <Select>
-                <Option key="YEAR" value='年'>年</Option>
-                <Option key="MONTH" value='月'>月</Option>
-                <Option key="QUARTER" value='季度'>季度</Option>
+              <Select onSelect={this.handSelectPeriodStrategy}>
+                {periodStrategyOptions}
               </Select>
             )}
           </FormItem>
@@ -341,12 +428,47 @@ class NewBudgetJournalFrom extends React.Component {
             })(
 
               <Select>
-                <Option key="2017" value='2017'>2017</Option>
-                <Option key="2018" value='2018'>2018</Option>
-                <Option key="2019" value='2019'>2019</Option>
+                {yearOptionsData}
               </Select>
             )}
           </FormItem>
+
+
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.periodQuarter"})} >
+            {getFieldDecorator('periodQuarter', {
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"季度"})
+              }],
+
+            })(
+
+              <Select>
+                {periodPeriodQuarterOptions}
+              </Select>
+            )}
+          </FormItem>
+
+
+          {/*periodName*/}
+
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.periodName"})} >
+            {getFieldDecorator('periodName', {
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"期间"})
+              }],
+
+            })(
+
+              <Select>
+                {monthOptionsData}
+              </Select>
+            )}
+          </FormItem>
+
+
+
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.version"})} >
             {getFieldDecorator('versionName', {
@@ -360,7 +482,7 @@ class NewBudgetJournalFrom extends React.Component {
                 type='budget_versions'
                 labelKey='versionName'
                 valueKey='id'
-                single="true"
+                single={true}
                 listExtraParams={{"organizationId":1}}
               />
             )}
@@ -379,7 +501,7 @@ class NewBudgetJournalFrom extends React.Component {
               type='budget_scenarios'
               labelKey='scenarioName'
               valueKey='id'
-              single="true"
+              single={true}
               listExtraParams={{"organizationId":1}}
              />
 
@@ -392,11 +514,15 @@ class NewBudgetJournalFrom extends React.Component {
             label="附件"
           >
             <div className="dropbox">
-              {getFieldDecorator('dragger', {
+              {getFieldDecorator('file', {
                 valuePropName: 'fileList',
                 getValueFromEvent: this.normFile,
               })(
-                <Upload.Dragger name="files" action="/upload.do">
+
+
+                <Upload.Dragger  {...props}
+
+                >
                   <p className="ant-upload-drag-icon">
                     <Icon type="cloud-upload-o" />
                   </p>

@@ -4,7 +4,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Modal,message,Popconfirm,notification,Icon,Row,Col,Input} from 'antd';
+import { Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+const Step =Steps.Step;
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
 
@@ -49,7 +50,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         onSelectAll: this.onSelectAll
       },
       organization: {},
-      infoDate: [],
+      infoData: [],
       infoList: [
         {
           type: 'input',
@@ -205,19 +206,11 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   componentWillMount=()=>{
     console.log(this.props.params.journalCode);
-    this.getOrganization();
+
     this.getDataByBudgetJournalCode();
   }
 
-  //获取预算组织
-  getOrganization=()=> {
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((request) => {
-      console.log(request.data)
-      this.setState({
-        organization: request.data
-      })
-    })
-  }
+
 
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
@@ -230,7 +223,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       let headerData =request.data.dto;
       this.setState({
         headerAndListData:request.data,
-        infoDate:headerData,
+        infoData:headerData,
         data:listData,
         pagination: {
           total:request.data.list.length ,
@@ -276,9 +269,31 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   }
 
+  //返回状态
+  getStatus=()=>{
+    const infoData = this.state.infoData;
+      switch (infoData.status){
+        case 'NEW':{ return <Badge status="processing" text="新建" />}
+        case 'SUBMIT':{ return   <Badge status="warning" text="等待" />}
+        case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
+        case 'CHECKED':{return    <Badge status="success" text="通过" />}
+      }
+  }
+
+  //获得总金额
+  getAmount=()=>{
+      const data = this.state.data;
+      let sum =0;
+      data.map((item)=>{
+       sum+= item.amount;
+      })
+    return "CNY"+" "+sum;
+  }
+
+
 
   render(){
-    const { data, columns,pagination} = this.state;
+    const { data, columns,pagination,infoData} = this.state;
     return(
       <div className="budget-journal-re-check-detail">
 
@@ -289,18 +304,62 @@ class BudgetJournalReCheckDetail extends React.Component {
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div>状态：</div>
-              <div> 等待复核</div>
+              <div className="base-info-title">状态：</div>{/*状态*/}
+              <div className="beep-info-text">
+                {this.getStatus()}
+              </div>
             </Col>
             <Col span={8}>
-              <div>预算日记账编号：</div>
+              <div className="base-info-title">预算日记账编号：</div>{/*预算日记账编号*/}
+              <div className="beep-info-text">{infoData.journalCode||'-'}</div>
             </Col>
             <Col span={8}>
-              <div>总金额：</div>
+              <div className="base-info-title">总金额：</div>{/*总金额*/}
+              <div className="beep-info-cent-text">
+                {this.getAmount()}
+              </div>
             </Col>
             <Col span={8}>
-              <div>申请人：</div>
+              <div className="base-info-title">申请人：</div>{/*申请人*/}
+              <div className="beep-info-text">{infoData.employeeName}</div>
             </Col>
+            <Col span={8}>
+              <div className="base-info-title">岗位：</div>{/*岗位*/}
+              <div className="beep-info-text">{infoData.unitName}</div>
+            </Col>
+            <Col span={8}>
+            <div className="base-info-title">创建日期：</div>{/*创建日期*/}
+            <div className="beep-info-text">{infoData.createdDate}</div>
+          </Col>
+            <Col span={8}>
+            <div className="base-info-title">预算项目类型：</div>{/*预算项目类型*/}
+            <div className="beep-info-text">{infoData.journalTypeName}</div>
+          </Col>
+            <Col span={8}>
+            <div className="base-info-title">预算表：</div>{/*预算表*/}
+            <div className="beep-info-text">{infoData.structureName}</div>
+          </Col>
+            <Col span={8}>
+            <div className="base-info-title">预算场景：</div>{/*预算场景*/}
+            <div className="beep-info-text">{infoData.scenarioName}</div>
+          </Col>
+            <Col span={8}>
+            <div className="base-info-title">预算版本：</div>{/*预算版本*/}
+            <div className="beep-info-text">{infoData.versionName}</div>
+          </Col>
+            <Col span={8}>
+            <div className="base-info-title">{this.props.intl.formatMessage({id: "budget.periodYear"})}：</div>{/*年度*/}
+            <div>{infoData.periodYear}</div>
+          </Col>
+            <Col span={8}>
+              <div className="base-info-title">编制期段：</div>{/*编制期段*/}
+              <div className="beep-info-text">{infoData.periodStrategy}</div>
+            </Col>
+            <Col span={8}>
+              <div className="base-info-title">附件：</div>{/*附件*/}
+              <div className="beep-info-text">{infoData.file}</div>
+            </Col>
+
           </Row>
 
 
@@ -313,14 +372,30 @@ class BudgetJournalReCheckDetail extends React.Component {
                size="middle"
         />
 
+        <div className="collapse">
+          <Collapse bordered={false} defaultActiveKey={['1']}>
+            <Collapse.Panel header="审批历史" key="1">
+              <Steps direction="vertical" size="small" >
+                <Step title="Finished" description="This is a description." />
+                <Step title="In Progress" description="This is a description." />
+                <Step title="Waiting" description="This is a description." icon={<Icon  type="smile-o"/>} />
+              </Steps>
+            </Collapse.Panel>
+
+          </Collapse>
+        </div>
+
+
         <div className="food">
-          <div><span>审批意见：&nbsp;</span><Input style={{}}/></div>
+          <div className="food-input" >
+            <span>审批意见：&nbsp;</span><Input style={{}}/>
+            <Button type="primary" onClick={this.handlePass}>通过</Button>
+            <Button className="button-reject" type="primary"   onClick={this.handleReject}>驳回</Button>
+            <Button className="button-return">返回</Button>
+
+
+          </div>
           <div>
-            <Button onClick={this.handlePass}>通过</Button>
-            <Button onClick={this.handleReject}>驳回</Button>
-
-
-            <Button>返回</Button>
 
 
           </div>

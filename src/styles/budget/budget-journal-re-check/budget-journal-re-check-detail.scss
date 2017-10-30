@@ -20,7 +20,38 @@
     }
     .base-info-cent{
       padding: 16px;
+      .base-info-title{
+        color: #999999;
+      }
+      .beep-info-text{
+        height: 30px;
+      }
+
+      .beep-info-cent-text{
+        height: 30px;
+        color: #ffaa00;
+      }
     }
+
   }
 
+  .food{
+    .food-input{
+      Input{
+        width: 600px;
+      }
+      Button{
+        margin-left: 8px;
+      }
+      .button-reject{
+        background-color: #FF0000;
+        border-color: #FF0000;
+      }
+
+      .button-return{
+        margin-left:32px;
+
+      }
+    }
+  }
 }

@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm, Modal, message } from 'antd'
+import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm, Modal, message, Checkbox } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -13,6 +13,7 @@ import Chooser from 'components/chooser'
 import SlideFrame from 'components/slide-frame'
 import BudgetBalanceCondition from 'containers/budget/budget-balance/budget-balance-condition'
 import menuRoute from 'share/menuRoute'
+import selectorData from 'share/selectorData'
 
 import 'styles/budget/budget-balance/budget-balance.scss'
 import httpFetch from 'share/httpFetch'
@@ -62,7 +63,9 @@ class BudgetBalance extends React.Component {
       conditionCode: '',
       conditionName: '',
       condition: null,
-      saving: false
+      saving: false,
+      searching: false,
+      saveNewCondition: true
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -108,6 +111,11 @@ class BudgetBalance extends React.Component {
       ]},
       {type: 'value_list', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: [], valueListCode: 2019}
     ];
+
+    let itemSelectorItem = selectorData['budget_item'];
+    itemSelectorItem.listExtraParams = organizationIdParams;
+    itemSelectorItem.searchForm[1].getParams = itemSelectorItem.searchForm[2].getParams = organizationIdParams;
+
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
         listType: 'budget_item_type',
@@ -125,8 +133,22 @@ class BudgetBalance extends React.Component {
         listExtraParams: organizationIdParams,
         selectorItem: undefined
       },
-      'BUDGET_ITEM': {},
-      'CURRENCY': {},
+      'BUDGET_ITEM': {
+        listType: 'budget_item',
+        labelKey: 'itemName',
+        valueKey: 'id',
+        codeKey: 'itemCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: itemSelectorItem
+      },
+      'CURRENCY': {
+        listType: 'currency',
+        labelKey: 'currencyName',
+        valueKey: 'companyCurrencyOID',
+        codeKey: 'currency',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
 
       'COMPANY': {},
       'COMPANY_GROUP': {},
@@ -242,30 +264,56 @@ class BudgetBalance extends React.Component {
   //查询，统一保存为临时方案后跳转
   search = (e) => {
     e.preventDefault();
-    this.validate((values) => {
-      this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
-    });
+    this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
+    // this.setState({ searching: true });
+    // this.validate((values) => {
+    //   httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/header/user`, values).then(res => {
+    //     this.setState({ searching: false })
+    //     this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', 'res.data'));
+    //   }).catch(e => {
+    //     if(e.response.data){
+    //       message.error(e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message);
+    //     }
+    //     this.setState({ searching: false });
+    //   })
+    // });
   };
 
   //验证并打开方案保存窗口
   showSaveModal = () => {
     this.validate(() => {
-      this.setState({ showSaveModal: true })
+      const { condition } = this.state;
+      if(this.state.condition)
+        this.setState({ conditionName: condition.conditionName, conditionCode: condition.conditionCode, showSaveModal: true});
+      else
+        this.setState({ conditionName: '', conditionCode: '',showSaveModal: true })
     });
   };
 
   //保存方案
   handleSaveCondition = () => {
     this.validate((values) => {
-      console.log(values);
       values.conditionCode = this.state.conditionCode;
       values.conditionName = this.state.conditionName;
       values.companyId = this.props.company.id;
       this.setState({ saving: true });
-      httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/header`, values).then(res => {
+      let method;
+      if(this.state.saveNewCondition || !this.state.condition)
+        method = 'post';
+      else {
+        method = 'put';
+        values.id = this.state.condition.id;
+        values.versionNumber = this.state.condition.versionNumber;
+      }
+      httpFetch[method](`${config.budgetUrl}/api/budget/balance/query/header`, values).then(res => {
         message.success('保存成功');
         this.setState({ showSaveModal: false, saving: false});
         this.clear();
+      }).catch(e => {
+        if(e.response.data){
+          message.error(e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message);
+          this.setState({ saving: false })
+        }
       })
     });
   };
@@ -382,13 +430,13 @@ class BudgetBalance extends React.Component {
         //获得参数列的选择项
         this.handleFocusParamSelect(index, item.parameterType)
       });
-      this.setState({ params, paramsKey, condition});
+      this.setState({ params, paramsKey, condition, saveNewCondition: true });
     }
   };
 
   clear = () => {
     this.props.form.resetFields();
-    this.setState({ params: [], paramsKey: 0, condition: null, conditionName: '', conditionCode: ''})
+    this.setState({ params: [], paramsKey: 0, condition: null, conditionName: '', conditionCode: '' })
   };
 
   //得到值列表的值增加options
@@ -442,7 +490,7 @@ class BudgetBalance extends React.Component {
 
   //给select增加options
   getOptions = (item) => {
-    if(item.options.length === 0){
+    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
       let url = item.getUrl;
       if(item.method === 'get' && item.getParams){
         url += '?';
@@ -666,7 +714,7 @@ class BudgetBalance extends React.Component {
   };
 
   render(){
-    const { params, columns, showSlideFrame, showSaveModal, saving, condition } = this.state;
+    const { params, columns, showSlideFrame, showSaveModal, saving, condition , conditionCode, conditionName, saveNewCondition, searching } = this.state;
     return (
       <div className="budget-balance">
         <Form
@@ -678,7 +726,7 @@ class BudgetBalance extends React.Component {
             <Row gutter={40} className="base-condition-content">{this.getFields()}</Row>
           </div>
           <div className="footer-operate">
-            <Button type="primary" htmlType="submit">查询</Button>
+            <Button type="primary" htmlType="submit" loading={searching}>查询</Button>
             <Button style={{ marginLeft: 10, marginRight: 20 }} onClick={this.clear}>重置</Button>
             <Button style={{ marginRight: 10}} onClick={this.showSaveModal}>保存方案</Button>
             <Button onClick={() => {this.setState({showSlideFrame : true})}}>应用现有方案</Button>
@@ -707,9 +755,11 @@ class BudgetBalance extends React.Component {
                confirmLoading={saving}>
           <div className="save-modal-content">
             <div>方案代码</div>
-            <Input onChange={this.handleChangeConditionCode}/>
+            <Input onChange={this.handleChangeConditionCode} value={conditionCode}/>
             <div>方案名称</div>
-            <Input onChange={(e) => this.setState({ conditionName: e.target.value })}/>
+            <Input onChange={(e) => this.setState({ conditionName: e.target.value })} value={conditionName}/>
+            <br/>
+            {condition ? <Checkbox checked={saveNewCondition} defaultValu={saveNewCondition} onChange={(e) => {this.setState({ saveNewCondition: e.target.checked })}}>保存为新方案</Checkbox> : null}
           </div>
         </Modal>
       </div>

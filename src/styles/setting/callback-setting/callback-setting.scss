@@ -11,11 +11,10 @@
     .picture{
       height: 75px;
       width: 75px;
-      background: #05afd1;
-      //background-image: url('/images/callback-setting.png');
+      //background: #05afd1;
+      background-image: url('/images/callback-setting.jpg');
       background-position: 0 0;
       display:inline-block;
-
     }
     .head-context{
       //position: relative;
@@ -29,26 +28,26 @@
         font-weight: bold;
       }
       .head-form-tips{
-        font-size: 16px;
+        font-size: 12px;
+        border-radius: 2px;
         background: #ffaa00;
         margin-left: 15px;
         padding-left: 8px;
         padding-right: 8px;
       }
-
       .head-status{
         margin-left: 33vw;
         .status-options{
           background: #FF0000;
+
         }
         .status-options-icon{
           border: 1px solid #108ee9;
           height: 2px;
-          width: 2px;
+          width: 20px;
+          display: block;
         }
-
       }
-
       .head-form{
         padding-top: 50px;
         .formItem-title{
@@ -58,7 +57,6 @@
           margin-top: -25px;
         }
       }
-
     }
   }
   .call-back-setting-tabs{
@@ -90,4 +88,6 @@
     }
   }
 }
-
+.call-back-setting-status{
+  color: #05afd1;
+}

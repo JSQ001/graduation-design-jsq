@@ -7,7 +7,6 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
@@ -104,9 +103,10 @@ class UpdateBudgetOrganization extends React.Component {
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: this.props.params.isEnabled
+              initialValue: this.props.params.isEnabled,
+              valuePropName: 'checked'
             })(
-              <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <div className="slide-footer">

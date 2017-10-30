@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Menu, Dropdown, Popconfirm } from 'antd';
+import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Popconfirm, Alert } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const CheckboxGroup = Checkbox.Group;
@@ -22,7 +22,6 @@ class AgencyRelation extends React.Component {
       data: [],
       statusValue: {'0': formatMessage({id:'common.enabled'})}, //启用
       uuid: 0,
-      keys: [],
       billOptions: {},    //代理单据选项
       chosenOptions: {},  //选中的代理单据选项
       chosenOptions1OIDs: {}, //选中的报销单选项ID
@@ -33,9 +32,11 @@ class AgencyRelation extends React.Component {
       startAgencyDate: moment().locale('zh-cn').utcOffset(8),
       endAgencyDate: null,
       fetching: false,
-      billSelectedOID: {}, //代理关系选中的代理单据formOID数组集合
-      editRelationBill: {}, //编辑代理关系时选中的代理单据
+      editBillSelectedOID: {}, //代理关系选中的代理单据formOID数组集合, { index: ['', ''] }
+      editBillSelectedItems: {}, //编辑代理关系时选中的代理单据, { index: [{}, {}] }
       editItem: {}, //编辑代理关系数据
+      editItemIndex: null, //编辑代理关系的index
+      switchDisabled: false, //状态是否可修改，false:可修改
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
@@ -45,23 +46,23 @@ class AgencyRelation extends React.Component {
       billProxyRuleDTOs: nextProps.billProxyRuleDTOs,
       principalInfo: nextProps.principalInfo,
     },() => {
-      let billSelectedOID = {};
-      let editRelationBill = {};
+      let editBillSelectedOID = {};
+      let editBillSelectedItems = {};
       this.state.billProxyRuleDTOs.map((item, index) => {
-        billSelectedOID[index] = {};
-        editRelationBill[index] = [];
-        billSelectedOID[index].bill1 = [];
-        billSelectedOID[index].bill2 = [];
-        item.customFormDTOs.map(formOID => {
-          editRelationBill[index].push(formOID);
-          if (formOID.formType / 1000 >= 3) {  //报销单
-            billSelectedOID[index].bill1.push(formOID.formOID)
+        editBillSelectedItems[index] = [];
+        editBillSelectedOID[index] = {};
+        editBillSelectedOID[index].bill1 = [];
+        editBillSelectedOID[index].bill2 = [];
+        item.customFormDTOs.map(billItem => {
+          editBillSelectedItems[index].push(billItem);
+          if (billItem.formType / 1000 >= 3) {  //报销单
+            editBillSelectedOID[index].bill1.push(billItem.formOID)
           } else {
-            billSelectedOID[index].bill2.push(formOID.formOID)
+            editBillSelectedOID[index].bill2.push(billItem.formOID)
           }
         });
       });
-      this.setState({ billSelectedOID, editRelationBill })
+      this.setState({ editBillSelectedOID, editBillSelectedItems })
     })
   }
 
@@ -84,7 +85,7 @@ class AgencyRelation extends React.Component {
   handleSelect = (item, key) => {
     item = JSON.parse(item);
     let proxyVerify = this.state.proxyVerify;
-    if (item.status == 1002) {
+    if (item.status == 1002) {  //item.status:1002 待离职
       proxyVerify[key] = {
         status: 'warning',
         help: this.props.intl.formatMessage({ id: 'agencySetting.leave-info', time: item.leavingDate }) //该员工将于 {time} 离职，离职后此代理将自动禁用
@@ -130,11 +131,25 @@ class AgencyRelation extends React.Component {
     this.setState((prevState) => {
       uuid: prevState.uuid++
     },()=>{
-      const { form } = this.props;
-      const keys = form.getFieldValue('keys');
-      const nextKeys = keys.concat(this.state.uuid);
-      form.setFieldsValue({
-        keys: nextKeys,
+      this.setState({
+        startAgencyDate: moment().locale('zh-cn').utcOffset(8),
+        endAgencyDate: null,
+        editItemIndex: null,
+      },() =>{
+        const { form } = this.props;
+        const keys = form.getFieldValue('keys');
+        let edit_tag = false;
+        this.state.billProxyRuleDTOs.map(item => {
+          if (item.isEdit || keys.length > 0) edit_tag = true
+        });
+        if(edit_tag) {
+          message.warning('你有一个编辑中的代理关系未保存');
+          return;
+        }
+        const nextKeys = keys.concat(this.state.uuid);
+        form.setFieldsValue({
+          keys: nextKeys,
+        });
       });
     });
   };
@@ -164,11 +179,11 @@ class AgencyRelation extends React.Component {
         message.error(`${formatMessage({id: 'common.save.filed'})/* 保存失败 */}, ${res.data.message}`);
       }
     }).catch((e)=>{
-      this.setState({loading: false});
-      if(e.response.data.message){
+      if(e.response){
         message.error(`${formatMessage({id: 'common.save.filed'})/* 保存失败 */}, ${e.response.data.message}`);
+        this.setState({loading: false});
       } else {
-        message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+        console.log(e);
       }
     })
   };
@@ -178,9 +193,27 @@ class AgencyRelation extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        const index = this.state.billProxyRuleDTOs.length;
+        let editBillSelectedItems = this.state.editBillSelectedItems;
+        editBillSelectedItems[index] = [];
+        let editBillSelectedOID = this.state.editBillSelectedOID;
+        editBillSelectedOID[index] = {};
+        editBillSelectedOID[index].bill1 = [];
+        editBillSelectedOID[index].bill2 = [];
+        this.state.chosenOptions[key].map(billItem => {
+          editBillSelectedItems[index].push(billItem);
+          if (billItem.formType / 1000 >= 3) {  //报销单
+            editBillSelectedOID[index].bill1.push(billItem.formOID)
+          } else {
+            editBillSelectedOID[index].bill2.push(billItem.formOID)
+          }
+        });
+        this.setState({ editBillSelectedOID, editBillSelectedItems });
+
+
         let proxyOID = JSON.parse(values[`proxyOID-${key}`]);
         let billProxyRuleDTO = {
-          'enabled': values[`enabled-${key}`],
+          'enabled': (values[`endDate-${key}`] && (new Date(values[`endDate-${key}`]) < new Date())) ? false : values[`enabled-${key}`],
           'endDate': values[`endDate-${key}`] ? values[`endDate-${key}`].format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
           'proxyName': proxyOID.fullName,
@@ -189,12 +222,19 @@ class AgencyRelation extends React.Component {
           'ruleOID': null,
           'startDate': values[`startDate-${key}`].format('YYYY-MM-DD'),
           'status': proxyOID.status,
-          'customFormDTOs': this.state.chosenOptions[key]
+          'customFormDTOs': this.state.chosenOptions[key],
+          'emplyeeId': proxyOID.employeeID
         };
         let principalInfo = this.state.principalInfo;
         let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
         billProxyRuleDTOs.push(billProxyRuleDTO);
         principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
+        principalInfo.enabled = false;
+        billProxyRuleDTOs.map(item => {
+          if(item.enabled) {
+            principalInfo.enabled = true;
+          }
+        });
         this.setState({ loading: true });
         this.handleSave(principalInfo, key);
       }
@@ -206,28 +246,38 @@ class AgencyRelation extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(this.state.editItem);
         let proxyOID;
         try {
           proxyOID = JSON.parse(values[`proxyOID`]);
         } catch(e) {
           proxyOID = this.state.editItem;
         }
+        let startDate = this.state.startAgencyDate;
+        let endDate = this.state.endAgencyDate;
         let billProxyRuleDTO = {
-          'enabled': values.enabled,
-          'endDate': values.endDate ? values.endDate.format('YYYY-MM-DD') : null ,
+          'enabled': (endDate && (new Date(endDate) < new Date())) ? false : values.enabled,
+          'endDate': endDate ? moment(endDate).format('YYYY-MM-DD') : null ,
           'leavingDate': proxyOID.leavingDate,
           'proxyName': proxyOID.fullName || proxyOID.proxyName,
           'proxyOID': proxyOID.userOID || proxyOID.proxyOID,
-          'proxyTimeRange': values.endDate ? 102 : 101,
+          'proxyTimeRange': endDate ? 102 : 101,
           'ruleOID': this.state.editItem.ruleOID,
-          'startDate': values.startDate.format('YYYY-MM-DD'),
+          'startDate': moment(startDate).format('YYYY-MM-DD'),
           'status': proxyOID.status,
-          'customFormDTOs': this.state.chosenOptions[-1]
+          'customFormDTOs': this.state.chosenOptions[-1],
+          'emplyeeId': proxyOID.emplyeeId || proxyOID.employeeID
         };
         let principalInfo = this.state.principalInfo;
         let billProxyRuleDTOs = [].concat(this.state.billProxyRuleDTOs);
-        billProxyRuleDTOs.push(billProxyRuleDTO);
+        principalInfo.enabled = false;
+        billProxyRuleDTOs.map((item, index) => {
+          if (item.ruleOID == billProxyRuleDTO.ruleOID) {
+            billProxyRuleDTOs[index] = billProxyRuleDTO
+          }
+          if(item.enabled) {
+            principalInfo.enabled = true;
+          }
+        });
         principalInfo.billProxyRuleDTOs = billProxyRuleDTOs;
         this.setState({ loading: true });
         this.handleSave(principalInfo);
@@ -237,6 +287,7 @@ class AgencyRelation extends React.Component {
 
   //选择代理单据，key==-1表示编辑的代理关系，key>0表示新增的代理关系
   onOptionsChange = (values, key, type) => {
+    let index = this.state.editItemIndex;
     let chosenOptions = this.state.chosenOptions;
     let bill1Options = this.state.billOptions[key].bill1Options;
     let bill2Options = this.state.billOptions[key].bill2Options;
@@ -256,7 +307,12 @@ class AgencyRelation extends React.Component {
           item.formOID == value && ((item.hasPermission = true) && chosenOptions[key].push(item));
         })
       });
-      this.setState({ chosenOptions })
+      let editBillSelectedItems = this.state.editBillSelectedItems;
+      let editBillSelectedOID = this.state.editBillSelectedOID;
+      (index || index == 0) && (editBillSelectedItems[index] = chosenOptions[-1]);
+      (index || index == 0) && (editBillSelectedOID[index].bill1 = chosenOptions1OIDs[-1]);
+      (index || index == 0) && (editBillSelectedOID[index].bill2 = chosenOptions2OIDs[-1]);
+      this.setState({ chosenOptions, editBillSelectedItems, editBillSelectedOID })
     })
   };
 
@@ -285,11 +341,21 @@ class AgencyRelation extends React.Component {
 
   //修改结束代理日期时间
   onEndChange = (endAgencyDate) => {
+    if (endAgencyDate) {
+      const endDate = new Date(new Date(endAgencyDate).getTime() + 86400000);
+      if(endDate < new Date()) {
+        this.setState({ switchDisabled: true })
+      } else {
+        this.setState({ switchDisabled: false })
+      }
+    } else {
+      this.setState({ switchDisabled: false })
+    }
     this.setState({ endAgencyDate })
   };
 
   //删除某个代理关系
-  handleDelete = (e, index) => {
+  handleDelete = (index) => {
     let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
     let principalInfo = this.state.principalInfo;
     billProxyRuleDTOs = billProxyRuleDTOs.slice(0, index).concat(billProxyRuleDTOs.slice(index+1));
@@ -298,20 +364,23 @@ class AgencyRelation extends React.Component {
   };
 
   //编辑某个代理关系，key==-1表示编辑的代理关系，key>0表示新增的代理关系
-  handleEdit = (index, isEdit, editItem) => {
+  handleEdit = (e, index, isEdit, editItem) => {
+    e.stopPropagation();
     let billProxyRuleDTOs = this.state.billProxyRuleDTOs;
     let edit_tag = false;
     isEdit && billProxyRuleDTOs.map(item => {
       if(item.isEdit) {
-        message.warning('你有一个编辑中的代理关系未保存');
         edit_tag = true;
       }
     });
-    if(edit_tag) return;
+    if(edit_tag || this.props.form.getFieldValue('keys').length > 0) {
+      message.warning('你有一个编辑中的代理关系未保存');
+      return;
+    }
     let statusValue = this.state.statusValue;
     statusValue[-1] = undefined;
-    if(isEdit) {
-      //获取代理单据选项
+
+    if(isEdit) {  //获取代理单据选项
       let url = `${config.baseUrl}/api/custom/forms/proxy?principalOID=${this.props.principalOID}&proxyOID=${editItem.proxyOID}`;
       httpFetch.get(url).then((response)=>{
         let bill1Options = [];
@@ -330,7 +399,17 @@ class AgencyRelation extends React.Component {
           bill1Options: bill1Options,
           bill2Options: bill2Options
         };
-        this.setState({ billOptions })
+        this.setState({
+          billOptions,
+          startAgencyDate: moment(editItem.startDate),
+          endAgencyDate: editItem.proxyTimeRange == '102' ? moment(editItem.endDate) : null
+        });
+        const endDate = new Date(new Date(editItem.endDate).getTime() + 86400000);
+        if(editItem.proxyTimeRange == 102 && endDate < new Date()) {  //proxyTimeRange:102 自定义结束时间
+          this.setState({ switchDisabled: true })
+        } else {
+          this.setState({ switchDisabled: false })
+        }
       });
     }
 
@@ -338,16 +417,17 @@ class AgencyRelation extends React.Component {
     let chosenOptions = this.state.chosenOptions;
     let chosenOptions1OIDs = this.state.chosenOptions1OIDs;
     let chosenOptions2OIDs = this.state.chosenOptions2OIDs;
-    chosenOptions[-1] = this.state.editRelationBill[index];
-    chosenOptions1OIDs[-1] = this.state.billSelectedOID[index].bill1;
-    chosenOptions2OIDs[-1] = this.state.billSelectedOID[index].bill2;
-    this.setState({ billProxyRuleDTOs, statusValue, chosenOptions, chosenOptions1OIDs, chosenOptions2OIDs, editItem })
+    chosenOptions[-1] = this.state.editBillSelectedItems[index];
+    chosenOptions1OIDs[-1] = this.state.editBillSelectedOID[index].bill1;
+    chosenOptions2OIDs[-1] = this.state.editBillSelectedOID[index].bill2;
+    let editItemIndex = index;
+    this.setState({ billProxyRuleDTOs, statusValue, chosenOptions, chosenOptions1OIDs, chosenOptions2OIDs, editItem, editItemIndex })
   };
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator, getFieldValue } = this.props.form;
-    const { loading, data, statusValue, billOptions, proxyVerify, fetching, billProxyRuleDTOs, billSelectedOID } = this.state;
+    const { loading, data, statusValue, billOptions, proxyVerify, fetching, billProxyRuleDTOs, editBillSelectedOID, switchDisabled } = this.state;
     const formItemLayout = {
       labelCol: { span: 1 },
       wrapperCol: { span: 23 },
@@ -453,44 +533,57 @@ class AgencyRelation extends React.Component {
       overflow: 'hidden',
     };
     const agencyInfo = billProxyRuleDTOs.map((item, index) => {
-      const menu = (
-        <Menu>
-          <Menu.Item>
-            <Popconfirm onConfirm={(e) => this.handleDelete(e, index)} title="你确定要删除这条数据吗?">
-              <a>删除</a>
-            </Popconfirm>
-          </Menu.Item>
-          <Menu.Item><a>复制</a></Menu.Item>
-        </Menu>
-      );
       const panelHeader = (
         <div>
           <span className="header-principal">代理人：{item.proxyName} - {item.emplyeeId}</span>
           <span className="header-more">
-            <a onClick={() => {this.handleEdit(index, true, item)}}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
+            <a onClick={(e) => {this.handleEdit(e, index, true, item)}}>{formatMessage({id: 'common.edit'})/* 编辑 */}</a>
             <span className="ant-divider"/>
-            <Dropdown overlay={menu}><a>更多 <Icon type="down"/></a></Dropdown>
+            <Popconfirm onConfirm={() => {this.handleDelete(index)}} onClick={e => e.stopPropagation()} title="你确定要删除这条数据吗?">
+              <a>{formatMessage({id: 'common.delete'})/* 删除 */}</a>
+            </Popconfirm>
           </span>
         </div>
       );
+      let alertEndDateMessage;
+      let alertLeavingDateMessage;
+      const endDate = new Date(new Date(item.endDate).getTime() + 86400000);
+      if(item.proxyTimeRange == 102 && endDate < new Date()) {  //proxyTimeRange:102 自定义结束时间
+        item.enabled = false;
+        alertEndDateMessage = (
+          <Alert message={`该代理关系在 ${endDate.format("yyyy-MM-dd")}号 失效`}
+                 type="warning" showIcon
+                 style={{marginTop:'3px'}} />)
+      }
+      if(item.status == 1003) { //status:1003 已离职
+        item.enabled = false;
+        alertLeavingDateMessage = (
+          <Alert message={`员工 ${item.proxyName}-${item.emplyeeId} 已于 ${moment(item.leavingDate).format("YYYY-MM-DD")}日离职，该代理关系已于该日期内自动禁用`}
+                 type="warning" showIcon
+                 style={{marginTop:'3px'}} />)
+      }
       const panelItem = (
-        <Collapse bordered={false} key={index}>
-          <Panel header={panelHeader} style={customPanelStyle}>
-            <div>
-              <Row style={{marginBottom:'10px'}}>
-                代理单据：{item.customFormDTOs.map((bill, index) => {
-                return index < item.customFormDTOs.length-1 ? bill.formName + '，' : bill.formName
-              })}
-              </Row>
-              <Row>
-                <Col span={8}>代理日期：
-                  {moment(item.startDate).format("YYYY-MM-DD")} 至 {item.proxyTimeRange == 102 ? moment(item.endDate).format("YYYY-MM-DD") : '无限制'}
-                </Col>
-                <Col span={8}>状态：<Badge status={item.enabled ? 'success': 'error'} text={item.enabled ? '启用' : '禁用'} /></Col>
-              </Row>
-            </div>
-          </Panel>
-        </Collapse>
+        <div key={index}>
+          <Collapse bordered={false} key={index}>
+            <Panel header={panelHeader} style={customPanelStyle}>
+              <div>
+                <Row style={{marginBottom:'10px'}}>
+                  代理单据：{item.customFormDTOs.map((bill, index) => {
+                  return index < item.customFormDTOs.length-1 ? bill.formName + '，' : bill.formName
+                })}
+                </Row>
+                <Row>
+                  <Col span={8}>代理日期：
+                    {moment(item.startDate).format("YYYY-MM-DD")} 至 {item.proxyTimeRange == 102 ? moment(item.endDate).format("YYYY-MM-DD") : '无限制'}
+                  </Col>
+                  <Col span={8}>状态：<Badge status={item.enabled ? 'success': 'error'} text={item.enabled ? '启用' : '禁用'} /></Col>
+                </Row>
+              </div>
+            </Panel>
+          </Collapse>
+          {alertEndDateMessage}
+          {alertLeavingDateMessage}
+        </div>
       );
       const editItem = (
         <Form className="relation-form" onSubmit={(e) => {this.handleEditSubmit(e)}} key={index}>
@@ -526,6 +619,7 @@ class AgencyRelation extends React.Component {
               <Switch defaultChecked={item.enabled}
                       checkedChildren={<Icon type="check" />}
                       unCheckedChildren={<Icon type="cross" />}
+                      disabled={switchDisabled}
                       onChange={(checked) => {this.handleStatusChange(checked, -1)}}/>
             )}
           </FormItem>
@@ -537,7 +631,7 @@ class AgencyRelation extends React.Component {
                           style={{marginBottom:'0'}}
                           label={formatMessage({id:'agencySetting.expense-account'})/*报销单*/}>
                   {getFieldDecorator(`bill1`, {
-                    initialValue: billSelectedOID[index].bill1
+                    initialValue: editBillSelectedOID[index].bill1
                   })(
                     <CheckboxGroup options={billOptions[-1] ? billOptions[-1].bill1Options: []}
                                    onChange={(value) => {this.onOptionsChange(value, -1, 'bill1Options')}} />
@@ -546,7 +640,7 @@ class AgencyRelation extends React.Component {
                 <FormItem {...formItemLayout}
                           label={formatMessage({id:'agencySetting.application-form'})/*申请单*/}>
                   {getFieldDecorator(`bill2`, {
-                    initialValue: billSelectedOID[index].bill2
+                    initialValue: editBillSelectedOID[index].bill2
                   })(
                     <CheckboxGroup options={billOptions[-1] ? billOptions[-1].bill2Options: []}
                                    onChange={(value) => {this.onOptionsChange(value, -1, 'bill2Options')}} />
@@ -558,7 +652,7 @@ class AgencyRelation extends React.Component {
           <div label={formatMessage({id:'agencySetting.agency-date'})}>{/*代理日期*/}
             <FormItem style={{display:'inline-block',marginRight:'20px'}}>
               {getFieldDecorator(`startDate`, {
-                initialValue: moment(item.startDate, 'YYYY-MM-DD')
+                initialValue: moment(new Date(item.startDate).format('yyyy-MM-dd'))
               })(
                 <DatePicker format="YYYY-MM-DD"
                             allowClear={false}
@@ -568,7 +662,7 @@ class AgencyRelation extends React.Component {
             </FormItem>
             <FormItem style={{display:'inline-block'}}>
               {getFieldDecorator(`endDate`, {
-                initialValue: item.proxyTimeRange == 102 ? moment(item.endDate, 'YYYY-MM-DD') : null
+                initialValue: item.proxyTimeRange == 102 ? moment(new Date(item.endDate).format('yyyy-MM-dd')) : null
               })(
                 <DatePicker format="YYYY-MM-DD"
                             placeholder={formatMessage({id:'agencySetting.indefinite'})/* 无限制 */}
@@ -582,7 +676,7 @@ class AgencyRelation extends React.Component {
                     htmlType="submit"
                     loading={loading}
                     style={{marginRight:'10px'}}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
-            <Button onClick={() => this.handleEdit(index, false)}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
+            <Button onClick={(e) => this.handleEdit(e, index, false)}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
           </FormItem>
         </Form>
       );

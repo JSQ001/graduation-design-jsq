@@ -154,7 +154,7 @@ class UpdateBudgetRulesDetail extends React.Component{
   };
 
   onCancel = () =>{
-    this.props.form.resetFields();
+
     this.setState({
       filtrateMethodHelp:'',
       summaryOrDetailHelp:'',
@@ -169,6 +169,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       ruleParamsTypeStatus: null,
       ruleParamsTypeHelp: null
     });
+    this.props.form.resetFields();
     this.props.close();
   };
 
@@ -229,8 +230,6 @@ class UpdateBudgetRulesDetail extends React.Component{
                 {
                   validator: (item,value,callback)=>{
                     console.log(value)
-
-
                     this.setState({
                       ruleParamsStatus: null,
                       ruleParamsHelp: null,

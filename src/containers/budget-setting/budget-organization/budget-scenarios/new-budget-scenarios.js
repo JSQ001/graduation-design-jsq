@@ -28,8 +28,12 @@ class NewBudgetScenarios extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.organizationId = this.props.params.organizationId;
+        if (values.defaultFlag && !values.isEnabled) {
+          message.error('默认预算场景的状态必须为启用');
+          return false;
+        }
         this.setState({loading: true});
-        values.organizationId = this.props.params.organizationId
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
@@ -38,11 +42,11 @@ class NewBudgetScenarios extends React.Component{
             message.success('操作成功');
           }
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.validationErrors){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+          if(e.response){
+            message.error(`保存失败, ${e.response.data.message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e);
           }
         })
       }

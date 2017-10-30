@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Select, message, Button, Spin } from 'antd'
+import { Form, Select, message, Button, Spin, Alert } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import debounce from 'lodash.debounce'
@@ -10,6 +10,8 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import AgencyRelation from 'containers/approve-setting/agency-setting/agency-relation'
+
+import moment from 'moment';
 
 import 'styles/approve-setting/agency-setting/agency-detail.scss'
 
@@ -93,11 +95,11 @@ class AgencyDetail extends React.Component {
             this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', this.state.principalOID));
           });
         }).catch((e)=>{
-          this.setState({loading: false});
-          if(e.response.data.message){
-            message.error(`操作失败, ${e.response.data.message}`);
+          if(e.response){
+            message.error(`${this.props.intl.formatMessage({id: 'common.save.filed'})/*保存失败*/}, ${e.response.data.message}`);
+            this.setState({loading: false});
           } else {
-            message.error('呼，服务器出了点问题，请联系管理员或稍后再试:(');
+            console.log(e);
           }
         })
       }
@@ -213,8 +215,22 @@ class AgencyDetail extends React.Component {
         </FormItem>;
       saveBtn = "";
     }
+    let alertMessage;
+    if(principalInfo.status == 1003) {
+      alertMessage = (
+        <Alert message="请注意"
+               description={formatMessage({id: 'agencySetting.dimission-info'},
+                 {name: principalInfo.userName, emplyeeId: principalInfo.emplyeeId, date: moment(principalInfo.leavingDate).format("YYYY-MM-DD")})}
+               type="warning"
+               showIcon
+               style={{marginBottom:'20px'}}/>
+      )
+    } else {
+      alertMessage = ""
+    }
     return (
       <div className="agency-detail">
+        {alertMessage}
         <h3 className="header-title">{formatMessage({id:'agencySetting.principal'})}</h3>{/*被代理人*/}
         <Form onSubmit={this.handleSave}>
           {principalItem}

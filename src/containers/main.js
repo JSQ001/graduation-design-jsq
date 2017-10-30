@@ -21,8 +21,8 @@ import ListSelector from 'components/list-selector'
 
 import { injectIntl } from 'react-intl';
 
-import en from 'static/i18n/en_US'
-import zh from 'static/i18n/zh_CN'
+import en from 'share/i18n/en_US'
+import zh from 'share/i18n/zh_CN'
 
 import LogoImg from 'images/logo.png'
 

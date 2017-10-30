@@ -243,7 +243,7 @@ class SearchArea extends React.Component{
    * list 所需格式为包含显示值与数据值的对象数组，根据valueKey与labelKey对应
    * TODO: combobox 与 multiple 模式待开发
    *
-   * example：
+   * @example：
    *
    * <SearchArea wrappedComponentRef={(inst) => this.formRef = inst} {...props} />
    *
@@ -508,10 +508,10 @@ class SearchArea extends React.Component{
           labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
           items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
-          entity: false     //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
-          getParam: ''     //可选,getUrl所需要的参数
-          single: false   //可选,当type为list时是否为单选
-          valueListCode: //可选，当type为value_list时的值列表coode
+          entity: false         //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
+          getParams: {}        //可选,getUrl所需要的参数
+          single: false       //可选,当type为list时是否为单选
+          valueListCode: ''  //可选，当type为value_list时的值列表coode
         }
  */
 SearchArea.propTypes = {
@@ -522,11 +522,9 @@ SearchArea.propTypes = {
   okText:  React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //左侧ok按钮的文本
   clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
   maxLength: React.PropTypes.number,  //搜索区域最大表单数量
-  onSearch: React.PropTypes.func
 };
 
 SearchArea.defaultProps = {
-  onSearch: null,
   maxLength: 6,
   eventHandle: () => {},
   okText: <FormattedMessage id='common.search'/>,  //搜索

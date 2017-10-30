@@ -2,10 +2,12 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Table, Badge } from 'antd'
+import { Button, Table, Badge, Input } from 'antd'
+const Search = Input.Search;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+import debounce from 'lodash.debounce'
 
 class AgencySetting extends React.Component {
   constructor(props) {
@@ -18,7 +20,9 @@ class AgencySetting extends React.Component {
           <span>{this.state.pageSize * this.state.page + index + 1}</span>
         )},  //序号
         {title: formatMessage({id:"agencySetting.employeeId"}), dataIndex: 'emplyeeId'},  //工号
-        {title: formatMessage({id:"agencySetting.userName"}), dataIndex: 'userName'},  //姓名
+        {title: formatMessage({id:"agencySetting.userName"}), dataIndex: 'userName', render: (name, record) => {
+          return record.status == 1003 ? <div><span style={{color:'#108EE9'}}>离职</span> - {name}</div>  : name; //record.status:1003 已离职
+        }},  //姓名
         {title: formatMessage({id:"agencySetting.departmentName"}), dataIndex: 'departmentName'},  //部门
         {title: formatMessage({id:"agencySetting.dutyName"}), dataIndex: 'dutyName'},  //职务
         {title: formatMessage({id:"common.column.status"}), dataIndex: 'enabled', width: '10%', render: isEnabled => (
@@ -32,9 +36,11 @@ class AgencySetting extends React.Component {
       pagination: {
         total: 0
       },
+      keyWords: '', //搜索关键字
       newAgency:  menuRoute.getRouteItem('new-agency','key'),    //新建代理
       agencyDetail:  menuRoute.getRouteItem('agency-detail','key'),    //代理详情
     };
+    this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillMount() {
@@ -43,6 +49,7 @@ class AgencySetting extends React.Component {
 
   getList = () => {
     let url = `${config.baseUrl}/api/bill/proxy/principals?&page=${this.state.page}&size=${this.state.pageSize}`;
+    url += this.state.keyWords ? `&keyword=${this.state.keyWords}` : '';
     return httpFetch.get(url).then((response)=>{
       this.setState({
         data: response.data,
@@ -75,6 +82,19 @@ class AgencySetting extends React.Component {
     this.context.router.push(this.state.agencyDetail.url.replace(':principalOID', record.principalOID));
   };
 
+  //搜索 姓名／工号
+  handleSearch= (value) => {
+    this.setState({
+      page: 0,
+      keyWords: value,
+      pagination: {
+        current: 1
+      }
+    }, () => {
+      this.getList();
+    })
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
     const { loading, columns, data, pagination } = this.state;
@@ -85,6 +105,11 @@ class AgencySetting extends React.Component {
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.newAgency}>{formatMessage({id:"agencySetting.create-agency"})}</Button> {/* 新建代理关系 */}
+            <Search
+              placeholder={formatMessage({id: 'agencySetting.search.hint'})/* 请输入姓名/工号 */}
+              style={{ width:200,position:'absolute',right:0,bottom:0 }}
+              onChange={(e) => this.handleSearch(e.target.value)}
+            />
           </div>
         </div>
         <Table rowKey="principalOID"
