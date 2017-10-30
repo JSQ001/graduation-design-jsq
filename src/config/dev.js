@@ -4,7 +4,6 @@ const config = {
   appEnv: 'dev',
   budgetUrl: 'http://rjfin.haasgz.hand-china.com:30496',
   baseUrl: 'http://139.224.220.217:11013',
-  uatUrl:'http://uat.huilianyi.com',
   payUrl: 'http://rjfin.haasgz.hand-china.com:30497'
 };
 
