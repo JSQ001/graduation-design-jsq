@@ -6,6 +6,7 @@ import { Table, Button, Badge } from 'antd';
 import httpFetch from 'share/httpFetch'
 
 import SearchArea from 'components/search-area'
+import menuRoute from 'share/menuRoute'
 
 class CodingRule extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class CodingRule extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'input', id: 'documentCategoryCode', label: "单据类型"},
+        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2106, options: []},
         {type: 'input', id: 'documentTypeCode', label: "单据名称"}
       ],
       searchParams: {
@@ -34,7 +35,7 @@ class CodingRule extends React.Component {
         documentTypeCode: ''
       },
       showSlideFrame: false,
-      nowSetOfBooks: {}
+      newCodingRulePage: menuRoute.getRouteItem('new-coding-rule', 'key')
     };
   }
 
@@ -78,12 +79,13 @@ class CodingRule extends React.Component {
   };
 
   search = (result) => {
-    this.setState({
-      page: 0,
-      searchParams: Object.assign(this.state.searchParams, result)
-    }, ()=>{
-      this.getList();
-    })
+    console.log(result);
+    // this.setState({
+    //   page: 0,
+    //   searchParams: Object.assign(this.state.searchParams, result)
+    // }, ()=>{
+    //   this.getList();
+    // })
   };
 
   clear = () => {
@@ -95,7 +97,9 @@ class CodingRule extends React.Component {
     })
   };
 
-  handleNew = () => {};
+  handleNew = () => {
+    this.context.router.push(this.state.newCodingRulePage.url);
+  };
 
   handleRowClick = (record) => {};
 
@@ -122,7 +126,7 @@ class CodingRule extends React.Component {
                pagination={pagination}
                loading={loading}
                onRowClick={this.handleRowClick}
-               rowKey="setOfBooksId"
+               rowKey="id"
                bordered
                size="middle"/>
 

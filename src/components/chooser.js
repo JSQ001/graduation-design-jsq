@@ -32,9 +32,11 @@ class Chooser extends React.Component {
           value: item
         })
       });
-      this.setState({ value: values })
+      this.onChange(nextProps.value);
+      this.setState({ value: values });
     }
     if(nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0){
+      this.onChange([]);
       this.setState({ value: [] })
     }
   };
@@ -82,11 +84,15 @@ class Chooser extends React.Component {
       })
     });
     //手动调用onChange事件以与父级Form绑定
+    this.onChange(result.result);
+    this.setState({ showListSelector: false, value });
+  };
+
+  onChange = (changedValue) => {
     const onChange = this.props.onChange;
     if (onChange) {
-      onChange(result.result);
+      onChange(changedValue);
     }
-    this.setState({ showListSelector: false, value });
   };
 
   render() {
