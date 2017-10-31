@@ -49,6 +49,7 @@ class AccountPeriodDefine extends React.Component {
       showSlideFrame: false,
       selectedPeriod: null,
       showRuleSlideFrame: false,
+      selectedPeriodRule: null,
     }
   }
 
@@ -63,10 +64,9 @@ class AccountPeriodDefine extends React.Component {
 
   //会计期规则
   ruleItem = (e, record) => {
-    console.log(record);
     this.setState({
       showRuleSlideFrame: true,
-      selectedPeriod: record
+      selectedPeriodRule: record
     })
   };
 
@@ -136,7 +136,7 @@ class AccountPeriodDefine extends React.Component {
 
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading, columns, data, pagination, searchForm, slideFrameTitle, showSlideFrame, selectedPeriod, showRuleSlideFrame } = this.state;
+    const { loading, columns, data, pagination, searchForm, slideFrameTitle, showSlideFrame, selectedPeriod, showRuleSlideFrame, selectedPeriodRule } = this.state;
     return (
       <div>
         <h3 className="header-title">会计期间定义</h3>
@@ -164,7 +164,7 @@ class AccountPeriodDefine extends React.Component {
         <SlideFrame title="会计期规则"
                     content={NewAccountRule}
                     show={showRuleSlideFrame}
-                    params={{periodDetail: selectedPeriod}}
+                    params={{period: selectedPeriodRule}}
                     onClose={() => {this.setState({ showRuleSlideFrame: false })}}/>
       </div>
     )

@@ -9,4 +9,13 @@
   .float-left {
     float: left;
   }
+  .ant-form-item {
+    margin-bottom: 0;
+  }
+  .no-input-style {
+    color: rgba(0, 0, 0, 0.65);
+    background: none;
+    border: none;
+    padding: 0;
+  }
 }
