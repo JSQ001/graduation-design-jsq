@@ -58,5 +58,6 @@
   "menu.budget-journal-re-check-detail":"budget journal re-check detail",
   "menu.set-of-books": "Set of books",
   "menu.coding-rule": "Coding rule",
-  "menu.new-coding-rule": "New coding rule"
+  "menu.new-coding-rule": "New coding rule",
+  "menu.coding-rule-detail": "Coding rule detail"
 }

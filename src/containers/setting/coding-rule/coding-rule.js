@@ -34,8 +34,8 @@ class CodingRule extends React.Component {
         documentCategoryCode: '',
         documentTypeCode: ''
       },
-      showSlideFrame: false,
-      newCodingRulePage: menuRoute.getRouteItem('new-coding-rule', 'key')
+      newCodingRulePage: menuRoute.getRouteItem('new-coding-rule', 'key'),
+      codingRuleDetail: menuRoute.getRouteItem('coding-rule-detail', 'key')
     };
   }
 
@@ -101,7 +101,9 @@ class CodingRule extends React.Component {
     this.context.router.push(this.state.newCodingRulePage.url);
   };
 
-  handleRowClick = (record) => {};
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.codingRuleDetail.url.replace(':id', record.id))
+  };
 
 
   render(){
