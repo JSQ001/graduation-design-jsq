@@ -58,5 +58,6 @@
   "menu.budget-journal-re-check-detail":"预算日记账复核详情",
   "menu.set-of-books": "帐套定义",
   "menu.coding-rule": "编码规则定义",
-  "menu.new-coding-rule": "新建编码规则"
+  "menu.new-coding-rule": "新建编码规则",
+  "menu.coding-rule-detail": "编码规则明细"
 }
