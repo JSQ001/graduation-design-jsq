@@ -54,6 +54,7 @@ class BasicInfo extends React.Component{
     if (item.type == 'switch') {
       return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} text={this.state.infoData[item.id] ? '启用' : '禁用'} />;
     } else if (item.type == 'select') {
+      console.log(item.options)
       item.options && item.options.map((option)=>{  //有options选项时显示label值
         if(this.state.infoData[item.id] == option.value) {
           this.state.infoData[item.id] = option.label;
@@ -96,6 +97,7 @@ class BasicInfo extends React.Component{
       //获取默认值，用于search-area组件
       item.defaultValue = this.state.infoData[item.id];
 
+      console.log(item.defaultValue);
       //规则定义的有效时间
       if(item.items){
         item.items.map((index)=>{
@@ -107,6 +109,7 @@ class BasicInfo extends React.Component{
       if(item.type == 'date') {
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
       }
+
 
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
