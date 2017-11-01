@@ -144,10 +144,10 @@ class BudgetStrategyDetail extends React.Component {
                    updateHandle={this.handleUpdate}
                    updateState={updateState}/>
         <div className="table-header">
-          <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${this.state.pagination.total || 0} 条数据`}</div>
+          <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>新 建</Button>
-            <span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>
+            {/*<span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>*/}
             <Search
               placeholder="请输入策略明细描述/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}

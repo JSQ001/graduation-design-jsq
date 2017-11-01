@@ -171,7 +171,7 @@ class BudgetScenarios extends React.Component {
           clearHandle={this.clear}
           eventHandle={this.searchEventHandle}/>
         <div className="table-header">
-          <div className="table-header-title">{`共搜索到 ${this.state.pagination.total} 条数据`}</div>
+          <div className="table-header-title">{`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={() => this.showSlide(true)}>新 建</Button>
           </div>
