@@ -28,5 +28,6 @@
   "common.more": "更多",
   "common.fold": "收起",
   "common.help": "帮助提示",
-  "common.baseInfo": "基本信息"
+  "common.baseInfo": "基本信息",
+  "common.sequence": "序号"
 }
