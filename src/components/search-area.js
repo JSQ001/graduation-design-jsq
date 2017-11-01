@@ -404,7 +404,11 @@ class SearchArea extends React.Component{
       }
       //switch状态切换组件
       case 'switch':{
-        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle} disabled={item.disabled}/>
+        return <Switch defaultChecked={item.defaultValue}
+                       checkedChildren={<Icon type="check"/>}
+                       unCheckedChildren={<Icon type="cross" />}
+                       onChange={handle}
+                       disabled={item.disabled}/>
       }
       //同一单元格下多个表单项组件
       case 'items':{

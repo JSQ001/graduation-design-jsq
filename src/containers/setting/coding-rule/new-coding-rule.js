@@ -27,7 +27,7 @@ class NewCodingRule extends React.Component {
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/coding/rule/objects`, values).then((res)=>{
           this.setState({loading: false});
-          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
+          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //新建成功
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.message}`);
