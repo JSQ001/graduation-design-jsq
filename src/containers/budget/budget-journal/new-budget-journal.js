@@ -5,6 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Form,Input,Switch,Icon,Upload,message} from 'antd';
+import axios from 'axios'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -31,8 +32,16 @@ class NewBudgetJournalFrom extends React.Component {
       idSelectJournal:false,
       isStructureIn:false,
       periodStrategy:[],
-      periodPeriodQuarter:[]
-
+      periodPeriodQuarter:[],
+      periodPeriod:[],
+      structureFlag:true,
+      periodFlag:true,
+      periodYearFlag:true,
+      periodQuarterFlag:true,
+      periodStrategyFlag:true,
+      fileList: [],
+      file:{},
+      uploading: false,
     };
   }
 
@@ -40,12 +49,27 @@ class NewBudgetJournalFrom extends React.Component {
 
   //跳转到预算日记账详情
   handleLastStep=(value)=>{
-
     const data =value;
     console.log(value);
+    const period =value.periodName?JSON.parse(value.periodName):'';
+    const  periodName=period.periodName;
+    const periodYear=period.periodYear;
+    //处理期间
+    let periodNameData;
+    if(periodName!=''&& periodName!=null && periodName!=undefined) {
+      const periodNameArray = periodName.split("-");
+      for (let i = 0; i < periodNameArray.length; i++) {
+        console.log(periodNameArray[i])
+        if (periodNameArray[i] != periodYear) {
+          periodNameData = periodYear + "" + periodNameArray[i]
+        }
+      }
+    }else {
+      periodNameData='';
+    }
+
 
     console.log(this.props.user);
-
     let userData ={
       "dto" :
         {
@@ -55,16 +79,16 @@ class NewBudgetJournalFrom extends React.Component {
           "organizationName":this.props.organization.organizationName,
           "structureId":value.structureId,
           "structureName":"structureName",
-          "periodYear":value.periodYear,
-          "periodQuarter":value.periodQuarter,
-          "periodName":value.periodName,
-          "description": "1111",
+          "periodYear":value.periodYear!=''?value.periodYear:period.periodYear,
+          "periodQuarter":value.periodQuarter!=''?value.periodQuarter:period.quarterNum,
+          "periodName":periodNameData,
+          "description": "",
           "reversedFlag":"N",
           "sourceBudgetHeaderId":undefined,
           "sourceType":undefined,
           "employeeId":this.props.user.id,
           "employeeName":this.props.user.fullName,
-          "periodNumber":"2",
+          "periodNumber":period.quarterNum?period.quarterNum:'',
           "unitId": "1",
           "unitName":"periodNumber",
           'versionId':value.versionName[0].id,
@@ -82,13 +106,17 @@ class NewBudgetJournalFrom extends React.Component {
       "list":[]
     }
 
+    console.log(userData);
     this.saveHeard(userData);
+
 
   }
 
 
   componentWillMount(){
     this.getPeriodStrategy();
+    this.getPeriodQuarter();
+    this.getPeriod();
   }
 
 
@@ -105,15 +133,15 @@ class NewBudgetJournalFrom extends React.Component {
         periodStrategy.push(option);
       });
       this.setState({
-        periodStrategy: periodStrategy
+        periodStrategy: periodStrategy,
       })
     });
   }
 
 //获取季度
-  getPeriodStrategy=()=>{
+  getPeriodQuarter=()=>{
     this.getSystemValueList(2021).then((response)=>{
-      let periodPeriodQuarter = [];
+      let  periodPeriodQuarter = [];
       response.data.values.map((item)=>{
         let option = {
           key: item.code,
@@ -125,6 +153,26 @@ class NewBudgetJournalFrom extends React.Component {
         periodPeriodQuarter: periodPeriodQuarter
       })
     });
+  }
+
+  //获取期间
+  getPeriod=()=>{
+    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`).then(( response)=>{
+     console.log(response.data);
+      let periodPeriod = [];
+      response.data.map((item)=>{
+        let option = {
+          value:item,
+          key: item.periodName,
+          label: item.periodName
+        };
+        periodPeriod.push(option);
+      });
+      this.setState({
+        periodPeriod: periodPeriod
+      })
+    })
+
   }
 
   //保存日记账头
@@ -166,10 +214,22 @@ class NewBudgetJournalFrom extends React.Component {
   handleJournalTypeChange=(values)=>{
     let value = values[0];
     this.setState({
-      idSelectJournal:true
+      idSelectJournal:true,
+      structureFlag:false
     })
-    this.getStructure(value.journalTypeId)
-
+    this.props.form.setFieldsValue({
+      structureId:''
+    })
+    this.props.form.setFieldsValue({
+      periodYear:''
+    })
+    this.props.form.setFieldsValue({
+      periodQuarter:''
+    })
+    this.props.form.setFieldsValue({
+      periodName:''
+    })
+    this.getStructure(value.journalTypeId);
 
   }
 
@@ -179,28 +239,95 @@ class NewBudgetJournalFrom extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${value}`).then(response=>{
       console.log(response.data);
       this.setState(
-        {structureGroup:response.data}
+        {
+          structureGroup:response.data,
+        }
       )
     })
   }
 
 
-  //选择预算表时，获得年度和期间段
+  //选择预算表时，获得期间段
   handleSelectChange=(values)=>{
+
     console.log(values);
+    const data =new Date();
+    const year = data.getFullYear();
+    const month =data.getMonth()+1;
+    const po=(month<2?2:month);
+    const quarter =parseInt((po-1)/3+1);
+    console.log(values);
+
     this.state.structureGroup.map((item)=>{
       if(item.id==values){
+        const periodStrategy  =item.periodStrategy;
+        if(periodStrategy=='MONTH'){
+          this.props.form.setFieldsValue({
+            periodYear:''
+          })
+
+          this.props.form.setFieldsValue({
+            periodQuarter:''
+          })
+          this.props.form.setFieldsValue({
+            periodName:''
+          })
+          this.setState({
+            periodYearFlag:true,
+            periodQuarterFlag:true,
+            periodFlag:false
+          })
+        }else if(periodStrategy=='YEAR'){
+          this.props.form.setFieldsValue({
+            periodYear:year
+          })
+          this.props.form.setFieldsValue({
+            periodQuarter:''
+          })
+          this.props.form.setFieldsValue({
+            periodName:''
+          })
+          this.setState({
+            periodFlag:true,
+            periodQuarterFlag:true,
+            periodYearFlag:false,
+          })
+        }else{
+          this.props.form.setFieldsValue({
+            periodYear:year
+          })
+
+          this.props.form.setFieldsValue({
+            periodQuarter:quarter
+          })
+          this.props.form.setFieldsValue({
+            periodName:''
+          })
+          this.setState({
+
+            periodFlag:true,
+            periodYearFlag:false,
+            periodQuarterFlag:false,
+          })
+        }
+
+
         this.props.form.setFieldsValue({
-          periodStrategy:item.periodStrategy
+          periodStrategy:periodStrategy,
         });
       }
     });
 
   }
 
+//选择期间，获取年度和季度
+  handleSelectPeriodName=(value)=>{
+    console.log(value);
+
+  }
+
 
   //选择期间编制期间段，的时候获取年度，季度，和期间
-
   handSelectPeriodStrategy=(values)=>{
     console.log(values);
     const data =new Date();
@@ -263,62 +390,123 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
+  handleUpload = () => {
+    const { fileList } = this.state;
+    const formData = new FormData();
+    fileList.forEach((file) => {
+      formData.append('files[]', file);
+    });
+
+    this.setState({
+      uploading: true,
+    });
+
+    // You can use any AJAX library you like
+    axios({
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
+      },
+      url: `${config.baseUrl}/api/upload/attachment`,
+      method: 'post',
+      mode: 'cors',
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
+      },
+      data:{
+        attachmentType:"PDF",
+        file:fileList[0]
+      },
+
+    }).then();
+  }
+
+
+
 
   render(){
     const { getFieldDecorator } = this.props.form;
     const organization =this.props.organization;
-    const { structureGroup,periodStrategy,periodPeriodQuarter} = this.state;
+    const { structureGroup,periodStrategy,periodPeriodQuarter,periodPeriod,structureFlag,periodFlag,periodYearFlag,periodQuarterFlag,periodStrategyFlag,uploading} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
 
-    /*  const strategyOptions = [];
-     for (let i = 0; i < structureGroup.length ; i++) {
-     strategyOptions.push(<Option key={i} value={structureGroup[i].id} >  {structureGroup[i].structureName}</Option>);
-     }
-     */
 
     const strategyOptions = structureGroup.map((item)=> <Option key={item.id} value={item.id}>{item.structureName}</Option>);
     const periodStrategyOptions = periodStrategy.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
     const periodPeriodQuarterOptions = periodPeriodQuarter.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
+    const periodPeriodOptions =periodPeriod.map((item)=><Option key={item.key} value={JSON.stringify(item.value)}>{item.label}</Option>);
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
       yearOptions.push({label: i, key: i})
     const yearOptionsData = yearOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
 
-    let monthOptions = [];
-    for(let i = 1; i <= 12; i++)
-      monthOptions.push({label: i, key: i})
-    const monthOptionsData = monthOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
-
 
     const props = {
-      name: 'file',
-      multiple: true,
-      showUploadList: false,
       action:`${config.baseUrl}/api/upload/attachment`,
-      headers:{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
+      onRemove: (file) => {
+        this.setState(({ fileList }) => {
+          const index = fileList.indexOf(file);
+          const newFileList = fileList.slice();
+          newFileList.splice(index, 1);
+          return {
+            fileList: newFileList,
+          };
+        });
       },
-      data:{
-        attachmentType:"PDF"
+      beforeUpload: (file) => {
+        this.setState(({ fileList }) => ({
+          fileList: [...fileList, file],
+        }));
+        return false;
       },
-      onChange(info) {
-        const status = info.file.status;
-        if (status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
-        if (status === 'done') {
-          message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-          message.error(`${info.file.name} file upload failed.`);
-        }
-      },
+      fileList: this.state.fileList,
     };
 
+
+
+   /* const props = {
+        name: 'file',
+        multiple: true,
+        showUploadList: true,
+        action:`${config.baseUrl}/api/upload/attachment`,
+        headers:{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.token
+        },
+        data:{
+          attachmentType:"PDF",
+          file:this.state.file
+        },
+        onChange(info) {
+          const status = info.file.status;
+          if (status !== 'uploading') {
+            console.log(info.file, info.fileList);
+          }
+          if (status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully.`);
+          } else if (status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+          }
+        },
+
+      beforeUpload: (file) => {
+        this.setState(({ fileList }) => ({
+          fileList: [...fileList, file],
+        }));
+        return false;
+      },
+      fileList: this.state.fileList,
+
+
+
+
+      };
+*/
 
     return (
       <div className="new-budget-journal">
@@ -387,8 +575,6 @@ class NewBudgetJournalFrom extends React.Component {
           </FormItem>
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.structureId"})}
-                    validateStatus={(!this.state.idSelectJournal )?'warning':''}
-                    help={(!this.state.idSelectJournal )?'请先选择预算日记账':''}
           >
             {getFieldDecorator('structureId', {
               rules: [{
@@ -398,7 +584,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select onSelect={this.handleSelectChange} >
+              <Select onSelect={this.handleSelectChange}  disabled={structureFlag}>
                 {strategyOptions}
               </Select>
             )}
@@ -415,7 +601,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select onSelect={this.handSelectPeriodStrategy}>
+              <Select onSelect={this.handSelectPeriodStrategy}  disabled={periodStrategyFlag}>
                 {periodStrategyOptions}
               </Select>
             )}
@@ -430,7 +616,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select>
+              <Select  disabled={periodYearFlag}>
                 {yearOptionsData}
               </Select>
             )}
@@ -446,7 +632,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select>
+              <Select  disabled={periodQuarterFlag}>
                 {periodPeriodQuarterOptions}
               </Select>
             )}
@@ -464,8 +650,8 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select>
-                {monthOptionsData}
+              <Select disabled={periodFlag} onSelect={this.handleSelectPeriodName()}>
+                {periodPeriodOptions}
               </Select>
             )}
           </FormItem>
@@ -539,6 +725,15 @@ class NewBudgetJournalFrom extends React.Component {
           <FormItem wrapperCol={{ offset: 7 }}>
             <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
             <Button>取消</Button>
+            <Button
+              className="upload-demo-start"
+              type="primary"
+              onClick={this.handleUpload}
+              disabled={this.state.fileList.length === 0}
+              loading={uploading}
+            >
+              {uploading ? 'Uploading' : 'Start Upload' }
+            </Button>
           </FormItem>
         </Form>
 

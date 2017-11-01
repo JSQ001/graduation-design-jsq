@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select ,Tag} from 'antd';
-
+import axios from 'axios';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -39,7 +39,7 @@ class BudgetJournal extends React.Component {
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
 
       ],
 
@@ -55,8 +55,8 @@ class BudgetJournal extends React.Component {
           render(recode,text){
             switch (text.periodStrategy){
               case 'MONTH':{ return "期间"}
-              case 'QUARTER':{ return `年`}
-              case 'YEAR':{ return `季度`}
+              case 'QUARTER':{ return `季度`}
+              case 'YEAR':{ return `年`}
 
             }
           }
@@ -69,9 +69,9 @@ class BudgetJournal extends React.Component {
           title: "期间", key: "periodName", dataIndex: 'periodName',
           render(recode,text){
             switch (text.periodStrategy){
-              case 'MONTH':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
-              case 'QUARTER':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
-              case 'YEAR':{ return `${text.periodYear}`}
+              case 'MONTH':{ return `${text.periodName?text.periodName:''}`}
+              case 'QUARTER':{ return `${text.periodYear}年-第 ${text.periodQuarter?text.periodQuarter:''} 季度`}
+              case 'YEAR':{ return `${text.periodYear}年`}
 
             }
           }
@@ -106,6 +106,10 @@ class BudgetJournal extends React.Component {
 
   //获取预算日记账数据
   getList(){
+    this.setState({
+      loading:true,
+    })
+
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
       this.setState({
         loading: false,
@@ -190,6 +194,7 @@ class BudgetJournal extends React.Component {
           size="middle"
           bordered
           onRowClick={this.HandleRowClick}
+          onChange={this.onChangePager}
         />
       </div>
     )
