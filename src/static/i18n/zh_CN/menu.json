@@ -59,5 +59,6 @@
   "menu.set-of-books": "帐套定义",
   "menu.coding-rule": "编码规则定义",
   "menu.new-coding-rule": "新建编码规则",
-  "menu.coding-rule-detail": "编码规则明细"
+  "menu.coding-rule-detail": "编码规则",
+  "menu.coding-rule-value": "编码规则明细"
 }

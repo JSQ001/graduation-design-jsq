@@ -8,7 +8,7 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import BasicInfo from 'components/basic-info'
 
-class CodingRuleDetail extends React.Component {
+class CodingRuleValue extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -18,10 +18,9 @@ class CodingRuleDetail extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: "编码规则代码", dataIndex: "codingRuleCode", width: '15%'},
-        {title: "编码规则名称", dataIndex: "codingRuleName", width: '25%'},
-        {title: "重置频率", dataIndex: "resetFrequence", width: '15%'},
-        {title: "备注", dataIndex: "description", width: '30%'},
+        {title: "顺序号", dataIndex: "sequence", width: '15%'},
+        {title: "参数名称", dataIndex: "segmentType", width: '15%'},
+        {title: "参数值", dataIndex: "segmentValue", width: '55%'},
         {title: "状态", dataIndex: 'isEnabled', width: '15%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)}
       ],
@@ -30,18 +29,19 @@ class CodingRuleDetail extends React.Component {
       },
       updateState: false,
       infoList: [
-        {type: 'input', label: '单据类型', id: 'documentCategoryCode', disabled: true},
-        {type: 'input', label: '应用公司', id: 'company', disabled: true},
+        {type: 'input', label: '编码规则代码', id: 'codingRuleCode', disabled: true},
+        {type: 'input', label: '编码规则名称', id: 'codingRuleName'},
+        {type: 'value_list', label: '重置频率', id: 'resetFrequence'},
+        {type: 'input', label: '备注', id: 'description'},
         {type: 'switch', label: '状态', id: 'isEnabled'},
       ],
-      infoData: {},
-      codingRuleValue: menuRoute.getRouteItem('coding-rule-value', 'key')
+      infoData: {}
     };
   }
 
   componentWillMount(){
     this.getList();
-    httpFetch.get(`${config.budgetUrl}/api/budget/coding/rule/objects/${this.props.params.id}`).then(res => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/coding/rules/${this.props.params.ruleId}`).then(res => {
       this.setState({ infoData: res.data })
     })
   }
@@ -49,7 +49,7 @@ class CodingRuleDetail extends React.Component {
   //得到列表数据
   getList(){
     this.setState({ loading: true });
-    let url = `${config.budgetUrl}/api/budget/coding/rules/query?&page=${this.state.page}&size=${this.state.pageSize}&codingRuleObjectId=${this.props.params.id}`;
+    let url = `${config.budgetUrl}/api/budget/coding/rule/details/query?&page=${this.state.page}&size=${this.state.pageSize}&codingRuleId=${this.props.params.id}`;
     return httpFetch.get(url).then((response)=>{
       response.data.map((item)=>{
         item.key = item.id;
@@ -81,16 +81,11 @@ class CodingRuleDetail extends React.Component {
     this.setState({updateState: true})
   };
 
-  handleRowClick = (record) => {
-    this.context.router.push(this.state.codingRuleValue.url.replace(':id', this.props.params.id).replace(':ruleId', record.id))
-  };
-
   render(){
     const { columns, data, loading,  pagination, infoList, infoData, updateState } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
-
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateState={updateState}
@@ -98,7 +93,7 @@ class CodingRuleDetail extends React.Component {
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew}>新建规则</Button>
+            <Button type="primary" onClick={this.handleNew}>添加段值</Button>
           </div>
         </div>
         <Table columns={columns}
@@ -116,7 +111,7 @@ class CodingRuleDetail extends React.Component {
 
 }
 
-CodingRuleDetail.contextTypes = {
+CodingRuleValue.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -124,4 +119,4 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(CodingRuleDetail));
+export default connect(mapStateToProps)(injectIntl(CodingRuleValue));

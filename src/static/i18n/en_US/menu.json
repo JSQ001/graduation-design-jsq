@@ -59,5 +59,6 @@
   "menu.set-of-books": "Set of books",
   "menu.coding-rule": "Coding rule",
   "menu.new-coding-rule": "New coding rule",
-  "menu.coding-rule-detail": "Coding rule detail"
+  "menu.coding-rule-detail": "Coding rule item",
+  "menu.coding-rule-value": "Coding rule detail"
 }
