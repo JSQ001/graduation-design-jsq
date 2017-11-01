@@ -4,6 +4,8 @@ import SecuritySetting from 'containers/setting/security-setting/security-settin
 import CallbackSetting from  'containers/setting/callback-setting/callback-setting'
 import CodingRule from 'containers/setting/coding-rule/coding-rule'
 import NewCodingRule from 'containers/setting/coding-rule/new-coding-rule'
+import CodingRuleDetai from 'containers/setting/coding-rule/coding-rule-detail'
+import CodingRuleValue from 'containers/setting/coding-rule/coding-rule-value'
 
 //新建值列表
 const newValueList = {
@@ -42,10 +44,27 @@ const callbackSetting = {
   children:{}
 };
 
+//新建编码规则
 const newCodingRule = {
   key:'new-coding-rule',
   url:'/main/setting/coding-rule/new-coding-rule',
   components: NewCodingRule,
+  parent: 'coding-rule'
+};
+
+//编码规则
+const codingRuleDetail = {
+  key:'coding-rule-detail',
+  url:'/main/setting/coding-rule/coding-rule-detail/:id',
+  components: CodingRuleDetai,
+  parent: 'coding-rule'
+};
+
+//编码规则明细
+const codingRuleValue = {
+  key:'coding-rule-value',
+  url:'/main/setting/coding-rule/coding-rule-detail/:id/coding-rule-value/:ruleId',
+  components: CodingRuleValue,
   parent: 'coding-rule'
 };
 
@@ -56,7 +75,9 @@ const codingRule = {
   components:CodingRule,
   parent: 'setting',
   children:{
-    newCodingRule
+    newCodingRule,
+    codingRuleDetail,
+    codingRuleValue
   }
 };
 

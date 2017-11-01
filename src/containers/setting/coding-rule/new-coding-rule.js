@@ -15,7 +15,8 @@ class NewCodingRule extends React.Component {
     super(props);
     this.state = {
       loading: false,
-      documentCategoryOptions: []
+      documentCategoryOptions: [],
+      codingRule: menuRoute.getRouteItem('coding-rule', 'key')
     };
   }
 
@@ -48,7 +49,7 @@ class NewCodingRule extends React.Component {
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { documentCategoryOptions } = this.state;
+    const { documentCategoryOptions, loading, codingRule } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 10, offset: 1 },
@@ -68,17 +69,6 @@ class NewCodingRule extends React.Component {
                   return <Option key={option.code}>{option.messageKey}</Option>
                 })}
               </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="单据名称">
-            {getFieldDecorator('documentTypeCode', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.enter'}),  //请输入
-              }],
-              initialValue: ''
-            })(
-              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="应用公司">
@@ -101,8 +91,8 @@ class NewCodingRule extends React.Component {
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
-              <Col span={3}><Button>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
+              <Col span={3}><Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
+              <Col span={3}><Button onClick={() => {this.context.router.push(codingRule.url)}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
             </Row>
           </FormItem>
         </Form>
