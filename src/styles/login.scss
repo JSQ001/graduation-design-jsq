@@ -1,85 +1,124 @@
-$login-text-color: rgba(255,255,255,0.5);
-$login-background-color: #0092DA;
-
 .login{
-  background: $login-background-color;
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   position: relative;
+  font-family: PingFangSC-Regular;
+  .background-img{
+    position: fixed;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
   .login-area{
-    width: 40vw;
-    margin-top: 10vh;
     position: absolute;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    -o-transform: translateX(-50%);
-    transform: translateX(-50%);
+    width: 20vw;
+    top: 20vh;
+    right: 10vw;
     text-align: center;
-    .login-logo{
-      width: 36px;
-    }
     .login-logo-text{
-      font-size: 20px;
+      font-size: 32px;
       color: white;
-      letter-spacing: 2px;
-      margin: 10px 0 30px 0;
-      font-weight: 200;
+      margin-bottom: 20px;
     }
-    .ant-input-affix-wrapper{
+    input{
+      border-radius: 0;
       height: 40px;
-      width: 20vw;
-      margin-bottom: 10px;
-      font-size: 18px;
-      .anticon:before{
-        color: rgba(255,255,255,0.7);
-      }
-      input{
-        font-size: 16px;
-        padding-left: 34px;
-        color: white;
-        border: none;
-        background: transparent;
-        border-bottom: 1px solid $login-text-color;
-        border-radius: 0;
-        caret-color: $login-text-color;
-        font-weight: 200;
-      }
-      input::-webkit-input-placeholder{
-        color: $login-text-color;
-        font-weight: 200;
-      }
-      input:focus{
-        border-bottom-color: white;
-      }
+      line-height: 40px;
+      margin-bottom: 30px;
+      font-size: 16px;
     }
     .forget-password{
-      display: inline-block;
-      width: 20vw;
+      font-size: 14px;
+      color: #FFFFFF;
       text-align: right;
-      color: $login-text-color;
-      font-weight: 200;
-      font-size: 12px;
+      margin-top: -10px;
+      width: 100%;
+      text-decoration: underline;
       cursor: pointer;
     }
-    .ant-btn-circle{
-      margin-top: 20px;
-      background: $login-background-color;
-      border: 1px solid $login-text-color;
-      color: $login-text-color;
-      width: 40px;
-      height: 40px;
-    }
-    .ant-btn-circle:hover{
-      color: white;
-      border-color: white;
+    button{
+      background: #166CFB;
+      border-radius: 4px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 18px;
+      width: 100%;
+      border: none;
+      margin-top: 46px;
     }
   }
-  .bottom-logo{
-    width: 100vw;
+  #scene{
+    position: absolute;
+    right: 45vw;
+    top: 10vh;
+    width: 40vw;
+    height: 80vh;
+    div{
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      img{
+        margin-top: 10vh;
+        width: 100%;
+      }
+    }
+    .img-logo{
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 50px;
+    }
+  }
+  .description{
+    position: absolute;
+    right: 40vw;
+    bottom: 20vh;
+    text-align: right;
+    .description-title{
+      font-size: 28px;
+      color: #FFFFFF;
+      line-height: 28px;
+    }
+    .description-content{
+      margin-top: 10px;
+      font-size: 16px;
+      color: #587DCD;
+      line-height: 16px;
+    }
+  }
+  .message{
+    position: absolute;
+    right: 10vw;
+    bottom: 20vh;
+    text-align: right;
+    .no-account{
+      font-size: 14px;
+      color: #FFFFFF;
+      line-height: 14px;
+      text-align: right;
+    }
+    .phone-number{
+      font-size: 18px;
+      color: #587DCD;
+      line-height: 18px;
+      margin-top: 8px;
+      text-align: right;
+    }
+  }
+  .footer{
     position: absolute;
     bottom: 0;
-    left: 0;
+    right: 10vw;
+    border-top: 1px solid #254181;
+    font-size: 14px;
+    color: #587DCD;
+    line-height: 16px;
+    padding: 20px 0;
+    text-align: center;
+    width: 80vw;
   }
 }

@@ -188,7 +188,8 @@ const selectorData = {
       {title: '币种名', dataIndex: 'currencyName'},
       {title: '代码', dataIndex: 'currency'},
       {title: '生效汇率', dataIndex: 'rate'}
-    ]
+    ],
+    key: 'currency'
   }
 
 };
