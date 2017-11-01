@@ -18,17 +18,15 @@ class CodingRule extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: "单据类型", dataIndex: "documentCategoryCode", width: '40%'},
-        {title: "单据名称", dataIndex: "documentTypeCode", width: '40%'},
-        {title: "状态", dataIndex: 'isEnabled', width: '20%', render: isEnabled => (
+        {title: "单据类型", dataIndex: "documentCategoryCode", width: '70%'},
+        {title: "状态", dataIndex: 'isEnabled', width: '30%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)}
       ],
       pagination: {
         total: 0
       },
       searchForm: [
-        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2106, options: []},
-        {type: 'input', id: 'documentTypeCode', label: "单据名称"}
+        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2106, options: []}
       ],
       searchParams: {
         documentCategoryCode: '',

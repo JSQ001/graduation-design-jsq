@@ -141,8 +141,8 @@ class BudgetBalance extends React.Component {
       'CURRENCY': {
         listType: 'currency',
         labelKey: 'currencyName',
-        valueKey: 'companyCurrencyOID',
-        codeKey: 'currency',
+        valueKey: 'currency',
+        codeKey: undefined,
         listExtraParams: {},
         selectorItem: undefined
       },
@@ -344,11 +344,13 @@ class BudgetBalance extends React.Component {
             queryParameterList: []
           };
           param.value.map(value => {
-            queryLine.queryParameterList.push({
-              parameterValueId: value[paramValueMap[param.params].valueKey],
-              parameterValueCode: value[paramValueMap[param.params].codeKey],
-              parameterValueName: value[paramValueMap[param.params].labelKey]
-            })
+            let paramItem = paramValueMap[param.params];
+            let queryParameter = {
+              parameterValueId: paramItem.listType === 'currency' ? null : (paramItem.valueKey ? value[paramItem.valueKey] : null),
+              parameterValueCode: paramItem.listType === 'currency' ? value[paramItem.valueKey] : (paramItem.codeKey ? value[paramItem.codeKey] : null),
+              parameterValueName: paramItem.labelKey ? value[paramItem.labelKey] : null
+            };
+            queryLine.queryParameterList.push(queryParameter)
           });
           values.queryLineList.push(queryLine)
         });
@@ -417,8 +419,9 @@ class BudgetBalance extends React.Component {
         item.queryParameterList.map(queryParameter => {
           let val = {};
           let mapItem = paramValueMap[item.parameterCode];
-          val[mapItem.codeKey] = queryParameter.parameterValueCode;
-          val[mapItem.valueKey] = queryParameter.parameterValueId;
+          if(item.parameterCode !== 'CURRENCY')
+            val[mapItem.codeKey] = queryParameter.parameterValueCode;
+          val[mapItem.valueKey] = item.parameterCode === 'CURRENCY' ? queryParameter.parameterValueCode : queryParameter.parameterValueId;
           val[mapItem.labelKey] = queryParameter.parameterValueName;
           newParams.value.push(val);
         });
