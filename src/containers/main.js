@@ -16,6 +16,7 @@ import menuRoute from 'share/menuRoute'
 import { setLanguage } from 'actions/main'
 import { setCompany } from 'actions/login'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
+import { setCodingRuleObjectId } from "actions/setting";
 import Loading from 'components/loading'
 import ListSelector from 'components/list-selector'
 
@@ -148,6 +149,12 @@ class Main extends React.Component{
         this.setState({check: true});
       };
       this.setUrl(section, 8, this.props.strategyId, actions, ":strategyId", 'budget-organization');
+    } else if(path.indexOf('coding-rule-detail') > -1 && this.props.codingRuleObjectId !== section[5]) {  //编码规则定义内部的编码规则id检查
+      let actions = (value) => {
+        this.props.dispatch(setCodingRuleObjectId(value));
+        this.setState({check: true});
+      };
+      this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule');
     } else {
       this.setState({check: true});
     }
@@ -275,7 +282,8 @@ function mapStateToProps(state) {
     profile: state.login.profile,
     company: state.login.company,
     organization: state.budget.organization,
-    strategyId: state.budget.strategyId
+    strategyId: state.budget.strategyId,
+    codingRuleObjectId: state.setting.codingRuleObjectId
   }
 }
 

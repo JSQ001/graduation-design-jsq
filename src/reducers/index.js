@@ -12,9 +12,10 @@ import { combineReducers } from 'redux';
 import login from 'reducers/login'
 import main from 'reducers/main'
 import budget from 'reducers/budget'
+import setting from 'reducers/setting'
 
 const reducers = {
-  login,main,budget
+  login,main,budget,setting
 };
 const combined = combineReducers(reducers);
 module.exports = combined;

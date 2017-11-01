@@ -7,6 +7,8 @@ import httpFetch from 'share/httpFetch'
 
 import menuRoute from 'share/menuRoute'
 import BasicInfo from 'components/basic-info'
+import NewCodingRuleValue from 'containers/setting/coding-rule/new-coding-rule-value'
+import SlideFrame from "components/slide-frame";
 
 class CodingRuleValue extends React.Component {
   constructor(props) {
@@ -31,11 +33,13 @@ class CodingRuleValue extends React.Component {
       infoList: [
         {type: 'input', label: '编码规则代码', id: 'codingRuleCode', disabled: true},
         {type: 'input', label: '编码规则名称', id: 'codingRuleName'},
-        {type: 'value_list', label: '重置频率', id: 'resetFrequence'},
+        {type: 'value_list', label: '重置频率', id: 'resetFrequence', options: []},
         {type: 'input', label: '备注', id: 'description'},
         {type: 'switch', label: '状态', id: 'isEnabled'},
       ],
-      infoData: {}
+      infoData: {},
+      showSlideFrameFlag: false,
+      nowCodingRuleValue: null
     };
   }
 
@@ -81,8 +85,22 @@ class CodingRuleValue extends React.Component {
     this.setState({updateState: true})
   };
 
+  handleNew = () => {
+    this.setState({
+      nowCodingRuleValue: null,
+      showSlideFrameFlag: true
+    })
+  };
+
+  handleRowClick = (record) => {
+    this.setState({
+      nowCodingRuleValue: record,
+      showSlideFrameFlag: true
+    })
+  };
+
   render(){
-    const { columns, data, loading,  pagination, infoList, infoData, updateState } = this.state;
+    const { columns, data, loading,  pagination, infoList, infoData, updateState, showSlideFrameFlag, nowCodingRuleValue } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
@@ -104,6 +122,13 @@ class CodingRuleValue extends React.Component {
                rowKey="id"
                bordered
                size="middle"/>
+
+        <SlideFrame content={NewCodingRuleValue}
+                    show={showSlideFrameFlag}
+                    params={{ codingRuleId: this.props.params.ruleId, nowCodingRuleValue }}
+                    onClose={() => {this.setState({ showSlideFrameFlag: false })}}
+                    afterClose={() => {this.setState({ showSlideFrameFlag: false })}}
+                    title="添加段值"/>
 
       </div>
     )

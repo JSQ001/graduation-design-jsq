@@ -107,7 +107,7 @@ class UpdateBudgetOrganization extends React.Component {
               valuePropName: 'checked'
             })(
               <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
-            )}
+            )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('isEnabled') ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})}
           </FormItem>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
