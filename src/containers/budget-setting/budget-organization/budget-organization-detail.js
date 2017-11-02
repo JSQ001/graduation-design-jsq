@@ -23,15 +23,15 @@ class BudgetOrganizationDetail extends React.Component {
     this.state = {
       nowStatus: 'SCENARIOS',
       tabs: [
-        {key: 'SCENARIOS', name:'预算场景定义'},
+        {key: 'SCENARIOS', name:'场景'},
         {key: 'STRUCTURE', name:'预算表'},
-        {key: 'VERSIONS', name:'预算版本定义'},
-        {key: 'TYPE', name:'预算项目类型定义'},
-        {key: 'ITEM', name:'预算项目定义'},
-        {key: 'GROUP', name:'预算项目组定义'},
-        {key: 'RULE', name:'预算控制规则定义'},
-        {key: 'STRATEGY', name:'预算控制策略定义'},
-        {key: 'JOURNAL_TYPE', name:'预算日记账类型定义'}
+        {key: 'VERSIONS', name:'版本'},
+        {key: 'TYPE', name:'项目类型'},
+        {key: 'ITEM', name:'项目'},
+        {key: 'GROUP', name:'项目组'},
+        {key: 'RULE', name:'控制规则'},
+        {key: 'STRATEGY', name:'控制策略'},
+        {key: 'JOURNAL_TYPE', name:'日记账类型'}
       ],
       budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
     };
