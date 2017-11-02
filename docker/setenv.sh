@@ -3,7 +3,6 @@
 echo "setting environment config"
 echo "$ARTEMIS_WS_URL"
 echo "$ARTEMIS_URL"
-echo "$BRMS_URL"
 
 #cat >> /app/www/scripts/app.constants.js <<EOF
 #angular.module('HLYAdminWebApp').constant('ServiceBaseURL', '').constant('SocketBaseURL', '$ARTEMIS_WS_URL');
@@ -26,33 +25,17 @@ server {
         proxy_pass $ARTEMIS_URL/api/;
     }
 
-    location /api/budget/ {
-        proxy_pass $BUDGET_URL/;
-        client_max_body_size 10m;
-    }
-    location /api/budget/ {
-        proxy_pass $BUDGET_URL/api/;
-        proxy_set_header Host \$host;
-        client_max_body_size 10m;
-    }
-    location /api/cash/ {
-        proxy_pass $PAY_URL/api/;
+    location /api/budget/  {
+        proxy_pass $BUDGET_URL/api/budget/;
         proxy_set_header Host \$host;
         client_max_body_size 10m;
     }
 
     location /api/cash/ {
-            proxy_pass $PAY_URL/;
-            client_max_body_size 10m;
-     }
-
-
-#    location /brms/ {
-#        proxy_pass $BRMS_URL/brms;
-#        proxy_set_header Host \$host;
-#        client_max_body_size 10m;
-#    }
-
+        proxy_pass $PAY_URL/api/cash;
+        proxy_set_header Host \$host;
+        client_max_body_size 10m;
+    }
 }
 EOF
 
