@@ -1,9 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Form, Input, Select, Button, InputNumber, message, Table, Badge } from 'antd'
-const FormItem = Form.Item;
-const Option = Select.Option;
+import { Form, Table, Badge, Modal } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
@@ -14,21 +12,23 @@ import SearchArea from 'components/search-area.js';
 class AccountPeriodControl extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: false,
       searchForm: [
-        {type: 'input', id: 'sobCode', label: "账套代码"},
-        {type: 'input', id: 'sobName', label: "账套名称"}
+        {type: 'input', id: 'sobCode', label: formatMessage({id: 'account-period-control.sobCode'})}, //账套代码
+        {type: 'input', id: 'sobName', label: formatMessage({id: 'account-period-control.sobName'})} //账套名称
       ],
       searchParams: {},
       columns: [
-        {title: "账套代码", key: "setOfBooksCode", dataIndex: "setOfBooksCode"},
-        {title: "账套名称", key: "setOfBooksName", dataIndex: 'setOfBooksName'},
-        {title: "会计期代码", key: "periodSetCode", dataIndex: 'periodSetCode'},
-        {title: "本位币", key: "functionalCurrencyCode", dataIndex: 'functionalCurrencyCode'},
-        {title: "科目表", key: "accountSetCode", dataIndex: 'accountSetCode'},
-        {title: "状态", key: "enabled", dataIndex: 'enabled',width: '10%',
-          render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />},
+        {title: formatMessage({id: 'account-period-control.sobCode'}), key: "setOfBooksCode", dataIndex: "setOfBooksCode"}, //账套代码
+        {title: formatMessage({id: 'account-period-control.sobName'}), key: "setOfBooksName", dataIndex: 'setOfBooksName'}, //账套名称
+        {title: formatMessage({id: 'account-period-control.periodSetCode'}), key: "periodSetCode", dataIndex: 'periodSetCode'}, //会计期代码
+        {title: formatMessage({id: 'account-period-control.currencyCode'}), key: "functionalCurrencyCode", dataIndex: 'functionalCurrencyCode'}, //本位币
+        {title: formatMessage({id: 'account-period-control.accountSetCode'}), key: "accountSetCode", dataIndex: 'accountSetCode'}, //科目表
+        {title: formatMessage({id: 'common.column.status'}), key: "enabled", dataIndex: 'enabled',width: '10%',  //状态
+          render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'}
+                                      text={isEnabled ? formatMessage({id: 'common.status.enable'}) : formatMessage({id: 'common.status.disable'})} />},
       ],
       data: [],
       pagination: {
@@ -107,21 +107,29 @@ class AccountPeriodControl extends React.Component {
   };
 
   handleRowClick = (record) => {
-    if (!record.enabled) return;
+    if (!record.enabled) {
+      Modal.info({
+        title: this.props.intl.formatMessage({id: 'account-period-control.disabled.info.title'}),  //该账套被禁用
+        content: this.props.intl.formatMessage({id: 'account-period-control.disabled.info.content'}),  //禁用的账套无法打开或关闭会计期间
+        maskClosable: true
+      });
+      return
+    }
     this.context.router.push(this.state.accountPeriodDetail.url.replace(':periodSetId', record.periodSetId).replace(':setOfBooksId', record.setOfBooksId));
   };
 
   render(){
+    const { formatMessage } = this.props.intl;
     const { loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="account-period-control">
-        <h3 className="header-title">账套级会计期间控制</h3>
+        <h3 className="header-title">{formatMessage({id: 'account-period-control.title'})/* 账套级会计期间控制 */}</h3>
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
           clearHandle={this.clear}/>
         <div className="table-header">
-          <div className="table-header-title">{`共搜索到 ${pagination.total || 0} 条数据`}</div>
+          <div className="table-header-title">{formatMessage({id: 'common.total'}, {total: pagination.total || 0})/* 共 total 条数据 */}</div>
         </div>
         <Table columns={columns}
                dataSource={data}
