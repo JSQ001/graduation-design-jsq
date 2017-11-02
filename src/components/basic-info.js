@@ -67,7 +67,6 @@ class BasicInfo extends React.Component{
     if (item.type == 'switch') {
       return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} text={this.state.infoData[item.id] ? '启用' : '禁用'} />;
     } else if (item.type == 'select') {
-      console.log(item.options)
       item.options && item.options.map((option)=>{  //有options选项时显示label值
         if(this.state.infoData[item.id] == option.value) {
           this.state.infoData[item.id] = option.label;
