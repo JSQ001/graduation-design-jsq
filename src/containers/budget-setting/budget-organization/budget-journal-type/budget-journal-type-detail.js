@@ -29,7 +29,6 @@ class BudgetJournalTypeDetail extends React.Component {
       tabs: [
         {key: 'STRUCTURE', name:'预算表'},
         {key: 'ITEM', name:'预算项目'},
-        {key: 'PERSON', name:'员工组'},
         {key: 'COMPANY', name:'公司分配'}
       ],
       typeData: {},
@@ -58,16 +57,14 @@ class BudgetJournalTypeDetail extends React.Component {
             {title: "预选项目描述", dataIndex: "itemName", width: '70%'}
           ]
         },
-        PERSON: {
-          columns: [
-            {title: "员工组代码", dataIndex: "personCode", width: '30%'},
-            {title: "员工组描述", dataIndex: "personName", width: '70%'}
-          ]
-        },
         COMPANY: {
+          url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/query`,
+          saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/companies`,
+          selectorItem: selectorData['company'],
+          extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
             {title: "公司代码", dataIndex: "companyCode", width: '30%'},
-            {title: "公司简称", dataIndex: "companyCode", width: '50%'},
+            {title: "公司简称", dataIndex: "companyName", width: '50%'},
             {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'}/>},
           ]
         }
@@ -193,6 +190,10 @@ class BudgetJournalTypeDetail extends React.Component {
       }
       if(nowStatus === 'ITEM'){
         item.bgtItemId = item.id;
+        delete item.id;
+      }
+      if(nowStatus === 'COMPANY'){
+        item.companyId = item.id;
         delete item.id;
       }
       item.journalTypeId = this.props.params.typeId;
