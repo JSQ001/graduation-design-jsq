@@ -27,6 +27,16 @@ server {
         proxy_set_header Host \$host;
         client_max_body_size 10m;
     }
+    location /api/budget/ {
+            proxy_pass $BUDGET_URL/api/;
+            proxy_set_header Host \$host;
+            client_max_body_size 10m;
+    }
+    location /api/cash/ {
+                proxy_pass PAY_URL/api/;
+                proxy_set_header Host \$host;
+                client_max_body_size 10m;
+    }
 
 #    location /brms/ {
 #        proxy_pass $BRMS_URL/brms;
