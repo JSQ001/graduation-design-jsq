@@ -9,14 +9,15 @@ const Option = Select.Option;
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
+import Chooser from 'components/chooser'
 
-class NewCodingRule extends React.Component {
+class NewCodingRuleObject extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      resetFrequenceOptions: [],
-      codingRule: menuRoute.getRouteItem('coding-rule', 'key')
+      documentCategoryOptions: [],
+      codingRuleObject: menuRoute.getRouteItem('coding-rule-object', 'key')
     };
   }
 
@@ -25,10 +26,11 @@ class NewCodingRule extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/coding/rules`, values).then((res)=>{
+        values.companyCode = values.company[0].companyCode;
+        httpFetch.post(`${config.budgetUrl}/api/budget/coding/rule/objects`, values).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //新建成功
-          this.context.router.push(this.state.codingRule.url.replace(':id', this.props.params.id));
+          this.context.router.push(this.state.codingRuleObject.url);
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.message}`);
@@ -42,12 +44,15 @@ class NewCodingRule extends React.Component {
   };
 
   componentWillMount(){
+    this.getSystemValueList(2106).then(res => {
+      this.setState({ documentCategoryOptions: res.data.values })
+    });
   }
 
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { resetFrequenceOptions, loading, codingRule } = this.state;
+    const { documentCategoryOptions, loading, codingRuleObject } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 10, offset: 1 },
@@ -55,43 +60,28 @@ class NewCodingRule extends React.Component {
     return (
       <div>
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout} label="编码规则代码">
-            {getFieldDecorator('codingRuleCode', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.enter'})  //请输入
-              }]
-            })(
-              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="编码规则名称">
-            {getFieldDecorator('codingRuleName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.enter'})  //请输入
-              }]
-            })(
-              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="重置频率">
-            {getFieldDecorator('resetFrequence', {
+          <FormItem {...formItemLayout} label="单据类型">
+            {getFieldDecorator('documentCategoryCode', {
               rules: [{
                 required: true,
                 message: formatMessage({id: 'common.please.select'})  //请选择
               }]
             })(
               <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}  notFoundContent={<Spin size="small" />}>
-                {resetFrequenceOptions.map((option)=>{
+                {documentCategoryOptions.map((option)=>{
                   return <Option key={option.code}>{option.messageKey}</Option>
                 })}
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="备注">
-            {getFieldDecorator('description')(
-              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
+          <FormItem {...formItemLayout} label="应用公司">
+            {getFieldDecorator('company', {
+              rules: [{
+                required: true,
+                message: formatMessage({id: 'common.please.select'}),  //请选择
+              }]
+            })(
+              <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
@@ -104,7 +94,7 @@ class NewCodingRule extends React.Component {
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>
               <Col span={3}><Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
-              <Col span={3}><Button onClick={() => {this.context.router.push(codingRule.url.replace(':id', this.props.params.id));}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
+              <Col span={3}><Button onClick={() => {this.context.router.push(codingRuleObject.url)}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
             </Row>
           </FormItem>
         </Form>
@@ -118,10 +108,10 @@ function mapStateToProps() {
   return {}
 }
 
-NewCodingRule.contextTypes = {
+NewCodingRuleObject.contextTypes = {
   router: React.PropTypes.object
 };
 
-const WrappedNewCodingRule = Form.create()(NewCodingRule);
+const WrappedNewCodingRuleObject = Form.create()(NewCodingRuleObject);
 
-export default connect(mapStateToProps)(injectIntl(WrappedNewCodingRule));
+export default connect(mapStateToProps)(injectIntl(WrappedNewCodingRuleObject));

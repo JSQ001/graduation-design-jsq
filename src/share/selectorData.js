@@ -46,6 +46,20 @@ const selectorData = {
     ],
     key: 'itemCode'
   },
+  'budget_journal_company': {
+    title: '选择预算日记账所需的公司',
+    url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司描述", dataIndex: 'description'}
+    ],
+    key: 'id'
+  },
   'budget_item': {
     title: '选择预算项目',
     url: `${config.budgetUrl}/api/budget/items/query`,
