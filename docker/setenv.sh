@@ -21,10 +21,6 @@ server {
         proxy_pass $ARTEMIS_URL/oauth/;
     }
 
-    location /api/ {
-        proxy_pass $ARTEMIS_URL/api/;
-    }
-
     location /api/budget/  {
         proxy_pass $BUDGET_URL/api/budget/;
         proxy_set_header Host \$host;
@@ -35,6 +31,10 @@ server {
         proxy_pass $PAY_URL/api/cash;
         proxy_set_header Host \$host;
         client_max_body_size 10m;
+    }
+
+    location /api/ {
+        proxy_pass $ARTEMIS_URL/api/;
     }
 }
 EOF
