@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Form, Input, Select, Button, InputNumber} from 'antd'
+import { Form, Input, Select, Button, InputNumber, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -28,8 +28,27 @@ class NewAccountPeriod extends React.Component {
     if(this.props.params.period)
       this.props.close();
     else{
-      //TODO:新增期间
-      this.props.close();
+      e.preventDefault();
+      this.props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          console.log(values);
+          this.setState({loading: true});
+          httpFetch.post(`${config.baseUrl}/api/periodset`, values).then((res)=>{
+            this.setState({loading: false});
+            if(res.status == 201){
+              message.success('保存成功');
+              this.props.close();
+            }
+          }).catch((e)=>{
+            if(e.response){
+              message.error(`保存失败, ${e.response.data.message}`);
+              this.setState({loading: false});
+            } else {
+              console.log(e)
+            }
+          })
+        }
+      })
     }
   };
 
@@ -48,7 +67,8 @@ class NewAccountPeriod extends React.Component {
           <FormItem {...formItemLayout} label="会计期代码">
             {getFieldDecorator('periodSetCode', {
               rules: [{
-                required: true
+                required: true,
+                message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
               initialValue: period ? period.periodSetCode : ''
             })(
@@ -80,7 +100,8 @@ class NewAccountPeriod extends React.Component {
           <FormItem {...formItemLayout} label="名称附加">
             {getFieldDecorator('periodAdditionalFlag', {
               rules: [{
-                required: true
+                required: true,
+                message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
               initialValue: period ? period.periodAdditionalFlag : ''
             })(

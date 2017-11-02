@@ -113,7 +113,6 @@ React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config
  * @param hoverDom hover所需要的dom
  */
 window.spriteAnimation = function(dom, img, height, width, total, duration = 500, hoverDom = dom){
-  console.log(img);
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
