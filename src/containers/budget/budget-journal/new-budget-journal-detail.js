@@ -14,6 +14,10 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 let companyId ='';
+
+let rateData=1;
+
+
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -32,7 +36,7 @@ class NewBudgetJournalDetail extends React.Component {
           url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
         },
         /*预算项目*/
-        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.Item"}), isRequired: true, options: [],
+        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
           labelKey:'itemName',valueKey:'id',
           url:`${config.budgetUrl}/api/budget/items/find/all`,
         },
@@ -46,14 +50,14 @@ class NewBudgetJournalDetail extends React.Component {
         /*年度*/
         {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,},
         /*币种*/
-        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],
+        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
           labelKey:'attribute5',valueKey:'attribute4',
           url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
         },
         /*汇率类型*/
-        {type: 'value_list', id:'rateType', label:  this.props.intl.formatMessage({id:"budget.rateType"}),  options: [],valueListCode:2101},
+       /* {type: 'value_list', id:'rateType', label:  this.props.intl.formatMessage({id:"budget.rateType"}),  options: [],valueListCode:2101},*/
         /*标价方法*/
-        {type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), options: []},
+        /*{type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), options: []},*/
         /*汇率*/
         {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate'},
         /*金额*/
@@ -63,7 +67,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*数量*/
         {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
         /*单位*/
-        {type: 'select', id:'unit', label:  this.props.intl.formatMessage({id:"budget.unit"}), isRequired: true, options: []},
+       /* {type: 'select', id:'unit', label:  this.props.intl.formatMessage({id:"budget.unit"}), isRequired: true, options: []},*/
         /*备注*/
         {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"}), isRequired: true, options: []},
         /*维度*/
@@ -122,13 +126,16 @@ class NewBudgetJournalDetail extends React.Component {
       case 'currency':{
         console.log(event)
         event =JSON.parse(event);
+        rateData =event.attribute11;
         this.props.form.setFieldsValue({
           rate:event.attribute11
         });
         return;
       }
       case 'amount':{
-        let functionalAmount =  event;
+
+        let functionalAmount =  event*rateData;
+
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
@@ -346,53 +353,56 @@ class NewBudgetJournalDetail extends React.Component {
       }
       // let currency =JSON.parse(value.currency);
       let  valueData = {
-        "companyId": companyId,
-        "companyName":companyName,
-        "unitId":unitId,
-        "departmentCode": "department1code",
-        "costCenter": "我是测试成本中心",
-        "itemId": itemId,
-        "itemName": itemName,
-        "currency": "RNB",
-        "rateType": "1",
-        "rateQuotation": "1",
-        "rate": value.rate,
-        "amount": value.amount,
-        "functionalAmount": value.functionalAmount,
-        "quantity": value.quantity,
-        "unit": "1",
-        "remark": "1",
-        "periodYear": value.periodYear,
-        "periodQuarter": "2",
-        "periodName": "201701",
-        "dimension1Id": "1111",
-        "dimension2Id": "2222",
-        "dimension3Id": null,
-        "dimension4Id": null,
-        "dimension5Id": null,
-        "dimension6Id": null,
-        "dimension7Id": null,
-        "dimension8Id": null,
-        "dimension9Id": null,
-        "dimension10Id": null,
-        "dimension11Id": null,
-        "dimension12Id": null,
-        "dimension13Id": null,
-        "dimension14Id": null,
-        "dimension15Id": null,
-        "dimension16Id": null,
-        "dimension17Id": null,
-        "dimension18Id": null,
-        "dimension19Id": null,
-        "dimension20Id": null,
-        "versionNumber": params.versionNumber||"1",
-        "createdBy": "1",
-        "lastUpdatedBy": "1"
+
+          "companyId": companyId,
+          "companyName":companyName,
+          "unitId":unitId,
+          "departmentCode": "department1code",
+          "costCenter": "我是测试成本中心",
+          "itemId": itemId,
+          "itemName": itemName,
+          "currency": "RNB",
+          "rateType": "1",
+          "rateQuotation": "1",
+          "rate": value.rate,
+          "amount": value.amount,
+          "functionalAmount": value.functionalAmount,
+          "quantity": value.quantity,
+          "unit": "1",
+          "remark": value.remark,
+          "periodYear": value.periodYear,
+          "periodQuarter": "2",
+          "periodName": "201701",
+          "dimension1Id": "1111",
+          "dimension2Id": "2222",
+          "dimension3Id": null,
+          "dimension4Id": null,
+          "dimension5Id": null,
+          "dimension6Id": null,
+          "dimension7Id": null,
+          "dimension8Id": null,
+          "dimension9Id": null,
+          "dimension10Id": null,
+          "dimension11Id": null,
+          "dimension12Id": null,
+          "dimension13Id": null,
+          "dimension14Id": null,
+          "dimension15Id": null,
+          "dimension16Id": null,
+          "dimension17Id": null,
+          "dimension18Id": null,
+          "dimension19Id": null,
+          "dimension20Id": null,
+          "versionNumber": params.versionNumber||"1",
+          "createdBy": "1",
+          "lastUpdatedBy": "1"
+
       }
       let data;
       if(params=={}){
         data={
           ...valueData
+
         }
       }else {
         data={

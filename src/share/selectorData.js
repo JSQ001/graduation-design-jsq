@@ -46,6 +46,20 @@ const selectorData = {
     ],
     key: 'itemCode'
   },
+  'budget_journal_company': {
+    title: '选择预算日记账所需的公司',
+    url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司描述", dataIndex: 'description'}
+    ],
+    key: 'id'
+  },
   'budget_item': {
     title: '选择预算项目',
     url: `${config.budgetUrl}/api/budget/items/query`,
@@ -180,19 +194,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'budget_item':{
-    title:"预算项目",
-    url: `${config.budgetUrl}/api/budget/items/query`,
-    searchForm:[
-      {type: 'input', id: 'itemCode', label: '预算项目代码'},
-      {type: 'input', id: 'itemName', label: '预算项目名称'},
-    ],
-    columns: [
-      {title: '预算项目代码', dataIndex: 'itemCode'},
-      {title: '预算项目名称', dataIndex: 'itemName'},
-    ],
-    key: 'id'
-  },
   'currency': {
     title: "币种",
     url: `${config.baseUrl}/api/company/standard/currency`,
@@ -201,7 +202,8 @@ const selectorData = {
       {title: '币种名', dataIndex: 'currencyName'},
       {title: '代码', dataIndex: 'currency'},
       {title: '生效汇率', dataIndex: 'rate'}
-    ]
+    ],
+    key: 'currency'
   }
 
 };

@@ -44,7 +44,8 @@ class NewBudgetOrganization extends React.Component {
   };
 
   componentWillMount(){
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant`).then(res => {
+    //TODO: tenant模式
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then(res => {
       this.setState({ setOfBooks: res.data })
     })
   }
@@ -104,10 +105,10 @@ class NewBudgetOrganization extends React.Component {
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: false
+              initialValue: true
             })(
-              <Switch defaultChecked={this.props.params.isEnabled} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
-            )}
+              <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+            )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('isEnabled') ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})}
           </FormItem>
           <FormItem wrapperCol={{ offset: 7 }}>
             <Row gutter={1}>

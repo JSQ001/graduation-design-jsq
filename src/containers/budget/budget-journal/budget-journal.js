@@ -31,26 +31,16 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-        {type: 'list', id: 'journalTypeName',
-          listType: 'budget_journal_type',
-          labelKey: 'journalTypeName',
-          valueKey: 'id',
-          label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),  /*预算日记账类型*/
-          listExtraParams:{organizationId:1}
-        },
+
+        {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:1},
+          labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
+
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
-        {type: 'select', id: 'periodStrategy',
-          label:  this.props.intl.formatMessage({id: 'budget.journal'})+this.props.intl.formatMessage({id: 'budget.periodStrategy'}),
-          options:
-            [
-              {value:'Y',label:this.props.intl.formatMessage({id:"budget.year"})},
-              {value:'Q',label:this.props.intl.formatMessage({id:"budget.quarter"})},
-              {value:'M',label:this.props.intl.formatMessage({id:"budget.month"})}
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
 
-            ]
-        },
       ],
 
       columns: [
@@ -58,16 +48,24 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeId'
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
         },
         {          /*预算表*/
-          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureId'
+          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*预算期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: "期间", key: "periodName", dataIndex: 'periodName',
+          render(recode,text){
+            switch (text.periodStrategy){
+              case 'MONTH':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
+              case 'QUARTER':{ return `${text.periodYear}/${text.periodQuarter?text.periodQuarter:''}`}
+              case 'YEAR':{ return `${text.periodYear}`}
+
+            }
+          }
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
@@ -132,6 +130,12 @@ class BudgetJournal extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) =>{
+    console.log(values);
+    const valueData={
+      ...values,
+      "journalTypeId":values.journalTypeId.id
+    }
+
     this.setState({
       params:values,
     },()=>{

@@ -4,15 +4,19 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Button from 'antd/lib/button';
-import { Input, Icon, message } from 'antd';
+import { Input, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { injectIntl } from 'react-intl';
+import Parallax from 'parallax-js'
 
 import 'styles/login.scss'
 
-import huilianyiImg from 'images/huilianyi.png'
-import logoImg from 'images/logo-white.png'
+import BG from 'images/login/BG.jpg'
+import logo from 'images/login/logo.png'
+import layer1 from 'images/login/layer01.png'
+import layer2 from 'images/login/layer02.png'
+import layer3 from 'images/login/layer03.png'
 
 class Login extends React.Component{
   constructor(props){
@@ -22,6 +26,13 @@ class Login extends React.Component{
       username: '',
       password: ''
     }
+  }
+
+  componentDidMount(){
+    let scene = document.getElementById('scene');
+    let parallaxInstance = new Parallax(scene, {
+      calibrateX: true
+    });
   }
 
   inputUsernameHandler = (evt) => {
@@ -49,14 +60,12 @@ class Login extends React.Component{
   render(){
     return (
       <div className="login">
-        <img src={huilianyiImg} className="bottom-logo"/>
+        <img src={BG} className="background-img"/>
         <div className="login-area">
-          <img src={logoImg} className="login-logo"/><br/>
-          <div className="login-logo-text">{this.props.intl.formatMessage({id: 'helios'})}</div>
+          <div className="login-logo-text">汇联易管理系统</div>
           <Input
             size="large"
             placeholder={this.props.intl.formatMessage({id: 'login.username'})} //用户名
-            prefix={<Icon type="user" />}
             onChange={this.inputUsernameHandler}
           />
           <br/>
@@ -64,14 +73,30 @@ class Login extends React.Component{
             size="large"
             type="password"
             placeholder={this.props.intl.formatMessage({id: 'login.password'})}  //密码
-            prefix={<Icon type="lock" />}
             onChange={this.inputPasswordHandler}
           />
           <br/>
-          <span className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</span>
+          <div className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</div>
           <br/>
-          <Button type="primary" shape="circle" icon="arrow-right" size="large" onClick={this.login} loading={this.state.loading}/>
+          <Button type="primary" size="large" onClick={this.login} loading={this.state.loading}>登录</Button>
         </div>
+        <div className="message">
+          <div className="no-account">还没有账号？请联系客服</div>
+          <div className="phone-number">400-202-2020</div>
+        </div>
+
+        <div id="scene">
+          <img src={logo} className="img-logo"/>
+          <div data-depth="0.2"><img src={layer1}/></div>
+          <div data-depth="0.4"><img src={layer2}/></div>
+          <div data-depth="0.6"><img src={layer3}/></div>
+        </div>
+        <div className="description">
+          <div className="description-title">重新定义报销</div>
+          <div className="description-content">引领差旅报销云时代, 实现自动化管理</div>
+        </div>
+        <div className="footer">CopyRight  汇联易  |  沪ICP备16047366号</div>
+
       </div>
     )
   }

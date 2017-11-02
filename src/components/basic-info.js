@@ -95,7 +95,6 @@ class BasicInfo extends React.Component{
     this.props.infoList.map((item, index)=>{
       //获取默认值，用于search-area组件
       item.defaultValue = this.state.infoData[item.id];
-
       //规则定义的有效时间
       if(item.items){
         item.items.map((index)=>{
@@ -107,6 +106,7 @@ class BasicInfo extends React.Component{
       if(item.type == 'date') {
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
       }
+
 
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>

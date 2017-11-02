@@ -49,7 +49,7 @@ class BudgetOrganization extends React.Component {
       newBudgetOrganization:  menuRoute.getRouteItem('new-budget-organization','key'),    //新建组织定义的页面项
       searchForm: [
         {type: 'select', id: 'setOfBooksId', label: formatMessage({id:"budget.set.of.books"}), options: [],
-          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id'}, //账套
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}}, //账套
         {type: 'input', id: 'organizationCode', label: formatMessage({id:"budget.organization.code"})},  //预算组织代码
         {type: 'input', id: 'organizationName', label: formatMessage({id:"budget.organization.name"})},  //预算组织名称
       ],
@@ -99,7 +99,7 @@ class BudgetOrganization extends React.Component {
         data: response.data,
         loading: false,
         pagination: {
-          total: Number(response.headers['x-total-count']),
+          total: Number(response.headers['x-total-count']) ? Number(response.headers['x-total-count']) : 0,
           onChange: this.onChangePager,
           current: this.state.page + 1
         }
