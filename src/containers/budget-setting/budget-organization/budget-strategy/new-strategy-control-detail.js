@@ -48,35 +48,44 @@ class NewStrategyControlDetail extends React.Component{
       this.setState({ periodStrategyOptions })
     });
   }
+
   componentWillReceiveProps(nextProps){
-    if(!nextProps.params.id) {
-      console.log(nextProps.params.strategyControlId, this.state.updateParams.strategyControlId);
+    const params = nextProps.params;
+    if (params.isNew && !this.state.updateParams.strategyControlId) {  //新建
+      console.log(123);
+      this.props.form.resetFields();
       this.setState({
-        updateParams: nextProps.params
+        updateParams: params.newParams,
+        objectValue: '',
+        rangeValue: '',
+        mannerValue: '',
+        operatorValue: '',
+        valueValue: '',
+        periodStrategyValue: ''
       })
-    } else if(nextProps.params.id != this.state.updateParams.id){ //更新
+    } else if(!params.isNew && params.newParams.id != this.state.updateParams.id) {  //更新
       this.setState({
-        updateParams: nextProps.params,
-        objectValue: nextProps.params.object,
-        rangeValue: nextProps.params.range,
-        mannerValue: nextProps.params.manner,
-        operatorValue: nextProps.params.operator,
-        valueValue: nextProps.params.value,
-        periodStrategyValue: this.handlePeriodStrategy(nextProps.params.periodStrategy)
+        updateParams: params.newParams,
+        objectValue: params.newParams.object,
+        rangeValue: params.newParams.range,
+        mannerValue: params.newParams.manner,
+        operatorValue: params.newParams.operator,
+        valueValue: params.newParams.value,
+        periodStrategyValue: this.handlePeriodStrategy(params.newParams.periodStrategy)
       });
-      let params = {
-        object: nextProps.params.object,
-        range: nextProps.params.range,
-        manner: nextProps.params.manner,
-        operator: nextProps.params.operator,
-        value: nextProps.params.value,
-        periodStrategy: nextProps.params.periodStrategy
+      let defaultDate = {
+        object: params.newParams.object,
+        range: params.newParams.range,
+        manner: params.newParams.manner,
+        operator: params.newParams.operator,
+        value: params.newParams.value,
+        periodStrategy: params.newParams.periodStrategy
       };
-      console.log(nextProps.params);
-      this.props.form.setFieldsValue(params)
+      this.props.form.setFieldsValue(defaultDate)
     }
   }
   onCancel = () =>{
+    this.setState({ updateParams: {} });
     this.props.close();
   };
   handleSave = (e) =>{
@@ -84,17 +93,18 @@ class NewStrategyControlDetail extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        values.controlStrategyDetailId = this.props.params.strategyControlId;
+        values.controlStrategyDetailId = this.props.params.newParams.strategyControlId;
         values.value = Number(values.value).toFixed(4);
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
+            this.setState({ updateParams: {} });
             this.props.close(true);
             message.success('保存成功');
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`保存失败, ${e.response.data.message}`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -129,6 +139,7 @@ class NewStrategyControlDetail extends React.Component{
       }
     });
   };
+
   handlePeriodStrategy = (value) => {
     const config = {
       '年度': '全年预算额',
@@ -142,6 +153,7 @@ class NewStrategyControlDetail extends React.Component{
     this.setState({ periodStrategyValue: config[value] });
     return config[value]
   };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { objectValue, rangeValue, mannerValue, operatorValue, valueValue, periodStrategyValue, updateParams, loading, controlObjectOptions, rangeOptions, mannerOptions, operatorOptions, periodStrategyOptions } = this.state;
@@ -309,7 +321,7 @@ class NewStrategyControlDetail extends React.Component{
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
               <div>{objectValue} {rangeValue} {periodStrategyValue}
-                {mannerValue == '百分比' && valueValue ? Number(valueValue).toFixed(4) + '%' : operatorValue + Number(valueValue).toFixed(4)}</div>
+                {valueValue ? (mannerValue == '百分比' ? Number(valueValue).toFixed(4) + '%' : operatorValue + Number(valueValue).toFixed(4)) : ''}</div>
             )}
           </FormItem>
           <div className="slide-footer">

@@ -6,7 +6,7 @@ import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 import debounce from 'lodash.debounce'
 import config from 'config'
-import { Table, Button, Input, Popover, message } from 'antd'
+import { Table, Button, Input, Popover, message, Icon } from 'antd'
 const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
@@ -42,6 +42,7 @@ class BudgetStrategyDetail extends React.Component {
       newBudgetStrategyDetail:  menuRoute.getRouteItem('new-budget-strategy-detail','key'),    //新建控制策略详情
       strategyControlDetail:  menuRoute.getRouteItem('strategy-control-detail','key'),    //策略明细
       budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
+      budgetOrganizationDetail:  menuRoute.getRouteItem('budget-organization-detail','key'),    //预算组织详情
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
@@ -135,6 +136,10 @@ class BudgetStrategyDetail extends React.Component {
     })
   };
 
+  handleBack = () => {
+    this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id) + '?tab=STRATEGY');
+  };
+
   render(){
     const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
     return (
@@ -158,10 +163,12 @@ class BudgetStrategyDetail extends React.Component {
         <Table columns={columns}
                dataSource={data}
                pagination={pagination}
+               rowKey={record => record.id}
                loading={loading}
                onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
       </div>
     )
     }
