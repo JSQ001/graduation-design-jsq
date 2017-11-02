@@ -25,6 +25,7 @@ class NewBudgetVersions extends React.Component {
       checkoutCodeData:[],
       loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
     };
   }
 
@@ -76,8 +77,6 @@ class NewBudgetVersions extends React.Component {
     e.preventDefault();
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
-
-
 
 
 
@@ -213,7 +212,8 @@ class NewBudgetVersions extends React.Component {
 
             <div className="">
               <Button type="primary" htmlType="submit" loading={this.state.loading} >{this.props.intl.formatMessage({id:"common.save"})}</Button>
-              <Button onClick={this.CancelHandle}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
+              <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=VERSIONS');}}>取消</Button>
+
             </div>
 
 
@@ -233,11 +233,12 @@ NewBudgetVersions.contextTypes={
   router:React.PropTypes.object
 }
 
+
 const WrappedNewBudgetVersions= Form.create()(NewBudgetVersions);
 
 function mapStateToProps(state) {
   return {
-    organization:state.budget.organization
+    organization: state.budget.organization
   }
 }
 

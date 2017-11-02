@@ -146,9 +146,15 @@ class BudgetJournalReCheck extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) =>{
-    console.log(values);
+    values.createData;
+
+    const valuesData={
+      ...values,
+      "createData":values['createData']?values['createData'].format('YYYY-MM-DD'):'',
+    }
+    console.log(valuesData);
     this.setState({
-      params:values,
+      params:valuesData,
     },()=>{
       this.getList()
     })

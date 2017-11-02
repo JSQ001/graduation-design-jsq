@@ -76,6 +76,9 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
+        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :1},
+          labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -93,7 +96,13 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1}
         },
         /*附件*/
-        {type:'file',label:'附件',id:'file',disabled: true}
+        {type:'file',label:'附件',id:'file',disabled: true},
+       /* {type: 'select', id:'versionId', label: '预算版本', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams:{organizationId :1},
+          labelKey: 'versionName', valueKey: 'id'},*/
+
+
+
 
       ],
 
@@ -278,13 +287,14 @@ class BudgetJournalDetail extends React.Component {
 
         console.log(statusData);
 
+        const dao={'status':'processing', 'value':'新建'};
 
       const fileData =[];
       fileData.push(file);
 
       const infoData={
         ...headerData,
-        "status":statusData,
+        "status":dao,
         "journalType":journalType,
         "versionName":versionName,
         "scenarioName":scenarioName,
