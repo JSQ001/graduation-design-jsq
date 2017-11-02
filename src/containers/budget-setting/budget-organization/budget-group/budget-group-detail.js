@@ -66,8 +66,8 @@ class BudgetGroupDetail extends React.Component {
     });
     this.getList();
     let selectorItem = selectorData['budget_item_filter'];
-    selectorItem.url = `${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/fiter`;
-    httpFetch.get(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/fiterAll?organizationId=${this.props.organization.id}`).then(response => {
+    selectorItem.url = `${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/filter`;
+    httpFetch.get(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/filterAll?organizationId=${this.props.organization.id}`).then(response => {
       let result = [];
       response.data.map((item) => {
         result.push({
