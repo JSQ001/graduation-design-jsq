@@ -149,12 +149,12 @@ class Main extends React.Component{
         this.setState({check: true});
       };
       this.setUrl(section, 8, this.props.strategyId, actions, ":strategyId", 'budget-organization');
-    } else if(path.indexOf('coding-rule-detail') > -1 && this.props.codingRuleObjectId !== section[5]) {  //编码规则定义内部的编码规则id检查
+    } else if(path.indexOf('coding-rule/') > -1 && this.props.codingRuleObjectId !== section[5]) {  //编码规则定义内部的编码规则id检查
       let actions = (value) => {
         this.props.dispatch(setCodingRuleObjectId(value));
         this.setState({check: true});
       };
-      this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule');
+      this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
     } else {
       this.setState({check: true});
     }
