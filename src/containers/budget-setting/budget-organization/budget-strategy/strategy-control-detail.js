@@ -56,7 +56,7 @@ class StrategyControlDetail extends React.Component {
     this.setState({
       strategyControlId: this.props.params.strategyControlId,
       newParams: {
-        strategyControlId: this.props.params.strategyControlId
+        strategyControlId: this.props.params.strategyControlId,
       }
     },() => {
       this.getBasicInfo();
@@ -177,7 +177,7 @@ class StrategyControlDetail extends React.Component {
                    updateHandle={this.handleUpdate}
                    updateState={updateState}/>
         <div className="table-header">
-          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${this.state.pagination.total || 0} 条数据`}</div>
+          <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary"  onClick={() => this.showSlide(true)}>新 建</Button>
             <Search
@@ -191,6 +191,7 @@ class StrategyControlDetail extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               rowKey={record => record.id}
                onRowClick={this.handleRowClick}
                bordered
                size="middle"/>
@@ -199,7 +200,7 @@ class StrategyControlDetail extends React.Component {
                     content={NewStrategyControlDetail}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showUpdateSlide(false)}
-                    params={newParams}/>
+                    params={{newParams, isNew}}/>
       </div>
     )
   }
