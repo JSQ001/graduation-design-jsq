@@ -103,6 +103,7 @@ class BudgetVersionsDetail extends React.Component {
     console.log(this.props)
     let data ={}
     httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
+      console.log(response.data);
       data = response.data;
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({
