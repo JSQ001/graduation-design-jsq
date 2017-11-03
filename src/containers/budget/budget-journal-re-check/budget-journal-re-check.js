@@ -69,7 +69,15 @@ class BudgetJournalReCheck extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy'
+          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy',
+          render(recode,text){
+            switch (text.periodStrategy){
+              case 'MONTH':{ return `期间`}
+              case 'QUARTER':{ return `年`}
+              case 'YEAR':{ return `季度`}
+
+            }
+          }
         },
         {          /*预算表*/
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
@@ -103,8 +111,7 @@ class BudgetJournalReCheck extends React.Component {
   }
 
 
-
-  //获取预算日记账数据
+//获取复核
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}&structureId=${this.state.params.structureId||''}&versionId=${this.state.params.versionId||''}&scenarioId=${this.state.params.scenarioId||''}&createDate=${this.state.params.createData||''}&empId=${this.state.params.employeeId||''}`).then((response)=>{
       this.setState({
@@ -139,9 +146,15 @@ class BudgetJournalReCheck extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) =>{
-    console.log(values);
+    values.createData;
+
+    const valuesData={
+      ...values,
+      "createData":values['createData']?values['createData'].format('YYYY-MM-DD'):'',
+    }
+    console.log(valuesData);
     this.setState({
-      params:values,
+      params:valuesData,
     },()=>{
       this.getList()
     })

@@ -14,7 +14,6 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 let companyId ='';
-
 let rateData=1;
 
 
@@ -31,7 +30,7 @@ class NewBudgetJournalDetail extends React.Component {
           url: `${config.baseUrl}/api/company/available`
         },
         /*部门*/
-        {type: 'select', id:'unitId', label:  this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
+        {type: 'select', id:'unitId', label:this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
           labelKey: 'name', valueKey: 'id',event:'unitId',
           url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
         },
@@ -46,7 +45,7 @@ class NewBudgetJournalDetail extends React.Component {
           url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`
         },
         /*季度*/
-        {type: 'input', id:'periodQuarter"', label:this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true,},
+        {type: 'value_list', id: 'periodQuarter', label: this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true, options: [], valueListCode: 2021},
         /*年度*/
         {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,},
         /*币种*/
@@ -102,25 +101,11 @@ class NewBudgetJournalDetail extends React.Component {
         this.props.form.setFieldsValue({
           periodYear:event.periodYear
         });
+
         this.props.form.setFieldsValue({
-          periodQuarter:event.periodQuarter,
+          periodQuarter:event.quarterNum,
         });
-        /* searchForm = searchForm.map(searchItem => {
-         if(searchItem.id === 'periodQuarter'){
-         searchItem.defaultValue = event.quarterNum;
-         console.log(event.quarterNum)
-         return searchItem;
-         }
-         if(searchItem.id === 'periodYear'){
-         searchItem.defaultValue = event.periodYear;
-         console.log(event.periodYear);
-         return searchItem;
-         }
-         });
-         console.log(searchForm);
-         this.setState({
-         searchForm:searchForm
-         })*/
+
         return;
       }
       case 'currency':{
@@ -160,6 +145,7 @@ class NewBudgetJournalDetail extends React.Component {
     console.log(this.props.params);
   }
   componentWillReceiveProps = (nextProps) => {
+
     if(nextProps.params && nextProps.params!=={} )
       this.setState({ params : nextProps.params });
     else
@@ -313,12 +299,17 @@ class NewBudgetJournalDetail extends React.Component {
     const params =this.state.params;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
+
+      console.log(value);
       let companyId;
       let companyName;
       let itemId;
       let itemName;
-      let periodName;
       let unitId;
+      let departmentName;
+      let periodNameData;
+      let currencyData;
+
       if(value.company.indexOf(":")>1){
         let company = JSON.parse(value.company);
         companyId=company.id;
@@ -329,6 +320,17 @@ class NewBudgetJournalDetail extends React.Component {
         companyName=params.companyName;
       }
       console.log(companyId+companyName);
+
+
+      if(value.currency.indexOf(":")>1){
+        let currency = JSON.parse(value.currency);
+        currencyData=currency.attribute4;
+      }
+      else {
+        currencyData=params.currency;
+      }
+
+
       if(value.item.indexOf(":")>1 ){
         let item = JSON.parse(value.item);
         itemId=item.id;
@@ -338,32 +340,56 @@ class NewBudgetJournalDetail extends React.Component {
         itemId=params.itemId;
         itemName=params.itemName;
       }
+
+
       if(value.periodName.indexOf(":")>1 ){
-        let periodName = JSON.parse(value.periodName);
-        periodName=periodName.periodName;
+        let periodNameFromData = JSON.parse(value.periodName);
+       let periodName=periodNameFromData.periodName;
+
+        //处理期间
+       if(periodName!=''&& periodName!=null && periodName!=undefined) {
+          const periodNameArray = periodName.split("-");
+          for (let i = 0; i < periodNameArray.length; i++) {
+            console.log(periodNameArray[i])
+            if (periodNameArray[i].length==4 &&  Number(periodNameArray[i])) {
+              if(i==0){
+                periodNameData = periodNameArray[0]+""+periodNameArray[1];
+              }else {
+                periodNameData = periodNameArray[1]+""+periodNameArray[0];
+              }
+              console.log(periodName.periodYear);
+            }
+          }
+        }else {
+          periodNameData='';
+        }
+
       }
       else {
-        periodName=params.periodName;
+        periodNameData=params.periodName;
       }
+
       if(value.unitId.indexOf(":">1)){
         let unit =JSON.parse(value.unitId);
         unitId = unit.id;
+        departmentName=unit.name
       }else {
         unitId = params.unitId;
+        departmentName = params.departmentName;
       }
       // let currency =JSON.parse(value.currency);
       let  valueData = {
-
           "companyId": companyId,
           "companyName":companyName,
           "unitId":unitId,
-          "departmentCode": "department1code",
-          "costCenter": "我是测试成本中心",
+           "departmentName":departmentName,
+          "departmentCode": "",
+          "costCenter": "",
           "itemId": itemId,
           "itemName": itemName,
-          "currency": "RNB",
+          "currency":currencyData,
           "rateType": "1",
-          "rateQuotation": "1",
+          "rateQuotation":'',
           "rate": value.rate,
           "amount": value.amount,
           "functionalAmount": value.functionalAmount,
@@ -371,10 +397,10 @@ class NewBudgetJournalDetail extends React.Component {
           "unit": "1",
           "remark": value.remark,
           "periodYear": value.periodYear,
-          "periodQuarter": "2",
-          "periodName": "201701",
-          "dimension1Id": "1111",
-          "dimension2Id": "2222",
+          "periodQuarter": value.periodQuarter,
+          "periodName":periodNameData,
+          "dimension1Id": null,
+          "dimension2Id": null,
           "dimension3Id": null,
           "dimension4Id": null,
           "dimension5Id": null,

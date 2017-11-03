@@ -7,6 +7,9 @@ import CodingRule from 'containers/setting/coding-rule/coding-rule'
 import NewCodingRuleObject from 'containers/setting/coding-rule/new-coding-rule-object'
 import NewCodingRule from 'containers/setting/coding-rule/new-coding-rule'
 import CodingRuleValue from 'containers/setting/coding-rule/coding-rule-value'
+import CompanyMaintain from 'containers/setting/company-maintain/company-maintain'
+import NewCompanyMaintain from 'containers/setting/company-maintain/new-company-maintain'
+import CompanyMaintainDetail from 'containers/setting/company-maintain/company-maintain-detail'
 
 //新建值列表
 const newValueList = {
@@ -83,18 +86,52 @@ const codingRuleObject = {
   url:'/main/setting/coding-rule-object',
   components:CodingRuleObject,
   parent: 'setting',
+
+};
+
+//新建公司
+const newCompanyMaintain ={
+  key:'new-company-maintain',
+  url:'/main/setting/company-maintain/new-company-maintain',
+  components:NewCompanyMaintain,
+  parent:'companyMaintain',
+
+}
+
+
+//公司维护详情
+const companyMaintainDetail ={
+  key:'company-maintain-detail',
+  url:'/main/setting/company-maintain/company-maintain-detail',
+  components:CompanyMaintainDetail,
+  parent: 'companyMaintain',
+
+}
+
+//公司维护
+const companyMaintain ={
+  key:'company-maintain',
+  url:'/main/setting/company-maintain',
+  components:CompanyMaintain,
+  parent: 'setting',
   children:{
+
+    newCompanyMaintain,
+    companyMaintainDetail,
     newCodingRuleObject,
     codingRule,
     codingRuleValue,
     newCodingRule
+
   }
-};
+}
+
+
 
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject],
+  subMenu: [valueList, securitySetting, callbackSetting,codingRuleObject, codingRule,companyMaintain],
   icon: 'setting',
   admin: true
 };

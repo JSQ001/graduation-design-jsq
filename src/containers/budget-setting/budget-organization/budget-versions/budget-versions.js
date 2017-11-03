@@ -96,7 +96,7 @@ class BudgetVersions extends React.Component {
         }
       })
     }).catch(e=>{
-      message.error(e.response.data.validationErrors[0].message)
+      message.error(`${e.response.data.message}`)
     });
   }
 
