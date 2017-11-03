@@ -6,20 +6,18 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Modal,message,Popconfirm,notification,Icon} from 'antd';
 import SearchArea from 'components/search-area.js';
-import "styles/budget/budget-journal/budget-journal-detail.scss"
+import "styles/budget/budget-journal/budget-journal-detail.scss";
 
 import httpFetch from 'share/httpFetch';
-import config from 'config'
-import menuRoute from 'share/menuRoute'
+import config from 'config';
+import menuRoute from 'share/menuRoute';
 
-import selectorData from 'share/selectorData'
-import ListSelector from 'components/list-selector'
-import BasicInfo from 'components/basic-info'
-import SlideFrame from 'components/slide-frame.js'
-import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
-import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
-
-
+import selectorData from 'share/selectorData';
+import ListSelector from 'components/list-selector';
+import BasicInfo from 'components/basic-info';
+import SlideFrame from 'components/slide-frame.js';
+import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js';
+import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js';
 
 class BudgetJournalDetail extends React.Component {
   constructor(props) {
@@ -28,6 +26,7 @@ class BudgetJournalDetail extends React.Component {
       edit:false,
       loading: true,
       data: [],
+      listData:[],
       params:{},
       organization:{},
       headerAndListData:{},
@@ -56,6 +55,8 @@ class BudgetJournalDetail extends React.Component {
       },
       infoDate:[],
       infoList:[
+        /*状态*/
+        {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
         /*预算日记账编号*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         /*总金额*/
@@ -75,8 +76,9 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
-
-
+        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :1},
+          labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
         {type: 'list', id: 'versionName',
           listType: 'budget_versions',
@@ -93,18 +95,23 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{organizationId:1}
         },
-     
+        /*附件*/
+        {type:'file',label:'附件',id:'file',disabled: true},
+       /* {type: 'select', id:'versionId', label: '预算版本', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams:{organizationId :1},
+          labelKey: 'versionName', valueKey: 'id'},*/
+
+
+
 
       ],
 
       columns: [
-
-
         {          /*公司*/
           title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName'
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "unitId", dataIndex: 'unitId'
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName'
         },
         {          /*预算项目*/
           title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName'
@@ -216,22 +223,14 @@ class BudgetJournalDetail extends React.Component {
     })
     const journalCode =this.props.params.journalCode;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
-    console.log(response.data)
-      let listData = response.data.list;
-    console.log(listData);
-      let headerData =response.data.dto;
-      console.log("!!!!!!!!!!!!!!!!!!!!");
-      console.log(headerData);
-
-      const journalType=[]
-      const journalType1={
-        "journalTypeName":headerData.journalTypeName,
-        "journalTypeId":headerData.journalTypeId,
+          let listData = response.data.list;
+          let headerData =response.data.dto;
+          const journalType=[];
+          const journalType1={
+            "journalTypeName":headerData.journalTypeName,
+            "journalTypeId":headerData.journalTypeId,
       }
       journalType.push(journalType1);
-
-
-
 
       const versionName=[]
       const versionName1={
@@ -273,11 +272,29 @@ class BudgetJournalDetail extends React.Component {
         "fileType": "IMAGE",
         "fileURL": "https://huilianyi-uat.oss-cn-shanghai.aliyuncs.com/e4b4a421-0355-4449-a610-26ff99322ab1/pdf/%E6%8D%95%E8%8E%B7.PNG?Expires=1509020077&OSSAccessKeyId=zmKqYB24JQrTqfiH&Signature=M%2BhSLTAjdrEtfgn%2Fe9GosXSyFGQ%3D",
       }
+
+      console.log(headerData);
+     let statusData={};
+      /*  switch (headerData.status){
+        case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
+        case 'SUBMIT':{ statusData={'status':'warning', 'label':'提交'}; return;}
+        case 'REJECT':{ statusData={'status':'error', 'label':'拒绝'}; return;}
+        case 'CHECKED':{statusData={'status':'success', 'label':'审核'}; return;}
+        case 'POSTED':{statusData={'status':'default', 'label':'复核'}; return;}
+        case 'BACKLASHSUBMIT':{statusData={'status':'default', 'label':'反冲提交'}; return;}
+        case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
+        }*/
+
+        console.log(statusData);
+
+        const dao={'status':'processing', 'value':'新建'};
+
       const fileData =[];
       fileData.push(file);
 
       const infoData={
         ...headerData,
+        "status":dao,
         "journalType":journalType,
         "versionName":versionName,
         "scenarioName":scenarioName,
@@ -304,17 +321,40 @@ class BudgetJournalDetail extends React.Component {
   })
   }
 
-  //当页码变化
-  onChangePager=()=>{
-
-  }
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    this.setState({
+      pagination:{
+        page: pagination.current-1,
+        current: pagination.current,
+        pageSize: pagination.pageSize
+      }
+    }, ()=>{
+      this.getList();
+    })
+  };
 
   showImport=()=>{}
 
   //保存编辑
   updateHandleInfo=(value)=>{
-    console.log(value)
+    console.log(value);
+    console.log()
+    const headerAndListData =this.state.headerAndListData;
+    headerAndListData.dto.versionId=value.versionName[0];
+    headerAndListData.dto.scenarioId=value.scenarioName[0];
+    console.log(headerAndListData);
+    console.log("!@#@$@#$@#%#%")
+    this.handleSaveJournal();
+    this.setState({
+      headerAndListData:headerAndListData,
+      updateState:true
+
+    })
+
   }
+
+
 
 
 
@@ -355,10 +395,10 @@ class BudgetJournalDetail extends React.Component {
     this.setState({
       showSlideFrameNew:false,
     })
-
     console.log(value);
-
-      let data = this.state.data;
+      let data=[];
+      data = this.state.data;
+      let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
       let fla =1;
       if(value.hasOwnProperty("id")){
@@ -380,18 +420,22 @@ class BudgetJournalDetail extends React.Component {
         console.log(value)
         headerAndListData.list.addIfNotExist(value);
         data.addIfNotExist(value);
+        listData.addIfNotExist(value);
+
       }
 
 
     this.setState({
       data:data,
-      headerAndListData: headerAndListData
+      headerAndListData: headerAndListData,
+      listData:listData
     });
 
 
       console.log(headerAndListData)
       console.log(this.state.data);
-      console.log(55555555555555555555555)
+      console.log(listData);
+
 
   }
 
@@ -439,6 +483,7 @@ class BudgetJournalDetail extends React.Component {
       console.log(req.data)
       message.success("成功");
       this.getDataByBudgetJournalCode();
+
     }).catch(e => {
       message.error("失败")
     })
@@ -456,6 +501,9 @@ class BudgetJournalDetail extends React.Component {
         console.log(req.data)
         message.success("提交成功");
        // this.getDataByBudgetJournalCode();
+        this.setState({
+          listData:[],
+        })
 
         let path=this.state.budgetJournalPage.url;
         this.context.router.push(path);
@@ -555,7 +603,7 @@ class BudgetJournalDetail extends React.Component {
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
               <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="Yes" cancelText="No">
-              <Button className="delete" >{this.props.intl.formatMessage({id:"common.delete"})}</Button>
+               <Button className="delete" >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
             </div>
           </div>

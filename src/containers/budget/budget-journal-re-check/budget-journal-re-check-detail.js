@@ -50,105 +50,24 @@ class BudgetJournalReCheckDetail extends React.Component {
         onSelectAll: this.onSelectAll
       },
       organization: {},
-      infoData: [],
-      infoList: [
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.journalCode"}),
-          id: 'journalCode',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.employeeId"}),
-          id: 'employeeName',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.organization"}),
-          id: 'organizationName',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.companyId"}),
-          id: 'companyId',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'list', id: 'journalTypeName',
-          listType: 'budget_journal_type',
-          labelKey: 'journalTypeName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.journalTypeId'}), /*预算日记账类型*/
-          listExtraParams: {'organizationId': 1}
-        },
-        {
-          type: 'select', id: 'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
-          labelKey: 'structureName', valueKey: 'structureCode'
-        },
-
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.periodYear"}),
-          id: 'periodYear',
-          message: this.props.intl.formatMessage({id: "common.please.enter"})
-        }, /*预算年度*/
-
-        {
-          type: 'select', label: this.props.intl.formatMessage({id: "budget.periodStrategy"}), id: 'periodStrategy',
-          options: [
-            {value: 'Y', label: this.props.intl.formatMessage({id: "budget.year"})},
-            {value: 'Q', label: this.props.intl.formatMessage({id: "budget.quarter"})},
-            {value: 'M', label: this.props.intl.formatMessage({id: "budget.month"})}
-
-          ]
-
-        },
-
-
-        {
-          type: 'list', id: 'versionName',
-          listType: 'budget_versions',
-          labelKey: 'versionName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.version'}), /*预算版本*/
-          listExtraParams: {'organizationId': 1}
-        },
-        {
-          type: 'list', id: 'scenarioName',
-          listType: 'budget_scenarios',
-          labelKey: 'scenarioName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.scenarios'}), /*预算场景*/
-          listExtraParams: {'organizationId': 1}
-        },
-
-
-      ],
 
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyId", dataIndex: 'companyId'
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName'
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "unitId", dataIndex: 'unitId'
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "unitName", dataIndex: 'unitName'
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemId", dataIndex: 'itemId'
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName'
         },
         {
           /*期间*/
           title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+
         },
         {
           /*季度*/
@@ -164,16 +83,16 @@ class BudgetJournalReCheckDetail extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        {
-          /*汇率类型*/
+        /*{
+
           title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
         },
         {
-          /*标价方法*/
+
           title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
           key: "rateQuotation",
           dataIndex: 'rateQuotation'
-        },
+        },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
@@ -192,15 +111,18 @@ class BudgetJournalReCheckDetail extends React.Component {
           /*数字*/
           title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "status", dataIndex: 'quantity'
         },
-        {
-          /*单位*/
+       /* {
+
           title: this.props.intl.formatMessage({id: "budget.unit"}), key: "unit", dataIndex: 'unit'
-        },
+        },*/
         {
           /*备注*/
           title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark'
         },
       ],
+
+      budgetJournalDetailReCheckPage: menuRoute.getRouteItem('budget-journal-re-check','key'),    //预算日记账复核
+
     };
   }
 
@@ -246,6 +168,9 @@ class BudgetJournalReCheckDetail extends React.Component {
       console.log(request.data)
       message.success("已经通过")
 
+        let path=this.state.budgetJournalDetailReCheckPage.url;
+          this.context.router.push(path);
+
     }).catch((e)=>{
       message.error("失败");
     })
@@ -261,12 +186,22 @@ class BudgetJournalReCheckDetail extends React.Component {
 
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
       console.log(request.data)
-      message.success("已经驳回")
+      message.success("已经驳回");
+      let path=this.state.budgetJournalDetailReCheckPage.url;
+       this.context.router.push(path);
+
 
     }).catch((e)=>{
       message.error("失败");
     })
 
+  }
+
+  //返回列表页
+  HandleReturn=()=>{
+       let path=this.state.budgetJournalDetailReCheckPage.url;
+         console.log(path);
+       this.context.router.push(path);
   }
 
   //返回状态
@@ -276,7 +211,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         case 'NEW':{ return <Badge status="processing" text="新建" />}
         case 'SUBMIT':{ return   <Badge status="warning" text="等待" />}
         case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-        case 'CHECKED':{return    <Badge status="success" text="通过" />}
+        case 'CHECKED':{return    <Badge status="success" text="审核" />}
       }
   }
 
@@ -391,7 +326,7 @@ class BudgetJournalReCheckDetail extends React.Component {
             <span>审批意见：&nbsp;</span><Input style={{}}/>
             <Button type="primary" onClick={this.handlePass}>通过</Button>
             <Button className="button-reject" type="primary"   onClick={this.handleReject}>驳回</Button>
-            <Button className="button-return">返回</Button>
+            <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
 
 
           </div>
@@ -407,6 +342,11 @@ class BudgetJournalReCheckDetail extends React.Component {
     )
   }
 
+}
+
+
+BudgetJournalReCheckDetail.contextTypes ={
+  router: React.PropTypes.object
 }
 
 function mapStateToProps() {

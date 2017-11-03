@@ -20,6 +20,7 @@ class BasicInfo extends React.Component{
     super(props);
     this.state = {
       infoList: [],
+      searchForm: [],
       infoData: {},
       cardShow: true,
     };
@@ -38,15 +39,27 @@ class BasicInfo extends React.Component{
 
   //点击 "编辑"
   editInfo = () => {
-    this.setState({ cardShow: false }, () => {
-      let values = {};
-      this.state.infoList.map(item => {
-        if (item.type != 'badge' && item.type != 'file') {
-          values[item.id] = this.state.infoData[item.id]
-        }
-      });
-      this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
+    //let searchForm = [].concat(this.state.infoList);
+    let searchForm =this.state.infoList;
+    console.log(searchForm)
+    searchForm.map((list, index) => {
+      if (list.type == 'badge' || list.type == 'file') {
+        searchForm.splice(index, 1)
+      }
     })
+    console.log(searchForm)
+
+    this.setState({ searchForm }, ()=> {
+      this.setState({ cardShow: false }, () => {
+        let values = {};
+        this.state.searchForm.map(item => {
+          values[item.id] = this.state.infoData[item.id]
+        });
+        console.log(values)
+        this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
+      })
+    })
+
   };
 
   //渲染基本信息显示页

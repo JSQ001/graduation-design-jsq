@@ -70,7 +70,7 @@ class PutBudgetItemType extends React.Component {
 
           this.setState({loading: false});
             this.props.close(true);
-            message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+            message.success("操作成功");
 
 
         }).catch((e)=>{

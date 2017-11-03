@@ -25,6 +25,7 @@ class NewBudgetVersions extends React.Component {
       checkoutCodeData:[],
       loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
     };
   }
 
@@ -54,7 +55,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value){
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
-      message.success(this.props.intl.formatMessage({id:"common.save.success"}), 2);
+      message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:"预算版本"}));
       setTimeout(() => {
         this.setState({loading:false }, () => this.context.router.push(path))
       },200)
@@ -63,7 +64,7 @@ class NewBudgetVersions extends React.Component {
       this.setState({loading:false});
       if(e.response){
 
-        message.error(this.props.intl.formatMessage({id:"common.save.filed"}),` ${e.response.data.validationErrors[0].message}`)
+        message.error(this.props.intl.formatMessage({id:"common.save.filed"})+""+`${e.response.data.message}`)
 
       }
     });
@@ -76,8 +77,6 @@ class NewBudgetVersions extends React.Component {
     e.preventDefault();
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
-
-
 
 
 
@@ -213,7 +212,8 @@ class NewBudgetVersions extends React.Component {
 
             <div className="">
               <Button type="primary" htmlType="submit" loading={this.state.loading} >{this.props.intl.formatMessage({id:"common.save"})}</Button>
-              <Button onClick={this.CancelHandle}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
+              <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=VERSIONS');}}>取消</Button>
+
             </div>
 
 
@@ -233,11 +233,12 @@ NewBudgetVersions.contextTypes={
   router:React.PropTypes.object
 }
 
+
 const WrappedNewBudgetVersions= Form.create()(NewBudgetVersions);
 
 function mapStateToProps(state) {
   return {
-    organization:state.budget.organization
+    organization: state.budget.organization
   }
 }
 
