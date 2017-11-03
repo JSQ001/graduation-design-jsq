@@ -8,7 +8,7 @@ import { Input, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { injectIntl } from 'react-intl';
-import Parallax from 'parallax-js'
+//import Parallax from 'parallax-js'
 
 import 'styles/login.scss'
 

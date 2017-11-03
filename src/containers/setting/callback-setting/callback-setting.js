@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Tabs, Button, Table, Form, InputNumber, Checkbox, Row, Col, Dropdown, Menu, message} from 'antd'
+import { Tabs, Button, Table, Form, Badge, Checkbox, Row, Col, Dropdown, Menu, message} from 'antd'
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -69,9 +69,11 @@ class CallBackSetting extends React.Component{
           },
           {                        /*状态*/
             title:"状态", key: "status", dataIndex: 'status',width:'10%',
-            render:recode=>{
-              return recode ? <span icon="" className="call-back-setting-status">运行中</span> : <span>已禁用</span>
-            }
+            render:recode=>(
+              <Badge status={recode ? 'success' : 'error'}
+                     text={recode ? "运行中" : "停用"} />
+
+            )
           },
           {
             title:"操作", key: "operation", dataIndex: 'operation',width:'10%',

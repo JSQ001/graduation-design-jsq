@@ -88,7 +88,7 @@ class NewBudgetStructure extends React.Component{
   //点击取消，返回预算组织详情
   handleCancel = (e) =>{
     e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+'?tab=STRUCTURE');
   };
 
   validateStructureCode = (item,value,callback)=>{
@@ -106,16 +106,24 @@ class NewBudgetStructure extends React.Component{
     });
   };
 
+  handleChange = ()=>{
+    if(this.state.loading){
+      this.setState({
+        loading: false
+      })
+    }
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { statusCode, organization, loading, periodStrategy } = this.state;
     const { formatMessage } = this.props.intl;
-    console.log(periodStrategy)
+
     const options = periodStrategy.map((item)=><Option key={item.id}>{item.value}</Option>)
     return(
       <div className="new-budget-structure">
         <div className="budget-structure-header">
-          <Form onSubmit={this.handleSave}>
+          <Form onSubmit={this.handleSave} onChange={this.handleChange}>
             <Row gutter={24}>
               <Col span={8}>
                 <FormItem
@@ -224,13 +232,15 @@ class NewBudgetStructure extends React.Component{
 
 NewBudgetStructure.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {
     organization: state.budget.organization
   }
 }
+
+
 
 const WrappedNewBudgetStructure = Form.create()(NewBudgetStructure);
 
