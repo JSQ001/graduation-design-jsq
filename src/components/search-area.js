@@ -12,6 +12,7 @@ const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
 import Chooser from 'components/chooser'
+import moment from 'moment'
 
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
@@ -261,6 +262,10 @@ class SearchArea extends React.Component{
           else if(searchItem.type === 'list'){
             let value = {};
             value[key] = options[key];
+            this.props.form.setFieldsValue(value)
+          } else if(searchItem.type === 'date'){
+            let value = {};
+            value[key] = moment(options[key]);
             this.props.form.setFieldsValue(value)
           } else {
             let value = {};
