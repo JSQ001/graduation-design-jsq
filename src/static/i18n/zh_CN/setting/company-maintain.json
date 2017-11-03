@@ -1,0 +1,13 @@
+{
+  "company.name": "公司名称",
+  "company.companyCode":"公司代码",
+  "company.setOfBooksName":"账套",
+  "company.legalEntityName":"法人",
+  "company.companyLevelName":"公司级别",
+  "company.startDateActive":"有效日期从",
+  "company.endDateActive":"有效日期至",
+  "company.companyType":"公司类型",
+  "company.parentCompanyName":"上级公司",
+  "company.address":"地址"
+
+}
