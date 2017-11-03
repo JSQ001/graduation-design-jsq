@@ -60,7 +60,7 @@ class BudgetJournalTypeDetail extends React.Component {
         COMPANY: {
           url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/query`,
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/companies`,
-          selectorItem: selectorData['company'],
+          selectorItem: selectorData['budget_journal_company'],
           extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
             {title: "公司代码", dataIndex: "companyCode", width: '30%'},
@@ -102,7 +102,9 @@ class BudgetJournalTypeDetail extends React.Component {
 
   componentWillMount(){
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${this.props.params.typeId}`).then(response => {
-      this.setState({ typeData: response.data});
+      let data = response.data;
+      data.businessType = {label: data.businessTypeName, value: data.businessType};
+      this.setState({ typeData: data});
     });
     this.getList(this.state.nowStatus);
     if(this.props.organization.id){
@@ -216,8 +218,10 @@ class BudgetJournalTypeDetail extends React.Component {
   updateHandleInfo = (params) => {
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
       message.success('修改成功');
+      let data = response.data;
+      data.businessType = {label: data.businessTypeName, value: data.businessType};
       this.setState({
-        typeData: response.data,
+        typeData: data,
         updateState: true
       });
     });
