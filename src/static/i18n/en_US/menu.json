@@ -62,9 +62,10 @@
   "menu.new-coding-rule-object": "New coding rule object",
   "menu.new-coding-rule": "New coding rule",
   "menu.coding-rule-detail": "Coding rule item",
+  "menu.account-period-control": "Account period control",
+  "menu.account-period-detail": "Account period control detail",
   "menu.coding-rule-value": "Coding rule detail",
   "menu.company-maintain":"Company maintain",
   "menu.new-company-maintain":"new company maintain",
   "menu.company-maintain-detail":"company maintain detail"
-
 }
