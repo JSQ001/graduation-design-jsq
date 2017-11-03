@@ -507,17 +507,17 @@ class SearchArea extends React.Component{
           selectorItem: {}      //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
-          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
-          getUrl: '',       //可选，初始显示的值需要的接口,适用与select、multiple、combobox
-          method: '',      //可选，getUrl接口所需要的接口类型get/post
-          searchKey: '',  //可选，搜索参数名
-          labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
-          valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
-          items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
-          entity: false         //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
-          getParams: {}        //可选,getUrl所需要的参数
-          single: false       //可选,当type为list时是否为单选
-          valueListCode: ''  //可选，当type为value_list时的值列表coode
+          searchUrl: '',      ╲╲可选，当类型为combobox和multiple有效，搜索需要的接口，
+          getUrl: '',          ╲╲可选，初始显示的值需要的接口,适用与select、multiple、combobox
+          method: '',           ╲╲可选，getUrl接口所需要的接口类型get/post
+          searchKey: '',         ╲╲可选，搜索参数名
+          labelKey: '',           ╲╲可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
+          valueKey: ''             ╲╲可选，接口返回或list返回的数据内所需要options值key的参数名
+          items:[]                  ╲╲可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
+          entity: false              ╲╲可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
+          getParams: {}               ╲╲可选,getUrl所需要的参数
+          single: false                ╲╲可选,当type为list时是否为单选
+          valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
         }
  */
 SearchArea.propTypes = {
