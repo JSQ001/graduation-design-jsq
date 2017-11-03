@@ -38,13 +38,15 @@ class BasicInfo extends React.Component{
 
   //点击 "编辑"
   editInfo = () => {
-    this.setState({ cardShow: false }, () => {
-      let values = {};
-      this.state.infoList.map(item => {
-        if (item.type != 'badge' && item.type != 'file') {
-          values[item.id] = this.state.infoData[item.id]
-        }
-      });
+    let values = {};
+    let infoList = this.state.infoList.map(item => {
+      item.defaultValue && delete item.defaultValue;
+      if (item.type != 'badge' && item.type != 'file') {
+        values[item.id] = this.state.infoData[item.id]
+      }
+      return item;
+    });
+    this.setState({ cardShow: false, infoList }, () => {
       this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
     })
   };
@@ -53,7 +55,7 @@ class BasicInfo extends React.Component{
   renderGetInfo(item) {
     if (item.type == 'switch') {
       return <Badge status={this.state.infoData[item.id] ? 'success' : 'error'} text={this.state.infoData[item.id] ? '启用' : '禁用'} />;
-    } else if (item.type == 'select') {
+    } else if (item.type == 'select' || item.type == 'value_list') {
       item.options && item.options.map((option)=>{  //有options选项时显示label值
         if(this.state.infoData[item.id] == option.value) {
           this.state.infoData[item.id] = option.label;
