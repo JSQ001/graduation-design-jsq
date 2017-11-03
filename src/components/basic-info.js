@@ -28,7 +28,7 @@ class BasicInfo extends React.Component{
 
   componentWillMount(){
     this.setState({ infoList: this.props.infoList })
-  };
+  }
 
   componentWillReceiveProps(nextProps){
     this.setState({ infoData: nextProps.infoData });
@@ -39,27 +39,22 @@ class BasicInfo extends React.Component{
 
   //点击 "编辑"
   editInfo = () => {
-    //let searchForm = [].concat(this.state.infoList);
-    let searchForm =this.state.infoList;
-    console.log(searchForm)
+    let searchForm = [].concat(this.state.infoList);
     searchForm.map((list, index) => {
       if (list.type == 'badge' || list.type == 'file') {
         searchForm.splice(index, 1)
       }
-    })
-    console.log(searchForm)
-
+    });
     this.setState({ searchForm }, ()=> {
       this.setState({ cardShow: false }, () => {
         let values = {};
         this.state.searchForm.map(item => {
           values[item.id] = this.state.infoData[item.id]
         });
-        console.log(values)
+        console.log(values);
         this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
       })
     })
-
   };
 
   //渲染基本信息显示页
@@ -89,12 +84,15 @@ class BasicInfo extends React.Component{
           </div>
       }
       return returnRender;
+    } else if (item.type == 'date') {  //时间
+      const dateValue = moment(this.state.infoData[item.id]).format('YYYY-MM-DD');
+      return this.state.infoData[item.id] && <div style={{wordWrap:'break-word'}}>{dateValue || '-'}</div>;
     } else if (item.type == 'badge') {  //状态
       return this.state.infoData[item.id] ? <Badge status={this.state.infoData[item.id].status} text={this.state.infoData[item.id].value} /> : '-';
     } else if (item.type == 'file') {   //附件
       let file_arr = [];
       this.state.infoData[item.id] && this.state.infoData[item.id].map(link => {
-        file_arr.push(<div><a href={link.fileURL}><Icon type="paper-clip" /> {link.fileName}</a></div>)
+        file_arr.push(<div key={link.fileURL}><a href={link.fileURL} target="_blank"><Icon type="paper-clip" /> {link.fileName}</a></div>)
       });
       return file_arr.length > 0 ? file_arr : '-';
     } else {
@@ -106,6 +104,7 @@ class BasicInfo extends React.Component{
     let children = [];
     let rows = [];
     this.props.infoList.map((item, index)=>{
+
       //获取默认值，用于search-area组件
       item.defaultValue = this.state.infoData[item.id];
 
@@ -120,7 +119,6 @@ class BasicInfo extends React.Component{
       if(item.type == 'date') {
         item.defaultValue = moment( item.defaultValue, 'YYYY-MM-DD');
       }
-
 
       children.push(
         <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
@@ -160,7 +158,7 @@ class BasicInfo extends React.Component{
   };
 
   render() {
-    const { cardShow, infoList } = this.state;
+    const { cardShow, infoList, searchForm } = this.state;
     let domRender;
     if(cardShow) {
       domRender = (
@@ -168,18 +166,16 @@ class BasicInfo extends React.Component{
               extra={<a onClick={this.editInfo}>{this.props.intl.formatMessage({id: 'common.edit'}) /* 编辑 */}</a>}
               noHovering >
           <Row>{this.getInfos()}</Row>
-        </Card>
-      )
+        </Card>)
     } else {
       domRender = (
-        <SearchArea searchForm={infoList}
+        <SearchArea searchForm={searchForm}
                     submitHandle={this.handleUpdate}
                     clearHandle={this.handelCancel}
                     eventHandle={this.handelEvent}
                     wrappedComponentRef={(inst) => this.formRef = inst}
                     okText={this.props.intl.formatMessage({id: 'common.save'}) /* 保存 */}
-                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */} />
-      )
+                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */} />)
     }
     return (
       <div className="basic-info">
@@ -199,7 +195,7 @@ BasicInfo.propTypes = {
 
 BasicInfo.defaultProps={
   eventHandle:()=>{}
-}
+};
 
 const WrappedBasicInfo= Form.create()(injectIntl(BasicInfo));
 
