@@ -60,10 +60,6 @@ class NewAccountPeriod extends React.Component {
           return this.state.ruleIsDefine ? count : (
             <FormItem>
               {this.props.form.getFieldDecorator(`monthFrom-${count}`, {
-                // rules: [{
-                //   required: true,
-                //   message: ' '
-                // }],
                 initialValue: this.state.monthFrom[count] ? String(this.state.monthFrom[count]) : undefined
               })(
                 <Select placeholder="请选择" disabled={count > 1 ? true : false} onChange={(value) => {
@@ -102,10 +98,6 @@ class NewAccountPeriod extends React.Component {
           return this.state.ruleIsDefine ? count : (
             <FormItem>
               {this.props.form.getFieldDecorator(`dateFrom-${count}`, {
-                // rules: [{
-                //   required: true,
-                //   message: ' '
-                // }],
                 initialValue: this.state.dateFrom[count] ? String(this.state.dateFrom[count]) : undefined
               })(
                 <Select placeholder="请选择" disabled={count > 1 ? true : false} onChange={(value) => {
@@ -136,7 +128,8 @@ class NewAccountPeriod extends React.Component {
                 rules: [{
                   required: true,
                   message: ' '
-                }]
+                }],
+                initialValue: this.state.monthTo[count] ? String(this.state.monthTo[count]) : undefined
               })(
                 <Select placeholder="请选择" onChange={(value) => {
                   let monthFrom = this.state.monthFrom;
@@ -153,8 +146,8 @@ class NewAccountPeriod extends React.Component {
                       dateFrom[count + 1] = 1;
                     } else if (value == 12 && dateToVal == 31 && count < this.state.period.totalPeriodNum) {
                       Modal.error({
-                        title: '截止日期不对',
-                        content: '截止日期不能为 12月31日',
+                        title: formatMessage({id :'account-period-define.rule.modal.error.title'}),  //截止日期不对
+                        content: formatMessage({id: 'account-period-define.rule.modal.error.content'}),  //截止日期不能为 12月31日
                       });
                       return;
                     } else if (dateToVal == 31) {
@@ -167,6 +160,8 @@ class NewAccountPeriod extends React.Component {
                     this.setState({ monthFrom, dateFrom },() => {
                       if (count == this.state.count) {
                         this.addNewRow();
+                      } else {
+                        this.clearWrite(count+1)
                       }
                     })
                   }
@@ -208,7 +203,8 @@ class NewAccountPeriod extends React.Component {
                 rules: [{
                   required: true,
                   message: ' '
-                }]
+                }],
+                initialValue: this.state.dateTo[count] ? String(this.state.dateTo[count]) : undefined
               })(
                 <Select placeholder="请选择" onChange={(value) => {
                   let monthFrom = this.state.monthFrom;
@@ -237,7 +233,9 @@ class NewAccountPeriod extends React.Component {
                   }
                   this.setState({ monthFrom, dateFrom },() => {
                     if (count == this.state.count) {
-                      this.addNewRow();
+                      this.addNewRow()
+                    } else {
+                      this.clearWrite(count+1)
                     }
                   })
                 }}>
@@ -421,27 +419,47 @@ class NewAccountPeriod extends React.Component {
   };
 
   //清空已填写
-  clearWrite = () => {
-    this.setState({
-      data: [{
-        id: 1,
-        periodNum: 1,
-        periodAdditionalName: 1,
-        monthFrom: 1,
-        monthTo: 1,
-        dateFrom: 1,
-        dateTo: 1,
-        quarterNum: 1
-      }]
+  clearWrite = (count) => {
+    let { additionalName, monthFrom, monthTo, dateFrom, dateTo, quarterNum } = this.state;
+    let data = [];
+    for (let i = 1; i <= count; i++) {
+      data.push({
+        id: i,
+        periodNum: i,
+        periodAdditionalName: i,
+        monthFrom: i,
+        monthTo: i,
+        dateFrom: i,
+        dateTo: i,
+        quarterNum: i
+      })
+    }
+    Object.keys(monthFrom).map(key => {
+      if (key == 1) {
+        monthFrom = {};
+        dateFrom = {};
+        monthTo = {};
+        dateTo = {};
+      }
+      if (key > count) {
+        monthFrom[key] = undefined;
+        dateFrom[key] = undefined;
+      }
+      if (key >= count) {
+        monthTo[key] = undefined;
+        dateTo[key] = undefined
+      }
     });
-    this.props.form.setFieldsValue({
-      periodAdditionalName: undefined,
-      monthFrom: undefined,
-      monthTo: undefined,
-      dateFrom: undefined,
-      dateTo: undefined,
-      quarterNum: undefined
-    })
+    this.props.form.resetFields();
+    this.setState({
+      data,
+      additionalName,
+      monthFrom,
+      monthTo,
+      dateFrom,
+      dateTo,
+      quarterNum,
+    });
   };
 
   render(){
@@ -502,7 +520,7 @@ class NewAccountPeriod extends React.Component {
         </Form>
       </Modal>
     } else {
-      button = <Button type="primary" onClick={this.clearWrite}>{formatMessage({id: 'account-period-define.rule.clear'})/* 清空已填写 */}</Button>;
+      button = <Button type="primary" onClick={() => this.clearWrite(1)}>{formatMessage({id: 'account-period-define.rule.clear'})/* 清空已填写 */}</Button>;
       modal = ""
     }
     return (

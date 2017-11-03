@@ -19,5 +19,7 @@
   "account-period-define.rule.period.create": "创建期间",
   "account-period-define.rule.year.create": "创建年度",
   "account-period-define.rule.year.from": "年度从",
-  "account-period-define.rule.year.to": "年度到"
+  "account-period-define.rule.year.to": "年度到",
+  "account-period-define.rule.modal.error.title": "截止日期不对",
+  "account-period-define.rule.modal.error.content": "截止日期不能为 12月31日"
 }
