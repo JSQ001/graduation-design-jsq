@@ -53,20 +53,20 @@ class BudgetJournalDetail extends React.Component {
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       },
-      infoDate:[],
+      infoDate:{},
       infoList:[
         /*状态*/
         {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
         /*预算日记账编号*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', disabled: true},
         /*总金额*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', disabled: true},
         /*申请人*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', disabled: true},
         /*岗位*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.positionId"}), id: 'positionId', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.positionId"}), id: 'positionId', disabled: true},
         /*创建时间*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
+        {type: 'date', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', disabled: true},
         /*预算日记账类型*/
         {type: 'list', id: 'journalType',
           listType: 'budget_journal_type',
@@ -273,7 +273,6 @@ class BudgetJournalDetail extends React.Component {
         "fileURL": "https://huilianyi-uat.oss-cn-shanghai.aliyuncs.com/e4b4a421-0355-4449-a610-26ff99322ab1/pdf/%E6%8D%95%E8%8E%B7.PNG?Expires=1509020077&OSSAccessKeyId=zmKqYB24JQrTqfiH&Signature=M%2BhSLTAjdrEtfgn%2Fe9GosXSyFGQ%3D",
       }
 
-      console.log(headerData);
      let statusData={};
       /*  switch (headerData.status){
         case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
@@ -285,7 +284,6 @@ class BudgetJournalDetail extends React.Component {
         case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
         }*/
 
-        console.log(statusData);
 
         const dao={'status':'processing', 'value':'新建'};
 
@@ -302,9 +300,6 @@ class BudgetJournalDetail extends React.Component {
         "periodYear":periodYear,
         "file":fileData,
       }
-
-      console.log(infoData)
-
 
     this.setState({
       loading:false,
@@ -610,6 +605,7 @@ class BudgetJournalDetail extends React.Component {
           <Table columns={columns}
                  dataSource={data}
                  pagination={pagination}
+                 rowKey={record=>record.id}
                  bordered
                  size="middle"
                  onRowClick={this.handlePutData}
