@@ -32,7 +32,7 @@ class BudgetVersionsDetail extends React.Component {
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'organizationName', message: this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionCode"}), id: 'versionCode', message:this.props.intl.formatMessage({id:"common.please.enter"}), disabled: true},
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.versionName"}), id: 'versionName', message:this.props.intl.formatMessage({id:"common.please.enter"})},
-        {type:'select',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status',
+        {type:'select',label: this.props.intl.formatMessage({id:"budget.versionStatus"}) ,id:'status',
           options:
             [
               {value:'NEW',label:this.props.intl.formatMessage({id:"budget.new"})},
@@ -55,8 +55,6 @@ class BudgetVersionsDetail extends React.Component {
       edit: false,
       formData:{},
       loading:true,
-      newAssignCompanyDate:[],
-      putAssignCompanyDate:[],
       page:0,
       pageSize:10
 
@@ -79,11 +77,6 @@ class BudgetVersionsDetail extends React.Component {
 
   componentWillMount(){
     console.log(this.props);
-    /*httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
-      response.data.organizationName = this.props.organization.organizationName;
-      let date =response.data.versionDate;
-      this.setState({ formData:response.data,infoDate: response.data});
-    }).catch(e=>{});*/
     this.getDetail();
     this.getAssignCompanyList();
     console.log(this.state.infoDate)
@@ -105,10 +98,18 @@ class BudgetVersionsDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`, ).then((response)=>{
       console.log(response.data);
       data = response.data;
+      let statusData = response.data.status;
       response.data.organizationName = this.props.organization.organizationName;
+      let info={
+        ...response.data,
+        status:{
+          key:statusData,
+          label:statusData=="NEW"?this.props.intl.formatMessage({id:"budget.new"}):(statusData=="CURRENT"?this.props.intl.formatMessage({id:"budget.current"}):this.props.intl.formatMessage({id:"budget.history"}))
+        }
+      }
       this.setState({
         formData:data,
-        infoDate:data
+        infoDate:info
       })
     }).catch(e=>{
     });
@@ -120,7 +121,7 @@ class BudgetVersionsDetail extends React.Component {
     this.setState({
       loading:true
     })
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query/${this.props.params.versionId}`).then((response)=>{
       this.setState({
         data:response.data,
         loading:false,
@@ -153,9 +154,6 @@ class BudgetVersionsDetail extends React.Component {
 
 
 
-
-
-
   handleEdit = () => {
     this.setState({edit: true})
   };
@@ -163,31 +161,6 @@ class BudgetVersionsDetail extends React.Component {
   showImport=(value)=>{
     this.setState({showImportFrame:value})
   }
-
-
-  infoDateChangeHandle=()=>{
-    console.log("versionAssignCompany")
-    this.versionAssignCompany(this.state.newAssignCompanyDate);
-  }
-
-  //保存新建分配公司
- versionAssignCompany=(values)=>{
-    console.log(values);
-    httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
-      message.success("成功");
-      this.setState({
-        newAssignCompanyDate:[]
-      })
-      this.getAssignCompanyList();
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${e.response.data.message}`);
-      } else {
-        console.log(e)
-      }
-    })
-  }
-
 
   //弹窗中，按确定，立即保存公司
   saveCompany=(values)=>{
@@ -201,7 +174,7 @@ class BudgetVersionsDetail extends React.Component {
       this.getAssignCompanyList();
     }).catch((e)=>{
       if(e.response){
-        message.error(`${e.response.data.message}`);
+        message.error(`${e.response.data.validationErrors[0].message}`);
       } else {
         console.log(e)
       }
@@ -303,7 +276,6 @@ class BudgetVersionsDetail extends React.Component {
             <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={() => this.showImport(true)}>分配公司</Button>
-              <Button onClick={this.infoDateChangeHandle}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
             </div>
           </div>
           <Table columns={columns}
@@ -316,7 +288,8 @@ class BudgetVersionsDetail extends React.Component {
           <ListSelector visible={this.state.showImportFrame}
                         onOk={this.submitHandle}
                         onCancel={this.CancelHandle}
-                        type='company'
+                        type='version_company'
+                        extraParams={{"versionId":this.props.versionId}}
                     />
 
         </div>
