@@ -50,7 +50,6 @@ class AccountPeriodControl extends React.Component {
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
-    url = "http://139.224.220.217:11013/api/setOfBooks/query/dto?roleType=TENANT&page=0&setOfBooksCode=&setOfBooksName=&size=10"; //测试用URL，会删
     this.setState({ loading: true });
     httpFetch.get(url).then((res)=>{
       if(res.status == 200){
