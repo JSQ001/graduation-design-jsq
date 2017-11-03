@@ -171,18 +171,37 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   //保存新建分配公司
-  versionAssignCompany=(values)=>{
+ versionAssignCompany=(values)=>{
     console.log(values);
-    console.log("保存新建分配公司");
     httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
-      message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+      message.success("成功");
       this.setState({
         newAssignCompanyDate:[]
       })
-      this.getAssignCompanyList;
+      this.getAssignCompanyList();
     }).catch((e)=>{
       if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.error"})},${e.response.data.validationErrors[0].message}`);
+        message.error(`${e.response.data.message}`);
+      } else {
+        console.log(e)
+      }
+    })
+  }
+
+
+  //弹窗中，按确定，立即保存公司
+  saveCompany=(values)=>{
+    console.log(values);
+    httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res)=>{
+      console.log(res.data);
+      message.success("成功");
+      this.setState({
+
+      })
+      this.getAssignCompanyList();
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${e.response.data.message}`);
       } else {
         console.log(e)
       }
@@ -197,7 +216,7 @@ class BudgetVersionsDetail extends React.Component {
     const isEnabled = true;
     let dataValue=[];
     for(let a=0;a<data.length;a++){
-      const newData ={
+      let newData ={
         "companyCode":data[a].companyCode,
         "companyName":data[a].name,
         "companyId": data[a].id,
@@ -205,14 +224,17 @@ class BudgetVersionsDetail extends React.Component {
         "isEnabled":isEnabled,
         "companyTypeName":data[a].companyTypeName,
       }
-      dataValue.push(newData)
-      this.state.data.push(newData)
+      //保存
+     dataValue.push(newData)
+    //  this.state.data.push(newData)
     }
+
+      this.saveCompany(dataValue);
 
     console.log(dataValue)
 
     this.setState({
-      newAssignCompanyDate:dataValue
+
     })
 
     this.showImport(false)
@@ -250,7 +272,7 @@ class BudgetVersionsDetail extends React.Component {
     }).catch((e)=>{
       if(e.response){
         console.log(e.response.data);
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.error"})},${e.response.data.validationErrors[0].message}`);
+        message.error(`${e.response.data.message}`);
       }
     });
 

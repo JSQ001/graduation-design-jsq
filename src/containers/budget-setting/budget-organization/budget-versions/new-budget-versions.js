@@ -55,7 +55,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value){
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
       let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
-      message.success(this.props.intl.formatMessage({id:"common.save.success"}), 2);
+      message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:"预算版本"}));
       setTimeout(() => {
         this.setState({loading:false }, () => this.context.router.push(path))
       },200)
@@ -64,7 +64,7 @@ class NewBudgetVersions extends React.Component {
       this.setState({loading:false});
       if(e.response){
 
-        message.error(this.props.intl.formatMessage({id:"common.save.filed"}),` ${e.response.data.validationErrors[0].message}`)
+        message.error(this.props.intl.formatMessage({id:"common.save.filed"})+""+`${e.response.data.message}`)
 
       }
     });

@@ -13,6 +13,7 @@ import agencySetting from 'static/i18n/zh_CN/approve-setting/agency-setting.json
 import bankDefinition from 'static/i18n/zh_CN/pay/bank-definition.json'
 import securitySetting from 'static/i18n/zh_CN/setting/security-setting.json'
 import accountPeriodDefine from 'static/i18n/zh_CN/finance-setting/account-period-define.json'
+import companyMaintain from 'static/i18n/zh_CN/setting/company-maintain.json'
 
 const i18nList = [
   common,  //公用
@@ -30,6 +31,7 @@ const i18nList = [
   agencySetting, //代理设置
   securitySetting, //安全设置
   accountPeriodDefine, //会计期间定义
+  companyMaintain     //公司维护
 
 ];
 
