@@ -64,7 +64,7 @@ const httpFetch = {
    */
   getInfo: function(){
     return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(), this.getOrganization()])
+      return Promise.all([this.getCompany(),this.getProfile(),this.getOrganization()])
     })
   },
 
