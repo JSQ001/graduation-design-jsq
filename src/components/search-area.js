@@ -267,6 +267,10 @@ class SearchArea extends React.Component{
             let value = {};
             value[key] = moment(options[key]);
             this.props.form.setFieldsValue(value)
+          } else if(searchItem.type === 'switch'){
+            let value = {};
+            value[key] = options[key];
+            this.props.form.setFieldsValue(value)
           } else {
             let value = {};
             value[key] = options[key] + '';
@@ -409,8 +413,7 @@ class SearchArea extends React.Component{
       }
       //switch状态切换组件
       case 'switch':{
-        return <Switch defaultChecked={item.defaultValue}
-                       checkedChildren={<Icon type="check"/>}
+        return <Switch checkedChildren={<Icon type="check"/>}
                        unCheckedChildren={<Icon type="cross" />}
                        onChange={handle}
                        disabled={item.disabled}/>
@@ -453,6 +456,7 @@ class SearchArea extends React.Component{
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label} colon={false}>
               {getFieldDecorator(item.id, {
+                valuePropName: item.type === 'switch' ? 'checked' : 'value',
                 initialValue: item.defaultValue,
                 rules: [{
                   required: item.isRequired,
@@ -483,7 +487,7 @@ class SearchArea extends React.Component{
                 {this.state.expand ? this.props.intl.formatMessage({id: "common.fold"}) : this.props.intl.formatMessage({id: "common.more"})} <Icon type={this.state.expand ? 'up' : 'down'} />
               </a>
             ) : null}
-            <Button type="primary" htmlType="submit">{this.props.okText}</Button>
+            <Button type="primary" htmlType="submit" loading={this.props.loading}>{this.props.okText}</Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
           </Col>
         </Row>
@@ -528,13 +532,15 @@ SearchArea.propTypes = {
   okText:  React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //左侧ok按钮的文本
   clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
   maxLength: React.PropTypes.number,  //搜索区域最大表单数量
+  loading: React.PropTypes.bool, //用于base-info组件的保存按钮
 };
 
 SearchArea.defaultProps = {
   maxLength: 6,
   eventHandle: () => {},
   okText: <FormattedMessage id='common.search'/>,  //搜索
-  clearText: <FormattedMessage id='common.clear'/>  //重置
+  clearText: <FormattedMessage id='common.clear'/>,  //重置
+  loading: false
 };
 
 const WrappedSearchArea = Form.create()(injectIntl(SearchArea));
