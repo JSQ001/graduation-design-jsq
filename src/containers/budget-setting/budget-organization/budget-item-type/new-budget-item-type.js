@@ -54,7 +54,7 @@ class NewBudgetItemType extends React.Component {
         }).catch((e)=>{
           this.setState({loading: false});
 
-          message.error(this.props.intl.formatMessage({id:"common.operate.error"})+","+e.response.data.validationErrors[0].message);
+          message.error(this.props.intl.formatMessage({id:"common.save.filed"}));
         })
       }
     });

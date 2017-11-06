@@ -32,7 +32,6 @@ server {
 }
 EOF
 
-echo "edited"
 echo "starting web server"
 
 nginx -g 'daemon off;'

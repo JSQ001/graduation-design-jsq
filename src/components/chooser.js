@@ -35,7 +35,7 @@ class Chooser extends React.Component {
       this.onChange(nextProps.value);
       this.setState({ value: values });
     }
-    if(nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0){
+    if(!nextProps.value || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
       this.onChange([]);
       this.setState({ value: [] })
     }

@@ -110,7 +110,6 @@ class BudgetJournalType extends React.Component {
     const { searchForm, pagination, columns, data, loading } = this.state;
     return (
       <div>
-        <h3 className="header-title">预算日记账类型定义</h3>
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}

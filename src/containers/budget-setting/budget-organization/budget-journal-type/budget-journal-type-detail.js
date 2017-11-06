@@ -24,7 +24,7 @@ class BudgetJournalTypeDetail extends React.Component {
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', disabled: true},
         {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
         {type: 'value_list', label: '预算业务类型', id: 'businessType', message: '请选择', options:[], valueListCode: 2018},
-        {type: 'switch', label: '状态：', id: 'isEnabled'}
+        {type: 'switch', label: '状态', id: 'isEnabled'}
       ],
       tabs: [
         {key: 'STRUCTURE', name:'预算表'},
@@ -59,13 +59,13 @@ class BudgetJournalTypeDetail extends React.Component {
         },
         COMPANY: {
           url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/query`,
-          saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/companies`,
-          selectorItem: selectorData['company'],
+          saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/companies/batch`,
+          selectorItem: selectorData['budget_journal_company'],
           extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
             {title: "公司代码", dataIndex: "companyCode", width: '30%'},
             {title: "公司简称", dataIndex: "companyName", width: '50%'},
-            {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'}/>},
+            {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>},
           ]
         }
       },
@@ -100,9 +100,21 @@ class BudgetJournalTypeDetail extends React.Component {
     })
   };
 
+  onChangeCompanyEnabled = (e, record) => {
+    this.setState({loading: true});
+    record.isEnabled = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/type/assign/companies`, record).then(() => {
+      this.getList(this.state.nowStatus).then(response => {
+        this.setState({loading: false})
+      });
+    })
+  };
+
   componentWillMount(){
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${this.props.params.typeId}`).then(response => {
-      this.setState({ typeData: response.data});
+      let data = response.data;
+      data.businessType = {label: data.businessTypeName, value: data.businessType};
+      this.setState({ typeData: data});
     });
     this.getList(this.state.nowStatus);
     if(this.props.organization.id){
@@ -193,8 +205,10 @@ class BudgetJournalTypeDetail extends React.Component {
         delete item.id;
       }
       if(nowStatus === 'COMPANY'){
-        item.companyId = item.id;
-        delete item.id;
+        item = {
+          companyId: item.id,
+          isEnabled: true
+        };
       }
       item.journalTypeId = this.props.params.typeId;
       paramList.push(item);
@@ -216,8 +230,10 @@ class BudgetJournalTypeDetail extends React.Component {
   updateHandleInfo = (params) => {
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
       message.success('修改成功');
+      let data = response.data;
+      data.businessType = {label: data.businessTypeName, value: data.businessType};
       this.setState({
-        typeData: response.data,
+        typeData: data,
         updateState: true
       });
     });

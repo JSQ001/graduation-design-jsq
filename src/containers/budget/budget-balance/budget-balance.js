@@ -308,7 +308,6 @@ class BudgetBalance extends React.Component {
       httpFetch[method](`${config.budgetUrl}/api/budget/balance/query/header`, values).then(res => {
         message.success('保存成功');
         this.setState({ showSaveModal: false, saving: false});
-        this.clear();
       }).catch(e => {
         if(e.response.data){
           message.error(e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message);
@@ -403,16 +402,16 @@ class BudgetBalance extends React.Component {
     if(condition){
       //设置顶部表单的值
       this.setValues({
-        versionId: {key: condition.versionId, label: condition.versionName},
-        structureId: {key: condition.structureId, label: condition.structureName},
-        scenarioId: {key: condition.scenarioId, label: condition.scenarioName},
+        versionId: {value: condition.versionId, label: condition.versionName},
+        structureId: {value: condition.structureId, label: condition.structureName},
+        scenarioId: {value: condition.scenarioId, label: condition.scenarioName},
         yearLimit: condition.yearLimit,
-        periodLowerLimit: {key: condition.periodLowerLimit, label: condition.periodLowerLimit},
-        periodUpperLimit: {key: condition.periodUpperLimit, label: condition.periodUpperLimit},
-        periodSummaryFlag: {key: condition.periodSummaryFlag, label: condition.periodSummaryFlag},
-        quarterLowerLimit: {key: condition.quarterLowerLimit, label: condition.quarterLowerLimit},
-        quarterUpperLimit: {key: condition.quarterUpperLimit, label: condition.quarterUpperLimit},
-        amountQuarterFlag: {key: condition.amountQuarterFlag, label: condition.amountQuarterFlag}
+        periodLowerLimit: {value: condition.periodLowerLimit, label: condition.periodLowerLimit},
+        periodUpperLimit: {value: condition.periodUpperLimit, label: condition.periodUpperLimit},
+        periodSummaryFlag: {value: condition.periodSummaryFlag, label: condition.periodSummaryFlag},
+        quarterLowerLimit: {value: condition.quarterLowerLimit, label: condition.quarterLowerLimit},
+        quarterUpperLimit: {value: condition.quarterUpperLimit, label: condition.quarterUpperLimit},
+        amountQuarterFlag: {value: condition.amountQuarterFlag, label: condition.amountQuarterFlag}
       });
       //设置下方列表内的值
       let { paramsKey, paramValueMap } = this.state;
@@ -540,12 +539,12 @@ class BudgetBalance extends React.Component {
     if(index !== undefined){
       searchForm[index].items = searchForm[index].items.map(searchItem => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.key + '';
+          valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.key;
+            dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -553,12 +552,12 @@ class BudgetBalance extends React.Component {
     } else {
       searchForm = searchForm.map(searchItem => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.key + '';
+          valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.key;
+            dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
           }
         }
         return searchItem;

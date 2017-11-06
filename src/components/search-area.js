@@ -12,6 +12,7 @@ const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
 import Chooser from 'components/chooser'
+import moment from 'moment'
 
 import debounce from 'lodash.debounce';
 import httpFetch from 'share/httpFetch'
@@ -192,7 +193,7 @@ class SearchArea extends React.Component{
   /**
    * 如果是select的设置值，如果options内没有值时应先增加一个默认的对应option
    * @param item  对应searchForm的表单项
-   * @param value 需要设置的值 {label: '', key: ''}
+   * @param value 需要设置的值 {label: '', value: ''}
    * @param index 当type为items时的序列
    */
   onSetSelectValue = (item, value, index) => {
@@ -201,12 +202,12 @@ class SearchArea extends React.Component{
     if(index === undefined)
       searchForm = searchForm.map(searchItem => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.key + '';
+          valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.key;
+            dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -214,12 +215,12 @@ class SearchArea extends React.Component{
     else
       searchForm[index].items = searchForm[index].items.map(searchItem => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.key + '';
+          valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.key;
+            dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.key, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -235,7 +236,7 @@ class SearchArea extends React.Component{
    * 设置searchForm的值
    * @param options 需要设置的值，与form.setFieldsValue值格式一致
    * input、switch、data、radio、big_radio、checkbox直接传入对应字符串value即可
-   * select、value_list 所需的默认值需要哦为 {label: '', key: ''}
+   * select、value_list 所需的默认值需要哦为 {label: '', value: ''}
    * list 所需格式为包含显示值与数据值的对象数组，根据valueKey与labelKey对应
    * TODO: combobox 与 multiple 模式待开发
    *
@@ -245,9 +246,9 @@ class SearchArea extends React.Component{
    *
    * this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
       listId: [{user: '', userOID: ''}, ...],
-      selectId: {label: '', key: ''},
+      selectId: {label: '', value: ''},
       inputId: 'value',
-      value_listId: {label: '', key: ''}
+      value_listId: {label: '', value: ''}
     });
    *
    */
@@ -261,6 +262,10 @@ class SearchArea extends React.Component{
           else if(searchItem.type === 'list'){
             let value = {};
             value[key] = options[key];
+            this.props.form.setFieldsValue(value)
+          } else if(searchItem.type === 'date'){
+            let value = {};
+            value[key] = moment(options[key]);
             this.props.form.setFieldsValue(value)
           } else {
             let value = {};
@@ -502,17 +507,17 @@ class SearchArea extends React.Component{
           selectorItem: {}      //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
-          searchUrl: '',     //可选，当类型为combobox和multiple有效，搜索需要的接口，
-          getUrl: '',       //可选，初始显示的值需要的接口,适用与select、multiple、combobox
-          method: '',      //可选，getUrl接口所需要的接口类型get/post
-          searchKey: '',  //可选，搜索参数名
-          labelKey: '',  //可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
-          valueKey: ''  //可选，接口返回或list返回的数据内所需要options值key的参数名
-          items:[]     //可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
-          entity: false         //可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
-          getParams: {}        //可选,getUrl所需要的参数
-          single: false       //可选,当type为list时是否为单选
-          valueListCode: ''  //可选，当type为value_list时的值列表coode
+          searchUrl: '',      ╲╲可选，当类型为combobox和multiple有效，搜索需要的接口，
+          getUrl: '',          ╲╲可选，初始显示的值需要的接口,适用与select、multiple、combobox
+          method: '',           ╲╲可选，getUrl接口所需要的接口类型get/post
+          searchKey: '',         ╲╲可选，搜索参数名
+          labelKey: '',           ╲╲可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
+          valueKey: ''             ╲╲可选，接口返回或list返回的数据内所需要options值key的参数名
+          items:[]                  ╲╲可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
+          entity: false              ╲╲可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
+          getParams: {}               ╲╲可选,getUrl所需要的参数
+          single: false                ╲╲可选,当type为list时是否为单选
+          valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
         }
  */
 SearchArea.propTypes = {
