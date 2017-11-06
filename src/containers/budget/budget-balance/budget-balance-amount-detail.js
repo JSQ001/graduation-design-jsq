@@ -40,7 +40,7 @@ class BudgetBalanceAmountDetail extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(!this.props.params.data || (nextProps.params.data.key !== this.props.params.data.key || nextProps.params.data.type !== this.props.params.data.type)){
+    if(!this.props.params.data || (nextProps.params.type !== this.props.params.type || nextProps.params.data.sessionId !== this.props.params.data.sessionId)){
       this.getList(nextProps);
     }
   }

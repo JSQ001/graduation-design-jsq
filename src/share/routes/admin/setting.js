@@ -68,7 +68,7 @@ const codingRule = {
 const newCodingRule = {
   key:'new-coding-rule',
   url:'/main/setting/coding-rule-object/coding-rule/:id/new-coding-rule',
-  components: NewCodingRuleObject,
+  components: NewCodingRule,
   parent: 'coding-rule'
 };
 
