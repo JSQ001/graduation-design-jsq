@@ -77,7 +77,6 @@ class ConfirmPayment extends React.Component{
       page: 0,
       pageSize: 10,
       loading: true,
-      selectedRowKeys: [],
       tabs: [
         {key: 'prending_pay', name:'待确认'},
         {key: 'pay_in_process', name:'待付款'},
@@ -87,7 +86,13 @@ class ConfirmPayment extends React.Component{
       pagination: {
         total: 0
       },
-      selectedEntityOIDs: []    //已选择的列表项的OIDs
+      selectedData: [], //已选择的列表项
+      rowSelection: {
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
+        onSelect: this.onSelectItem,
+        onSelectAll: this.onSelectAll
+      }
     };
   }
 
@@ -136,7 +141,6 @@ class ConfirmPayment extends React.Component{
       this.state.searchParams).then((response)=>{
       response.data.map((item, index)=>{
         item.index = this.state.page * this.state.pageSize + index + 1;
-        item.key = item.index;
       });
       this.setState({
         data: response.data,
@@ -243,58 +247,64 @@ class ConfirmPayment extends React.Component{
 
   //列表选择更改
   onSelectChange = (selectedRowKeys) => {
-    this.setState({ selectedRowKeys });
+    let { rowSelection } = this.state;
+    rowSelection.selectedRowKeys = selectedRowKeys;
+    this.setState({ rowSelection });
   };
 
-  //选择一行
-  //选择逻辑：每一项设置selected属性，如果为true则为选中
-  //同时维护selectedEntityOIDs列表，记录已选择的OID，并每次分页、选择的时候根据该列表来刷新选择项
-  onSelectRow = (record, selected) => {
-    let temp = this.state.selectedEntityOIDs;
-    if(selected)
-      temp.push(record.expenseReportOID);
-    else
-      temp.delete(record.expenseReportOID);
-    this.setState({selectedEntityOIDs: temp})
-  };
-
-  //全选
-  onSelectAllRow = (selected) => {
-    let temp = this.state.selectedEntityOIDs;
-    if(selected){
-      this.state.data.map(item => {
-        temp.addIfNotExist(item.expenseReportOID)
-      })
+  /**
+   * 选择单个时的方法，遍历selectedData，根据是否选中进行插入或删除操作
+   * @param record 被改变的项
+   * @param selected 是否选中
+   */
+  onSelectItem = (record, selected) => {
+    let { selectedData } = this.state;
+    if(this.props.single){
+      selectedData = [record];
     } else {
-      this.state.data.map(item => {
-        temp.delete(item.expenseReportOID)
-      })
+      if(!selected){
+        selectedData.map((selected, index) => {
+          if(selected.expenseReportOID === record.expenseReportOID){
+            selectedData.splice(index, 1);
+          }
+        })
+      } else {
+        selectedData.push(record);
+      }
     }
-    this.setState({selectedEntityOIDs: temp})
+    this.setState({ selectedData });
   };
+
+  //选择当页全部时的判断
+  onSelectAll = (selected, selectedRows, changeRows) => {
+    changeRows.map(changeRow => this.onSelectItem(changeRow, selected));
+  };
+
 
   //换页后根据OIDs刷新选择框
   refreshRowSelection(){
-    let selectedRowKeys = [];
-    this.state.selectedEntityOIDs.map(selectedEntityOID => {
-      this.state.data.map((item, index) => {
-        if(item.expenseReportOID === selectedEntityOID)
-          selectedRowKeys.push(index);
+    let { selectedData, data, rowSelection } = this.state;
+    let nowSelectedRowKeys = [];
+    selectedData.map(selected => {
+      data.map(item => {
+        if(item.expenseReportOID === selected.expenseReportOID)
+          nowSelectedRowKeys.push(item.expenseReportOID)
       })
     });
-    this.setState({ selectedRowKeys });
+    rowSelection.selectedRowKeys = nowSelectedRowKeys;
+    this.setState({ rowSelection });
   }
 
   //清空选择框
   clearRowSelection(){
-    this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
+    this.setState({selectedData: [],selectedRowKeys: []});
   }
 
   //提交成功
   confirmSuccess(){
     notification.open({
       message: '确认付款成功！',
-      description: `您有${this.state.selectedEntityOIDs.length}笔单据确认付款成功:)`,
+      description: `您有${this.state.selectedData.length}笔单据确认付款成功:)`,
       icon: <Icon type="smile-circle" style={{ color: '#108ee9' }} />,
     });
     this.setState({loading: true});
@@ -306,12 +316,16 @@ class ConfirmPayment extends React.Component{
   //提交
   confirm = () => {
     this.setState({confirmLoading: true});
+    let selectedEntityOIDs = [];
+    this.state.selectedData.map(item => {
+      selectedEntityOIDs.push(item.expenseReportOID);
+    });
     httpFetch.post(`${config.baseUrl}/api/reimbursement/batch/pay/${this.state.status === 'prending_pay' ? 'processing' : 'finished'}/confirm`, {
       businessCode: null,
       comment: null,
       corporationOIDs: [],
       endDate: null,
-      entityOIDs: this.state.selectedEntityOIDs,
+      entityOIDs: selectedEntityOIDs,
       entityType: 1001,
       excludedEntityOIDs: [],
       selectMode: "current_page",
@@ -334,13 +348,7 @@ class ConfirmPayment extends React.Component{
   };
 
   render(){
-    const { searchForm, columns, data, loading, selectedRowKeys, pagination, selectedEntityOIDs, status, confirmLoading } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-      onSelect: this.onSelectRow,
-      onSelectAll: this.onSelectAllRow
-    };
+    const { searchForm, columns, data, loading, pagination, selectedData, status, confirmLoading, rowSelection } = this.state;
     return (
       <div className="confirm-payment">
         <Tabs type="card" onChange={this.onChangeTabs}>
@@ -352,10 +360,10 @@ class ConfirmPayment extends React.Component{
           clearHandle={this.clear}
           eventHandle={this.searchEventHandle}/>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据 <span>/</span> 已选 {selectedEntityOIDs.length} 条</div>
+          <div className="table-header-title">共 {pagination.total} 条数据 <span>/</span> 已选 {selectedData.length} 条</div>
           <div className="table-header-buttons">
             { status === 'pay_finished' ? null :
-              <Button type="primary" onClick={this.confirm} disabled={selectedEntityOIDs.length === 0}
+              <Button type="primary" onClick={this.confirm} disabled={selectedData.length === 0}
                       loading={confirmLoading}>确认已付款</Button>
             }
             <Button>导入报盘文件</Button>
@@ -367,6 +375,7 @@ class ConfirmPayment extends React.Component{
                pagination={pagination}
                loading={loading}
                bordered
+               rowKey="expenseReportOID"
                size="middle"/>
       </div>
     )

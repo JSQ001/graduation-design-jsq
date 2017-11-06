@@ -33,7 +33,7 @@ class CodingRuleValue extends React.Component {
       infoList: [
         {type: 'input', label: '编码规则代码', id: 'codingRuleCode', disabled: true},
         {type: 'input', label: '编码规则名称', id: 'codingRuleName'},
-        {type: 'value_list', label: '重置频率', id: 'resetFrequence', options: []},
+        {type: 'value_list', label: '重置频率', id: 'resetFrequence', options: [], valueListCode: 2024},
         {type: 'input', label: '备注', id: 'description'},
         {type: 'switch', label: '状态', id: 'isEnabled'},
       ],
