@@ -522,7 +522,11 @@ class BudgetBalance extends React.Component {
   handleEvent = (value, event) => {
     switch(event){
       case 'YEAR_CHANGE':
-
+        let searchForm = this.state.searchForm;
+        searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {year: value};
+        searchForm[4].items[0].disabled =  searchForm[4].items[1].disabled = false;
+        searchForm[4].items[0].options = searchForm[4].items[1].options = [];
+        this.setState({ searchForm })
     }
   };
 
