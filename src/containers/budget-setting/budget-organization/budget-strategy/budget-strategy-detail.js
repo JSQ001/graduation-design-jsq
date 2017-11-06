@@ -25,6 +25,7 @@ class BudgetStrategyDetail extends React.Component {
       ],
       infoData: {},
       updateState: false,
+      baseInfoLoading: false,
       columns: [
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
@@ -120,20 +121,22 @@ class BudgetStrategyDetail extends React.Component {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlStrategyCode || !params.controlStrategyName) return;
-    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
-      if(response.status == 200) {
-        message.success('保存成功');
-        this.getBasicInfo();
-        this.setState({ updateState: true })
-      }
-    }).catch((e) => {
-      if(e.response){
-        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({ updateState: false })
-      } else {
-        console.log(e)
-      }
-    })
+    this.setState({ baseInfoLoading: true }, () => {
+      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
+        if(response.status == 200) {
+          message.success('保存成功');
+          this.getBasicInfo();
+          this.setState({ updateState: true, baseInfoLoading: false })
+        }
+      }).catch((e) => {
+        if(e.response){
+          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          this.setState({ updateState: false, baseInfoLoading: false })
+        } else {
+          console.log(e)
+        }
+      })
+    });
   };
 
   handleBack = () => {
@@ -141,13 +144,14 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   render(){
-    const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, updateState, baseInfoLoading } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">

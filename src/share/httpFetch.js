@@ -111,21 +111,22 @@ const httpFetch = {
       localStorage.refresh_token = response.data.refresh_token;
     });
   }
-}
+};
 
 let methodList = ['get','post','put','delete'];
 methodList.map(method => {
-  httpFetch[method] = function(url, params ,header){
+  httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
       header = {};
     header.Authorization = "Bearer " + localStorage.token;
-    return axios(url, {
+    let option = {
       url: url,
       method: method.toUpperCase(),
       mode: 'cors',
       headers: header,
       data: params
-    }).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
+    };
+    return axios(url, Object.assign(options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };
 });
 

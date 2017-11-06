@@ -14,6 +14,7 @@ class CodingRuleDetail extends React.Component {
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
+      editing: false,
       data: [],
       page: 0,
       pageSize: 10,
@@ -79,7 +80,7 @@ class CodingRuleDetail extends React.Component {
   };
 
   updateInfo = () => {
-    this.setState({updateState: true})
+    this.setState({updateState: true, editing: false})
   };
 
   handleRowClick = (record) => {
@@ -91,7 +92,7 @@ class CodingRuleDetail extends React.Component {
   };
 
   render(){
-    const { columns, data, loading,  pagination, infoList, infoData, updateState } = this.state;
+    const { columns, data, loading,  pagination, infoList, infoData, updateState, editing } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
@@ -99,7 +100,8 @@ class CodingRuleDetail extends React.Component {
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateState={updateState}
-                   updateHandle={this.updateInfo}/>
+                   updateHandle={this.updateInfo}
+                   loading={editing}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
