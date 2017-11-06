@@ -53,7 +53,6 @@ class BudgetControlRulesDetail extends React.Component{
           {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", isRequired: true},
           {type: 'date', id: 'endDate', label: ' '}
         ]},
-        //{type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
         {type: 'input', id: 'priority', required: true, disabled: true, label: formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
       ],
       columns: [
@@ -104,6 +103,8 @@ class BudgetControlRulesDetail extends React.Component{
       this.getList();
     })
   };
+
+
   componentWillMount(){
     this.getList();
     //根据路径上的预算规则id查出完整数据
@@ -112,6 +113,7 @@ class BudgetControlRulesDetail extends React.Component{
         console.log(response.data.startDate.substring(0,10))
         let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
+        response.data.strategyGroupName = {label:response.data.strategyGroupName,value:response.data.strategyGroupName,key:response.data.strategyGroupId}
         console.log(response.data)
         this.setState({
           controlRule: response.data,
@@ -128,6 +130,7 @@ class BudgetControlRulesDetail extends React.Component{
         response.data.map((item)=>{
           let strategy = {
             id: item.id,
+            key: item.id,
             label: item.controlStrategyCode+" - "+item.controlStrategyName,
             value: item.controlStrategyCode,
             title: item.controlStrategyName
@@ -168,6 +171,7 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   handleChange = (e)=>{
+    console.log(123)
     this.setState({
       buttonLoading: false,
     })
@@ -206,10 +210,14 @@ class BudgetControlRulesDetail extends React.Component{
 
   handleUpdate = (values)=>{
     values.organizationId = this.props.params.id;
-    values.controlRuleId = this.props.params.ruleId;
+    values.id = this.props.params.ruleId;
+    values.versionNumber = this.state.controlRule.versionNumber;
     values.strategyGroupId = this.state.controlRule.strategyGroupId;
+    values.isEnabled = this.state.controlRule.isEnabled;
+    values.isDeleted = this.state.controlRule.isDeleted;
+    values.createdBy = this.state.controlRule.createdBy;
     strategyGroup.map((item)=>{
-      if(item.title === values.strategyGroupName){
+      if(item.value === values.strategyGroupName){
         values.strategyGroupId = item.id;
       }
     });
@@ -223,7 +231,7 @@ class BudgetControlRulesDetail extends React.Component{
       }
     }).catch((e)=>{
       if(e.response){
-        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+        message.error(`修改失败, ${e.response.data.errorCode}`);
         this.setState({loading: false});
       }
       else {
@@ -257,6 +265,7 @@ class BudgetControlRulesDetail extends React.Component{
         <BasicInfo
           infoList={infoList}
           infoData={controlRule}
+          handelEvent={this.handleChange}
           updateHandle={this.handleUpdate}
           updateState={updateState}/>
         <div className="table-header">

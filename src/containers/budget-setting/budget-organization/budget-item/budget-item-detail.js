@@ -58,6 +58,8 @@ class BudgetItemDetail extends React.Component{
     //根据路径上的id,查出该条预算项目完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
       if(response.status === 200){
+        response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
+        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttributeName};
         this.setState({
           budgetItem: response.data
         })
@@ -75,7 +77,10 @@ class BudgetItemDetail extends React.Component{
     httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
         console.log(response)
-
+        response.data.organizationName = this.state.budgetItem.organizationName;
+        console.log(value)
+        response.data.itemTypeName = {label:value,value:itemType};
+        response.data.variationAttribute = {label:response.data.variationAttribute,value:response.data.variationAttribute};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           budgetItem: response.data,
@@ -153,7 +158,6 @@ class BudgetItemDetail extends React.Component{
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'structure.addCompany'})}</Button>  {/*添加公司*/}
-            <Button onClick={this.handleSave()}>{this.props.intl.formatMessage({id: 'common.save'})}</Button>
           </div>
         </div>
         <Table
@@ -163,9 +167,10 @@ class BudgetItemDetail extends React.Component{
           size="middle"
           bordered/>
 
-        <ListSelector type="company"
+        <ListSelector type="company_item"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
+                      extraParams={{}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }

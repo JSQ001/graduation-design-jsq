@@ -88,7 +88,7 @@ class NewBudgetStructure extends React.Component{
   //点击取消，返回预算组织详情
   handleCancel = (e) =>{
     e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+'?tab=STRUCTURE');
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=STRUCTURE');
   };
 
   validateStructureCode = (item,value,callback)=>{

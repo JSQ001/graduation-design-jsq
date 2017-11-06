@@ -111,7 +111,7 @@ class NewBudgetItem extends React.Component{
 
   handleCancel = (e) =>{
     e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+  '? tab=ITEM');
   };
   render(){
     const { getFieldDecorator } = this.props.form;

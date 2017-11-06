@@ -220,6 +220,22 @@ const selectorData = {
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
+  },
+  'company_item':{
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/budget/item/companies/query/fiter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
   }
 
 };

@@ -256,6 +256,7 @@ class SearchArea extends React.Component{
     Object.keys(options).map(key => {
       let searchForm = this.state.searchForm;
       searchForm.map((searchItem, index) => {
+        console.log(options)
         if(searchItem.id === key){
           if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
             this.onSetSelectValue(searchItem, options[key]);
