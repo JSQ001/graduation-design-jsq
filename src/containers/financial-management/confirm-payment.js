@@ -291,6 +291,7 @@ class ConfirmPayment extends React.Component{
           nowSelectedRowKeys.push(item.expenseReportOID)
       })
     });
+
     rowSelection.selectedRowKeys = nowSelectedRowKeys;
     this.setState({ rowSelection });
   }
