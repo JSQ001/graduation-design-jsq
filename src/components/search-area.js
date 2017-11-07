@@ -25,6 +25,10 @@ import 'styles/components/search-area.scss'
  * @params submitHandle  点击搜索时的回调
  * @params clearHandle  点击重置时的回调
  * @params eventHandle  表单项onChange事件，于searchForm内的event有联动，见底端注释
+ * @params okText  搜索按钮的文字
+ * @params clearText  重置按钮的文字
+ * @params maxLength  最大项数，如果超过则隐藏支展开菜单中
+ * @params loading  搜索按钮的loading状态
  * TODO: 选项render函数、searchUrl和getUrl的method区分
  */
 class SearchArea extends React.Component{

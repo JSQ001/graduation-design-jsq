@@ -4,7 +4,7 @@
 import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
-import {setUser,setCompany,setProfile,setOrganization} from 'actions/login'
+import {setUser,setCompany,setProfile,setOrganization,setCompanyConfiguration} from 'actions/login'
 
 /**
  * 检查是否token过期
@@ -64,7 +64,7 @@ const httpFetch = {
    */
   getInfo: function(){
     return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(),this.getOrganization()])
+      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration()])
     })
   },
 
@@ -77,6 +77,12 @@ const httpFetch = {
   getCompany: function(){
     return this.get(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
       configureStore.store.dispatch(setCompany(response.data));
+    })
+  },
+
+  getCompanyConfiguration: function(){
+    return this.get(`${config.baseUrl}/api/company/configurations/user`).then(response => {
+      configureStore.store.dispatch(setCompanyConfiguration(response.data));
     })
   },
 
