@@ -64,12 +64,15 @@ class BudgetVersionsDetail extends React.Component {
 
   //编辑启用
   onChangeEnabled = (e, record) => {
-    console.log("111111111111111111")
-    this.setState({loading: true});
-    record.isDefault = e.target.checked;
-    httpFetch.put(`${config.budgetUrl}/api/budget/version/assign/companies`, record).then(response => {
-        this.setState({loading: false})
-    })
+    console.log(e);
+    console.log(record);
+    let data = record;
+    data.isDefined = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/version/assign/companies`, data).then(response => {
+     this.getAssignCompanyList();
+    }).catch(
+
+    )
   };
 
 
@@ -190,7 +193,7 @@ class BudgetVersionsDetail extends React.Component {
     let dataValue=[];
     for(let a=0;a<data.length;a++){
       let newData ={
-        "companyCode":data[a].companyCode,
+        "companyCode":data[a].code,
         "companyName":data[a].name,
         "companyId": data[a].id,
         "versionId":this.props.params.id,
@@ -289,7 +292,7 @@ class BudgetVersionsDetail extends React.Component {
                         onOk={this.submitHandle}
                         onCancel={this.CancelHandle}
                         type='version_company'
-                        extraParams={{"versionId":this.props.versionId}}
+                        extraParams={{"versionId":this.props.params.versionId}}
                     />
 
         </div>

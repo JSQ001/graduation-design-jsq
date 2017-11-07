@@ -42,7 +42,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*期间*/
         {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: [],
           labelKey:'periodName',valueKey:'periodName',event:'periodName',
-          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`
+          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.user.setOfBooksId}`
         },
         /*季度*/
         {type: 'value_list', id: 'periodQuarter', label: this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true, options: [], valueListCode: 2021},
@@ -185,8 +185,8 @@ class NewBudgetJournalDetail extends React.Component {
     let path = item.url;
     let organizationId ;
     if(item.id=="item"){
-      // path = path+`?organizationId=${this.props.organization.id}`    //真实的代码
-      path = path+`?organizationId=1`  //暂时写死
+      path = path+`?organizationId=${this.props.organization.id}`;
+     // path = path+`?organizationId=1`
     }
     url=path;
     httpFetch.get(url, params).then((res) => {
@@ -296,6 +296,7 @@ class NewBudgetJournalDetail extends React.Component {
   }
   //提交保存
   HandleSubmit=(e)=>{
+    console.log(this.props.user);
     const params =this.state.params;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
@@ -444,16 +445,8 @@ class NewBudgetJournalDetail extends React.Component {
     this.props.form.resetFields();
     this.props.close();
   }
-  componentWillMount(){
-    this.getCurrency
-  }
-  //获得币种
-  getCurrency=()=>{
-    httpFetch.get(`http://uat.huilianyi.com/api/company/standard/currency?language=chineseName&page=0&size=30`).then((req)=>{
-      console.log(req.data);
-      console.log(121321312)
-    })
-  }
+
+
   render(){
     return (
       <div>
@@ -473,7 +466,8 @@ class NewBudgetJournalDetail extends React.Component {
 const WrappedNewBudgetJournalDetail = Form.create()(NewBudgetJournalDetail);
 function mapStateToProps(state) {
   return {
-    organization: state.login.organization
+    organization: state.login.organization,
+    user: state.login.user,
   }
 }
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetJournalDetail));

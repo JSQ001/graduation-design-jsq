@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Modal,message,Popconfirm,notification,Icon} from 'antd';
+import { Popover,Button, Table, Select,Modal,message,Popconfirm,notification,Icon} from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal-detail.scss";
 
@@ -63,8 +63,6 @@ class BudgetJournalDetail extends React.Component {
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', disabled: true},
         /*申请人*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', disabled: true},
-        /*岗位*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.positionId"}), id: 'positionId', disabled: true},
         /*创建时间*/
         {type: 'date', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', disabled: true},
         /*预算日记账类型*/
@@ -76,7 +74,7 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
-        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
+        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',disabled: true,
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :1},
           labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
@@ -95,26 +93,34 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{organizationId:1}
         },
+
+        {type: 'value_list', id: 'periodStrategy', label: '编制期段', isRequired: true, options: [], valueListCode: 2002,disabled: true},
         /*附件*/
         {type:'file',label:'附件',id:'file',disabled: true},
-       /* {type: 'select', id:'versionId', label: '预算版本', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams:{organizationId :1},
-          labelKey: 'versionName', valueKey: 'id'},*/
-
-
-
 
       ],
 
       columns: [
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName'
+          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          render: companyName => (
+            <Popover content={companyName}>
+              {companyName}
+            </Popover>)
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName'
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          render: departmentName => (
+            <Popover content={departmentName}>
+              {departmentName}
+            </Popover>)
         },
         {          /*预算项目*/
-          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName'
+          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName',
+          render: itemName => (
+            <Popover content={itemName}>
+              {itemName}
+            </Popover>)
         },
         {          /*期间*/
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
@@ -150,7 +156,11 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
         },*/
         {          /*备注*/
-          title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark'
+          title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark',
+          render: remark => (
+            <Popover content={remark}>
+              {remark}
+            </Popover>)
         },
       ],
 
@@ -248,13 +258,13 @@ class BudgetJournalDetail extends React.Component {
 
       const budgetStructure={
         "label":headerData.structureName,
-        "key":headerData.structureId
+        "value":headerData.structureId
       }
 
 
       const periodYear={
         "label":headerData.periodYear,
-        "key":headerData.periodYear
+        "value":headerData.periodYear
       }
 
      /* const periodStrategy={
@@ -262,10 +272,13 @@ class BudgetJournalDetail extends React.Component {
         "key":headerData.periodStrategy
       }
 */
+     const period = headerData.periodStrategy;
       const periodStrategy={
-        "label":"年",
-        "key":"YEAR"
+        "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
+        "value":period
       }
+
+
 
       const file={
         "fileName": "捕获.PNG",
@@ -273,8 +286,14 @@ class BudgetJournalDetail extends React.Component {
         "fileURL": "https://huilianyi-uat.oss-cn-shanghai.aliyuncs.com/e4b4a421-0355-4449-a610-26ff99322ab1/pdf/%E6%8D%95%E8%8E%B7.PNG?Expires=1509020077&OSSAccessKeyId=zmKqYB24JQrTqfiH&Signature=M%2BhSLTAjdrEtfgn%2Fe9GosXSyFGQ%3D",
       }
 
-     let statusData={};
-      /*  switch (headerData.status){
+      //状态
+      let statusData={};
+    if(headerData.status=="NEW"){
+       statusData={'status':'processing', 'value':'新建'};
+    }else if(headerData.status=="REJECT"){
+      statusData={'status':'error', 'label':'拒绝'};
+    }
+    /* switch (headerData.status){
         case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
         case 'SUBMIT':{ statusData={'status':'warning', 'label':'提交'}; return;}
         case 'REJECT':{ statusData={'status':'error', 'label':'拒绝'}; return;}
@@ -284,7 +303,7 @@ class BudgetJournalDetail extends React.Component {
         case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
         }*/
 
-
+        console.log(statusData);
         const dao={'status':'processing', 'value':'新建'};
 
       const fileData =[];
@@ -292,14 +311,16 @@ class BudgetJournalDetail extends React.Component {
 
       const infoData={
         ...headerData,
-        "status":dao,
+        "status":statusData,
         "journalType":journalType,
         "versionName":versionName,
         "scenarioName":scenarioName,
         "budgetStructure":budgetStructure,
         "periodYear":periodYear,
         "file":fileData,
+        "periodStrategy":periodStrategy
       }
+
 
     this.setState({
       loading:false,
@@ -396,28 +417,29 @@ class BudgetJournalDetail extends React.Component {
       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
       let fla =1;
-      if(value.hasOwnProperty("id")){
+      //if(value.hasOwnProperty("id")){
 
-        console.log("id+6666666666666666")
-         let list = headerAndListData.list;
-         for(let a=0;a<list.length;a++){
-            if(list[a].id==value.id){
-              list[a]=value;
-              fla=0;
-            }
-         }
-          headerAndListData.list=list;
-        console.log(list);
-      }
-
-      if(fla==1){
+    if(value.id==undefined || value.id==null || value.id==false || value.id==NaN){
         console.log("value");
-        console.log(value)
+        console.log(value);
         headerAndListData.list.addIfNotExist(value);
         data.addIfNotExist(value);
         listData.addIfNotExist(value);
-
+        fla=0;
       }
+
+    if(fla==1){
+
+      console.log("id+6666666666666666")
+      let list = headerAndListData.list;
+      for(let a=0;a<list.length;a++){
+        if(list[a].id==value.id){
+          list[a]=value;
+        }
+      }
+      headerAndListData.list=list;
+      console.log(list);
+    }
 
 
     this.setState({
@@ -603,14 +625,14 @@ class BudgetJournalDetail extends React.Component {
             </div>
           </div>
           <Table columns={columns}
-                 dataSource={data}
-                 pagination={pagination}
-                 rowKey={record=>record.id}
-                 bordered
-                 size="middle"
-                 onRowClick={this.handlePutData}
-                 rowSelection={rowSelection}
-                 loading={loading}
+                  dataSource={data}
+                  pagination={pagination}
+                  rowKey={record=>record.id}
+                  bordered
+                  size="middle"
+                  onRowClick={this.handlePutData}
+                  rowSelection={rowSelection}
+                  loading={loading}
 
           />
           <div className="footer-operate">
