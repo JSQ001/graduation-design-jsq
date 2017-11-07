@@ -138,7 +138,9 @@ class StrategyControlDetail extends React.Component {
         if(response.status==200) {
           message.success('保存成功');
           this.getBasicInfo();
-          this.setState({ updateState: true, baseInfoLoading: false })
+          this.setState({ updateState: true, baseInfoLoading: false }, () => {
+            this.setState({ updateState: false })
+          })
         }
       }).catch((e)=>{
         if(e.response){
