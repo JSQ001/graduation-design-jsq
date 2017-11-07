@@ -5,11 +5,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Form,Input,Switch,Icon,Upload,message} from 'antd';
-import axios from 'axios'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 import Chooser from  'components/Chooser';
+import WrappedUploadFile from 'components/upload.js'
 import ListSelector from 'components/list-selector.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -360,37 +360,6 @@ class NewBudgetJournalFrom extends React.Component {
 
 
 
-  handleUpload = () => {
-   /* const { fileList } = this.state;
-    const formData = new FormData();
-    fileList.forEach((file) => {
-      formData.append('files[]', file);
-    });
-
-    this.setState({
-      uploading: true,
-    });
-
-    // You can use any AJAX library you like
-    axios({
-      headers:{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      },
-      url: `${config.baseUrl}/api/upload/attachment`,
-      method: 'post',
-      mode: 'cors',
-      headers:{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      },
-      data:{
-        attachmentType:"BUDGET_JOURNAL",
-        file:fileList[0]
-      },
-
-    }).then();*/
-  }
 
 
   //取消
@@ -430,7 +399,10 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
+ //上传附件，获取OID
+  uploadHandle=(value)=>{
 
+  }
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -452,57 +424,6 @@ class NewBudgetJournalFrom extends React.Component {
       yearOptions.push({label: i, key: i})
     const yearOptionsData = yearOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
 
-
-    /*const props = {
-      action:`${config.baseUrl}/api/upload/attachment`,
-      onRemove: (file) => {
-        this.setState(({ fileList }) => {
-          const index = fileList.indexOf(file);
-          const newFileList = fileList.slice();
-          newFileList.splice(index, 1);
-          return {
-            fileList: newFileList,
-          };
-        });
-      },
-      beforeUpload: (file) => {
-        this.setState(({ fileList }) => ({
-          fileList: [...fileList, file],
-        }));
-        return false;
-      },
-      fileList: this.state.fileList,
-    };*/
-
-
-
-  /* const props = {
-        name: 'file',
-        multiple: true,
-        showUploadList: true,
-        action:`${config.baseUrl}/api/upload/attachment`,
-        headers:{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.token
-        },
-        data:{
-          attachmentType:"BUDGET_JOURNAL",
-          file:this.state.file
-        },
-        onChange(info) {
-          const status = info.file.status;
-          if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-          }
-          if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-          } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-          }
-        },
-
-      };
-*/
 
     return (
       <div className="new-budget-journal">
@@ -697,6 +618,14 @@ class NewBudgetJournalFrom extends React.Component {
             )}
           </FormItem>
 
+          <FormItem>
+            <WrappedUploadFile
+              attachmentType="BUDGET_JOURNAL"
+              fileNum={3}
+              uploadHandle={this.uploadHandle}
+            />
+          </FormItem>
+
 {/*
           <FormItem
             {...formItemLayout}
@@ -728,15 +657,7 @@ class NewBudgetJournalFrom extends React.Component {
             <div className="footer-operate">
               <Button type="primary"  htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
               <Button style={{marginRight:'10px'}} onClick={this.HandleClear}>取消</Button>
-           {/*   <Button
-                className="upload-demo-start"
-                type="primary"
-                onClick={this.handleUpload}
-                disabled={this.state.fileList.length === 0}
-                loading={uploading}
-              >
-                {uploading ? 'Uploading' : 'Start Upload' }
-              </Button>*/}
+
             </div>
 
         </Form>
