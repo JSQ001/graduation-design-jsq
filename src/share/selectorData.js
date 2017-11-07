@@ -22,8 +22,8 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'structureCode', label: '预算表代码'},
       {type: 'input', id: 'structureName', label: '预算表描述'},
-      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: []},
-      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: []}
+      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'},
+      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'}
     ],
     columns: [
       {title: '预算表代码', dataIndex: 'structureCode', width: '45%'},
@@ -37,8 +37,8 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
       {type: 'input', id: 'itemName', label: '预算项目描述'},
-      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: []},
-      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: []}
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},

@@ -29,6 +29,7 @@ class StrategyControlDetail extends React.Component {
       ],
       infoData: {},
       updateState: false,
+      baseInfoLoading: false,
       columns: [
         {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode', render:()=>{return '公式'}},
         {title: '控制对象', dataIndex: 'object', key: 'object'},
@@ -132,20 +133,23 @@ class StrategyControlDetail extends React.Component {
   handleUpdate = (params) => {
     params.id = this.state.strategyControlId;
     params.versionNumber = this.state.infoData.versionNumber;
-    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
-      if(response.status==200) {
-        message.success('保存成功');
-        this.getBasicInfo();
-        this.setState({ updateState: true })
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({ updateState: false })
-      } else {
-        console.log(e)
-      }
+    this.setState({ baseInfoLoading: true }, () => {
+      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
+        if(response.status==200) {
+          message.success('保存成功');
+          this.getBasicInfo();
+          this.setState({ updateState: true, baseInfoLoading: false })
+        }
+      }).catch((e)=>{
+        if(e.response){
+          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          this.setState({ updateState: false, baseInfoLoading: false })
+        } else {
+          console.log(e)
+        }
+      })
     })
+
   };
   handleSearch = (value) => {
     console.log(value);
@@ -169,13 +173,14 @@ class StrategyControlDetail extends React.Component {
   };
 
   render() {
-    const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, newParams, isNew } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, baseInfoLoading, newParams, isNew } = this.state;
     return (
       <div className="strategy-control-detail">
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">

@@ -158,6 +158,20 @@ table{
     display: inline-block;
     text-align: right;
   }
+  .center-icon{
+    text-align: center;
+    i{
+      cursor: pointer;
+      transition: transform .5s ease;
+    }
+    i:hover{
+      -webkit-transform: scale(1.5);
+      -moz-transform: scale(1.5);
+      -ms-transform: scale(1.5);
+      -o-transform: scale(1.5);
+      transform: scale(1.5);
+    }
+  }
 }
 
 .form-title{

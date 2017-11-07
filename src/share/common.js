@@ -25,7 +25,11 @@ Array.prototype.addIfNotExist = function(item){
 };
 
 //金额过滤
-React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{Number(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
+React.Component.prototype.filterMoney = (money, fixed = 2) => {
+  let numberString = Number(money || 0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  numberString += (numberString.indexOf('.') > -1 ? '' : '.00');
+ return <span className="money-cell">{numberString}</span>;
+}
 
 //检查用户操作权限
 React.Component.prototype.checkAuthorities = auth => {
@@ -87,6 +91,10 @@ Date.prototype.format = function (fmt) {
  * 2020 期间汇总标志
  * 2021 预算季度
  * 2022 预算控制消息
+ * 2023 单据类别
+ * 2024 重置频率
+ * 2025 段值
+ * 2026 日期格式
  * 2101 汇率方法
  * 2102 汇率标价方法
  * 2103 银行类型
