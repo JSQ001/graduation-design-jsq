@@ -25,7 +25,11 @@ Array.prototype.addIfNotExist = function(item){
 };
 
 //金额过滤
-React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{Number(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
+React.Component.prototype.filterMoney = (money, fixed = 2) => {
+  let numberString = Number(money || 0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  numberString += (numberString.indexOf('.') > -1 ? '' : '.00');
+ return <span className="money-cell">{numberString}</span>;
+}
 
 //检查用户操作权限
 React.Component.prototype.checkAuthorities = auth => {
