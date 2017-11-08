@@ -1,6 +1,7 @@
 import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import PaymentBatch from 'containers/financial-management/payment-batch'
 import FinanceReview from 'containers/financial-management/finance-review'
+import FinanceView from 'containers/financial-management/finance-view'
 
 //单据审核
 const financeReview = {
@@ -26,10 +27,18 @@ const paymentBatch = {
   parent: 'financial-management'
 };
 
+//单据查看
+const financeView = {
+  key:'finance-view',
+  url:'/main/financial-management/finance-view',
+  components: FinanceView,
+  parent: 'financial-management'
+};
+
 //财务管理
 const financialManagement = {
   key:'financial-management',
-  subMenu: [financeReview, confirmPayment, paymentBatch],
+  subMenu: [financeReview, confirmPayment, paymentBatch, financeView],
   icon: 'pay-circle-o'
 };
 

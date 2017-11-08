@@ -32,4 +32,35 @@
       }
     }
   }
+  .checkbox-list-form {
+    border: 1px solid #eee;
+    border-top: none;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    .list-row {
+      border-top: 1px solid #eee;
+      .list-col-header {
+        background: #f7f7f7;
+        text-align: right;
+        padding-right:20px;
+        height: 100%;
+        position: absolute;
+        span {
+          display: block;
+          position: relative;
+          top: 50%;
+          margin-top: -16px;
+        }
+      }
+      .list-col-content {
+        padding: 5px 10px;
+        float: right;
+      }
+    }
+    .ant-row.ant-form-item {
+      margin-bottom: 0;
+    }
+  }
 }

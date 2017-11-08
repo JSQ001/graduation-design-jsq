@@ -17,7 +17,7 @@ class BudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
         {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
@@ -29,9 +29,12 @@ class BudgetStrategyDetail extends React.Component {
       columns: [
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
-        {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
-        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
+        {title: "描述", dataIndex: "detailName", key: "detailName",
+          render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: "消息", dataIndex: "messageCode", key: "messageCode",
+          render: message => <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover>},
+        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent",
+          render: event => <span>{event ? event : '-'}</span>}
       ],
       data: [],
       pagination: {
@@ -71,6 +74,7 @@ class BudgetStrategyDetail extends React.Component {
   getList() {
     let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
+    this.setState({ loading: true });
     httpFetch.get(url).then((response) => {
       this.setState({
         data: response.data,
