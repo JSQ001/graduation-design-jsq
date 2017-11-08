@@ -18,12 +18,10 @@ class BudgetJournal extends React.Component {
       params:{},
       organization:{},
       pagination: {
-        current:0,
-        page:0,
         total:0,
-        pageSize:10,
-
       },
+      page:0,
+      pageSize: 10,
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
@@ -64,17 +62,17 @@ class BudgetJournal extends React.Component {
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
-          render(recode){
+          render(recode,text){
             switch (recode){
-              case 'NEW':{ return <Badge status="processing" text="新建" />}
-              case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
-              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
-              case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-              case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
-              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
-              case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
-              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
-              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
+              case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
+              case 'SUBMIT':{ return   <Badge status="warning" text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text={text.statusName}/> }
+              case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
+              case 'CHECKED':{return < Badge status="default" color="#234234" text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={text.statusName}/>}
+              case 'POSTED':{return <Badge status="default"  color="#87d068" text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
             }
           }
       /*   render(recode){
@@ -111,35 +109,32 @@ class BudgetJournal extends React.Component {
       loading:true,
     })
 
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
-      this.setState({
-        loading: false,
-        data: response.data,
-        pagination: {
-          page: this.state.pagination.page,
-          current: this.state.pagination.current,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-          total: Number(response.headers['x-total-count']),
-        }
-      },()=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.page}&size=${this.state.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
 
+      this.setState({
+        data: response.data,
+        loading: false,
+        pagination: {
+          total: Number(response.headers['x-total-count']) ? Number(response.headers['x-total-count']) : 0,
+          onChange: this.onChangePager,
+          current: this.state.page + 1
+        }
       })
     })
   }
 
   //分页点击
-  onChangePager = (pagination,filters, sorter) =>{
-    this.setState({
-      pagination:{
-        page: pagination.current-1,
-        current: pagination.current,
-        pageSize: pagination.pageSize
-      }
-    }, ()=>{
-      this.getList();
-    })
+  onChangePager = (page) => {
+    console.log("BHNHG");
+    console.log(page);
+    console.log("!@#!@#!@#")
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
   };
 
   //点击搜搜索
@@ -195,7 +190,7 @@ class BudgetJournal extends React.Component {
           bordered
           onRowClick={this.HandleRowClick}
           onChange={this.onChangePager}
-          rowKey={recode=>{return recode.id}}
+
         />
       </div>
     )

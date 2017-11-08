@@ -54,7 +54,6 @@ class BudgetVersionsDetail extends React.Component {
       optionData:[{value:"NEW",label:this.props.intl.formatMessage({id:"budget.new"})},{value:"CURRENT",label:this.props.intl.formatMessage({id:"budget.current"})},{value:"HISTORY",label:this.props.intl.formatMessage({id:"budget.history"})}],
       edit: false,
       formData:{},
-      loading:true,
       page:0,
       pageSize:10
 
@@ -67,8 +66,12 @@ class BudgetVersionsDetail extends React.Component {
     console.log(e);
     console.log(record);
     let data = record;
-    data.isDefined = e.target.checked;
+    const isEnabled = record.isEnabled;
+    data.isEnabled = !isEnabled;
+    console.log(data);
+    console.log("qwewqewq");
     httpFetch.put(`${config.budgetUrl}/api/budget/version/assign/companies`, data).then(response => {
+      message.success("编辑成功")
      this.getAssignCompanyList();
     }).catch(
 
@@ -105,10 +108,6 @@ class BudgetVersionsDetail extends React.Component {
       response.data.organizationName = this.props.organization.organizationName;
       let info={
         ...response.data,
-        status:{
-          key:statusData,
-          label:statusData=="NEW"?this.props.intl.formatMessage({id:"budget.new"}):(statusData=="CURRENT"?this.props.intl.formatMessage({id:"budget.current"}):this.props.intl.formatMessage({id:"budget.history"}))
-        }
       }
       this.setState({
         formData:data,
@@ -124,7 +123,7 @@ class BudgetVersionsDetail extends React.Component {
     this.setState({
       loading:true
     })
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query/${this.props.params.versionId}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response)=>{
       this.setState({
         data:response.data,
         loading:false,
@@ -196,7 +195,7 @@ class BudgetVersionsDetail extends React.Component {
         "companyCode":data[a].code,
         "companyName":data[a].name,
         "companyId": data[a].id,
-        "versionId":this.props.params.id,
+        "versionId":this.props.params.versionId,
         "isEnabled":isEnabled,
         "companyTypeName":data[a].companyTypeName,
       }
@@ -255,7 +254,7 @@ class BudgetVersionsDetail extends React.Component {
   }
 
   render(){
-    const {  edit, data, columns, pagination,formData,infoDate,infoList,updateState} = this.state;
+    const {  edit, data, columns, pagination,formData,infoDate,infoList,updateState,loading} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
@@ -286,6 +285,7 @@ class BudgetVersionsDetail extends React.Component {
                  pagination={pagination}
                  bordered
                  size="middle"
+                 loading={loading}
           />
 
           <ListSelector visible={this.state.showImportFrame}

@@ -94,8 +94,14 @@ class BudgetJournalDetail extends React.Component {
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
           listExtraParams:{organizationId:1}
         },
-
-        {type: 'value_list', id: 'periodStrategy', label: '编制期段', isRequired: true, options: [], valueListCode: 2002,disabled: true},
+        /*编辑期段*/
+        {type: 'value_list', id: 'periodStrategy', label: '编制期段', options: [], valueListCode: 2002,disabled: true},
+        /*预算年度*/
+        {type:'input',id:'periodYear',label:'预算年度',disabled: true,},
+        /*预算季度*/
+        {type:'input',id:'periodQuarterName',label:'预算季度',disabled: true,},
+        /*期间*/
+       {type:'input',id:'periodName',label:'期间',disabled: true},
         /*附件*/
         {type:'file',label:'附件',id:'file',disabled: true},
 
@@ -103,37 +109,37 @@ class BudgetJournalDetail extends React.Component {
 
       columns: [
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'10%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
             </Popover>)
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'10%',
           render: departmentName => (
             <Popover content={departmentName}>
               {departmentName}
             </Popover>)
         },
         {          /*预算项目*/
-          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName',
+          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName',width:'10%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
             </Popover>)
         },
         {          /*期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%'
         },
         {          /*季度*/
-          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarter", dataIndex: 'periodQuarter'
+          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarter", dataIndex: 'periodQuarter',width:'6%'
         },
         {          /*年度*/
-          title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear'
+          title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'6%'
         },
         {          /*币种*/
-          title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency'
+          title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency',width:'4%'
         },
       /*  {          /!*汇率类型*!/
           title: this.props.intl.formatMessage({id:"budget.rateType"}), key: "rateType", dataIndex: 'rateType'
@@ -142,16 +148,16 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.rateQuotation"}), key: "rateQuotation", dataIndex: 'rateQuotation'
         },*/
         {          /*汇率*/
-          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate'
+          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',width:'4%',
         },
         {          /*金额*/
-          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount'
+          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',width:'6%'
         },
         {          /*本币今额*/
-          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount'
+          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'6%'
         },
         {          /*数字*/
-          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',width:'6%'
         },
        /* {          /!*单位*!/
           title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
@@ -170,6 +176,15 @@ class BudgetJournalDetail extends React.Component {
     };
   }
 
+//获得总金额
+  getAmount=()=>{
+    const data = this.state.data;
+    let sum =0;
+    data.map((item)=>{
+      sum+= item.functionalAmount;
+    })
+    return "CNY"+" "+sum;
+  }
 
 
   //选项改变时的回调，重置selection
@@ -250,7 +265,11 @@ class BudgetJournalDetail extends React.Component {
           let headerData =response.data.dto;
 
      console.log(response.data);
-      this.getFile(headerData.attachmentOID);
+      headerData.attachmentOID.map((item)=>{
+        this.getFile(item);
+      })
+
+
 
           const journalType=[];
           const journalType1={
@@ -259,6 +278,7 @@ class BudgetJournalDetail extends React.Component {
       }
       journalType.push(journalType1);
 
+      //预算版本
       const versionName=[]
       const versionName1={
         "versionName":headerData.versionName,
@@ -266,6 +286,7 @@ class BudgetJournalDetail extends React.Component {
       }
       versionName.push(versionName1);
 
+      //预算场景
       const scenarioName=[]
       const scenarioName1={
         "scenarioName":headerData.scenario,
@@ -273,22 +294,21 @@ class BudgetJournalDetail extends React.Component {
       }
       scenarioName.push(scenarioName1);
 
+      //预算表
       const budgetStructure={
         "label":headerData.structureName,
         "value":headerData.structureId
       }
 
-
+    //预算年度
+/*
       const periodYear={
         "label":headerData.periodYear,
         "value":headerData.periodYear
       }
-
-     /* const periodStrategy={
-        "label":headerData.periodStrategy,
-        "key":headerData.periodStrategy
-      }
 */
+
+   //编制期段
      const period = headerData.periodStrategy;
       const periodStrategy={
         "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
@@ -314,9 +334,14 @@ class BudgetJournalDetail extends React.Component {
         }*/
 
         console.log(statusData);
-        const dao={'status':'processing', 'value':'新建'};
 
 
+      //获取总金额
+      let sum =0;
+      listData.map((item)=>{
+        sum+= item.amount;
+      })
+      const amountData = "CNY"+" "+sum;
 
       const infoData={
         ...headerData,
@@ -325,9 +350,10 @@ class BudgetJournalDetail extends React.Component {
         "versionName":versionName,
         "scenarioName":scenarioName,
         "budgetStructure":budgetStructure,
-        "periodYear":periodYear,
+       // "periodYear":periodYear,
         "file":this.state.fileList,
-        "periodStrategy":periodStrategy
+        "periodStrategy":periodStrategy,
+        "totalAmount":amountData
       }
 
 
@@ -425,14 +451,14 @@ class BudgetJournalDetail extends React.Component {
       data = this.state.data;
       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
-    if(value.isNew){
-        console.log("value");
-        console.log(value);
-        headerAndListData.list.addIfNotExist(value);
-        data.addIfNotExist(value);
-        listData.addIfNotExist(value);
+      if(value.isNew){
+          console.log("value");
+          console.log(value);
+          headerAndListData.list.addIfNotExist(value);
+          data.addIfNotExist(value);
+          listData.addIfNotExist(value);
 
-      }
+        }
 
     else{
 

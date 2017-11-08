@@ -58,7 +58,7 @@ class NewBudgetJournalFrom extends React.Component {
     let periodNameData;
     console.log(periodName);
     if(periodName!=''&& periodName!=null && periodName!=undefined) {
-      console.log("!@#@$!!!!!!!!!!!!!!!!!!!!!!!!%%%%%%%%%%%%%%%%%%%%55555555555")
+
       const periodNameArray = periodName.split("-");
       for (let i = 0; i < periodNameArray.length; i++) {
         console.log(periodNameArray[i])
@@ -102,7 +102,7 @@ class NewBudgetJournalFrom extends React.Component {
           "journalTypeName":value.journalTypeName[0].journalTypeName,
           "periodStrategy":value.periodStrategy,
           "versionNumber":"1",
-          "attachmentOID":this.state.attachmentOID[0],
+          "attachmentOID":this.state.attachmentOID,
         }
       ,
       "list":[]
@@ -381,6 +381,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType=(value)=>{
+    console.log(this.props.organization.id)
 
    // console.log(this.props.company.setOfBooksId);
 
@@ -496,8 +497,8 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='journalTypeName'
               valueKey='journalTypeId'
               single={true}
-              // listExtraParams={{"organizationId":this.props.organization.id}}
-              listExtraParams={{"organizationId":1}}
+              listExtraParams={{"organizationId":this.props.organization.id}}
+             // listExtraParams={{"organizationId":1}}
               onChange={this.handleJournalType}
               />
 
@@ -602,8 +603,8 @@ class NewBudgetJournalFrom extends React.Component {
                 labelKey='versionName'
                 valueKey='id'
                 single={true}
-                //listExtraParams={{"organizationId":this.props.organization.id}}
-                listExtraParams={{"organizationId":1}}
+                listExtraParams={{"organizationId":this.props.organization.id}}
+               // listExtraParams={{"organizationId":1}}
                 onChange={this.handleVersion}
               />
             )}
@@ -623,8 +624,8 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='scenarioName'
               valueKey='id'
               single={true}
-             // listExtraParams={{"organizationId":this.props.organization.id}}
-              listExtraParams={{"organizationId":1}}
+             listExtraParams={{"organizationId":this.props.organization.id}}
+            //  listExtraParams={{"organizationId":1}}
              />
 
             )}

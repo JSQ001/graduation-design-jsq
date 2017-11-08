@@ -58,11 +58,11 @@ class NewBudgetJournalDetail extends React.Component {
         /*标价方法*/
         /*{type: 'select', id:'rateQuotation', label:  this.props.intl.formatMessage({id:"budget.rateQuotation"}), options: []},*/
         /*汇率*/
-        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate'},
+        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},
         /*金额*/
         {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
         /*本位金额*/
-        {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0},
+        {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0,disabled: true},
         /*数量*/
         {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
         /*单位*/
@@ -426,11 +426,11 @@ class NewBudgetJournalDetail extends React.Component {
 
       }
       let data;
-      if(params=={}){
+
+      if(JSON.stringify(params) == "{}"){
         data={
           ...valueData,
-          "isNew":true
-
+          "isNew":true,
         }
       }else {
         data={

@@ -241,7 +241,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       const data = this.state.data;
       let sum =0;
       data.map((item)=>{
-       sum+= item.amount;
+       sum+= item.functionalAmount;
       })
     return "CNY"+" "+sum;
   }
