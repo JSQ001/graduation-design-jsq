@@ -36,6 +36,7 @@ class BudgetJournalDetail extends React.Component {
       updateState:false,
       pageSize:10,
       page:0,
+      fileList:[],
       pagination: {
         current:0,
         page:0,
@@ -74,7 +75,7 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:1},
           disabled: true
         },
-        {type: 'select', id:'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',disabled: true,
+        {type: 'select', id:'budgetStructure', label: '预算表', options: [], method: 'get',disabled: true,
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :1},
           labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
@@ -223,6 +224,18 @@ class BudgetJournalDetail extends React.Component {
 
   }
 
+//根据attachmentOID，查询附件
+  getFile=(value)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getAttachmentDTOByOid?oid=${value}`,).then((resp)=>{
+      let fileList = this.state.fileList;
+      fileList.addIfNotExist(resp.data)
+      this.setState({
+        fileList:fileList
+      })
+    }).catch(e=>{
+
+    })
+  }
 
 
 
@@ -235,6 +248,10 @@ class BudgetJournalDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
           let listData = response.data.list;
           let headerData =response.data.dto;
+
+     console.log(response.data);
+      this.getFile(headerData.attachmentOID);
+
           const journalType=[];
           const journalType1={
             "journalTypeName":headerData.journalTypeName,
@@ -279,13 +296,6 @@ class BudgetJournalDetail extends React.Component {
       }
 
 
-
-      const file={
-        "fileName": "捕获.PNG",
-        "fileType": "IMAGE",
-        "fileURL": "https://huilianyi-uat.oss-cn-shanghai.aliyuncs.com/e4b4a421-0355-4449-a610-26ff99322ab1/pdf/%E6%8D%95%E8%8E%B7.PNG?Expires=1509020077&OSSAccessKeyId=zmKqYB24JQrTqfiH&Signature=M%2BhSLTAjdrEtfgn%2Fe9GosXSyFGQ%3D",
-      }
-
       //状态
       let statusData={};
     if(headerData.status=="NEW"){
@@ -306,8 +316,7 @@ class BudgetJournalDetail extends React.Component {
         console.log(statusData);
         const dao={'status':'processing', 'value':'新建'};
 
-      const fileData =[];
-      fileData.push(file);
+
 
       const infoData={
         ...headerData,
@@ -317,7 +326,7 @@ class BudgetJournalDetail extends React.Component {
         "scenarioName":scenarioName,
         "budgetStructure":budgetStructure,
         "periodYear":periodYear,
-        "file":fileData,
+        "file":this.state.fileList,
         "periodStrategy":periodStrategy
       }
 
@@ -416,19 +425,16 @@ class BudgetJournalDetail extends React.Component {
       data = this.state.data;
       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
-      let fla =1;
-      //if(value.hasOwnProperty("id")){
-
-    if(value.id==undefined || value.id==null || value.id==false || value.id==NaN){
+    if(value.isNew){
         console.log("value");
         console.log(value);
         headerAndListData.list.addIfNotExist(value);
         data.addIfNotExist(value);
         listData.addIfNotExist(value);
-        fla=0;
+
       }
 
-    if(fla==1){
+    else{
 
       console.log("id+6666666666666666")
       let list = headerAndListData.list;
@@ -654,7 +660,7 @@ class BudgetJournalDetail extends React.Component {
         >
         </BudgetJournalDetailLead>
 
-        <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
+        <SlideFrame title={"预算日记账"}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetJournalDetail}
                     afterClose={this.handleAfterCloseNewSlide}

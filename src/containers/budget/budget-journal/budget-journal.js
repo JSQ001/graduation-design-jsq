@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select ,Tag} from 'antd';
+import { Button, Table, Select ,Tag,Badge} from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -64,7 +64,20 @@ class BudgetJournal extends React.Component {
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
-         render(recode){
+          render(recode){
+            switch (recode){
+              case 'NEW':{ return <Badge status="processing" text="新建" />}
+              case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
+              case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
+              case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
+              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
+              case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
+            }
+          }
+      /*   render(recode){
               switch (recode){
                 case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
                 case 'SUBMIT':{ return  <Tag color="#f50">提交审批</Tag>}
@@ -76,7 +89,7 @@ class BudgetJournal extends React.Component {
                 case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
                 case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
               }
-      }
+      }*/
     },
   ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项

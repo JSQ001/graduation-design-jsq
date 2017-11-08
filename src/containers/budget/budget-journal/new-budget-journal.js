@@ -9,7 +9,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import Chooser from  'components/Chooser';
-import WrappedUploadFile from 'components/upload.js'
+import UploadFile from 'components/upload.js'
 import ListSelector from 'components/list-selector.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -41,6 +41,7 @@ class NewBudgetJournalFrom extends React.Component {
       fileList: [],
       file:{},
       uploading: false,
+      attachmentOID:[],
     };
   }
 
@@ -55,7 +56,9 @@ class NewBudgetJournalFrom extends React.Component {
     const periodYear=period.periodYear;
     //处理期间
     let periodNameData;
+    console.log(periodName);
     if(periodName!=''&& periodName!=null && periodName!=undefined) {
+      console.log("!@#@$!!!!!!!!!!!!!!!!!!!!!!!!%%%%%%%%%%%%%%%%%%%%55555555555")
       const periodNameArray = periodName.split("-");
       for (let i = 0; i < periodNameArray.length; i++) {
         console.log(periodNameArray[i])
@@ -99,7 +102,7 @@ class NewBudgetJournalFrom extends React.Component {
           "journalTypeName":value.journalTypeName[0].journalTypeName,
           "periodStrategy":value.periodStrategy,
           "versionNumber":"1",
-          "attachmentOID":'',
+          "attachmentOID":this.state.attachmentOID[0],
         }
       ,
       "list":[]
@@ -157,7 +160,9 @@ class NewBudgetJournalFrom extends React.Component {
   //获取期间
   getPeriod=()=>{
     console.log(this.props.user);
-    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`).then(( response)=>{
+    console.log(this.props.company);
+    //
+    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then(( response)=>{
      console.log(response.data);
       let periodPeriod = [];
       response.data.map((item)=>{
@@ -376,32 +381,39 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType=(value)=>{
-    console.log(value);
-    console.log("@@#$#@$#$###$#1111111111111");
-    let valueData = value[0];
-   this.setState({
-      idSelectJournal:true,
-      structureFlag:false
-    })
-    this.props.form.setFieldsValue({
-      structureId:''
-    })
-    this.props.form.setFieldsValue({
-      periodYear:''
-    })
-    this.props.form.setFieldsValue({
-      periodQuarter:''
-    })
-    this.props.form.setFieldsValue({
-      periodName:''
-    })
-  //  this.getStructure(valueData.journalTypeId);
+
+   // console.log(this.props.company.setOfBooksId);
+
+    if(value.length>0){
+      let valueData = value[0];
+      this.setState({
+        idSelectJournal:true,
+        structureFlag:false
+      })
+      this.props.form.setFieldsValue({
+        structureId:''
+      })
+      this.props.form.setFieldsValue({
+        periodYear:''
+      })
+      this.props.form.setFieldsValue({
+        periodQuarter:''
+      })
+      this.props.form.setFieldsValue({
+        periodName:''
+      })
+      this.getStructure(valueData.journalTypeId);
+    }
+
   }
 
 
  //上传附件，获取OID
   uploadHandle=(value)=>{
-
+    console.log(value);
+    this.setState({
+      attachmentOID:value
+    })
   }
 
   render(){
@@ -618,38 +630,23 @@ class NewBudgetJournalFrom extends React.Component {
             )}
           </FormItem>
 
-          <FormItem>
-            <WrappedUploadFile
-              attachmentType="BUDGET_JOURNAL"
-              fileNum={3}
-              uploadHandle={this.uploadHandle}
-            />
-          </FormItem>
-
-{/*
           <FormItem
             {...formItemLayout}
             label="附件"
           >
             <div className="dropbox">
               {getFieldDecorator('file', {
-                valuePropName: 'fileList',
-                getValueFromEvent: this.normFile,
+
               })(
+                <UploadFile
+                  attachmentType="BUDGET_JOURNAL"
+                  fileNum={5}
+                  uploadHandle={this.uploadHandle}
+                />
 
-
-                <Upload.Dragger  {...props}
-
-                >
-                  <p className="ant-upload-drag-icon">
-                    <Icon type="cloud-upload-o" />
-                  </p>
-                  <p className="ant-upload-text">点击或将文件拖拽到这里上传</p>
-                  <p className="ant-upload-hint">支持扩展名：.rar .zip .doc .docx .pdf .jpg...</p>
-                </Upload.Dragger>
               )}
             </div>
-          </FormItem>*/}
+          </FormItem>
 
           <FormItem wrapperCol={{ offset: 7 }}>
           </FormItem>

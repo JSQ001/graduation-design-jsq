@@ -225,41 +225,15 @@ class BudgetJournalReCheckDetail extends React.Component {
       switch (infoData.status){
         case 'NEW':{ return <Badge status="processing" text="新建" />}
         case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
-        case 'SUNMITRETAR':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
+        case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
         case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
         case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
         case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
         case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
-        case 'BACKLASHSUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
-        case 'BACKLASHCHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
+        case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
+        case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
       }
   }
-/*
-*
- case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
- case 'SUBMIT':{ return  <Tag color="#f50">提交审批</Tag>}
- case 'SUNMITRETAR':{return <Tag color="#dd12333">提交撤回</Tag> }
- case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
- case 'CHECKED':{return <Tag color="#234234">审批完成</Tag>}
- case 'CHECKING':{return <Tag color="#ffdd44">审批中</Tag>}
- case 'POSTED':{return <Tag color="#87d068">复核</Tag>}
- case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
- case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}*/
-
-/*  if(headerData.status=="NEW"){
-  statusData={'status':'processing', 'value':'新建'};
-}else if(headerData.status=="REJECT"){
-  statusData={'status':'error', 'label':'拒绝'};
-}*/
-/* switch (headerData.status){
- case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
- case 'SUBMIT':{ statusData={'status':'warning', 'label':'提交'}; return;}
- case 'REJECT':{ statusData={'status':'error', 'label':'拒绝'}; return;}
- case 'CHECKED':{statusData={'status':'success', 'label':'审核'}; return;}
- case 'POSTED':{statusData={'status':'default', 'label':'复核'}; return;}
- case 'BACKLASHSUBMIT':{statusData={'status':'default', 'label':'反冲提交'}; return;}
- case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
- }*/
 
 
 //获得总金额

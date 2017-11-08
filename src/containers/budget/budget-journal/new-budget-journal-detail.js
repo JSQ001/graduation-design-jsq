@@ -27,7 +27,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*公司*/
         {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
           labelKey: 'name', valueKey: 'id',event:'company',
-          url: `${config.baseUrl}/api/company/available`
+          url: `${config.baseUrl}/api/company/by/term?setOfBooksId=${this.props.company.setOfBooksId}`
         },
         /*部门*/
         {type: 'select', id:'unitId', label:this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
@@ -42,7 +42,7 @@ class NewBudgetJournalDetail extends React.Component {
         /*期间*/
         {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true, options: [],
           labelKey:'periodName',valueKey:'periodName',event:'periodName',
-          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.user.setOfBooksId}`
+          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`
         },
         /*季度*/
         {type: 'value_list', id: 'periodQuarter', label: this.props.intl.formatMessage({id:"budget.periodQuarter"}), isRequired: true, options: [], valueListCode: 2021},
@@ -428,15 +428,18 @@ class NewBudgetJournalDetail extends React.Component {
       let data;
       if(params=={}){
         data={
-          ...valueData
+          ...valueData,
+          "isNew":true
 
         }
       }else {
         data={
           ...valueData,
-          "id":params.id
+          "id":params.id,
+          "isNew":false
         }
       }
+      console.log(data);
       this.props.close(data);
     })
     this.props.form.resetFields();
@@ -467,6 +470,7 @@ const WrappedNewBudgetJournalDetail = Form.create()(NewBudgetJournalDetail);
 function mapStateToProps(state) {
   return {
     organization: state.login.organization,
+    company: state.login.company,
     user: state.login.user,
   }
 }
