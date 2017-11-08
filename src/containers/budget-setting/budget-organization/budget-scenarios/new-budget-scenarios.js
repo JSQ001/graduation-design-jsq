@@ -111,7 +111,7 @@ class NewBudgetScenarios extends React.Component{
             {getFieldDecorator('description', {
               initialValue: ''
             })(
-              <TextArea rows={4} placeholder="请输入"/>
+              <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="状态">

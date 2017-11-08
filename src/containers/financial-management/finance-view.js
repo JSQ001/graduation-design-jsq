@@ -20,15 +20,17 @@ class FinanceView extends React.Component{
         ]},
         {type: 'checkbox', id: 'status', label: '单号', options: [{label:'全部', value:'all'}]},
       ],
-      listSearchForm: [
-        {label: '报销单', id: 'expense', list: [{label: '全部', value: '1002'}]},
-        {label: '借款单', id: 'borrow', list: [{label: '全部', value: '1008'}]}
+      checkboxListForm: [
+        {id: 'entityType', items: [
+          {label: '报销单', key:'account', options: [{label: '全部', value: '1002'}]},
+          {label: '借款单', key:'borrow', options: [{label: '全部', value: '1008'}]}
+        ]}
       ]
     }
   }
 
   search = (result) => {
-
+    console.log(result)
   };
 
   clear = () => {
@@ -36,26 +38,11 @@ class FinanceView extends React.Component{
   };
 
   render() {
-    const { searchForm, listSearchForm } = this.state;
+    const { searchForm, checkboxListForm } = this.state;
     return (
       <div className="finance-view">
-        <div className="list-search-area">
-          {listSearchForm.map(item => {
-            return (
-              <Row className="list-row" key={item.id}>
-                <Col span={3} className="list-col-header"><span>{item.label} :</span></Col>
-                <Col span={21} className="list-col-content">
-                  <CheckboxGroup>
-                    {item.list.map(list => {
-                      return <Checkbox value={list.value} key={list.value}>{list.label}</Checkbox>
-                    })}
-                  </CheckboxGroup>
-                </Col>
-              </Row>
-            )
-          })}
-        </div>
         <SearchArea searchForm={searchForm}
+                    checkboxListForm={checkboxListForm}
                     submitHandle={this.search}
                     clearHandle={this.clear}/>
 
