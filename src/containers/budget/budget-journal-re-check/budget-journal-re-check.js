@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Tag  } from 'antd';
+import { Button, Table, Select,Tag,Badge} from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -87,7 +87,20 @@ class BudgetJournalReCheck extends React.Component {
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
-          render(recode){
+          render(recode,text){
+            switch (recode){
+              case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
+              case 'SUBMIT':{ return   <Badge status="warning" text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text={text.statusName}/> }
+              case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
+              case 'CHECKED':{return < Badge status="default" color="#234234" text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={text.statusName}/>}
+              case 'POSTED':{return <Badge status="default"  color="#87d068" text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
+            }
+          }
+          /*render(recode){
             switch (recode){
               case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
               case 'SUBMIT':{ return  <Tag color="#f50">提交</Tag>}
@@ -97,7 +110,7 @@ class BudgetJournalReCheck extends React.Component {
               case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
               case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
             }
-          }
+          }*/
         },
       ],
 

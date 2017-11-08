@@ -21,7 +21,7 @@ class BudgetJournal extends React.Component {
         total:0,
       },
       page:0,
-      pageSize: 10,
+      pageSize:10,
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
@@ -189,8 +189,6 @@ class BudgetJournal extends React.Component {
           size="middle"
           bordered
           onRowClick={this.HandleRowClick}
-          onChange={this.onChangePager}
-
         />
       </div>
     )

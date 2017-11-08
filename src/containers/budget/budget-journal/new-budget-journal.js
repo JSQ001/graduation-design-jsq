@@ -381,10 +381,8 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType=(value)=>{
-    console.log(this.props.organization.id)
-
-   // console.log(this.props.company.setOfBooksId);
-
+    console.log(this.props.organization.id);
+    console.log("setOfbook"+this.props.company.setOfBooksId);
     if(value.length>0){
       let valueData = value[0];
       this.setState({

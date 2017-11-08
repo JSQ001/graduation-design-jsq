@@ -148,13 +148,21 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.rateQuotation"}), key: "rateQuotation", dataIndex: 'rateQuotation'
         },*/
         {          /*汇率*/
-          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',width:'4%',
+          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',width:'6%',
+          render: rate => (
+            <Popover content={rate}>
+              {rate}
+            </Popover>)
         },
         {          /*金额*/
           title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',width:'6%'
         },
         {          /*本币今额*/
-          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'6%',
+          render: functionalAmount => (
+            <Popover content={functionalAmount}>
+              {functionalAmount}
+            </Popover>)
         },
         {          /*数字*/
           title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',width:'6%'
@@ -228,7 +236,7 @@ class BudgetJournalDetail extends React.Component {
       this.getDataByBudgetJournalCode();
         message.success("删除成功");
     }).catch(e=>{
-      message.error("删除失败");
+      message.error(`删除失败,${e.response.data.message}`);
     })
   }
 
@@ -248,7 +256,7 @@ class BudgetJournalDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-
+      message.error(`查询附件失败,${e.response.data.message}`);
     })
   }
 
@@ -256,120 +264,120 @@ class BudgetJournalDetail extends React.Component {
 
  //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
-    this.setState({
-      loading:true
-    })
-    const journalCode =this.props.params.journalCode;
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
-          let listData = response.data.list;
-          let headerData =response.data.dto;
-
-     console.log(response.data);
-      headerData.attachmentOID.map((item)=>{
-        this.getFile(item);
+      this.setState({
+        loading:true
       })
+      const journalCode =this.props.params.journalCode;
+      httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
+            let listData = response.data.list;
+            let headerData =response.data.dto;
+
+       console.log(response.data);
+        headerData.attachmentOID.map((item)=>{
+          this.getFile(item);
+        })
 
 
 
-          const journalType=[];
-          const journalType1={
-            "journalTypeName":headerData.journalTypeName,
-            "journalTypeId":headerData.journalTypeId,
+            const journalType=[];
+            const journalType1={
+              "journalTypeName":headerData.journalTypeName,
+              "journalTypeId":headerData.journalTypeId,
+        }
+        journalType.push(journalType1);
+
+        //预算版本
+        const versionName=[]
+        const versionName1={
+          "versionName":headerData.versionName,
+          "id":headerData.versionId
+        }
+        versionName.push(versionName1);
+
+        //预算场景
+        const scenarioName=[]
+        const scenarioName1={
+          "scenarioName":headerData.scenario,
+          "id":headerData.scenarioId
+        }
+        scenarioName.push(scenarioName1);
+
+        //预算表
+        const budgetStructure={
+          "label":headerData.structureName,
+          "value":headerData.structureId
+        }
+
+      //预算年度
+  /*
+        const periodYear={
+          "label":headerData.periodYear,
+          "value":headerData.periodYear
+        }
+  */
+
+     //编制期段
+       const period = headerData.periodStrategy;
+        const periodStrategy={
+          "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
+          "value":period
+        }
+
+
+        //状态
+        let statusData={};
+      if(headerData.status=="NEW"){
+         statusData={'status':'processing', 'value':'新建'};
+      }else if(headerData.status=="REJECT"){
+        statusData={'status':'error', 'label':'拒绝'};
       }
-      journalType.push(journalType1);
+      /* switch (headerData.status){
+          case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
+          case 'SUBMIT':{ statusData={'status':'warning', 'label':'提交'}; return;}
+          case 'REJECT':{ statusData={'status':'error', 'label':'拒绝'}; return;}
+          case 'CHECKED':{statusData={'status':'success', 'label':'审核'}; return;}
+          case 'POSTED':{statusData={'status':'default', 'label':'复核'}; return;}
+          case 'BACKLASHSUBMIT':{statusData={'status':'default', 'label':'反冲提交'}; return;}
+          case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
+          }*/
 
-      //预算版本
-      const versionName=[]
-      const versionName1={
-        "versionName":headerData.versionName,
-        "id":headerData.versionId
-      }
-      versionName.push(versionName1);
-
-      //预算场景
-      const scenarioName=[]
-      const scenarioName1={
-        "scenarioName":headerData.scenario,
-        "id":headerData.scenarioId
-      }
-      scenarioName.push(scenarioName1);
-
-      //预算表
-      const budgetStructure={
-        "label":headerData.structureName,
-        "value":headerData.structureId
-      }
-
-    //预算年度
-/*
-      const periodYear={
-        "label":headerData.periodYear,
-        "value":headerData.periodYear
-      }
-*/
-
-   //编制期段
-     const period = headerData.periodStrategy;
-      const periodStrategy={
-        "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
-        "value":period
-      }
+          console.log(statusData);
 
 
-      //状态
-      let statusData={};
-    if(headerData.status=="NEW"){
-       statusData={'status':'processing', 'value':'新建'};
-    }else if(headerData.status=="REJECT"){
-      statusData={'status':'error', 'label':'拒绝'};
-    }
-    /* switch (headerData.status){
-        case 'NEW':{statusData={'status':'processing', 'label':'新建'}; return;}
-        case 'SUBMIT':{ statusData={'status':'warning', 'label':'提交'}; return;}
-        case 'REJECT':{ statusData={'status':'error', 'label':'拒绝'}; return;}
-        case 'CHECKED':{statusData={'status':'success', 'label':'审核'}; return;}
-        case 'POSTED':{statusData={'status':'default', 'label':'复核'}; return;}
-        case 'BACKLASHSUBMIT':{statusData={'status':'default', 'label':'反冲提交'}; return;}
-        case 'BACKLASHCHECKED':{statusData={'status':'default', 'label':'反冲审核'}; return;}
-        }*/
+        //获取总金额
+        let sum =0;
+        listData.map((item)=>{
+          sum+= item.amount;
+        })
+        const amountData = "CNY"+" "+sum;
 
-        console.log(statusData);
+        const infoData={
+          ...headerData,
+          "status":statusData,
+          "journalType":journalType,
+          "versionName":versionName,
+          "scenarioName":scenarioName,
+          "budgetStructure":budgetStructure,
+         // "periodYear":periodYear,
+          "file":this.state.fileList,
+          "periodStrategy":periodStrategy,
+          "totalAmount":amountData
+        }
 
 
-      //获取总金额
-      let sum =0;
-      listData.map((item)=>{
-        sum+= item.amount;
+      this.setState({
+        loading:false,
+        headerAndListData:response.data,
+        infoDate:infoData,
+        data:listData,
+        pagination: {
+          total:response.data.list.length ,
+          onChange: this.onChangePager,
+          pageSize: this.state.pageSize,
+          current: this.state.page + 1
+        }
       })
-      const amountData = "CNY"+" "+sum;
-
-      const infoData={
-        ...headerData,
-        "status":statusData,
-        "journalType":journalType,
-        "versionName":versionName,
-        "scenarioName":scenarioName,
-        "budgetStructure":budgetStructure,
-       // "periodYear":periodYear,
-        "file":this.state.fileList,
-        "periodStrategy":periodStrategy,
-        "totalAmount":amountData
-      }
-
-
-    this.setState({
-      loading:false,
-      headerAndListData:response.data,
-      infoDate:infoData,
-      data:listData,
-      pagination: {
-        total:response.data.list.length ,
-        onChange: this.onChangePager,
-        pageSize: this.state.pageSize,
-        current: this.state.page + 1
-      }
     })
-  })
   }
 
   //分页点击

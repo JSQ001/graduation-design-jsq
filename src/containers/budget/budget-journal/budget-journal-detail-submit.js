@@ -1,10 +1,7 @@
-/**
- * Created by 13576 on 2017/10/20.
- */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
 const Step =Steps.Step;
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
@@ -19,9 +16,6 @@ import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame.js'
 import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
-
-
-
 
 
 class BudgetJournalDetailSubmit extends React.Component {
@@ -50,6 +44,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         onSelectAll: this.onSelectAll
       },
       organization: {},
+      fileList:[],
       infoData:{},
       columns: [
         {
@@ -62,7 +57,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "unitName", dataIndex: 'unitName',
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
@@ -151,6 +146,18 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
 
+//根据attachmentOID，查询附件
+  getFileByAttachmentOID=(value)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getAttachmentDTOByOid?oid=${value}`,).then((resp)=>{
+      let fileList = this.state.fileList;
+      fileList.addIfNotExist(resp.data)
+      this.setState({
+        fileList:fileList
+      })
+    }).catch(e=>{
+      message.error(`查询附件失败,${e.response.data.message}`);
+    })
+  }
 
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
@@ -161,6 +168,10 @@ class BudgetJournalDetailSubmit extends React.Component {
       let listData = request.data.list;
       console.log(listData);
       let headerData =request.data.dto;
+      headerData.attachmentOID.map((item)=>{
+        this.getFileByAttachmentOID(item);
+      })
+
       this.setState({
         headerAndListData:request.data,
         infoData:headerData,
@@ -261,6 +272,19 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   }
 
+  //获取附件
+  getFile=()=>{
+
+    console.log(12332321312312);
+    const fileList = this.state.fileList;
+    let file_arr=[];
+    fileList.map((link)=>{
+      file_arr.push(<div key={link.fileURL}><a href={link.fileURL} target="_blank"><Icon type="paper-clip" /> {link.fileName}</a> </div>)
+    })
+    return file_arr.length > 0 ? file_arr : '-';
+
+  }
+
 
   getPeriod=()=>{
     const infoData = this.state.infoData;
@@ -339,7 +363,7 @@ class BudgetJournalDetailSubmit extends React.Component {
             </Col>
             <Col span={8}>
               <div className="base-info-title">附件</div>
-              <div className="beep-info-text">{infoData.file}</div>
+              <div className="beep-info-text">{this.getFile()}</div>
             </Col>
 
           </Row>
@@ -369,6 +393,7 @@ class BudgetJournalDetailSubmit extends React.Component {
           </Collapse>
         </div>
 
+
       </div>
 
 
@@ -377,9 +402,13 @@ class BudgetJournalDetailSubmit extends React.Component {
 
 }
 
+
+BudgetJournalDetailSubmit.contextTypes ={
+  router: React.PropTypes.object
+}
+
 function mapStateToProps() {
   return {}
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalDetailSubmit));
-
