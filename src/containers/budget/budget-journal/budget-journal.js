@@ -27,7 +27,7 @@ class BudgetJournal extends React.Component {
       searchForm: [
 
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:1},
+          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
 
         {type: 'input', id: 'journalCode',

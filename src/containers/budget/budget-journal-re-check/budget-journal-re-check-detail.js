@@ -268,6 +268,17 @@ class BudgetJournalReCheckDetail extends React.Component {
     const infoData = this.state.infoData;
     const periodStrategy =  infoData.periodStrategy;
     switch (periodStrategy){
+      case 'MONTH':{ return `月`}
+      case 'QUARTER':{ return `年`}
+      case 'YEAR':{ return `季度`}
+    }
+
+  }
+
+  getPeriodStrategyData=()=>{
+    const infoData = this.state.infoData;
+    const periodStrategy =  infoData.periodStrategy;
+    switch (periodStrategy){
       case 'MONTH':{ return `期间`}
       case 'QUARTER':{ return `年`}
       case 'YEAR':{ return `季度`}
@@ -361,7 +372,7 @@ class BudgetJournalReCheckDetail extends React.Component {
               <div className="beep-info-text">{this.getPeriodStrategy()}</div>
             </Col>
            <Col span={8}>
-             <div className="base-info-title">{this.getPeriodStrategy()}</div>
+             <div className="base-info-title">{this.getPeriodStrategyData()}</div>
              <div className="beep-info-text">{this.getPeriod()}</div>
            </Col>
             <Col span={8}>

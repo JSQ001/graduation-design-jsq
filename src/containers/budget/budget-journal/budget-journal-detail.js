@@ -265,7 +265,8 @@ class BudgetJournalDetail extends React.Component {
  //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
       this.setState({
-        loading:true
+        loading:true,
+        fileList:[]
       })
       const journalCode =this.props.params.journalCode;
       httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
