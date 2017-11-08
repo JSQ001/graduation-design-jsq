@@ -4,7 +4,7 @@
 import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
-import {setUser,setCompany,setProfile,setOrganization,setCompanyConfiguration} from 'actions/login'
+import {setUser,setCompany,setProfile,setUserOrganization,setCompanyConfiguration} from 'actions/login'
 
 /**
  * 检查是否token过期
@@ -64,7 +64,7 @@ const httpFetch = {
    */
   getInfo: function(){
     return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(),this.getOrganization(),this.getCompanyConfiguration()])
+      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration(),this.getOrganization()])
     })
   },
 
@@ -94,7 +94,9 @@ const httpFetch = {
 
   getOrganization: function(){
     return this.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((response)=>{
-      configureStore.store.dispatch(setOrganization(response.data));
+      configureStore.store.dispatch(setUserOrganization(response.data));
+    }).catch(e => {
+      configureStore.store.dispatch(setUserOrganization({message: e.response ? e.response.data.message : 'error'}));
     })
   },
 
