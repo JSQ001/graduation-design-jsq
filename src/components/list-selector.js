@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-
-import { Modal, Table, Button } from 'antd'
+import { injectIntl } from 'react-intl'
+import { Modal, Table, message } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import SearchArea from 'components/search-area'
@@ -77,7 +76,7 @@ class ListSelector extends React.Component {
   clear = () => {
     let searchParams = {};
     this.state.selectorItem.searchForm.map(form => {
-      searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;
+      searchParams[form.id] = form.defaultValue;
     });
     this.setState({
       page: 0,
@@ -93,7 +92,7 @@ class ListSelector extends React.Component {
     let searchParams = Object.assign(this.state.searchParams,this.props.extraParams);
     let url = `${selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
+      url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
     return httpFetch.get(url).then((response)=>{
       response.data.map((item)=>{
@@ -110,6 +109,9 @@ class ListSelector extends React.Component {
       }, () => {
         this.refreshSelected();  //刷新当页选择器
       })
+    }).catch(e => {
+      message.error('获取数据失败，请稍后重试或联系管理员');
+      this.setState({loading: false})
     });
   }
 
@@ -137,7 +139,7 @@ class ListSelector extends React.Component {
   checkSelectorItem(selectorItem){
     let searchParams = {};
     selectorItem.searchForm.map(form => {
-      searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;  //遍历searchForm，取id组装成searhParams
+      searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searhParams
     });
     this.setState({ selectorItem, searchParams }, () => {
       this.getList();
@@ -176,7 +178,7 @@ class ListSelector extends React.Component {
     let nowSelectedRowKeys = [];
     selectedData.map(selected => {
       data.map(item => {
-        if(item[selectorItem.key] === selected[selectorItem.key])
+        if(item[selectorItem.key] == selected[selectorItem.key])
           nowSelectedRowKeys.push(item[selectorItem.key])
       })
     });
@@ -203,7 +205,7 @@ class ListSelector extends React.Component {
     } else {
       if(!selected){
         selectedData.map((selected, index) => {
-          if(selected[selectorItem.key] === record[selectorItem.key]){
+          if(selected[selectorItem.key] == record[selectorItem.key]){
             selectedData.splice(index, 1);
           }
         })

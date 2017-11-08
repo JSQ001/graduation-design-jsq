@@ -30,7 +30,7 @@ class BudgetBalance extends React.Component {
         {title: '参数类型', dataIndex: 'type', width: '20%', render: (text, record, index) => this.renderColumns(index, 'type')},
         {title: '参数', dataIndex: 'params', width: '35%', render: (text, record, index) => this.renderColumns(index, 'params')},
         {title: '参数值', dataIndex: 'value', width: '35%', render: (text, record, index) => this.renderColumns(index, 'value')},
-        {title: '类型', dataIndex: 'operation', width: '10%', render: (text, record, index) => (
+        {title: '操作', dataIndex: 'operation', width: '10%', render: (text, record, index) => (
           <span>
             <Popconfirm onConfirm={(e) => this.deleteItem(e, index)} title="你确定要删除这条数据吗?">
               <a onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
@@ -38,7 +38,7 @@ class BudgetBalance extends React.Component {
           </span>)}
       ],
       searchForm: [],
-      organizationId: '908139656192442369', //TODO:默认组织ID
+      organizationId: this.props.organization.id,
       searchParams: {
         periodSummaryFlag: false,
         amountQuarterFlag: '',
@@ -67,7 +67,6 @@ class BudgetBalance extends React.Component {
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
 
-  //TODO:进入该页面时或登录时获取默认组织ID放入state
   componentWillMount(){
     let { queryLineListTypeOptions } = this.state;
     this.getSystemValueList(2012).then(res => {
@@ -147,11 +146,39 @@ class BudgetBalance extends React.Component {
         selectorItem: undefined
       },
 
-      'COMPANY': {},
-      'COMPANY_GROUP': {},
+      'COMPANY': {
+        listType: 'company',
+        labelKey: 'name',
+        valueKey: 'id',
+        codeKey: 'companyCode',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
+      'COMPANY_GROUP': {
+        listType: 'company_group',
+        labelKey: 'companyGroupName',
+        valueKey: 'id',
+        codeKey: 'companyGroupCode',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
       'UNIT': {},
-      'UNIT_GROUP': {},
-      'EMPLOYEE': {},
+      'UNIT_GROUP': {
+        listType: 'department_group',
+        labelKey: 'description',
+        valueKey: 'id',
+        codeKey: 'deptGroupCode',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
+      'EMPLOYEE': {
+        listType: 'user',
+        labelKey: 'fullName',
+        valueKey: 'employeeID',
+        codeKey: 'employeeID',
+        listExtraParams: {},
+        selectorItem: undefined
+      },
       'EMPLOYEE_GROUP': {}
     };
     this.setState({ searchForm, paramValueMap });
@@ -261,19 +288,18 @@ class BudgetBalance extends React.Component {
   //查询，统一保存为临时方案后跳转
   search = (e) => {
     e.preventDefault();
-    this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', '922281746635608065'));
-    // this.setState({ searching: true });
-    // this.validate((values) => {
-    //   httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/header/user`, values).then(res => {
-    //     this.setState({ searching: false })
-    //     this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', 'res.data'));
-    //   }).catch(e => {
-    //     if(e.response.data){
-    //       message.error(e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message);
-    //     }
-    //     this.setState({ searching: false });
-    //   })
-    // });
+    this.setState({ searching: true });
+    this.validate((values) => {
+      httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/header/user`, values).then(res => {
+        this.setState({ searching: false });
+        this.context.router.push(this.state.budgetBalanceResult.url.replace(':id', res.data));
+      }).catch(e => {
+        if(e.response.data){
+          message.error(e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message);
+        }
+        this.setState({ searching: false });
+      })
+    });
   };
 
   //验证并打开方案保存窗口
@@ -354,6 +380,7 @@ class BudgetBalance extends React.Component {
           values.queryLineList.push(queryLine)
         });
         values.organizationId = this.state.organizationId;
+        values.companyId = this.props.company.id;
         callback(values);
       }
     })
@@ -571,10 +598,6 @@ class BudgetBalance extends React.Component {
   renderFormItem(item){
     let handle = item.event ? (event) => this.handleEvent(event, item.event) : ()=>{};
     switch(item.type){
-      //输入组件
-      case 'input':{
-        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
-      }
       //选择组件
       case 'select':{
         return (
@@ -604,58 +627,6 @@ class BudgetBalance extends React.Component {
             })}
           </Select>
         )
-      }
-      //日期组件
-      case 'date':{
-        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}/>
-      }
-      case 'switch':{
-        return <Switch defaultChecked={item.defaultValue} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={handle} disabled={item.disabled}/>
-      }
-      //带搜索的选择组件
-      case 'combobox':{
-        return <Select
-          labelInValue={!!item.entity}
-          showSearch
-          allowClear
-          placeholder={item.placeholder}
-          filterOption={!item.searchUrl}
-          optionFilterProp='children'
-          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key,  handle) : handle}
-          disabled={item.disabled}
-        >
-          {item.options.map((option)=>{
-            return <Option key={option.key} title={JSON.stringify(option.value)}>{option.label}</Option>
-          })}
-        </Select>
-      }
-      //带搜索的多选组件
-      case 'multiple':{
-        return <Select
-          mode="multiple"
-          labelInValue={!!item.entity}
-          placeholder={item.placeholder}
-          filterOption={!item.searchUrl}
-          optionFilterProp='children'
-          onFocus={item.getUrl ? () => this.setOptionsToFormItem(item, item.getUrl) : () => {}}
-          onSearch={item.searchUrl ? (key) => this.setOptionsToFormItem(item, item.searchUrl, key, handle) : handle}
-          disabled={item.disabled}
-        >
-          {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)}>{option.label}</Option>
-          })}
-        </Select>
-      }
-      //弹出框列表选择组件
-      case 'list':{
-        return <Chooser placeholder={item.placeholder}
-                        disabled={item.disabled}
-                        type={item.listType}
-                        labelKey={item.labelKey}
-                        valueKey={item.value}
-                        listExtraParams={item.listExtraParams}
-                        selectorItem={item.selectorItem}/>
       }
       //同一单元格下多个表单项组件
       case 'items':{

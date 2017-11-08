@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button, Modal } from 'antd';
 const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -57,9 +57,15 @@ class Main extends React.Component{
     });
   }
 
-  shouldComponentUpdate(){
-    this.checkParams();
-    return true;
+  componentWillReceiveProps(nextProps){
+    if(nextProps.location.pathname !== this.props.location.pathname){
+      this.checkParams();
+    } else {
+      if(nextProps.currentPage.length === 1)
+        this.setState({selectedKeys: [nextProps.currentPage[0].key]});
+      else
+        this.setState({openKeys: [nextProps.currentPage[0].key], selectedKeys: [nextProps.currentPage[1].key]})
+    }
   }
 
   //切换模式
@@ -155,6 +161,16 @@ class Main extends React.Component{
         this.setState({check: true});
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
+    } else if(path.indexOf('/budget/') > -1 && !this.props.userOrganization.id && this.props.userOrganization.message) {  //预算组织的默认检查
+      let modalData = {
+        content: this.props.userOrganization.message,
+        onOk: () => {
+          this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
+          this.setState({check: true});
+        },
+        okText: '现在去设置'
+      };
+      Modal.error(modalData);
     } else {
       this.setState({check: true});
     }
@@ -163,11 +179,11 @@ class Main extends React.Component{
   renderMenu(){
     const { adminMode } = this.state;
     return (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
+      <Menu theme="dark" mode="inline" selectedKeys={this.state.selectedKeys} openKeys={this.state.openKeys} onClick={(e) => {this.setState({selectedKeys: [e.key]})}}>
         {this.state.menu.map(item =>
           item.subMenu ? (
             ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <SubMenu
-              key={item.key}
+              key={item.key} onTitleClick={(e) => {this.setState({openKeys: [e.key]})}}
               title={<span><Icon type={item.icon} /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
@@ -282,6 +298,7 @@ function mapStateToProps(state) {
     profile: state.login.profile,
     company: state.login.company,
     organization: state.budget.organization,
+    userOrganization: state.login.organization,
     strategyId: state.budget.strategyId,
     codingRuleObjectId: state.setting.codingRuleObjectId
   }

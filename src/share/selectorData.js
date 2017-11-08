@@ -204,8 +204,35 @@ const selectorData = {
       {title: '生效汇率', dataIndex: 'rate'}
     ],
     key: 'currency'
+  },
+  'company_group': {
+    title: "公司组",
+    url: `${config.baseUrl}/api/company/group/query/dto`,
+    searchForm: [
+      {type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
+        getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
+      {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
+      {type: 'input', id: 'companyGroupName', label: '公司组描述'},
+    ],
+    columns: [
+      {title: '公司组代码', dataIndex: 'companyGroupCode'},
+      {title: '公司组描述', dataIndex: 'companyGroupName'}
+    ],
+    key: 'id'
+  },
+  'department_group': {
+    title: "部门组",
+    url: `${config.baseUrl}/api/DepartmentGroup/selectByInput`,
+    searchForm: [
+      {type: 'input', id: 'deptGroupCode', label: '部门组代码', defaultValue: ''},
+      {type: 'input', id: 'description', label: '部门组描述', defaultValue: ''},
+    ],
+    columns: [
+      {title: '部门组代码', dataIndex: 'deptGroupCode'},
+      {title: '部门组描述', dataIndex: 'description'}
+    ],
+    key: 'id'
   }
-
 };
 
 export default selectorData;
