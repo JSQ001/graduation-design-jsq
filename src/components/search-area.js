@@ -171,12 +171,21 @@ class SearchArea extends React.Component{
 
   //根据接口返回数据重新设置options
   setOptionsToFormItem = (item, url, key) => {
-    let params = {};
+
+    let params = item.getParams ? item.getParams : {};
     if(key){
       params[item.searchKey] = key;
-      if(item.method === 'get')
+      if(item.method === 'get'){
         url += `?${item.searchKey}=${key}`;
+        if(item.getParams){
+          let keys = Object.keys(item.getParams);
+          keys.map(paramName => {
+            url += `&${paramName}=${item.getParams[paramName]}`
+          })
+        }
+      }
     }
+
     if( (key !== undefined && key !== '') || key === undefined){
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
@@ -482,10 +491,18 @@ class SearchArea extends React.Component{
     return (
       <div className="checkbox-list-form">
         {this.props.checkboxListForm.map(list => {
+          let checkedArr = [];
+          list.items.map(item => {
+            item.checked.map(value => {
+              checkedArr.push(value)
+            })
+          });
           return (
             <FormItem key={list.id}>
-              {getFieldDecorator(list.id)(
-                <Checkbox.Group>
+              {getFieldDecorator(list.id, {
+                initialValue: checkedArr,
+              })(
+                <Checkbox.Group onChange={values => this.props.checkboxChange(values)}>
                   {list.items.map(item => {
                     return (
                       <Row className="list-row" key={item.key}>
@@ -572,6 +589,7 @@ class SearchArea extends React.Component{
  * {
       label: '',   //必填，每行列表的label显示
       key: '',    //必填，唯一，每行的标识
+      checked: [],    //可选，默认选中的value值
       options: [{label: '',  value: '', disabled: false}]  //必填，checkbox可选项
    }
  */
@@ -585,6 +603,7 @@ SearchArea.propTypes = {
   clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
   maxLength: React.PropTypes.number,  //搜索区域最大表单数量
   loading: React.PropTypes.bool, //用于base-info组件的保存按钮
+  checkboxChange: React.PropTypes.func, //checkbox表单列表修改时返回选中value事件
 };
 
 SearchArea.defaultProps = {
