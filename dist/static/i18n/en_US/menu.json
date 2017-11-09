@@ -67,5 +67,8 @@
   "menu.coding-rule-value": "Coding rule detail",
   "menu.company-maintain":"Company maintain",
   "menu.new-company-maintain":"new company maintain",
-  "menu.company-maintain-detail":"company maintain detail"
+  "menu.company-maintain-detail":"company maintain detail",
+  "menu.payment-batch": "Payment batch",
+  "menu.finance-review": "Finance review",
+  "menu.finance-view": "Finance view"
 }
