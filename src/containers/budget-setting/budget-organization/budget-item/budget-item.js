@@ -86,10 +86,10 @@ class BudgetItem extends React.Component {
           title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description',
           render: description => (
             <span>
-              {description ? description : '-'}
-              <Popover content={description}>
+              {description ?
+                <Popover content={description}>
                 {description}
-              </Popover>
+              </Popover> : '-'}
             </span>)
         },
       ],
@@ -98,6 +98,7 @@ class BudgetItem extends React.Component {
   }
 
   componentWillMount(){
+    this.getList();
     //查出所有预算项目，以方便预算项目的查询中可以选择
     httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.id}`).then((response)=>{
       response.data.map((item,index)=>{
@@ -108,20 +109,6 @@ class BudgetItem extends React.Component {
         };
         itemCode.push(budgetItem);
       });
-      this.setState({
-        loading: false,
-        data: response.data,
-        pagination: {
-          page: this.state.pagination.page,
-          current: this.state.pagination.current,
-          pageSize: this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-          total: response.data.length,
-        }
-      },()=>{
-        this.refreshRowSelection()
-      })
     })
   }
 
@@ -250,9 +237,20 @@ class BudgetItem extends React.Component {
 
   //处理公司弹框点击ok
   handleListOk = (result) => {
-    console.log(result)
-
-    //调用分配公司接口
+    let companyIds = [];
+    result.result.map((item)=>{
+      companyIds.push(item.id)
+    });
+    let param = [];
+    param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
+    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      console.log(response)
+      if(response.status === 200){
+        this.setState({
+          loading: true,
+        },this.getList())
+      }
+    });
 
     this.showListSelector(false)
 
@@ -296,6 +294,7 @@ class BudgetItem extends React.Component {
         <ListSelector type="company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
+                      extraParams={{isEnabled: true}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>
     )

@@ -45,7 +45,7 @@ class BudgetJournalTypeDetail extends React.Component {
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
             {title: "默认", dataIndex: "isDefault", width: '15%', render: (isDefault, record) => <Checkbox onChange={(e) => this.onChangeDefault(e, record)} checked={record.isDefault}/>},
             {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
-          ]
+  ]
         },
         ITEM:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
