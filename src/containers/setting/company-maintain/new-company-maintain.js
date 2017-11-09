@@ -16,18 +16,20 @@ class WrappedNewCompanyMaintain extends React.Component {
       searchForm: [
 
         {          /*公司代码*/
-          type: 'input',label: this.props.intl.formatMessage({id:"company.companyCode"}), id: "companyCode"
+          type: 'input',label: this.props.intl.formatMessage({id:"company.companyCode"}), id: "companyCode",isRequired:true
         },
 
         {          /*公司名称*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.name"}), id: "name",
+          type: 'input', label: this.props.intl.formatMessage({id:"company.name"}), id: "name",isRequired:true
         },
         {          /*公司类型*/
           type: 'select',label: this.props.intl.formatMessage({id:"company.companyType"}), id: "companyType",options: [], method: 'get',
         },
         {          /*账套*/
           type: 'select', label: this.props.intl.formatMessage({id:"company.setOfBooksName"}), id:"setOfBooksName",options: [], method: 'get',
-          labelKey:'setOfBooksName',valueKey:'setOfBooksId'
+         // getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          getUrl:`${config.baseUrl}/api/refactor/tenant/company/register`,
+          labelKey:'setOfBooksCode',valueKey:'id'
         },
         {          /*法人*/
           type: 'select', label: this.props.intl.formatMessage({id:"company.legalEntityName"}), id:"legalEntityName",options: [], method: 'get',
@@ -46,14 +48,12 @@ class WrappedNewCompanyMaintain extends React.Component {
         },
 
         {          /*有效日期从*/
-          type: 'date', label: this.props.intl.formatMessage({id:"company.startDateActive"}), id: "startDateActive",event:'startDateActive'
+          type: 'date', label: this.props.intl.formatMessage({id:"company.startDateActive"}), id: "startDateActive",event:'startDateActive',isRequired:true,
         },
         {          /*有效日期至*/
           type: 'date', label: this.props.intl.formatMessage({id:"company.endDateActive"}), id: "endDateActive",event:'endDateActive'
         },
-        {         /*地址*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.address"}), id: "address", labelKey: 'address',
-        }
+
 
 
       ],
@@ -216,6 +216,9 @@ class WrappedNewCompanyMaintain extends React.Component {
       case 'input':{
         return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
       }
+      case 'input_long':{
+        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled} style={{width:600}}/>
+      }
       //选择组件
       case 'select':{
         return (
@@ -248,7 +251,7 @@ class WrappedNewCompanyMaintain extends React.Component {
       }
       //日期组件
       case 'date':{
-        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}  disabledDate={disabledDate}/>
+        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}  disabledDate={disabledDate} style={{width:'100%'}}/>
       }
     }
   }
@@ -309,14 +312,31 @@ class WrappedNewCompanyMaintain extends React.Component {
   };
 
   render(){
+
     const { getFieldDecorator } = this.props.form;
     const { formatMessage } = this.props.intl;
+    const formItemLayout = {};
     return (
       <div onSubmit={this.handleSave}>
         <div className="common-top-area">
           <Form>
             <Row gutter={40}>
               {this.getFields()}
+            </Row>
+            <Row>
+              <Col span={24}>
+              <FormItem {...formItemLayout} label="地址" >
+                {getFieldDecorator('address', {
+                  rules: [{
+                    required: true,
+                    message: '请输入',
+                  }],
+
+                })(
+                  <Input  />
+                )}
+              </FormItem>
+              </Col>
             </Row>
             <Row>
               <Col span={8}>

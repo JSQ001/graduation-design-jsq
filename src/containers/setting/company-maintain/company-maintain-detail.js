@@ -49,6 +49,7 @@ class WrappedCompanyMaintainDetail extends React.Component{
       },
       status:"",
       columns:[],
+      infoData:[],
       infoList: [
         {          /*公司代码*/
           type: 'input',label: this.props.intl.formatMessage({id:"company.companyCode"}), id: "companyCode"
@@ -138,17 +139,23 @@ class WrappedCompanyMaintainDetail extends React.Component{
   }
   componentWillMount(){
     //获取某预算表某行的数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
+
+   this.getCompanyByCode(this.props.params.companyCode);
+  }
+
+  //根据companyCode获取公司
+  getCompanyByCode(companyCode){
+    console.log("12321312321321321");
+    httpFetch.get(`${config.baseUrl}/api/company/by/term?companyCode=${companyCode}`).then((response)=>{
+      console.log(response.data);
       this.setState({
-        columns: this.state.columnGroup.dimension,
-        structure: response.status === 200 ? response.data : null
-      });
+        infoData:response.data
+      })
     })
   }
 
-  getCompany(){
-    
-  }
+
+
 
   //保存所做的修改
   handleUpdate = (value) => {
@@ -269,12 +276,12 @@ class WrappedCompanyMaintainDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { infoList, updateState, structure, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
+    const { infoList, updateState, infoData, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
     return(
       <div className="budget-structure-detail">
         <BasicInfo
           infoList={infoList}
-          infoData={structure}
+          infoData={infoData}
           updateHandle={this.handleUpdate}
           updateState={updateState}/>
         <div className="structure-detail-distribution">
