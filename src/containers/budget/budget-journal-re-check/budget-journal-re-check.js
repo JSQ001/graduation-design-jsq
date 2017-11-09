@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Tag  } from 'antd';
+import { Button, Table, Select,Tag,Badge} from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -39,20 +39,20 @@ class BudgetJournalReCheck extends React.Component {
 
 
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:1},
+          getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
 
 
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',isRequired: true, options: [], valueListCode: 2002},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
 
         {type: 'select', id:'versionId', label: '预算版本', options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:1},
+          getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'versionName', valueKey: 'id'},
         {type: 'select', id:'structureId', label: '预算表',  options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:1},
+          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
         {type: 'select', id:'scenarioId', label: '预算场景', options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:1},
+          getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'scenarioName', valueKey: 'id'},
         {type: 'select', id:'employeeId', label: '申请人', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/selectCheckedEmp`, getParams: {},
@@ -69,25 +69,38 @@ class BudgetJournalReCheck extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy',
-          render(recode,text){
-            switch (text.periodStrategy){
-              case 'MONTH':{ return `期间`}
-              case 'QUARTER':{ return `年`}
-              case 'YEAR':{ return `季度`}
-
-            }
-          }
+          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
         },
         {          /*预算表*/
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
         {          /*预算期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: "期间", key: "periodName", dataIndex: 'periodName',
+          render(recode,text){
+            switch (text.periodStrategy){
+              case 'MONTH':{ return `${text.periodName?text.periodName:''}`}
+              case 'QUARTER':{ return `${text.periodYear}年-${text.periodQuarterName?text.periodQuarterName:''}`}
+              case 'YEAR':{ return `${text.periodYear}年`}
+
+            }
+          }
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
-          render(recode){
+          render(recode,text){
+            switch (recode){
+              case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
+              case 'SUBMIT':{ return   <Badge status="warning" text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text={text.statusName}/> }
+              case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
+              case 'CHECKED':{return < Badge status="default" color="#234234" text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={text.statusName}/>}
+              case 'POSTED':{return <Badge status="default"  color="#87d068" text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
+            }
+          }
+          /*render(recode){
             switch (recode){
               case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
               case 'SUBMIT':{ return  <Tag color="#f50">提交</Tag>}
@@ -97,7 +110,7 @@ class BudgetJournalReCheck extends React.Component {
               case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
               case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
             }
-          }
+          }*/
         },
       ],
 
@@ -194,6 +207,7 @@ class BudgetJournalReCheck extends React.Component {
           size="middle"
           bordered
           onRowClick={this.HandleRowClick}
+          rowKey={record=>record.id}
         />
       </div>
     )

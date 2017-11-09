@@ -142,7 +142,7 @@ class NewBudgetVersions extends React.Component {
 
               <Col span={8} style={{ display: 'inline-block'}}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.status"})}
+                  label={this.props.intl.formatMessage({id:"budget.versionStatus"})}
 
                 >
                   {getFieldDecorator('status', {

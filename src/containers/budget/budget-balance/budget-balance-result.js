@@ -82,14 +82,18 @@ class BudgetBalanceResult extends React.Component {
 
   getList = () => {
     return httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/results/${this.props.params.id}?page=${this.state.page}&size=${this.state.pageSize}`).then(res => {
-      let data = res.data.queryResultList.map((item, index) => {
-        item.key = this.state.page * this.state.pageSize + index;
-        return item;
-      });
+      let data = [], total = [];
+      if(res.data){
+        data = res.data.queryResultList.map((item, index) => {
+          item.key = this.state.page * this.state.pageSize + index;
+          return item;
+        });
+        total = res.data.queryResultCurrencyList
+      }
       this.setState({
         loading: false,
         data,
-        total: res.data.queryResultCurrencyList
+        total
       })
     })
   };
