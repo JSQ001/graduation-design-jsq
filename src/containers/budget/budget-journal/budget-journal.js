@@ -158,7 +158,7 @@ class BudgetJournal extends React.Component {
   HandleRowClick=(value)=>{
     console.log(value);
     const journalCode =value.journalCode;
-    if(value.status=="NEW"){
+    if(value.status=="NEW" || value.status=="REJECT"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }else {

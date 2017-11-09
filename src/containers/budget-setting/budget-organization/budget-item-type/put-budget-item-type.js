@@ -1,21 +1,16 @@
 /**
  * Created by 13576 on 2017/9/22.
  */
-/**
- * Created by 13576 on 2017/9/21.
- */
 import React from 'react'
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd'
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
+import {Button,Form,Switch,Input,message,Icon}from 'antd'
 const FormItem = Form.Item;
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
 
 import 'styles/budget-setting/budget-organization/buget-item-type/budget-item-type.scss'
-
 
 class PutBudgetItemType extends React.Component {
   constructor(props) {
@@ -23,13 +18,13 @@ class PutBudgetItemType extends React.Component {
     this.state = {
       params: {},
       isEnabled: true,
-      loading:false,
+      loading: false,
 
     };
   }
 
   //获取数据
-  componentWillMount(){
+  componentWillMount() {
     console.log(this.state.params)
     this.setState({
       params: this.props.params,
@@ -39,41 +34,39 @@ class PutBudgetItemType extends React.Component {
 
 //状态变化时,获取默认值数据
   componentWillReceiveProps = (nextProps) => {
-    if(nextProps.params && nextProps.params.length > 0)
+    if (nextProps.params && nextProps.params.length > 0)
       this.setState({
         params: this.props.params,
         isEnabled: this.props.params.isEnabled,
       })
     else
-      this.setState({ params : [] });
+      this.setState({params: []});
 
   };
 
 
-
 //修改
-  handlePut= (e) =>{
+  handlePut = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        console.log(values);
         this.setState({loading: true});
         console.log(values);
-        const data ={
-          'isEnabled':values.isEnabled,
-          'itemTypeName':values.itemTypeName,
-          'id':this.props.params.id,
-          'itemTypeCode':this.props.params.itemTypeCode,
-          'versionNumber':this.props.params.versionNumber,
+        const data = {
+          ...this.props.params,
+          'isEnabled': this.state.isEnabled,
+          'itemTypeName': values.itemTypeName,
         }
         console.log(data);
-        httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res)=>{
+        httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res) => {
 
           this.setState({loading: false});
-            this.props.close(true);
-            message.success("操作成功");
+          this.props.close(true);
+          message.success("操作成功");
 
 
-        }).catch((e)=>{
+        }).catch((e) => {
           this.setState({loading: false});
           message.error(e.response.data.validationErrors[0].message);
         })
@@ -82,9 +75,7 @@ class PutBudgetItemType extends React.Component {
   };
 
 
-
-
-  onCancel = () =>{
+  onCancel = () => {
     this.props.close();
   };
 
@@ -94,12 +85,12 @@ class PutBudgetItemType extends React.Component {
     }))
   }
 
-  render(){
-    const { getFieldDecorator } = this.props.form;
-    const { params,isEnabled} = this.state;
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    const {params, isEnabled} = this.state;
     const formItemLayout = {
-      labelCol: { span: 6,offset: 1  },
-      wrapperCol: { span: 14, offset: 1 },
+      labelCol: {span: 6, offset: 1},
+      wrapperCol: {span: 14, offset: 1},
     };
     return (
 
@@ -107,48 +98,52 @@ class PutBudgetItemType extends React.Component {
       <div className="new-value">
         <Form onSubmit={this.handlePut}>
           <FormItem {...formItemLayout}
-            label={this.props.intl.formatMessage({id:"budget.isEnabled"})}>
-            {getFieldDecorator('isEnabled', {
-            })(
+                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+            {getFieldDecorator('isEnabled', {})(
               <div>
-                <Switch  defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ?this.props.intl.formatMessage({id:"common.enabled"}) : this.props.intl.formatMessage({id:"common.disabled"}) }</span>
+                <Switch defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
+                <span className="enabled-type" style={{
+                  marginLeft: 20,
+                  width: 100
+                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout}      label={this.props.intl.formatMessage({id:"budget.organization"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.organization"})}>
             {getFieldDecorator('organizationName', {
-              initialValue:this.props.organization.organizationName
+              initialValue: this.props.organization.organizationName
 
             })(
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout}  label={this.props.intl.formatMessage({id:"budget.itemTypeCode"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeCode"})}>
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
               }],
-              initialValue:this.props.params.itemTypeCode
+              initialValue: this.props.params.itemTypeCode
             })(
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeName"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeName"})}>
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
-                message: this.props.intl.formatMessage({id:"common.please.enter"})
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
               initialValue: this.props.params.itemTypeName
             })(
-              <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})} />
+              <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}/>
             )}
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
+            <Button type="primary" htmlType="submit"
+                    loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>
+            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id: "common.cancel"})}</Button>
           </div>
         </Form>
       </div>
@@ -159,7 +154,7 @@ class PutBudgetItemType extends React.Component {
 const WrappedPutBudgetItemType = Form.create()(PutBudgetItemType);
 function mapStateToProps(state) {
   return {
-    organization:state.budget.organization
+    organization: state.budget.organization
   }
 }
 export default connect(mapStateToProps)(injectIntl(WrappedPutBudgetItemType));
