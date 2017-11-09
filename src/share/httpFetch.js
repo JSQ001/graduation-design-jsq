@@ -5,6 +5,7 @@ import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
 import {setUser,setCompany,setProfile,setUserOrganization,setCompanyConfiguration} from 'actions/login'
+import { message } from 'antd'
 
 /**
  * 检查是否token过期
@@ -52,7 +53,10 @@ const httpFetch = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer ' + localStorage.token
       }
-    }).then(checkStatus).then(response => {
+    }).then(checkStatus).catch(e => {
+      message.error(e.response.data.error_description);
+      location.href = '/';
+    }).then(response => {
       localStorage.token = response.data.access_token;
       localStorage.refresh_token = response.data.refresh_token;
     })
