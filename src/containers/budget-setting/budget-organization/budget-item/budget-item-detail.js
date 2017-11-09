@@ -74,12 +74,13 @@ class BudgetItemDetail extends React.Component{
     value.organizationId = this.state.budgetItem.organizationId;
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
+    console.log(this.state.budgetItem)
     httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
         console.log(response)
         response.data.organizationName = this.state.budgetItem.organizationName;
         console.log(value)
-        response.data.itemTypeName = {label:value,value:itemType};
+        response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
         response.data.variationAttribute = {label:response.data.variationAttribute,value:response.data.variationAttribute};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
@@ -90,35 +91,17 @@ class BudgetItemDetail extends React.Component{
     })
   };
 
-  //分配公司
-  handleSave = (e) =>{
-
-    /*this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values)
-      if (!err) {
-        httpFetch.put(`${config.budgetUrl}/api/budget/items`,values).then((response) => {
-          if(response.status === 200){
-            this.setState({
-              buttonLoading: false,
-              edit: false
-            })
-          }
-        }).catch((e)=>{
-          if(e.response){
-            message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          }
-          else {
-            console.log(e)
-          }
+  //查询已经分配过的公司
+  getList(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
+      console.log(response)
+      if(response.status === 200){
+        this.setState({
+          loading: false,
+          data: response.data
         })
       }
-    })*/
-  };
-
-  //查询公司
-  getList(){
-
+    })
   }
 
 
@@ -134,14 +117,24 @@ class BudgetItemDetail extends React.Component{
     })
   };
 
-  //处理公司弹框点击ok
+  //处理公司弹框点击ok,分配公司
   handleListOk = (result) => {
-    console.log(result)
-    this.setState({
-        data: result.result
-      },
-      this.showListSelector(false)
-    );
+    let companyIds = [];
+    let resourceIds = [];
+    resourceIds.push(parseInt(this.props.params.itemId));
+    result.result.map((item)=>{
+      companyIds.push(item.id)
+    });
+    let param = [];
+    param.push({"companyIds": companyIds, "resourceIds": resourceIds});
+    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      if(response.status === 200){
+        this.showListSelector(false);
+        this.setState({
+          loading: true
+        },this.getList())
+      }
+    });
   };
 
 
@@ -170,7 +163,7 @@ class BudgetItemDetail extends React.Component{
         <ListSelector type="company_item"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
-                      extraParams={{}}
+                      extraParams={{itemId: this.props.params.itemId}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }

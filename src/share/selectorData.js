@@ -223,7 +223,7 @@ const selectorData = {
   },
   'company_item':{
     title: '添加公司',
-    url: `${config.budgetUrl}/api/budget/item/companies/query/fiter`,
+    url: `${config.budgetUrl}/api/budget/item/companies/query/filter`,
     searchForm: [
       {type: 'input', id: 'companyCode', label: "公司代码"},
       {type: 'input', id: 'companyName', label: "公司名称"},

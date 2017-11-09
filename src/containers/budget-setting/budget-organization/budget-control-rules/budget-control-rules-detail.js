@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import moment from 'moment'
 import menuRoute from 'share/menuRoute'
 
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker, Popconfirm, Popover  } from 'antd'
@@ -57,19 +58,19 @@ class BudgetControlRulesDetail extends React.Component{
       ],
       columns: [
         {          /*规则参数类型*/
-          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType',
+          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterTypeDescription", dataIndex: 'ruleParameterTypeDescription',
           render: recode =>{
             return recode
           }
         },
         {          /*规则参数*/
-          title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameter", dataIndex: 'ruleParameter'
+          title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameterDescription", dataIndex: 'ruleParameterDescription'
         },
         {          /*取值方式*/
-          title: formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethod", dataIndex: 'filtrateMethod'
+          title: formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethodDescription", dataIndex: 'filtrateMethodDescription'
         },
         {          /*取值范围*/
-          title: formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetail", dataIndex: 'summaryOrDetail'
+          title: formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetailDescription", dataIndex: 'summaryOrDetailDescription'
         },
         {          /*下限值*/
           title: formatMessage({id:"budget.parameterLowerLimit"}), key: "parameterLowerLimit", dataIndex: 'parameterLowerLimit'
@@ -132,7 +133,7 @@ class BudgetControlRulesDetail extends React.Component{
             id: item.id,
             key: item.id,
             label: item.controlStrategyCode+" - "+item.controlStrategyName,
-            value: item.controlStrategyCode,
+            value: item.controlStrategyName,
             title: item.controlStrategyName
           };
           strategyGroup.addIfNotExist(strategy)
@@ -209,6 +210,8 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   handleUpdate = (values)=>{
+    console.log(values)
+    console.log(values.startDate.utc())
     values.organizationId = this.props.params.id;
     values.id = this.props.params.ruleId;
     values.versionNumber = this.state.controlRule.versionNumber;
@@ -223,6 +226,15 @@ class BudgetControlRulesDetail extends React.Component{
     });
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
       if(response) {
+        console.log(response)
+        let startDate = moment(response.data.startDate.utc);
+        console.log(startDate)
+
+        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
+        response.data.strategyGroupName = {label:values.strategyGroupName,value:values.strategyGroupName,key:values.strategyGroupId}
+        console.log(response.data.startDate+8)
+        console.log(moment(response.data.endDate))
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           controlRule: response.data,

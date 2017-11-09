@@ -8,6 +8,7 @@ import FileSaver from 'file-saver'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
+
 class PaymentBatch extends React.Component {
   constructor(props) {
     super(props);

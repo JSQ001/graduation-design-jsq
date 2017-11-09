@@ -237,9 +237,20 @@ class BudgetItem extends React.Component {
 
   //处理公司弹框点击ok
   handleListOk = (result) => {
-    console.log(result)
-
-    //调用分配公司接口
+    let companyIds = [];
+    result.result.map((item)=>{
+      companyIds.push(item.id)
+    });
+    let param = [];
+    param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
+    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      console.log(response)
+      if(response.status === 200){
+        this.setState({
+          loading: true,
+        },this.getList())
+      }
+    });
 
     this.showListSelector(false)
 
@@ -283,6 +294,7 @@ class BudgetItem extends React.Component {
         <ListSelector type="company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
+                      extraParams={{isEnabled: true}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
