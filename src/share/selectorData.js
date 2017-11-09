@@ -156,7 +156,7 @@ const selectorData = {
       {title: '预算日记账类型代码', dataIndex: 'journalTypeCode'},
       {title: '预算日记账类型名称', dataIndex: 'journalTypeName'},
     ],
-    key: 'id'
+    key: 'journalTypeId'
   },
   'budget_versions':{
     title:"预算版本",
@@ -205,6 +205,7 @@ const selectorData = {
     ],
     key: 'currency'
   },
+
   'company_group': {
     title: "公司组",
     url: `${config.baseUrl}/api/company/group/query/dto`,
@@ -232,7 +233,25 @@ const selectorData = {
       {title: '部门组描述', dataIndex: 'description'}
     ],
     key: 'id'
-  }
+  },
+
+ 'version_company': {
+    title: '添加公司',  ///versionId=925656597618454529
+    url: `${config.budgetUrl}/api/budget/version/assign/companies/query/filter`,
+    searchForm: [
+      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+     /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
+    ],
+    key: 'id'
+  },
 };
 
 export default selectorData;

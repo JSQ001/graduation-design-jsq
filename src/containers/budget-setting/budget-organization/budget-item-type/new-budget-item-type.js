@@ -49,7 +49,7 @@ class NewBudgetItemType extends React.Component {
           this.setState({loading: false});
           this.props.form.resetFields();
             this.props.close(true);
-            message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:`${this.props.intl.formatMessage({id:"budget.version"})}`}));
+            message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:`${this.props.intl.formatMessage({id:"budget.itemType"})}`}));
           console.log( this.props.id);
         }).catch((e)=>{
           this.setState({loading: false});

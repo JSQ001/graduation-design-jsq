@@ -146,6 +146,10 @@ class WrappedCompanyMaintainDetail extends React.Component{
     })
   }
 
+  getCompany(){
+    
+  }
+
   //保存所做的修改
   handleUpdate = (value) => {
     //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
