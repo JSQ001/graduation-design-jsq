@@ -123,12 +123,10 @@ const companyMaintain ={
   }
 };
 
-
-
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, codingRule, companyMaintain],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain],
   icon: 'setting',
   admin: true
 };
