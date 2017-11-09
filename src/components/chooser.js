@@ -23,11 +23,11 @@ class Chooser extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps = (nextProps) => {
-    if(nextProps.value && nextProps.value.length > 0 && this.state.value.length === 0){
+    if(nextProps.value && nextProps.value.length !== this.state.value.length){
       let values = [];
       nextProps.value.map(item => {
         values.push({
-          key: item[this.props.valueKey],
+          key: item[this.props.valueKey] + '',
           label: item[this.props.labelKey],
           value: item
         })

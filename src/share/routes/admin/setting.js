@@ -86,7 +86,12 @@ const codingRuleObject = {
   url:'/main/setting/coding-rule-object',
   components:CodingRuleObject,
   parent: 'setting',
-
+  children:{
+    newCodingRuleObject,
+    codingRule,
+    codingRuleValue,
+    newCodingRule
+  }
 };
 
 //新建公司
@@ -94,19 +99,17 @@ const newCompanyMaintain ={
   key:'new-company-maintain',
   url:'/main/setting/company-maintain/new-company-maintain',
   components:NewCompanyMaintain,
-  parent:'companyMaintain',
-
-}
+  parent:'company-maintain'
+};
 
 
 //公司维护详情
 const companyMaintainDetail ={
   key:'company-maintain-detail',
-  url:'/main/setting/company-maintain/company-maintain-detail',
+  url:'/main/setting/company-maintain/company-maintain-detail/:companyCode',
   components:CompanyMaintainDetail,
-  parent: 'companyMaintain',
-
-}
+  parent: 'company-maintain'
+};
 
 //公司维护
 const companyMaintain ={
@@ -115,23 +118,15 @@ const companyMaintain ={
   components:CompanyMaintain,
   parent: 'setting',
   children:{
-
     newCompanyMaintain,
-    companyMaintainDetail,
-    newCodingRuleObject,
-    codingRule,
-    codingRuleValue,
-    newCodingRule
-
+    companyMaintainDetail
   }
-}
-
-
+};
 
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting,codingRuleObject, codingRule,companyMaintain],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain],
   icon: 'setting',
   admin: true
 };

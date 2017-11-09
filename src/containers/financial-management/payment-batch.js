@@ -22,9 +22,9 @@ class PaymentBatch extends React.Component {
       },
       columns: [
         {title: "序号", dataIndex: "index", width: '10%'},
-        {title: "放款批次", dataIndex: "batchNumber", width: '20%'},
-        {title: "放款日期", dataIndex: "createdDate", width: '30%', render: date => new Date(date).format('yyyy-MM-dd hh:mm')},
-        {title: "总金额", dataIndex: "totalAmount", render: this.filterMoney, width: '20%'},
+        {title: "放款批次", dataIndex: "batchNumber", width: '25%'},
+        {title: "放款日期", dataIndex: "createdDate", width: '25%', render: date => new Date(date).format('yyyy-MM-dd hh:mm')},
+        {title: "总金额", dataIndex: "totalAmount", width: '20%', render: this.filterMoney},
         {title: "报盘文件", dataIndex: "reimbursementBatchOID", width: '10%', className: 'center-icon',
           render: (id, record) => id ? <Icon type="download" onClick={() => {this.download(record, 'nacha')}}/> : null},
         {title: "报销单明细", dataIndex: "batchType", key: 1001, width: '10%', className: 'center-icon',
@@ -81,12 +81,10 @@ class PaymentBatch extends React.Component {
     })
   };
 
-
   render(){
     const { data, loading, columns, pagination } = this.state;
     return (
       <div>
-        <h3 className="header-title">付款批次</h3>
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据</div>
         </div>

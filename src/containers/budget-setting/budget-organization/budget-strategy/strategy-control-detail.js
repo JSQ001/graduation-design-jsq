@@ -17,14 +17,14 @@ class StrategyControlDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       strategyControlId: null,
       infoList: [
         {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
         {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
         {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005},
         {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
-        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022},
+        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true},
         {type: 'input', label: '事件：', id: 'expWfEvent'},
       ],
       infoData: {},
@@ -79,6 +79,7 @@ class StrategyControlDetail extends React.Component {
   getList() {
     let url = `${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
+    this.setState({ loading: true });
     httpFetch.get(url).then((response)=>{
       this.setState({
         data: response.data,
@@ -133,12 +134,16 @@ class StrategyControlDetail extends React.Component {
   handleUpdate = (params) => {
     params.id = this.state.strategyControlId;
     params.versionNumber = this.state.infoData.versionNumber;
+    console.log(params);
+    if(!params.controlMethod || !params.messageCode || !params.detailName) return;
     this.setState({ baseInfoLoading: true }, () => {
       httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
         if(response.status==200) {
           message.success('保存成功');
           this.getBasicInfo();
-          this.setState({ updateState: true, baseInfoLoading: false })
+          this.setState({ updateState: true, baseInfoLoading: false }, () => {
+            this.setState({ updateState: false })
+          })
         }
       }).catch((e)=>{
         if(e.response){

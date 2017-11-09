@@ -5,11 +5,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select,Form,Input,Switch,Icon,Upload,message} from 'antd';
-import axios from 'axios'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 import Chooser from  'components/Chooser';
+import UploadFile from 'components/upload.js'
 import ListSelector from 'components/list-selector.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -24,13 +24,12 @@ class NewBudgetJournalFrom extends React.Component {
       showListSelector:false,
       organization:{},
       organizationId:{organizationId:''},
-      listType:'',
       listExtraParams: {},
       budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail','key'),    //预算日记账详情
-      structureGroup:[],
-      fromData:{ periodYear:'',},
+      budgetJournalPage: menuRoute.getRouteItem('budget-journal','key'),    //预算日记账详情
       idSelectJournal:false,
       isStructureIn:false,
+      structureGroup:[],
       periodStrategy:[],
       periodPeriodQuarter:[],
       periodPeriod:[],
@@ -42,6 +41,7 @@ class NewBudgetJournalFrom extends React.Component {
       fileList: [],
       file:{},
       uploading: false,
+      attachmentOID:[],
     };
   }
 
@@ -56,7 +56,9 @@ class NewBudgetJournalFrom extends React.Component {
     const periodYear=period.periodYear;
     //处理期间
     let periodNameData;
+    console.log(periodName);
     if(periodName!=''&& periodName!=null && periodName!=undefined) {
+
       const periodNameArray = periodName.split("-");
       for (let i = 0; i < periodNameArray.length; i++) {
         console.log(periodNameArray[i])
@@ -100,7 +102,7 @@ class NewBudgetJournalFrom extends React.Component {
           "journalTypeName":value.journalTypeName[0].journalTypeName,
           "periodStrategy":value.periodStrategy,
           "versionNumber":"1",
-          "attachmentOID":'',
+          "attachmentOID":this.state.attachmentOID,
         }
       ,
       "list":[]
@@ -157,7 +159,10 @@ class NewBudgetJournalFrom extends React.Component {
 
   //获取期间
   getPeriod=()=>{
-    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=910833336382156802`).then(( response)=>{
+    console.log(this.props.user);
+    console.log(this.props.company);
+    //
+    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then(( response)=>{
      console.log(response.data);
       let periodPeriod = [];
       response.data.map((item)=>{
@@ -210,28 +215,7 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-  //选择预算日记账类型，设置对应的预算表选
-  handleJournalTypeChange=(values)=>{
-    let value = values[0];
-    this.setState({
-      idSelectJournal:true,
-      structureFlag:false
-    })
-    this.props.form.setFieldsValue({
-      structureId:''
-    })
-    this.props.form.setFieldsValue({
-      periodYear:''
-    })
-    this.props.form.setFieldsValue({
-      periodQuarter:''
-    })
-    this.props.form.setFieldsValue({
-      periodName:''
-    })
-    this.getStructure(value.journalTypeId);
 
-  }
 
 
   //根据账套类型，获得预算表
@@ -368,10 +352,7 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-  scenarioChange=(value)=>{
-    //console.log(value);
 
-  }
 
   normFile = (e) => {
     console.log('Upload event:', e);
@@ -382,48 +363,57 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-  //鼠标移动到预算表选择时，
-  handleStructure=()=>{
-    this.state.setState({
-      isStructureIn:true
+
+
+
+
+  //取消
+  HandleClear=()=>{
+    let path=this.state.budgetJournalPage.url
+    this.context.router.push(path);
+  }
+
+
+  handleVersion=(value)=>{
+    console.log("33333333333333333333333")
+    console.log(value);
+  }
+
+  //选择预算日记账类型，设置对应的预算表选
+  handleJournalType=(value)=>{
+    console.log(this.props.organization.id);
+    console.log("setOfbook"+this.props.company.setOfBooksId);
+    if(value.length>0){
+      let valueData = value[0];
+      this.setState({
+        idSelectJournal:true,
+        structureFlag:false
+      })
+      this.props.form.setFieldsValue({
+        structureId:''
+      })
+      this.props.form.setFieldsValue({
+        periodYear:''
+      })
+      this.props.form.setFieldsValue({
+        periodQuarter:''
+      })
+      this.props.form.setFieldsValue({
+        periodName:''
+      })
+      this.getStructure(valueData.journalTypeId);
+    }
+
+  }
+
+
+ //上传附件，获取OID
+  uploadHandle=(value)=>{
+    console.log(value);
+    this.setState({
+      attachmentOID:value
     })
   }
-
-
-  handleUpload = () => {
-    const { fileList } = this.state;
-    const formData = new FormData();
-    fileList.forEach((file) => {
-      formData.append('files[]', file);
-    });
-
-    this.setState({
-      uploading: true,
-    });
-
-    // You can use any AJAX library you like
-    axios({
-      headers:{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      },
-      url: `${config.baseUrl}/api/upload/attachment`,
-      method: 'post',
-      mode: 'cors',
-      headers:{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      },
-      data:{
-        attachmentType:"PDF",
-        file:fileList[0]
-      },
-
-    }).then();
-  }
-
-
-
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -445,68 +435,6 @@ class NewBudgetJournalFrom extends React.Component {
       yearOptions.push({label: i, key: i})
     const yearOptionsData = yearOptions.map((item)=><Option key={item.key} value={item.key}>{item.label}</Option>);
 
-
-    const props = {
-      action:`${config.baseUrl}/api/upload/attachment`,
-      onRemove: (file) => {
-        this.setState(({ fileList }) => {
-          const index = fileList.indexOf(file);
-          const newFileList = fileList.slice();
-          newFileList.splice(index, 1);
-          return {
-            fileList: newFileList,
-          };
-        });
-      },
-      beforeUpload: (file) => {
-        this.setState(({ fileList }) => ({
-          fileList: [...fileList, file],
-        }));
-        return false;
-      },
-      fileList: this.state.fileList,
-    };
-
-
-
-   /* const props = {
-        name: 'file',
-        multiple: true,
-        showUploadList: true,
-        action:`${config.baseUrl}/api/upload/attachment`,
-        headers:{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.token
-        },
-        data:{
-          attachmentType:"PDF",
-          file:this.state.file
-        },
-        onChange(info) {
-          const status = info.file.status;
-          if (status !== 'uploading') {
-            console.log(info.file, info.fileList);
-          }
-          if (status === 'done') {
-            message.success(`${info.file.name} file uploaded successfully.`);
-          } else if (status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-          }
-        },
-
-      beforeUpload: (file) => {
-        this.setState(({ fileList }) => ({
-          fileList: [...fileList, file],
-        }));
-        return false;
-      },
-      fileList: this.state.fileList,
-
-
-
-
-      };
-*/
 
     return (
       <div className="new-budget-journal">
@@ -567,8 +495,9 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='journalTypeName'
               valueKey='journalTypeId'
               single={true}
-              listExtraParams={{"organizationId":1}}
-              onChange={this.handleJournalTypeChange}
+              listExtraParams={{"organizationId":this.props.organization.id}}
+             // listExtraParams={{"organizationId":1}}
+              onChange={this.handleJournalType}
               />
 
             )}
@@ -650,7 +579,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             })(
 
-              <Select disabled={periodFlag} onSelect={this.handleSelectPeriodName()}>
+              <Select disabled={periodFlag} onSelect={this.handleSelectPeriodName}>
                 {periodPeriodOptions}
               </Select>
             )}
@@ -672,7 +601,9 @@ class NewBudgetJournalFrom extends React.Component {
                 labelKey='versionName'
                 valueKey='id'
                 single={true}
-                listExtraParams={{"organizationId":1}}
+                listExtraParams={{"organizationId":this.props.organization.id}}
+               // listExtraParams={{"organizationId":1}}
+                onChange={this.handleVersion}
               />
             )}
           </FormItem>
@@ -691,12 +622,12 @@ class NewBudgetJournalFrom extends React.Component {
               labelKey='scenarioName'
               valueKey='id'
               single={true}
-              listExtraParams={{"organizationId":1}}
+             listExtraParams={{"organizationId":this.props.organization.id}}
+            //  listExtraParams={{"organizationId":1}}
              />
 
             )}
           </FormItem>
-
 
           <FormItem
             {...formItemLayout}
@@ -704,42 +635,34 @@ class NewBudgetJournalFrom extends React.Component {
           >
             <div className="dropbox">
               {getFieldDecorator('file', {
-                valuePropName: 'fileList',
-                getValueFromEvent: this.normFile,
+
               })(
+                <UploadFile
+                  attachmentType="BUDGET_JOURNAL"
+                  fileNum={5}
+                  uploadHandle={this.uploadHandle}
+                />
 
-
-                <Upload.Dragger  {...props}
-
-                >
-                  <p className="ant-upload-drag-icon">
-                    <Icon type="cloud-upload-o" />
-                  </p>
-                  <p className="ant-upload-text">点击或将文件拖拽到这里上传</p>
-                  <p className="ant-upload-hint">支持扩展名：.rar .zip .doc .docx .pdf .jpg...</p>
-                </Upload.Dragger>
               )}
             </div>
           </FormItem>
 
           <FormItem wrapperCol={{ offset: 7 }}>
-            <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
-            <Button>取消</Button>
-            <Button
-              className="upload-demo-start"
-              type="primary"
-              onClick={this.handleUpload}
-              disabled={this.state.fileList.length === 0}
-              loading={uploading}
-            >
-              {uploading ? 'Uploading' : 'Start Upload' }
-            </Button>
           </FormItem>
+
+            <div className="footer-operate">
+              <Button type="primary"  htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>下一步</Button>
+              <Button style={{marginRight:'10px'}} onClick={this.HandleClear}>取消</Button>
+
+            </div>
+
         </Form>
 
-        <div>
+        <div className="div-div">
 
         </div>
+
+
       </div>
     )
   }

@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Tabs, Table, Button, notification, Icon } from 'antd';
+import { Tabs, Table, Button, notification, Icon, Popover } from 'antd';
 const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -53,16 +53,20 @@ class ConfirmPayment extends React.Component{
 
       ],
       columns: [
-        {title: '序号', dataIndex: 'index'},
-        {title: '申请人', dataIndex: 'applicantName'},
-        {title: '提交日期', dataIndex: 'submittedDate'},
-        {title: '单据类型', dataIndex: 'formName'},
-        {title: '报销单号', dataIndex: 'parentBusinessCode'},
-        {title: '币种', dataIndex: 'currencyCode'},
-        {title: '总金额', dataIndex: 'baseCurrencyTotalamount', render: this.filterMoney},
-        {title: '支付币种', dataIndex: 'currencyCode', key: 'realCurrencyCode'},
-        {title: '待支付金额', dataIndex: 'baseCurrencyRealPaymentAmount', render: this.filterMoney},
-        {title: '凭证编号', dataIndex: 'origDocumentSequence'}
+        {title: '序号', dataIndex: 'index', width: '8%'},
+        {title: '申请人', dataIndex: 'applicantName', width: '8%'},
+        {title: '提交日期', dataIndex: 'submittedDate', width: '10%', render: date => new Date(date).format('yyyy-MM-dd')},
+        {title: '单据类型', dataIndex: 'formName', width: '13%', render: formName => (
+          <Popover content={formName}>
+            {formName}
+          </Popover>
+        )},
+        {title: '报销单号', dataIndex: 'parentBusinessCode', width: '15%'},
+        {title: '币种', dataIndex: 'currencyCode', width: '8%'},
+        {title: '总金额', dataIndex: 'baseCurrencyTotalamount', render: this.filterMoney, width: '10%'},
+        {title: '支付币种', dataIndex: 'currencyCode', key: 'realCurrencyCode', width: '8%'},
+        {title: '待支付金额', dataIndex: 'baseCurrencyRealPaymentAmount', render: this.filterMoney, width: '10%'},
+        {title: '凭证编号', dataIndex: 'origDocumentSequence', width: '10%'}
       ],
       status: 'prending_pay',   //当前状态
       searchParams: {
@@ -187,8 +191,8 @@ class ConfirmPayment extends React.Component{
 
   //搜索
   search = (result) => {
-    result.dateFrom = result.dateFrom ? result.dateFrom.format('YYYY-MM-DD') : undefined;
-    result.dateTo = result.dateTo ? result.dateTo.format('YYYY-MM-DD') : undefined;
+    result.dateFrom = result.dateFrom ? result.dateFrom.format('YYYY-MM-DD hh:mm:ss') : undefined;
+    result.dateTo = result.dateTo ? result.dateTo.format('YYYY-MM-DD hh:mm:ss') : undefined;
     let searchParams = {
       applicantOID: result.user,
       businessCode: result.formID,
