@@ -2,6 +2,7 @@ import React from 'React'
 import { injectIntl } from 'react-intl';
 import { Form, Row, Col, Checkbox } from 'antd'
 const CheckboxGroup = Checkbox.Group;
+import config from 'config'
 
 import SearchArea from 'components/search-area'
 
@@ -12,8 +13,12 @@ class FinanceView extends React.Component{
     super(props);
     this.state = {
       searchForm: [
-        {type: 'input', id: 'userOID', label: '申请人姓名/工号'},
-        {type: 'input', id: 'businessCode', label: '单号'},
+        {type: 'combobox', id: 'userOID', label: '申请人姓名/工号',  placeholder: '请输入姓名／工号', options: [],
+          searchUrl: `${config.baseUrl}/api/search/users/all`, method: 'get',
+          searchKey: 'keyword', labelKey: 'fullName', valueKey: 'userOID'},
+        {type: 'combobox', id: 'businessCode', label: '单号',  placeholder: '请输入父单/子单/借款单号', options: [],
+          searchUrl: `${config.baseUrl}/api/expense/report/loanApplication/search`, method: 'get',
+          searchKey: 'keyword', getParams: {type: '10021008'}, labelKey: 'fullName', valueKey: 'userOID'},
         {type: 'items', id: 'dateRange', items: [
           {type: 'date', id: 'dateFrom', label: '提交日期从'},
           {type: 'date', id: 'dateTo', label: '提交日期至'}
@@ -22,11 +27,27 @@ class FinanceView extends React.Component{
       ],
       checkboxListForm: [
         {id: 'entityType', items: [
-          {label: '报销单', key:'account', options: [{label: '全部', value: '1002'}]},
-          {label: '借款单', key:'borrow', options: [{label: '全部', value: '1008'}]}
+          {label: '报销单', key: 'account', checked: ["1002"], options: [{label: '全部', value: '1002'}]},
+          {label: '借款单', key: 'borrow', checked: ["1008"], options: [{label: '全部', value: '1008'}]}
         ]}
-      ]
+      ],
+      searchParams: {
+        entityType: '',
+        userOID: '',
+        businessCode: '',
+        dateFrom: '',
+        dateTo: '',
+        status: ''
+      }
     }
+  }
+
+  componentWillMount() {
+
+  }
+
+  getList() {
+    let url = `${config.baseUrl}/api/approvals/filters/get`;
   }
 
   search = (result) => {
@@ -37,6 +58,13 @@ class FinanceView extends React.Component{
 
   };
 
+  handleCheckbox = (values) => {
+    console.log(values);
+    // let searchForm = this.state.searchForm;
+    // searchForm[0].getParams = (values.length === 1 ?values[0] : '10021008');
+    // this.setState({ searchForm })
+  };
+
   render() {
     const { searchForm, checkboxListForm } = this.state;
     return (
@@ -44,7 +72,8 @@ class FinanceView extends React.Component{
         <SearchArea searchForm={searchForm}
                     checkboxListForm={checkboxListForm}
                     submitHandle={this.search}
-                    clearHandle={this.clear}/>
+                    clearHandle={this.clear}
+                    checkboxChange={this.handleCheckbox}/>
 
       </div>
     )
