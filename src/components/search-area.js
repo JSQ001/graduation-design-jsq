@@ -467,7 +467,7 @@ class SearchArea extends React.Component{
       children.push(
         <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           {item.type === 'items' ? this.renderFormItem(item) :
-            <FormItem {...formItemLayout} label={item.label} colon={false}>
+            <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
                 valuePropName: item.type === 'switch' ? 'checked' : 'value',
                 initialValue: item.defaultValue,

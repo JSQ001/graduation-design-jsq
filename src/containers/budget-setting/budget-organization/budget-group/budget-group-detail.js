@@ -56,8 +56,7 @@ class BudgetGroupDetail extends React.Component {
         onSelectAll: this.onSelectAll
       },
       editing: false
-    }
-    ;
+    };
   }
 
   componentWillMount(){

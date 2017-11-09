@@ -151,6 +151,20 @@ body{
   white-space: nowrap;
 }
 
+.divider{
+  width: calc(100% + 40px);
+  background: #ECECEC;
+  height: 10px;
+  margin: 20px -20px;
+}
+
+.background-transparent{
+  background: #ECECEC;
+  margin: -27px -20px 0 -20px;
+  padding: 20px;
+  height: calc(100% + 27px);
+}
+
 table{
   table-layout: fixed;
   .money-cell{
