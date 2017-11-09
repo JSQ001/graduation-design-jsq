@@ -1,10 +1,7 @@
-/**
- * Created by 13576 on 2017/10/20.
- */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
 const Step =Steps.Step;
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
@@ -19,9 +16,6 @@ import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame.js'
 import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
-
-
-
 
 
 class BudgetJournalDetailSubmit extends React.Component {
@@ -50,105 +44,39 @@ class BudgetJournalDetailSubmit extends React.Component {
         onSelectAll: this.onSelectAll
       },
       organization: {},
-      infoData: [],
-      infoList: [
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.journalCode"}),
-          id: 'journalCode',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.employeeId"}),
-          id: 'employeeName',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.organization"}),
-          id: 'organizationName',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.companyId"}),
-          id: 'companyId',
-          message: this.props.intl.formatMessage({id: "common.please.enter"}),
-          disabled: true
-        },
-        {
-          type: 'list', id: 'journalTypeName',
-          listType: 'budget_journal_type',
-          labelKey: 'journalTypeName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.journalTypeId'}), /*预算日记账类型*/
-          listExtraParams: {'organizationId': 1}
-        },
-        {
-          type: 'select', id: 'budgetStructure', label: '预算表', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {},
-          labelKey: 'structureName', valueKey: 'structureCode'
-        },
-
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.periodYear"}),
-          id: 'periodYear',
-          message: this.props.intl.formatMessage({id: "common.please.enter"})
-        }, /*预算年度*/
-
-        {
-          type: 'select', label: this.props.intl.formatMessage({id: "budget.periodStrategy"}), id: 'periodStrategy',
-          options: [
-            {value: 'Y', label: this.props.intl.formatMessage({id: "budget.year"})},
-            {value: 'Q', label: this.props.intl.formatMessage({id: "budget.quarter"})},
-            {value: 'M', label: this.props.intl.formatMessage({id: "budget.month"})}
-
-          ]
-
-        },
-
-
-        {
-          type: 'list', id: 'versionName',
-          listType: 'budget_versions',
-          labelKey: 'versionName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.version'}), /*预算版本*/
-          listExtraParams: {'organizationId': 1}
-        },
-        {
-          type: 'list', id: 'scenarioName',
-          listType: 'budget_scenarios',
-          labelKey: 'scenarioName',
-          valueKey: 'id',
-          label: this.props.intl.formatMessage({id: 'budget.scenarios'}), /*预算场景*/
-          listExtraParams: {'organizationId': 1}
-        },
-
-
-      ],
-
+      fileList:[],
+      infoData:{},
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyId", dataIndex: 'companyId'
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          render: companyName => (
+            <Popover content={companyName}>
+              {companyName}
+            </Popover>)
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "unitId", dataIndex: 'unitId'
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          render: unitName => (
+            <Popover content={unitName}>
+              {unitName}
+            </Popover>)
+
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemId", dataIndex: 'itemId'
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',
+          render: itemName => (
+            <Popover content={itemName}>
+              {itemName}
+            </Popover>)
+
         },
         {
           /*期间*/
           title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+
         },
         {
           /*季度*/
@@ -164,16 +92,16 @@ class BudgetJournalDetailSubmit extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        {
-          /*汇率类型*/
-          title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-        },
-        {
-          /*标价方法*/
-          title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
-          key: "rateQuotation",
-          dataIndex: 'rateQuotation'
-        },
+        /*{
+
+         title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
+         },
+         {
+
+         title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
+         key: "rateQuotation",
+         dataIndex: 'rateQuotation'
+         },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
@@ -192,15 +120,22 @@ class BudgetJournalDetailSubmit extends React.Component {
           /*数字*/
           title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "status", dataIndex: 'quantity'
         },
-        {
-          /*单位*/
-          title: this.props.intl.formatMessage({id: "budget.unit"}), key: "unit", dataIndex: 'unit'
-        },
+        /* {
+
+         title: this.props.intl.formatMessage({id: "budget.unit"}), key: "unit", dataIndex: 'unit'
+         },*/
         {
           /*备注*/
-          title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark'
+          title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
+          render: remark => (
+            <Popover content={remark}>
+              {remark}
+            </Popover>)
         },
       ],
+
+      budgetJournalDetailReCheckPage: menuRoute.getRouteItem('budget-journal-re-check','key'),    //预算日记账复核
+
     };
   }
 
@@ -211,6 +146,18 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
 
+//根据attachmentOID，查询附件
+  getFileByAttachmentOID=(value)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getAttachmentDTOByOid?oid=${value}`,).then((resp)=>{
+      let fileList = this.state.fileList;
+      fileList.addIfNotExist(resp.data)
+      this.setState({
+        fileList:fileList
+      })
+    }).catch(e=>{
+      message.error(`查询附件失败,${e.response.data.message}`);
+    })
+  }
 
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
@@ -221,6 +168,10 @@ class BudgetJournalDetailSubmit extends React.Component {
       let listData = request.data.list;
       console.log(listData);
       let headerData =request.data.dto;
+      headerData.attachmentOID.map((item)=>{
+        this.getFileByAttachmentOID(item);
+      })
+
       this.setState({
         headerAndListData:request.data,
         infoData:headerData,
@@ -246,6 +197,9 @@ class BudgetJournalDetailSubmit extends React.Component {
       console.log(request.data)
       message.success("已经通过")
 
+      let path=this.state.budgetJournalDetailReCheckPage.url;
+      this.context.router.push(path);
+
     }).catch((e)=>{
       message.error("失败");
     })
@@ -261,7 +215,10 @@ class BudgetJournalDetailSubmit extends React.Component {
 
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
       console.log(request.data)
-      message.success("已经驳回")
+      message.success("已经驳回");
+      let path=this.state.budgetJournalDetailReCheckPage.url;
+      this.context.router.push(path);
+
 
     }).catch((e)=>{
       message.error("失败");
@@ -269,25 +226,74 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   }
 
+  //返回列表页
+  HandleReturn=()=>{
+    let path=this.state.budgetJournalDetailReCheckPage.url;
+    console.log(path);
+    this.context.router.push(path);
+  }
+
   //返回状态
   getStatus=()=>{
     const infoData = this.state.infoData;
     switch (infoData.status){
       case 'NEW':{ return <Badge status="processing" text="新建" />}
-      case 'SUBMIT':{ return   <Badge status="warning" text="等待" />}
+      case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
+      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
       case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-      case 'CHECKED':{return    <Badge status="success" text="通过" />}
+      case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
+      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
+      case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
     }
   }
 
-  //获得总金额
+
+//获得总金额
   getAmount=()=>{
     const data = this.state.data;
     let sum =0;
     data.map((item)=>{
-      sum+= item.amount;
+      sum+= item.functionalAmount;
     })
     return "CNY"+" "+sum;
+  }
+
+
+  getPeriodStrategy=()=>{
+    const infoData = this.state.infoData;
+    const periodStrategy =  infoData.periodStrategy;
+    switch (periodStrategy){
+      case 'MONTH':{ return `期间`}
+      case 'QUARTER':{ return `年`}
+      case 'YEAR':{ return `季度`}
+    }
+
+  }
+
+  //获取附件
+  getFile=()=>{
+
+    console.log(12332321312312);
+    const fileList = this.state.fileList;
+    let file_arr=[];
+    fileList.map((link)=>{
+      file_arr.push(<div key={link.fileURL}><a href={link.fileURL} target="_blank"><Icon type="paper-clip" /> {link.fileName}</a> </div>)
+    })
+    return file_arr.length > 0 ? file_arr : '-';
+
+  }
+
+
+  getPeriod=()=>{
+    const infoData = this.state.infoData;
+    switch (infoData.periodStrategy){
+      case 'MONTH':{ return `${infoData.periodName?infoData.periodName:''}`}
+      case 'QUARTER':{ return `${infoData.periodYear}年-第 ${infoData.periodQuarter?infoData.periodQuarter:''} 季度`}
+      case 'YEAR':{ return `${infoData.periodYear}年`}
+
+    }
   }
 
 
@@ -304,60 +310,60 @@ class BudgetJournalDetailSubmit extends React.Component {
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">状态：</div>{/*状态*/}
+              <div className="base-info-title">状态</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算日记账编号：</div>{/*预算日记账编号*/}
-              <div className="beep-info-text">{infoData.journalCode||'-'}</div>
+              <div className="base-info-title">预算日记账编号</div>
+              <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">总金额：</div>{/*总金额*/}
+              <div className="base-info-title">总金额</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">申请人：</div>{/*申请人*/}
-              <div className="beep-info-text">{infoData.employeeName}</div>
+              <div className="base-info-title">申请人</div>
+              <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">岗位：</div>{/*岗位*/}
-              <div className="beep-info-text">{infoData.unitName}</div>
-            </Col>
-            <Col span={8}>
-              <div className="base-info-title">创建日期：</div>{/*创建日期*/}
+              <div className="base-info-title">创建日期</div>
               <div className="beep-info-text">{infoData.createdDate}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算项目类型：</div>{/*预算项目类型*/}
+              <div className="base-info-title">预算项目类型</div>
               <div className="beep-info-text">{infoData.journalTypeName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算表：</div>{/*预算表*/}
+              <div className="base-info-title">预算表</div>
               <div className="beep-info-text">{infoData.structureName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算场景：</div>{/*预算场景*/}
-              <div className="beep-info-text">{infoData.scenarioName}</div>
+              <div className="base-info-title">预算场景</div>
+              <div className="beep-info-text">{infoData.scenario}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算版本：</div>{/*预算版本*/}
+              <div className="base-info-title">预算版本</div>
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id: "budget.periodYear"})}：</div>{/*年度*/}
+              <div className="base-info-title">{this.props.intl.formatMessage({id: "budget.periodYear"})}：</div>
               <div>{infoData.periodYear}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">编制期段：</div>{/*编制期段*/}
-              <div className="beep-info-text">{infoData.periodStrategy}</div>
+              <div className="base-info-title">编制期段</div>
+              <div className="beep-info-text">{this.getPeriodStrategy()}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">附件：</div>{/*附件*/}
-              <div className="beep-info-text">{infoData.file}</div>
+              <div className="base-info-title">{this.getPeriodStrategy()}</div>
+              <div className="beep-info-text">{this.getPeriod()}</div>
+            </Col>
+            <Col span={8}>
+              <div className="base-info-title">附件</div>
+              <div className="beep-info-text">{this.getFile()}</div>
             </Col>
 
           </Row>
@@ -370,6 +376,8 @@ class BudgetJournalDetailSubmit extends React.Component {
                pagination={pagination}
                bordered
                size="middle"
+               rowKey={recode=>{return recode.id}}
+
         />
 
         <div className="collapse">
@@ -386,14 +394,6 @@ class BudgetJournalDetailSubmit extends React.Component {
         </div>
 
 
-        <div className="food">
-
-          <div>
-
-
-          </div>
-
-        </div>
       </div>
 
 
@@ -402,9 +402,13 @@ class BudgetJournalDetailSubmit extends React.Component {
 
 }
 
+
+BudgetJournalDetailSubmit.contextTypes ={
+  router: React.PropTypes.object
+}
+
 function mapStateToProps() {
   return {}
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalDetailSubmit));
-

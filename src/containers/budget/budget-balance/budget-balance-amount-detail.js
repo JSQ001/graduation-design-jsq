@@ -40,7 +40,7 @@ class BudgetBalanceAmountDetail extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(!this.props.params.data || (nextProps.params.data.key !== this.props.params.data.key || nextProps.params.data.type !== this.props.params.data.type)){
+    if(!this.props.params.data || (nextProps.params.type !== this.props.params.type || nextProps.params.data.key !== this.props.params.data.key)){
       this.getList(nextProps);
     }
   }
@@ -51,16 +51,6 @@ class BudgetBalanceAmountDetail extends React.Component {
     params.reserveFlag = nextProps.params.type;
     params.organizationId = this.props.organization.id;
     params.year = params.periodYear;
-    params = {
-      "reserveFlag": "J",
-      "organizationId": 1,
-      "versionId": "1",
-      "scenarioId": "1",
-      "structureId": "1",
-      "companyId": "1",
-      "year": 2017,
-      "itemGroupId": 1
-    };
     httpFetch.post(`${config.budgetUrl}/api/budget/balance/query/results/detail`, params).then(res => {
       let data = res.data.map((item, index) => {
         item.key = index;

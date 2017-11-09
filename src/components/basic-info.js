@@ -13,12 +13,14 @@ import 'styles/components/basic-info.scss'
  * @params updateHandle  点击保存时的回调
  * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
  * @params eventHandle 表单的onChange事件
+ * @params loading 表单保存时保存按钮loading
  */
 
 class BasicInfo extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       infoList: [],
       searchForm: [],
       infoData: {},
@@ -31,10 +33,14 @@ class BasicInfo extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.setState({ infoData: nextProps.infoData });
-    if(nextProps.updateState) {
-      this.handelCancel();
-    }
+    this.setState({
+      infoData: nextProps.infoData,
+      loading: nextProps.loading
+    },() => {
+      if(nextProps.updateState) {
+        this.handelCancel();
+      }
+    })
   }
 
   //点击 "编辑"
@@ -155,7 +161,7 @@ class BasicInfo extends React.Component{
   };
 
   render() {
-    const { cardShow, infoList, searchForm } = this.state;
+    const { cardShow, searchForm, loading } = this.state;
     let domRender;
     if(cardShow) {
       domRender = (
@@ -172,7 +178,8 @@ class BasicInfo extends React.Component{
                     eventHandle={this.handelEvent}
                     wrappedComponentRef={(inst) => this.formRef = inst}
                     okText={this.props.intl.formatMessage({id: 'common.save'}) /* 保存 */}
-                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */} />)
+                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */}
+                    loading={loading}/>)
     }
     return (
       <div className="basic-info">
@@ -187,6 +194,7 @@ BasicInfo.propTypes = {
   infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
   updateHandle: React.PropTypes.func.isRequired,  //更新表单事件
   updateState: React.PropTypes.bool.isRequired,  //更新状态（true／false）
+  loading: React.PropTypes.bool,  //保存按钮状态（true／false）
   eventHandle: React.PropTypes.func,  //表单的onChang事件
 };
 

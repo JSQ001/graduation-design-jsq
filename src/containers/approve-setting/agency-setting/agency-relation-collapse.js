@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Button, Icon, Select, Switch, Checkbox, DatePicker, message, Collapse, Spin, Row, Col, Badge, Menu, Dropdown, Popconfirm } from 'antd';
+import { Form, Icon, Collapse, Row, Col, Badge, Menu, Dropdown, Popconfirm } from 'antd';
 
 class AgencyRelationCollapse extends React.Component {
   constructor(props) {

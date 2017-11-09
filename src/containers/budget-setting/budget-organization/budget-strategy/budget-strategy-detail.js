@@ -17,7 +17,7 @@ class BudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
         {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
@@ -25,12 +25,16 @@ class BudgetStrategyDetail extends React.Component {
       ],
       infoData: {},
       updateState: false,
+      baseInfoLoading: false,
       columns: [
         {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
-        {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
-        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
+        {title: "描述", dataIndex: "detailName", key: "detailName",
+          render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: "消息", dataIndex: "messageCode", key: "messageCode",
+          render: message => <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover>},
+        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent",
+          render: event => <span>{event ? event : '-'}</span>}
       ],
       data: [],
       pagination: {
@@ -70,6 +74,7 @@ class BudgetStrategyDetail extends React.Component {
   getList() {
     let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
+    this.setState({ loading: true });
     httpFetch.get(url).then((response) => {
       this.setState({
         data: response.data,
@@ -120,20 +125,24 @@ class BudgetStrategyDetail extends React.Component {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlStrategyCode || !params.controlStrategyName) return;
-    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
-      if(response.status == 200) {
-        message.success('保存成功');
-        this.getBasicInfo();
-        this.setState({ updateState: true })
-      }
-    }).catch((e) => {
-      if(e.response){
-        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({ updateState: false })
-      } else {
-        console.log(e)
-      }
-    })
+    this.setState({ baseInfoLoading: true }, () => {
+      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
+        if(response.status == 200) {
+          message.success('保存成功');
+          this.getBasicInfo();
+          this.setState({ updateState: true, baseInfoLoading: false },() => {
+            this.setState({ updateState: false })
+          })
+        }
+      }).catch((e) => {
+        if(e.response){
+          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          this.setState({ updateState: false, baseInfoLoading: false })
+        } else {
+          console.log(e)
+        }
+      })
+    });
   };
 
   handleBack = () => {
@@ -141,13 +150,14 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   render(){
-    const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, updateState, baseInfoLoading } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">

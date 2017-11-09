@@ -20,6 +20,7 @@ class BudgetJournalTypeDetail extends React.Component {
       updateState: false,
       saving: false,
       loading: true,
+      editing: false,
       infoList: [
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', disabled: true},
         {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
@@ -44,7 +45,7 @@ class BudgetJournalTypeDetail extends React.Component {
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
             {title: "默认", dataIndex: "isDefault", width: '15%', render: (isDefault, record) => <Checkbox onChange={(e) => this.onChangeDefault(e, record)} checked={record.isDefault}/>},
             {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
-          ]
+  ]
         },
         ITEM:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
@@ -228,25 +229,30 @@ class BudgetJournalTypeDetail extends React.Component {
   };
 
   updateHandleInfo = (params) => {
+    this.setState({ editing: true });
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
       message.success('修改成功');
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
       this.setState({
         typeData: data,
-        updateState: true
+        updateState: true,
+        editing: false
       });
+    }).catch(e => {
+      this.setState({ editing: false })
     });
   };
 
   render(){
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState} = this.state;
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
                    infoData={typeData}
                    updateHandle={this.updateHandleInfo}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={editing}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>

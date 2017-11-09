@@ -21,7 +21,7 @@ class BudgetJournalType extends React.Component {
       columns: [
         {title: '类型代码', dataIndex: 'journalTypeCode', width: '30%'},
         {title: '类型名称', dataIndex: 'journalTypeName', width: '30%'},
-        {title: '预算业务类型', dataIndex: 'businessType', width: '25%'},
+        {title: '预算业务类型', dataIndex: 'businessTypeName', width: '25%'},
         {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {

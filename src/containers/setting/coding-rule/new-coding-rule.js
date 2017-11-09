@@ -42,6 +42,9 @@ class NewCodingRule extends React.Component {
   };
 
   componentWillMount(){
+    this.getSystemValueList(2024).then(res => {
+      this.setState({ resetFrequenceOptions: res.data.values })
+    });
   }
 
   render(){

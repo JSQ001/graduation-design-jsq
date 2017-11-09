@@ -15,6 +15,8 @@ import "styles/budget-setting/budget-organization/budget-control-rules/new-budge
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+let detail = {};
+
 class NewBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
@@ -27,17 +29,10 @@ class NewBudgetRulesDetail extends React.Component{
       summaryOrDetailArray: [],   //值列表：取值范围
       ruleParamsArray: [],        //规则参数值列表
       organizationId: "",
-      valueListMap:{
-        ruleParamType: 2012,
-        filtrateMethod: 2013,
-        summaryOrDetail: 2014,
-        'BGT_RULE_PARAMETER_BUDGET': 2015,
-        'BGT_RULE_PARAMETER_ORG': 2016,
-        'BGT_RULE_PARAMETER_DIM': 2017
-      },
       paramValueMap:{},
-
-      ruleParam:{}
+      ruleParamDetail:{},
+      validateStatusMap: {},
+      helpMap: {}
     }
   }
 
@@ -78,10 +73,11 @@ class NewBudgetRulesDetail extends React.Component{
       'EMPLOYEE': {},
       'EMPLOYEE_GROUP': {}
     };
+    console.log(this.props.params)
     this.setState({
       ruleDetail: this.props.params,
       paramValueMap: paramValueMap
-    })
+    });
   }
   /**
    * 获取值列表
@@ -89,14 +85,14 @@ class NewBudgetRulesDetail extends React.Component{
    * @param name :值列表名称
   */
   getValueList(code, name){
-    name.splice(0,name.length)
+    name.splice(0,name.length);
     this.getSystemValueList(code).then((response)=>{
       response.data.values.map((item)=>{
         let option = {
           key: item.code,
           label: item.messageKey
         };
-        name.push(option);
+        name.addIfNotExist(option);
       });
       this.setState({
         name
@@ -122,9 +118,9 @@ class NewBudgetRulesDetail extends React.Component{
       if (!err) {
         console.log(values)
         values.controlRuleId = this.props.ruleId;
-        console.log(this.state.ruleParam)
-        values.parameterLowerLimit = this.state.ruleParam.lowerValue[0].id;
-        values.parameterUpperLimit = this.state.ruleParam.upperValue[0].id
+        console.log(this.state.ruleParamDetail)
+        values.parameterLowerLimit = detail.parameterLowerLimit[0][this.state.paramValueMap[this.state.ruleParamDetail.name].codeKey];
+        values.parameterUpperLimit = detail.parameterUpperLimit[0][this.state.paramValueMap[this.state.ruleParamDetail.name].codeKey];
         httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
           console.log(res);
           this.setState({
@@ -135,6 +131,15 @@ class NewBudgetRulesDetail extends React.Component{
           if(res.status == 200){
             this.props.close(true);
             message.success('操作成功');
+            detail = {};
+            let {validateStatusMap,helpMap} = this.state;
+            validateStatusMap = {};
+            helpMap = {};
+            this.setState({
+              loading: false,
+              validateStatusMap,
+              helpMap
+            });
             this.props.form.resetFields();
           }
         }).catch((e)=>{
@@ -152,55 +157,64 @@ class NewBudgetRulesDetail extends React.Component{
   onCancel = () =>{
     this.props.form.resetFields();
     this.setState({
-      filtrateMethodHelp:'',
-      summaryOrDetailHelp:'',
-      filtrateMethodStatus:'',
-      summaryOrDetailStatus:'',
-      ruleParamsStatus: null,
-      ruleParamsHelp: null,
-      UpperLimitStatus: null,
-      UpperLimitHelp: null,
-      LowerLimitStatus: null,
-      LowerLimitHelp: null,
-      ruleParamsTypeStatus: null,
-      ruleParamsTypeHelp: null
+      ruleParameterTypeArray: [],
+      ruleParamsArray: [],
+      validateStatusMap: {},
+      helpMap: {},
+      loading: false
     });
+    detail ={};
     this.props.close();
   };
 
   //选择规则参数
-  handleSelectParam = ()=>{
+  handleSelectParam = (value)=>{
     let ruleParameterType = this.props.form.getFieldValue("ruleParameterType");
     //没有选择规则参数类型，提示：请先选择规则参数类型
     if(typeof ruleParameterType === 'undefined'){
+      let { validateStatusMap, helpMap} = this.state;
+      validateStatusMap.ruleParameter= "warning";
+      helpMap.ruleParameter = "请先选择规则参数类型";
       this.setState({
-        ruleParamsStatus:"warning",
-        ruleParamsHelp:  "请先选择规则参数类型"
+        validateStatusMap,
+        helpMap
       })
     }
   };
 
-  handleValueChange = (value,key)=>{
-    if(typeof value === 'undefined'){
-      this.setState({
-        lowerLimitHelp: "请先选择规则参数",
-        lowerLimitStatus: "warning",
-        upperLimitHelp: "请先选择规则参数",
-        upperLimitStatus: "warning",
-      })
-    }
-    console.log(key === "lower")
-    let ruleParam = this.state.ruleParam;
-    key === "lower" ? ruleParam.lowerValue = value : ruleParam.upperValue =value
+  //验证上下限值
+  handleSelectValue = (key) =>{
+    let { validateStatusMap, helpMap} = this.state;
+    validateStatusMap[key] = "warning";
+    helpMap[key] = "请先选择规则参数";
     this.setState({
-      ruleParam
+      validateStatusMap,
+      helpMap
     })
   };
 
+  handleValueChange = (value,key)=>{
+    if(value.length!==0){
+      detail[key] = value;
+      let {validateStatusMap, helpMap} = this.state;
+      if(key === "parameterLowerLimit"){
+        this.props.form.setFieldsValue({"parameterLowerLimit":value});
+        validateStatusMap.parameterLowerLimit = "";
+        helpMap.parameterLowerLimit ="";
+      }else {
+        this.props.form.setFieldsValue({"parameterUpperLimit":value});
+        validateStatusMap.parameterUpperLimit = "";
+        helpMap.parameterUpperLimit ="";
+      }
+      this.setState({validateStatusMap,helpMap})
+    }
+  };
+
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, ruleParam, valueListMap, ruleDetail, paramValueMap, ruleParamsTypeHelp, ruleParamsStatus, ruleParamsHelp, filtrateMethodHelp, filtrateMethodStatus, summaryOrDetailHelp, summaryOrDetailStatus, upperLimitStatus, upperLimitHelp, lowerLimitStatus, lowerLimitHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
     const { formatMessage } = this.props.intl;
+    const { loading, ruleParamDetail, paramValueMap, validateStatusMap, helpMap, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -209,7 +223,9 @@ class NewBudgetRulesDetail extends React.Component{
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}>
+          <FormItem {...formItemLayout} label={formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}
+            validateStatus={validateStatusMap.ruleParameterType}
+            help={helpMap.ruleParameterType}>
             {getFieldDecorator('ruleParameterType', {
               rules: [{
                 required: true,
@@ -218,45 +234,52 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator: (item,value,callback)=>{
                     console.log(value)
-                    if(typeof value != 'undefined'){
+                    if(typeof value !== 'undefined'){
+                      validateStatusMap.ruleParameter = "";
+                      helpMap.ruleParameter = "";
+                      validateStatusMap.ruleParameterType = "";
+                      helpMap.ruleParameterType = "";
+                      let ruleDetail = {};
+                      ruleDetail.type = value;
+
+                      detail = {};
                       this.setState({
-                        loading: false
-                      })
-                    }
-                    if(typeof value != 'undefined' && ruleParamsStatus === "warning"){
-                      this.setState({
-                        ruleParamsStatus: null,
-                        ruleParamsHelp: null,
+                        loading: false,
+                        ruleParamDetail: ruleDetail,
+                        validateStatusMap,
+                        helpMap
                       });
+                      let ruleParameterCode;
+                      switch (value){
+                        case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode= 2015; break;
+                        case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = 2016;break;
+                        case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = 2017;break
+                      }
+                      this.getValueList(ruleParameterCode,ruleParamsArray);
+                      //规则参数类型修改后，规则参数，上限值，下限值自动清空
+                      this.props.form.setFieldsValue({"ruleParameter":""});
+                      callback();
+                    }else {
+                      validateStatusMap.ruleParameterType = "error";
+                      helpMap.ruleParameterType = formatMessage({id:"common.please.select"});
+                      this.setState({validateStatusMap,helpMap})
                     }
-                    //规则参数类型修改后，规则参数，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"ruleParameter":""});
-                    //this.props.form.resetFields("parameterLowerLimit");
-                    let ruleParameterCode;
-                    switch (value){
-                      case 'BGT_RULE_PARAMETER_BUDGET': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET; break;
-                      case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;break;
-                      case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;break
-                    }
-                    console.log(ruleParameterCode)
-                    this.getValueList(ruleParameterCode,ruleParamsArray);
-                    callback();
                   }
                 }
               ]
             })(
               <Select
                 className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray)}>
+                onFocus={()=>this.getValueList(2012, ruleParameterTypeArray)}>
                 {
                   ruleParameterTypeArray.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameter'})  /*规则参数*/}
-            validateStatus={ruleParamsStatus}
-            help={ruleParamsHelp}>
+          <FormItem {...formItemLayout} label={formatMessage({id:'budget.ruleParameter'})  /*规则参数*/}
+            validateStatus={validateStatusMap.ruleParameter}
+            help={helpMap.ruleParameter}>
             {getFieldDecorator('ruleParameter', {
               rules: [{
                 required: true,
@@ -264,21 +287,23 @@ class NewBudgetRulesDetail extends React.Component{
                 {
                   validator: (item,value,callback)=>{
                     console.log(value)
-                    this.setState({
-                      ruleParamsStatus: typeof value === 'undefined' ? "error" : "",
-                      ruleParamsHelp: typeof value === 'undefined' ?  "请选择"  : "",
-                      upperLimitHelp: typeof value ==='undefined' ? upperLimitHelp : "",
-                      upperLimitStatus: typeof value ==='undefined' ? upperLimitStatus : "",
-                      lowerLimitHelp: typeof value ==='undefined' ? lowerLimitHelp : "",
-                      lowerLimitStatus: typeof value ==='undefined' ? lowerLimitStatus : "",
-                      ruleParam: {
-                        type: this.props.form.getFieldValue("ruleParameterType"),
-                        name: value,
-                      }
-                    });
-                    //规则参数修改后，上限值，下限值自动清空
-                    this.props.form.setFieldsValue({"parameterLowerLimit":"","parameterUpperLimit":""});
-                    callback();
+                    if(typeof value === 'undefined'){
+                      console.log(123)
+                      validateStatusMap.ruleParameter = "error";
+                      helpMap.ruleParameter = formatMessage({id:"common.please.select"})
+                    }else {
+                      ruleParamDetail.name = value;
+                      detail = {};
+                      validateStatusMap.parameterLowerLimit = "";
+                      validateStatusMap.parameterUpperLimit = "";
+                      helpMap.parameterLowerLimit = "";
+                      helpMap.parameterUpperLimit = "";
+
+                      this.setState({ruleParamDetail});
+                      //规则参数修改后，上限值，下限值自动清空
+                      this.props.form.setFieldsValue({"parameterLowerLimit": "", "parameterUpperLimit": ""});
+                      callback();
+                    }
                   }
                 }
               ]
@@ -293,8 +318,9 @@ class NewBudgetRulesDetail extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-                    label={ formatMessage({id:'budget.filtrateMethod'})  /*取值方式*/}
-                    help={filtrateMethodHelp}>
+            label={ formatMessage({id:'budget.filtrateMethod'})  /*取值方式*/}
+            validateStatus={validateStatusMap.filtrateMethod}
+            help={helpMap.filtrateMethod}>
             {getFieldDecorator('filtrateMethod', {
               rules: [{
                 required: true,
@@ -302,43 +328,44 @@ class NewBudgetRulesDetail extends React.Component{
               },
                 {
                   validator: (item,value,callback)=>{
+                    helpMap.filtrateMethod =  value === "INCLUDE" ? formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
+                      : value === "EXCLUDE" ? formatMessage({id:"budget.filtrateMethodHelp.exclude"}) : "请选择" ,/*值范围为开区间，不包含左右边界值*/
+                    validateStatusMap.filtrateMethod = typeof value === 'undefined' ? "error" : "";
                     this.setState({
-                      filtrateMethodHelp: value === "INCLUDE" ?
-                        formatMessage({id:"budget.filtrateMethodHelp.contain"}) /*值范围为闭区间，包含左右边界值*/
-                        : value === "EXCLUDE" ? formatMessage({id:"budget.filtrateMethodHelp.exclude"}) : "请选择" ,/*值范围为开区间，不包含左右边界值*/
-                      filtrateMethodStatus: typeof value === 'undefined' ? "error" : null
+                      helpMap,
+                      validateStatusMap
                     });
                     callback();
                   }
                 }
               ],
-              initialValue: ruleDetail.filtrateMethod
             })(
               <Select
                 placeholder={ formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(valueListMap.filtrateMethod, filtrateMethodArray)}>
+                onFocus={()=>this.getValueList(2013, filtrateMethodArray)}
+                >
                 {filtrateMethodArray.map((item)=><Option key={item.key}>{item.label}</Option>)}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout}
             label={formatMessage({id:'budget.summaryOrDetail'})  /*取值范围*/}
-            help={summaryOrDetailHelp}>
+            validateStatus={validateStatusMap.summaryOrDetail}
+            help={helpMap.summaryOrDetail}>
             {getFieldDecorator('summaryOrDetail', {
-              initialValue: ruleDetail.summaryOrDetail,
               rules: [
                 {
                   required: true,
                   message: formatMessage({id:"common.please.select"})
                 },
                 {
-                  validator: (item,value,callback)=>{
+                  validator: (item,value,callback)=>{              /*在上下限值内的明细和汇总规则参数都包括在内*/                                     /*只包括在上下限内的汇总规则参数*/
+                    helpMap.summaryOrDetail = value === "ALL" ? formatMessage({id:"budget.summaryOrDetailHelp.all"}) : value === "SUMMARY"? formatMessage({id:"budget.summaryOrDetailHelp.summary"})
+                        : value === "DETAIL" ? formatMessage({id:"budget.summaryOrDetailHelp.detail"}) : formatMessage({id:"common.please.select"}),          /*只包括在上下限内的明细规则参数*/
+                    validateStatusMap.summaryOrDetail = typeof value === 'undefined' ? "error" : "";
                     this.setState({
-                      summaryOrDetailHelp: value === "ALL" ? formatMessage({id:"budget.summaryOrDetailHelp.all"}) /*在上下限值内的明细和汇总规则参数都包括在内*/
-                        : value === "SUMMARY"? formatMessage({id:"budget.summaryOrDetailHelp.summary"})
-                          /*只包括在上下限内的汇总规则参数*/ :
-                          value === "DETAIL" ? formatMessage({id:"budget.summaryOrDetailHelp.detail"}) : "请选择", /*只包括在上下限内的明细规则参数*/
-                      summaryOrDetailStatus: typeof value === 'undefined' ? "error" : null
+                      validateStatusMap,
+                      helpMap
                     });
                     callback();
                   }
@@ -347,41 +374,81 @@ class NewBudgetRulesDetail extends React.Component{
             })(
               <Select
                 placeholder={formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(valueListMap.summaryOrDetail, summaryOrDetailArray)}>
+                onFocus={()=>this.getValueList(2014, summaryOrDetailArray)}
+                >
                 {summaryOrDetailArray.map((item)=><Option key={item.key}>{item.label}</Option>)}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-            validateStatus={lowerLimitStatus}
-            help={lowerLimitHelp}>
-            {getFieldDecorator('parameterLowerLimit')(
+            validateStatus={validateStatusMap.parameterLowerLimit}
+            help={helpMap.parameterLowerLimit}>
+            {getFieldDecorator('parameterLowerLimit',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({id: "common.please.select"})
+                  },
+                  {
+                    validator: (item,value,callback)=>{
+                      console.log(value)
+                      if(typeof value === 'undefined'){
+                        validateStatusMap.parameterLowerLimit = "error";
+                        helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
+                      }
+                      callback();
+                    }
+                  }
+                ]
+              })(
               <div>
-                {typeof ruleParam.name === 'undefined' ? <Select onFocus={this.handleValueChange}/> :
+                {typeof ruleParamDetail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterLowerLimit")}/> :
                   <Chooser
-                    type={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].listType}
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={ paramValueMap[ruleParamDetail.name].listType}
                     listExtraParams= {{organizationId:this.state.organizationId}}
-                    labelKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].codeKey}
-                    valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
+                    labelKey={  paramValueMap[ruleParamDetail.name].codeKey}
+                    valueKey={  paramValueMap[ruleParamDetail.name].valueKey}
                     single={true}
-                    onChange={(value)=>this.handleValueChange(value,"lower")}
+                    value={detail.parameterLowerLimit}
+                    onChange={(value)=> this.handleValueChange(value,"parameterLowerLimit")}
                   />}
               </div>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
-            validateStatus={upperLimitStatus}
-            help={upperLimitHelp}>
-            {getFieldDecorator('parameterUpperLimit')(
+            validateStatus={validateStatusMap.parameterUpperLimit}
+            help={helpMap.parameterUpperLimit}>
+            {getFieldDecorator('parameterUpperLimit',{
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage({id: "common.please.select"})
+                },
+                {
+                  validator: (item,value,callback)=>{
+                    console.log(value)
+                    if(typeof value === 'undefined'){
+                      validateStatusMap.parameterUpperLimit = "error";
+                        helpMap.parameterUpperLimit = formatMessage({id: "common.please.select"})
+                    }
+                    callback();
+                  }
+                }
+              ]
+            })(
               <div>
-                {typeof ruleParam.name === 'undefined' ? <Select onFocus={this.handleValueChange}/> :
+                {typeof ruleParamDetail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
                   <Chooser
-                    type={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].listType}
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={ paramValueMap[ruleParamDetail.name].listType}
                     listExtraParams= {{organizationId:this.state.organizationId}}
-                    labelKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].codeKey}
-                    valueKey={typeof ruleParam.name === 'undefined' ? "aa" : paramValueMap[ruleParam.name].valueKey}
+                    labelKey={ paramValueMap[ruleParamDetail.name].codeKey}
+                    valueKey={ paramValueMap[ruleParamDetail.name].valueKey}
                     single={true}
-                    onChange={(value)=>this.handleValueChange(value,"upper")}
+                    value={detail.parameterUpperLimit}
+                    onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
                   />}
               </div>
             )}

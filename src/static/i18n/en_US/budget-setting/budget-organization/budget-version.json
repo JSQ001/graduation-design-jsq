@@ -6,7 +6,7 @@
   "budget.description": "描述",
   "budget.versionDate": "版本日期",
   "budget.isEnabled": "状态",
-  "budget.status": "版本状态",
+  "budget.versionStatus": "版本状态",
   "budget.new":"新建",
   "budget.history":"历史",
   "budget.current":"当前",

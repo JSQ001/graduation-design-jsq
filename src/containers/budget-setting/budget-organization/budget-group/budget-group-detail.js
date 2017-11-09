@@ -54,7 +54,8 @@ class BudgetGroupDetail extends React.Component {
         onChange: this.onSelectChange,
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
-      }
+      },
+      editing: false
     }
     ;
   }
@@ -82,13 +83,20 @@ class BudgetGroupDetail extends React.Component {
   }
 
   updateHandleInfo = (params) => {
+    this.setState({ editing: true });
     httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign(this.state.groupData, params)).then(response => {
       message.success('修改成功');
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({
+        editing: false,
         groupData: response.data,
         updateState: true
       });
+    }).catch(e => {
+      this.setState({
+        editing: false,
+        updateState: false
+      })
     });
   };
 
@@ -222,13 +230,14 @@ class BudgetGroupDetail extends React.Component {
   };
 
   render(){
-    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData, infoList, groupData, updateState, selectorItem } = this.state;
+    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData, infoList, groupData, updateState, selectorItem, editing } = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
                    infoData={groupData}
                    updateHandle={this.updateHandleInfo}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={editing}/>
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">

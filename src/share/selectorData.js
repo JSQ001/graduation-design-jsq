@@ -22,8 +22,8 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'structureCode', label: '预算表代码'},
       {type: 'input', id: 'structureName', label: '预算表描述'},
-      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: []},
-      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: []}
+      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'},
+      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'}
     ],
     columns: [
       {title: '预算表代码', dataIndex: 'structureCode', width: '45%'},
@@ -37,8 +37,8 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
       {type: 'input', id: 'itemName', label: '预算项目描述'},
-      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: []},
-      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: []}
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
@@ -156,7 +156,7 @@ const selectorData = {
       {title: '预算日记账类型代码', dataIndex: 'journalTypeCode'},
       {title: '预算日记账类型名称', dataIndex: 'journalTypeName'},
     ],
-    key: 'id'
+    key: 'journalTypeId'
   },
   'budget_versions':{
     title:"预算版本",
@@ -204,7 +204,84 @@ const selectorData = {
       {title: '生效汇率', dataIndex: 'rate'}
     ],
     key: 'currency'
-  }
+  },
+  'company_structure':{
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/budget/structure/assign/companies/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
+  'company_item':{
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/budget/item/companies/query/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
+  'company_group': {
+    title: "公司组",
+    url: `${config.baseUrl}/api/company/group/query/dto`,
+    searchForm: [
+      {type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
+        getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
+      {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
+      {type: 'input', id: 'companyGroupName', label: '公司组描述'},
+    ],
+    columns: [
+      {title: '公司组代码', dataIndex: 'companyGroupCode'},
+      {title: '公司组描述', dataIndex: 'companyGroupName'}
+    ],
+    key: 'id'
+  },
+  'department_group': {
+    title: "部门组",
+    url: `${config.baseUrl}/api/DepartmentGroup/selectByInput`,
+    searchForm: [
+      {type: 'input', id: 'deptGroupCode', label: '部门组代码', defaultValue: ''},
+      {type: 'input', id: 'description', label: '部门组描述', defaultValue: ''},
+    ],
+    columns: [
+      {title: '部门组代码', dataIndex: 'deptGroupCode'},
+      {title: '部门组描述', dataIndex: 'description'}
+    ],
+    key: 'id'
+  },
+  'version_company': {
+    title: '添加公司',  ///versionId=925656597618454529
+    url: `${config.budgetUrl}/api/budget/version/assign/companies/query/filter`,
+    searchForm: [
+      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+      /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
+    ],
+    key: 'id'
+  },
 
 };
 
