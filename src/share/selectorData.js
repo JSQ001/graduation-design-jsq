@@ -205,7 +205,6 @@ const selectorData = {
     ],
     key: 'currency'
   },
-
   'company_group': {
     title: "公司组",
     url: `${config.baseUrl}/api/company/group/query/dto`,
@@ -234,7 +233,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-
  'version_company': {
     title: '添加公司',  ///versionId=925656597618454529
     url: `${config.budgetUrl}/api/budget/version/assign/companies/query/filter`,
