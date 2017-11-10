@@ -128,12 +128,6 @@ class BudgetJournalDetail extends React.Component {
         {          /*币种*/
           title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency',width:'4%'
         },
-      /*  {          /!*汇率类型*!/
-          title: this.props.intl.formatMessage({id:"budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-        },*/
-      /*  {          /!*标价方法*!/
-          title: this.props.intl.formatMessage({id:"budget.rateQuotation"}), key: "rateQuotation", dataIndex: 'rateQuotation'
-        },*/
         {          /*汇率*/
           title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',width:'6%',
           render: rate => (
@@ -178,7 +172,7 @@ class BudgetJournalDetail extends React.Component {
     data.map((item)=>{
       sum+= item.functionalAmount;
     })
-    return "CNY"+" "+sum;
+    return "CNY"+" "+sum.toFixed(2);
   }
 
 
