@@ -205,6 +205,38 @@ const selectorData = {
     ],
     key: 'currency'
   },
+  'company_structure':{
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/budget/structure/assign/companies/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
+  'company_item':{
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/budget/item/companies/query/filter`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex: 'companyTypeName'}
+    ],
+    key: 'id'
+  },
   'company_group': {
     title: "公司组",
     url: `${config.baseUrl}/api/company/group/query/dto`,
@@ -233,7 +265,7 @@ const selectorData = {
     ],
     key: 'id'
   },
- 'version_company': {
+  'version_company': {
     title: '添加公司',  ///versionId=925656597618454529
     url: `${config.budgetUrl}/api/budget/version/assign/companies/query/filter`,
     searchForm: [
@@ -246,10 +278,11 @@ const selectorData = {
       {title: "公司代码", dataIndex: 'code'},
       {title: "公司明称", dataIndex: 'name'},
       {title:"描述",dataIndex:'description'}
-     /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
+      /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
     ],
     key: 'id'
   },
+
 };
 
 export default selectorData;

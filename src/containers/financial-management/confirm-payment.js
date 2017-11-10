@@ -356,7 +356,7 @@ class ConfirmPayment extends React.Component{
     const { searchForm, columns, data, loading, pagination, selectedData, status, confirmLoading, rowSelection } = this.state;
     return (
       <div className="confirm-payment">
-        <Tabs type="card" onChange={this.onChangeTabs}>
+        <Tabs onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         <SearchArea
@@ -364,6 +364,7 @@ class ConfirmPayment extends React.Component{
           submitHandle={this.search}
           clearHandle={this.clear}
           eventHandle={this.searchEventHandle}/>
+        <div className="divider"/>
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据 <span>/</span> 已选 {selectedData.length} 条</div>
           <div className="table-header-buttons">
