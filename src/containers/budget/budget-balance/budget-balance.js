@@ -343,7 +343,6 @@ class BudgetBalance extends React.Component {
   //验证通过后将state.params的值包装至values
   validate = (callback) => {
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
       if(!err){
         let searchForm = [].concat(this.state.searchForm);
         searchForm.map(item => {
@@ -382,6 +381,8 @@ class BudgetBalance extends React.Component {
         values.organizationId = this.state.organizationId;
         values.companyId = this.props.company.id;
         callback(values);
+      } else {
+        this.setState({ searching: false });
       }
     })
   };
@@ -695,7 +696,7 @@ class BudgetBalance extends React.Component {
         >
           <div className="base-condition">
             <div className="base-condition-title">基本条件</div>
-            <Row gutter={40} className="base-condition-content">{this.getFields()}</Row>
+            <Row gutter={40} className="base-condition-content" type="flex" align="top">{this.getFields()}</Row>
           </div>
           <div className="footer-operate">
             <Button type="primary" htmlType="submit" loading={searching}>查询</Button>

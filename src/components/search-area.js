@@ -467,7 +467,7 @@ class SearchArea extends React.Component{
       children.push(
         <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           {item.type === 'items' ? this.renderFormItem(item) :
-            <FormItem {...formItemLayout} label={item.label} colon={false}>
+            <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
                 valuePropName: item.type === 'switch' ? 'checked' : 'value',
                 initialValue: item.defaultValue,
@@ -530,7 +530,7 @@ class SearchArea extends React.Component{
       >
         {this.props.checkboxListForm && this.getCheckboxList()}
         <div className="common-top-area">
-          <Row gutter={40}>{this.getFields()}</Row>
+          <Row gutter={40} type="flex" align="top">{this.getFields()}</Row>
           <Row>
             <Col span={24} style={{ textAlign: 'right' }}>
               {this.state.searchForm.length > this.props.maxLength ? (

@@ -212,17 +212,19 @@ class FinanceReview extends React.Component {
 
   render(){
     const { data, loading, columns, pagination, searchForm } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <div>
-        <Tabs type="card" onChange={this.onChangeTabs}>
+        <Tabs onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         <SearchArea searchForm={searchForm}
                     submitHandle={this.search}
                     clearHandle={this.clear}
                     eventHandle={this.searchEventHandle}/>
+        <div className="divider"/>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据</div>
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
         </div>
         <Table columns={columns}
                dataSource={data}
