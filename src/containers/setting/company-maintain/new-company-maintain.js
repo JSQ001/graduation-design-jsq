@@ -17,33 +17,26 @@ class WrappedNewCompanyMaintain extends React.Component {
 
         {
           /*公司代码*/
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "company.companyCode"}),
-          id: "companyCode",
-          isRequired: true
+          type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
         },
-
         {
           /*公司名称*/
           type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", isRequired: true
         },
         {
           /*公司类型*/
-          type: 'select',
-          label: this.props.intl.formatMessage({id: "company.companyType"}),
-          id: "companyType",
-          options: [],
-          method: 'get',
+          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,
         },
         {
           /*账套*/
           type: 'select',
           label: this.props.intl.formatMessage({id: "company.setOfBooksName"}),
-          id: "setOfBooksName",
+          id: "setOfBooksId",
           options: [],
           method: 'get',
-          // getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          getUrl: `${config.baseUrl}/api/refactor/tenant/company/register`,
+          getUrl:`${config.baseUrl}/api/setOfBooks/query`,
+          //getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          //getUrl: `${config.baseUrl}/api/refactor/tenant/company/register`,
           labelKey: 'setOfBooksCode',
           valueKey: 'id'
         },
@@ -51,18 +44,18 @@ class WrappedNewCompanyMaintain extends React.Component {
           /*法人*/
           type: 'select',
           label: this.props.intl.formatMessage({id: "company.legalEntityName"}),
-          id: "legalEntityName",
+          id: "legalEntityId",
           options: [],
           method: 'get',
           getUrl: `${config.baseUrl}/api/all/legalentitys`,
-          labelKey: 'legalEntityName',
-          valueKey: 'legalEntityName'
+          labelKey: 'entityName',
+          valueKey: 'companyReceiptedOID'
         },
         {
           /*公司级别*/
           type: 'select',
           label: this.props.intl.formatMessage({id: "company.companyLevelName"}),
-          id: "companyLevelName",
+          id: "companyLevelId",
           options: [],
           method: 'get',
           getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
@@ -73,7 +66,7 @@ class WrappedNewCompanyMaintain extends React.Component {
           /*上级机构*/
           type: 'select',
           label: this.props.intl.formatMessage({id: "company.parentCompanyName"}),
-          id: "parentCompanyName",
+          id: "parentCompanyId",
           options: [],
           method: 'get',
           getUrl: `${config.baseUrl}/api/company/by/tenant`,
@@ -103,8 +96,8 @@ class WrappedNewCompanyMaintain extends React.Component {
       endDateActive: null,
 
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
-      newCompanyMaintainPage: menuRoute.getRouteItem('new-company-maintain', 'key'),         //公司新建
-      companyMaintainDetailPage: menuRoute.getRouteItem('company-maintain-detail', 'key'),  //公司详情
+      newCompanyMaintainPage: menuRoute.getRouteItem('new-company-maintain', 'key'),          //公司新建
+      companyMaintainDetailPage: menuRoute.getRouteItem('company-maintain-detail', 'key'),    //公司详情
 
       loading: false,
       businessTypeOptions: []
@@ -113,9 +106,7 @@ class WrappedNewCompanyMaintain extends React.Component {
 
 
   componentWillMount() {
-    this.getSystemValueList(2018).then(res => {
-      this.setState({businessTypeOptions: res.data.values})
-    })
+
   }
 
   //处理表单事件
@@ -329,7 +320,7 @@ class WrappedNewCompanyMaintain extends React.Component {
     return children;
   }
 
-
+//保存新建公司
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {

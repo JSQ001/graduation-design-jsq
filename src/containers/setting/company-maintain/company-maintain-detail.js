@@ -50,7 +50,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
       data: [],
       tabsData: {
         BANK:{
-          url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/query`,
+          url: `${config.baseUrl}/api/budget/journal/type/assign/structures/query`,
           columns:
             [
               {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
@@ -63,7 +63,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
             ]
         },
         USER:{
-          url: `${config.budgetUrl}/api/users/all/e4b4a421-0355-4449-a610-26ff99322ab1`,
+          url: `${config.baseUrl}/api/users/all/`,
           columns:
             [
               {title: "姓名", key: "fullName", dataIndex: 'name', width: '16%'},                   /*姓名*/
@@ -108,7 +108,8 @@ class WrappedCompanyMaintainDetail extends React.Component {
     const { tabsData, page, pageSize } = this.state;
     let url = tabsData[key].url;
     if(url){
-      return httpFetch.get(`${url}?companyOId=${1}&page=${page}&size=${pageSize}`).then(response => {
+      //&page=${page}&size=${pageSize}
+      return httpFetch.get(`${url}`).then(response => {
         response.data.map((item, index)=>{
           item.key = item.id ? item.id : index;
         });
