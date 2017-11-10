@@ -171,17 +171,18 @@ class SearchArea extends React.Component{
 
   //根据接口返回数据重新设置options
   setOptionsToFormItem = (item, url, key) => {
-
     let params = item.getParams ? item.getParams : {};
     if(key){
       params[item.searchKey] = key;
       if(item.method === 'get'){
-        url += `?${item.searchKey}=${key}`;
+        url += '?';
         if(item.getParams){
           let keys = Object.keys(item.getParams);
           keys.map(paramName => {
             url += `&${paramName}=${item.getParams[paramName]}`
           })
+        } else {
+          url += `${item.searchKey}=${key}`;
         }
       }
     }

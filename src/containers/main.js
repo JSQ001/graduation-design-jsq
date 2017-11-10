@@ -13,8 +13,7 @@ import 'styles/main.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import { setLanguage } from 'actions/main'
-import { setCompany } from 'actions/login'
+import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import { setCodingRuleObjectId } from "actions/setting";
 import Loading from 'components/loading'
@@ -37,7 +36,6 @@ class Main extends React.Component{
       collapsed: false,
       check: false,
       adminMode: false,
-      companyMode: true,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
       dashboardAdminPage: menuRoute.getRouteItem('dashboard-admin', 'key')
@@ -47,6 +45,7 @@ class Main extends React.Component{
   componentWillMount(){
     this.checkParams();
     this.setMenuSelectedState();
+    this.props.dispatch(setTenantMode(this.checkAuthorities('ROLE_TENANT_ADMIN')))
   }
 
   setMenuSelectedState(){
@@ -80,10 +79,8 @@ class Main extends React.Component{
   handleModeMenuClick = (e) => {
     switch (e.key){
       case 'bloc':
-        this.setState({ companyMode: false });
-        break;
-      case 'company':
-        this.setState({ companyMode: true });
+        //TODO:切换回默认公司，account内存默认公司
+        this.props.dispatch(setTenantMode(true));
         break;
       case 'change':
         this.setState({ showListSelector: true })
@@ -93,22 +90,28 @@ class Main extends React.Component{
 
   //渲染公司模式切换下拉选项
   renderModeMenu = () => {
-    const { companyMode, collapsed } = this.state;
+    const { collapsed } = this.state;
     let menu = (
       <Menu onClick={this.handleModeMenuClick}>
-        {this.checkAuthorities('ROLE_TENANT_ADMIN') && companyMode ? <Menu.Item key="bloc">集团模式</Menu.Item> : null}
-        {!companyMode ? <Menu.Item key="company">公司模式</Menu.Item> : null}
-        <Menu.Item key="change">切换公司</Menu.Item>
+        {!this.props.tenantMode && <Menu.Item key="bloc">集团模式</Menu.Item>}
+        {<Menu.Item key="change">切换公司</Menu.Item>}
       </Menu>
     );
-    return <Dropdown overlay={menu}><span>{collapsed ? '' :  (this.props.company.name + ' ')}<Icon type="down" /></span></Dropdown>
+    return this.checkAuthorities('ROLE_TENANT_ADMIN') ?
+      <Dropdown overlay={menu}><span>{collapsed ? '' :  ((!this.props.tenantMode ? this.props.company.name : '集团模式') + ' ')}<Icon type="down" /></span></Dropdown>
+      : this.props.company.name
   };
 
   //切换公司
   handleChangeCompany = (result) => {
     this.setState({ showListSelector: false });
     if(result && result.result.length > 0){
-      this.props.dispatch(setCompany(result.result[0]));
+      httpFetch.post(`${config.baseUrl}/api/company/change/${result.result[0].id}`).then(() => {
+        httpFetch.getInfo().then(() => {
+          this.props.dispatch(setTenantMode(false));
+          this.context.router.replace(this.state.dashboardPage.url);
+        });
+      });
     }
   };
 
@@ -276,6 +279,7 @@ class Main extends React.Component{
         </Layout>
 
         <ListSelector type="available_company"
+                      selectedData={[this.props.company]}
                       visible={showListSelector}
                       onOk={this.handleChangeCompany}
                       onCancel={() => { this.setState({showListSelector: false}) }}
@@ -292,6 +296,7 @@ Main.contextTypes = {
 
 function mapStateToProps(state) {
   return {
+    tenantMode: state.main.tenantMode,
     language: state.main.language,
     currentPage: state.main.currentPage,
     user: state.login.user,

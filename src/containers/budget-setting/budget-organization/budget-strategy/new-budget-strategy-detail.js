@@ -65,9 +65,9 @@ class NewBudgetStrategyDetail extends React.Component {
 
   handleMethodChange = (value) => {
     let controlMethodNotice = '';
-    if(value == '1502553') {
+    if(value == 'BLOCK') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，禁止提交';
-    } else if(value == '1502552') {
+    } else if(value == 'ALLOWED') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，进行提示';
     } else {
       controlMethodNotice = '不做任何控制';
@@ -117,7 +117,7 @@ class NewBudgetStrategyDetail extends React.Component {
                   }]})(
                   <Select onChange={this.handleMethodChange} placeholder="请选择">
                     {controlMethodOptions.map((option)=>{
-                      return <Option key={option.id}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
@@ -145,9 +145,9 @@ class NewBudgetStrategyDetail extends React.Component {
                   }],
                   initialValue: ''
                 })(
-                  <Select onChange={this.handleMethodChange} placeholder="请选择">
+                  <Select placeholder="请选择">
                     {messageCodeOptions && messageCodeOptions.map((option)=>{
-                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}

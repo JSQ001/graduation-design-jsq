@@ -209,6 +209,12 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
+  handleCloseSlideUpdate = ()=>{
+    this.setState({
+      showSlideFrameUpdate: false
+    },this.getList())
+  };
+
   handleUpdate = (values)=>{
     console.log(values)
     console.log(values.startDate.utc())
@@ -260,15 +266,24 @@ class BudgetControlRulesDetail extends React.Component{
         response.data.map((item)=>{
           item.key = item.id
         });
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
         this.setState({
           loading: false,
-          data: response.data
+          data: response.data,
+          pagination
         })
       }
     }).catch((e)=>{
       //console.log(e)
     })
   }
+
+
+  //返回预算规则页面
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=RULE');
+  };
 
   render(){
     const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrameCreate,showSlideFrameUpdate, ruleDetail, controlRule, updateState } = this.state;
@@ -294,6 +309,7 @@ class BudgetControlRulesDetail extends React.Component{
           pagination={pagination}
           size="middle"
           bordered/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
         <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
                     show={showSlideFrameCreate}
@@ -305,7 +321,7 @@ class BudgetControlRulesDetail extends React.Component{
         <SlideFrame title= { this.props.intl.formatMessage({id: 'budget.editRulesDetail'})}
                     show={showSlideFrameUpdate}
                     content={UpdateBudgetRulesDetail}
-                    afterClose={this.handleCloseSlide}
+                    afterClose={this.handleCloseSlideUpdate}
                     onClose={()=>this.showSlideUpdate(false)}
                     params={ruleDetail}/>
       </div>

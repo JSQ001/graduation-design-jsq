@@ -65,7 +65,8 @@ class BudgetBalanceResult extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/header/${this.props.params.id}`).then(res => {
       let companyNumber = 0;
       res.data.queryLineList.map(item => {
-        companyNumber += item.parameterCode === 'COMPANY' ? 1 : 0
+        if(item.parameterCode === 'COMPANY')
+          companyNumber = item.queryParameterList.length;
       });
       this.setState({
         condition: {

@@ -84,7 +84,7 @@ class UploadFile extends React.Component{
                  onRemove={this.handleRemove}
                  style={{padding: '20px 0'}}>
           <p className="ant-upload-drag-icon">
-            <Icon type="cloud-upload-o" />
+            <Icon type="inbox" />
           </p>
           <p className="ant-upload-text">点击或将文件拖拽到这里上传</p>
           <p className="ant-upload-hint">支持扩展名：{this.props.extensionName}</p>
