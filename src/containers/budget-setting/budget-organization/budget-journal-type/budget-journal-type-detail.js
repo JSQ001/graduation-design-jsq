@@ -230,10 +230,11 @@ class BudgetJournalTypeDetail extends React.Component {
 
   updateHandleInfo = (params) => {
     this.setState({ editing: true });
-    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign({}, this.state.typeData, params)).then(response => {
       message.success('修改成功');
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
+      console.log(data);
       this.setState({
         typeData: data,
         updateState: true,

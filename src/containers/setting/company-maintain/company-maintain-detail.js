@@ -1,15 +1,14 @@
-
 import React from 'react';
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import debounce from 'lodash.debounce';
 
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+
+import {Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message} from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
-import SlideFrame from "components/slide-frame";
+import SlideFrame from "components/slide-frame"
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
@@ -19,175 +18,142 @@ const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
 
-let periodStrategy = [
-  {label:"月度",value: "month"},  /*月度*/
-  {label:"季度",value: "quarter"}, /*季度*/
-  {label:"年度",value: "year"} /*年度*/
-];
-class WrappedCompanyMaintainDetail extends React.Component{
 
-  constructor(props){
+class WrappedCompanyMaintainDetail extends React.Component {
+
+  constructor(props) {
     super(props);
-    const { formatMessage } = this.props.intl;
     this.state = {
-      loading: true,
-      companyListSelector: false,  //控制公司选则弹框
       updateState: false,
-      structure:{},
-      showSlideFrame: false,
-      showSlideFrameUpdate: false,
-      statusCode: formatMessage({id:"common.status.enable"}) /*启用*/,
-      total:0,
-      data:[],
-      pagination: {
-        current: 1,
-        page: 0,
-        total:0,
-        pageSize:10,
-        showSizeChanger:true,
-        showQuickJumper:true,
-      },
-      status:"",
-      columns:[],
+      saving: false,
+      loading: true,
+      editing: false,
+      infoData:{},
       infoList: [
-        {          /*公司代码*/
-          type: 'input',label: this.props.intl.formatMessage({id:"company.companyCode"}), id: "companyCode"
-        },
-
-        {          /*公司名称*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.name"}), id: "name", labelKey: 'name',
-        },
-        {          /*公司类型*/
-          type: 'input',label: this.props.intl.formatMessage({id:"company.companyType"}), id: "companyType", labelKey: 'companyType'
-        },
-        {          /*账套*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.setOfBooksName"}), id: "setOfBooksName", labelKey: 'setOfBooksName'
-        },
-        {          /*法人*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.legalEntityName"}), id: "legalEntityName", labelKey: 'legalEntityName',
-        },
-        {          /*公司级别*/
-          type: 'input',label: this.props.intl.formatMessage({id:"company.companyLevelName"}), id: "companyLevelName", labelKey: 'companyLevelName',
-        },
-        {          /*上级机构*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.parentCompanyName"}), id: "parentCompanyName", labelKey: 'parentCompanyName',
-        },
-        {          /*有效日期从*/
-          type: 'date', label: this.props.intl.formatMessage({id:"company.startDateActive"}), id: "startDateActive",
-        },
-        {          /*有效日期至*/
-          type: 'date', label: this.props.intl.formatMessage({id:"company.endDateActive"}), id: "endDateActive",
-        },
-        {         /*地址*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.address"}), id: "address", labelKey: 'address',
-        }
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode",labelKey:'companyCode'},   /*公司代码*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", labelKey: 'name' }, /*公司名称*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", labelKey: 'companyType'},    /*公司类型*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.setOfBooksName"}), id: "setOfBooksName", labelKey: 'setOfBooksName' },  /*账套*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.legalEntityName"}), id: "legalEntityName", labelKey: 'legalEntityName'  },  /*法人*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyLevelName"}), id: "companyLevelName", labelKey: 'companyLevelName' },    /*公司级别*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.parentCompanyName"}), id: "parentCompanyName", labelKey: 'parentCompanyName' },    /*上级机构*/
+        {type: 'date', label: this.props.intl.formatMessage({id: "company.startDateActive"}), id: "startDateActive",  labelKey: 'startDateActive'},  /*有效日期从*/
+        {type: 'date', label: this.props.intl.formatMessage({id: "company.endDateActive"}), id: "endDateActive",labelKey:'endDateActive'},  /*有效日期至*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.address"}), id: "address", labelKey: 'address' }   /*地址*/
 
       ],
-      columnGroup:{
-
-        dimension:[
-          {                        /*维度代码*/
-            title:formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
-          },
-          {                        /*描述*/
-            title:formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
-          },
-          {                        /*布局位置*/
-            title:formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
-          },
-          {                        /*布局顺序*/
-            title:formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
-          },
-          {                        /*默认维值*/
-            title:formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
-          },
-          {                        /*操作*/
-            title:formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
-          },],
-        user:[
-          /* {
-           title:"序号", key: "companyCode", dataIndex: 'companyCode',width:'8%'
-           },*/
-          {                        /*姓名*/
-            title:"姓名", key: "fullName", dataIndex: 'name',width:'16%'
-          },
-          {                        /*工号*/
-            title:"工号", key: "id", dataIndex: 'id',width:'8%',
-          },
-          {                        /*部门*/
-            title:"部门", key: "departmentName", dataIndex: 'departmentName',width:'10%',
-          },
-          {                        /*联系方式*/
-            title:"联系方式", key: "mobile", dataIndex: 'mobile',width:'10%',
-          },
-          {                        /*邮箱*/
-            title:"邮箱", key: "email", dataIndex: 'email',width:'10%',
-          },
-        ]
-      },
       tabs: [
-        {key: 'dimension', name:"银行账户信息"}, /*维度分配*/
-        {key: 'user', name: "员工信息"}  /*公司分配*/
+        {key: 'BANK', name: "银行账户信息"}, /*银行账户信息*/
+        {key: 'USER', name: "员工信息"}  /*公司分配*/
       ],
-      form: {
-        name: '',
-        enabled: true
+      typeData: {},
+      data: [],
+      tabsData: {
+        BANK:{
+          url: `${config.baseUrl}/api/budget/journal/type/assign/structures/query`,
+          columns:
+            [
+              {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
+              {title: "银行代码", key: "2", dataIndex: '2', width: '16%'},               /*银行代码*/
+              {title: "银行名称", key: "3", dataIndex: '3', width: '16%'},               /*银行名称*/
+              {title: "账户名称", key: "4", dataIndex: '4', width: '16%'},               /*账户名称*/
+              {title: "账号", key: "5", dataIndex: '5', width: '16%'},                   /*账号*/
+              {title: "国家", key: "6", dataIndex: '6', width: '16%'},                   /*国家*/
+              {title: "开户地", key: "7", dataIndex: '7', width: '16%'},                 /*开户地*/
+            ]
+        },
+        USER:{
+          url: `${config.baseUrl}/api/users/all/`,
+          columns:
+            [
+              {title: "姓名", key: "fullName", dataIndex: 'name', width: '16%'},                   /*姓名*/
+              {title: "工号", key: "id", dataIndex: 'id', width: '8%'},                             /*工号*/
+              {title: "部门", key: "departmentName", dataIndex: 'departmentName', width: '10%'},    /*部门*/
+              {title: "联系方式", key: "mobile", dataIndex: 'mobile', width: '10%'},                /*联系方式*/
+              {title: "邮箱", key: "email", dataIndex: 'email', width: '10%'},                      /*邮箱*/
+            ]
+
+        },
       },
-    };
-    this.queryDimension = debounce(this.queryDimension,1000)
+      pagination: {
+        total: 0
+      },
+      page: 0,
+      pageSize: 10,
+      nowStatus: 'BANK',
+      showListSelector: false,
+      newData: []
+    }
   }
-  componentWillMount(){
-    //获取某预算表某行的数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
+
+
+
+  componentWillMount() {
+    this.getCompanyByCode(this.props.params.companyCode);
+    this.getList(this.state.nowStatus);
+  }
+
+  //根据companyCode获取公司
+  getCompanyByCode = (companyCode) => {
+    httpFetch.get(`${config.baseUrl}/api/company/by/term?companyCode=${companyCode}`).then((response) => {
+      console.log(response.data);
       this.setState({
-        columns: this.state.columnGroup.dimension,
-        structure: response.status === 200 ? response.data : null
-      });
+        infoData: response.data
+      })
     })
   }
 
-  getCompany(){
-    
-  }
 
-  //保存所做的修改
-  handleUpdate = (value) => {
-    //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${this.state.structure.id}`).then((response)=>{
-      if(response.status === 200){
-        if(response.data.length>0 && this.state.structure.periodStrategy !== value.periodStrategy){
-          message.error(this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})) //该预算表已被预算日记账引用，不允许修改编制期段！
-        }
-      }
-    });
-    value.id = this.state.structure.id;
-    value.versionNumber = this.state.structure.versionNumber;
-    value.organizationId = this.state.structure.organizationId;
-    httpFetch.put(`${config.budgetUrl}/api/budget/structures`,value).then((response)=>{
-      if(response) {
-        if(response.status === 200) {
-          message.success(this.props.intl.formatMessage({id: "structure.saveSuccess"}));
-          /*保存成功！*/
-          this.setState({
-              structure: response.data,
-              updateState: true
-            },
-            //调用维度查询接口
-          );
-        }
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({loading: false});
-      }
-      else {
-        console.log(e)
-      }
-    })
+  getList = (key) => {
+    const { tabsData, page, pageSize } = this.state;
+    let url = tabsData[key].url;
+    if(url){
+      //&page=${page}&size=${pageSize}
+      return httpFetch.get(`${url}`).then(response => {
+        response.data.map((item, index)=>{
+          item.key = item.id ? item.id : index;
+        });
+        this.setState({
+          data: response.data,
+          loading: false,
+          pagination: {
+            total: Number(response.headers['x-total-count']),
+            onChange: this.onChangePager,
+            current: this.state.page + 1
+          }
+        })
+      })
+    }
+  };
+
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList(this.state.nowStatus);
+      })
   };
 
 
+  //公司详情编辑
+  updateHandleInfo = (params) => {
+    this.setState({ editing: true });
+    httpFetch.put(`${config.budgetUrl}`, Object.assign(this.state.typeData, params)).then(response => {
+      message.success('修改成功');
+      let data = response.data;
+      this.setState({
+        typeData: data,
+        updateState: true,
+        editing: false
+      });
+    }).catch(e => {
+      this.setState({ editing: false })
+    });
+  };
+
+  //渲染Tabs
   renderTabs(){
     return (
       this.state.tabs.map(tab => {
@@ -196,126 +162,41 @@ class WrappedCompanyMaintainDetail extends React.Component{
     )
   }
 
-  //Tabs点击
-  onChangeTabs = (key) => {
+  //点击
+  onChangeTabs = (key) =>{
     this.setState({
+      nowStatus: key,
       loading: true,
-      page: 0,
-      data:[],
-      status: key,
-      columns: key === 'user' ? this.state.columnGroup.user : this.state.columnGroup.dimension
-    },()=>{
-      key === "user" ? this.queryCompany : this.queryDimension ;
-    });
-  };
-
-  handleSearchChange = (e) =>{
-    this.state.status === "user" ? this.queryCompany(e.target.value) : this.queryDimension(e.target.value);
-  };
-
-  handleCreate = (e) =>{
-    this.state.status ==="user" ? this.showListSelector(true) : this.showSlide(true)
-  };
-
-
-  //分配公司
-  distributeCompany(){
-
-  }
-
-  //维度分配
-  distributeDimension(){}
-
-  //调用维度查询接口
-  queryDimension(value){
-    console.log(value)
-  }
-
-  queryCompany(value){
-    console.log(value)
-  }
-
-  showSlide = (flag) => {
-    this.setState({
-      showSlideFrame: flag
+      page: 0
+    }, ()=>{
+      this.getList(key);
     })
   };
 
-  handleCloseSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
-    this.setState({
-      showSlideFrame: false
-    })
-  };
-
-  //控制是否弹出公司列表
-  showListSelector = (flag) =>{
-    this.setState({
-      companyListSelector: flag
-    })
-  };
-
-  //处理公司弹框点击ok
-  handleListOk = (result) => {
-    console.log(result)
-    this.setState({
-        data: result.result
-      },
-      this.showListSelector(false)
-    );
-  };
-
-  render(){
-    const { getFieldDecorator } = this.props.form;
-    const { infoList, updateState, structure, loading, showSlideFrameUpdate, total, data, columns, pagination, status, showSlideFrame, companyListSelector} = this.state;
-    return(
-      <div className="budget-structure-detail">
-        <BasicInfo
-          infoList={infoList}
-          infoData={structure}
-          updateHandle={this.handleUpdate}
-          updateState={updateState}/>
-        <div className="structure-detail-distribution">
-          <Tabs onChange={this.onChangeTabs}>
-            {this.renderTabs()}
-          </Tabs>
-        </div>
+  render() {
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    return (
+      <div>
+        <BasicInfo infoList={infoList}
+                   infoData={typeData}
+                   updateHandle={this.updateHandleInfo}
+                   updateState={updateState}
+                   loading={editing}/>
+        <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
+          {this.renderTabs()}
+        </Tabs>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{status === 'user'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
-              this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
-            {status === "user" ? <Button >{this.props.intl.formatMessage({id:'common.save'})}</Button> : null}
-            <Search className="table-header-search"
-                    onChange={this.handleSearchChange}                                      /* 请输入公司名称/代码*/
-                    placeholder={ status === "user" ? this.props.intl.formatMessage({id:'structure.searchCompany'}) :
-                      this.props.intl.formatMessage({id: 'structure.searchDimension' /*请输入维度名称/代码*/ })}/>
+            <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
           </div>
         </div>
-        <Table
-          dataSource={data}
-          columns={columns}
-          pagination={pagination}
-          size="middle"
-          bordered/>
-
-        <SlideFrame title="新建维度"
-                    show={showSlideFrame}
-                    content={NewDimension}
-                    afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}/>
-        <SlideFrame title="编辑维度"
-                    show={showSlideFrameUpdate}
-                    content={NewDimension}
-                    afterClose={this.handleCloseSlideUpdae}
-                    onClose={() => this.showSlideUpdate(false)}/>
-
-        <ListSelector type="company"
-                      visible={companyListSelector}
-                      onOk={this.handleListOk}
-                      onCancel={()=>this.showListSelector(false)}/>
+        <Table columns={tabsData[nowStatus].columns}
+               dataSource={data}
+               pagination={pagination}
+             /*  loading={loading}*/
+               bordered
+               size="middle"/>
       </div>
     )
   }

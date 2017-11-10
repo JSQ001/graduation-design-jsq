@@ -1,21 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+import { Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps} from 'antd';
 const Step =Steps.Step;
-import SearchArea from 'components/search-area.js';
-import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
+
+import "styles/budget/budget-journal/budget-journal-detail-submit.scss"
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-
-import selectorData from 'share/selectorData'
-import ListSelector from 'components/list-selector'
-import BasicInfo from 'components/basic-info'
-import SlideFrame from 'components/slide-frame.js'
-import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
-import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
 
 
 class BudgetJournalDetailSubmit extends React.Component {
@@ -24,18 +17,10 @@ class BudgetJournalDetailSubmit extends React.Component {
     this.state = {
       loading: true,
       data: [],
-      params: {},
+      total:0,
       headerAndListData: {},
       pageSize: 10,
       page: 0,
-      pagination: {
-        current: 0,
-        page: 0,
-        total: 0,
-        pageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: true,
-      },
       rowSelection: {
         type: 'checkbox',
         selectedRowKeys: [],
@@ -92,16 +77,7 @@ class BudgetJournalDetailSubmit extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        /*{
 
-         title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-         },
-         {
-
-         title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
-         key: "rateQuotation",
-         dataIndex: 'rateQuotation'
-         },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
@@ -118,12 +94,9 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "status", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
         },
-        /* {
 
-         title: this.props.intl.formatMessage({id: "budget.unit"}), key: "unit", dataIndex: 'unit'
-         },*/
         {
           /*备注*/
           title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
@@ -134,7 +107,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
       ],
 
-      budgetJournalDetailReCheckPage: menuRoute.getRouteItem('budget-journal-re-check','key'),    //预算日记账复核
+      budgetJournalPage: menuRoute.getRouteItem('budget-journal','key'),    //预算日记账
 
     };
   }
@@ -155,7 +128,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`查询附件失败,${e.response.data.message}`);
+      message.error(e.response.message.data);
     })
   }
 
@@ -176,55 +149,12 @@ class BudgetJournalDetailSubmit extends React.Component {
         headerAndListData:request.data,
         infoData:headerData,
         data:listData,
-        pagination: {
-          total:request.data.list.length ,
-          onChange: this.onChangePager,
-          pageSize: this.state.pageSize,
-          current: this.state.page + 1
-        }
+        total:request.data.list.length ,
       })
     })
   }
 
-  //通过
-  handlePass=()=>{
-    const id= this.state.headerAndListData.dto.id;
-    let data =[];
-    data.addIfNotExist(id);
-    console.log(data);
 
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
-      console.log(request.data)
-      message.success("已经通过")
-
-      let path=this.state.budgetJournalDetailReCheckPage.url;
-      this.context.router.push(path);
-
-    }).catch((e)=>{
-      message.error("失败");
-    })
-  }
-
-  //驳回
-  handleReject=()=>{
-
-    const id= this.state.headerAndListData.dto.id;
-    let data =[];
-    data.addIfNotExist(id);
-    console.log(data);
-
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
-      console.log(request.data)
-      message.success("已经驳回");
-      let path=this.state.budgetJournalDetailReCheckPage.url;
-      this.context.router.push(path);
-
-
-    }).catch((e)=>{
-      message.error("失败");
-    })
-
-  }
 
   //返回列表页
   HandleReturn=()=>{
@@ -236,16 +166,17 @@ class BudgetJournalDetailSubmit extends React.Component {
   //返回状态
   getStatus=()=>{
     const infoData = this.state.infoData;
+    console.log(this.state.infoData);
     switch (infoData.status){
-      case 'NEW':{ return <Badge status="processing" text="新建" />}
-      case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
-      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
-      case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-      case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
-      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
-      case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
-      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
-      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
+      case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
+      case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
+      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text={infoData.statusName}/> }
+      case 'REJECT':{ return  <Badge status="error" text={infoData.statusName} />}
+      case 'CHECKED':{return < Badge status="default" color="#234234" text={infoData.statusName}/>}
+      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={infoData.statusName}/>}
+      case 'POSTED':{return <Badge status="default"  color="#87d068" text={infoData.statusName}/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={infoData.statusName}/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={infoData.statusName}/>}
     }
   }
 
@@ -297,12 +228,25 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
 
+  //撤回
+  handleRevocation=()=>{
+   // this.context.router.push(this.state.budgetJournalPage.url);
+  }
+
+  //返回
+  HandleReturn=()=>{
+    this.context.router.push(this.state.budgetJournalPage.url);
+  }
+
+  //审批中返回，撤回按钮
+  getCheckingButton(){
+    return this.state.infoData.status=="CHECKIMG"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+  }
 
   render(){
-    const { data, columns,pagination,infoData} = this.state;
+    const { data, columns,infoData} = this.state;
     return(
-      <div className="budget-journal-re-check-detail">
-
+      <div className="budget-journal-detail-submit">
         <div className="base-info">
           <div className="base-info-header">
             基本信息
@@ -310,43 +254,43 @@ class BudgetJournalDetailSubmit extends React.Component {
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">状态</div>
+              <div className="base-info-title">状态:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算日记账编号</div>
+              <div className="base-info-title">预算日记账编号:</div>
               <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">总金额</div>
+              <div className="base-info-title">总金额:</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">申请人</div>
+              <div className="base-info-title">申请人:</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">创建日期</div>
+              <div className="base-info-title">创建日期:</div>
               <div className="beep-info-text">{infoData.createdDate}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算项目类型</div>
+              <div className="base-info-title">预算项目类型:</div>
               <div className="beep-info-text">{infoData.journalTypeName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算表</div>
+              <div className="base-info-title">预算表:</div>
               <div className="beep-info-text">{infoData.structureName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算场景</div>
+              <div className="base-info-title">预算场景:</div>
               <div className="beep-info-text">{infoData.scenario}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算版本</div>
+              <div className="base-info-title">预算版本:</div>
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
@@ -354,7 +298,7 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div>{infoData.periodYear}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">编制期段</div>
+              <div className="base-info-title">编制期段:</div>
               <div className="beep-info-text">{this.getPeriodStrategy()}</div>
             </Col>
             <Col span={8}>
@@ -362,7 +306,7 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="beep-info-text">{this.getPeriod()}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">附件</div>
+              <div className="base-info-title">附件:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
 
@@ -373,7 +317,6 @@ class BudgetJournalDetailSubmit extends React.Component {
 
         <Table columns={columns}
                dataSource={data}
-               pagination={pagination}
                bordered
                size="middle"
                rowKey={recode=>{return recode.id}}
@@ -393,9 +336,13 @@ class BudgetJournalDetailSubmit extends React.Component {
           </Collapse>
         </div>
 
+        <div className="footer-operate">
+            <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
+            {this.getCheckingButton()}
+
+        </div>
 
       </div>
-
 
     )
   }

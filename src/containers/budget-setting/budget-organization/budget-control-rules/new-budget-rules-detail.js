@@ -64,12 +64,46 @@ class NewBudgetRulesDetail extends React.Component{
         listExtraParams: organizationIdParams,
         selectorItem: undefined
       },
-      'CURRENCY': {},
-
-      'COMPANY': {},
-      'COMPANY_GROUP': {},
-      'UNIT': {},
-      'UNIT_GROUP': {},
+      'CURRENCY': {
+        listType: 'currency',
+        labelKey: 'id',
+        valueKey: 'currencyName',
+        codeKey: 'currency',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'COMPANY': {
+        listType: 'company',
+        labelKey: 'id',
+        valueKey: 'name',
+        codeKey: 'companyCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'COMPANY_GROUP': {
+        listType: 'company_group',
+        labelKey: 'id',
+        valueKey: 'companyGroupName',
+        codeKey: 'companyGroupCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'UNIT': {
+        listType: 'department',
+        labelKey: 'id',
+        valueKey: 'custDeptNumber',
+        codeKey: 'name',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'UNIT_GROUP': {
+        listType: 'department_group',
+        labelKey: 'id',
+        valueKey: 'description',
+        codeKey: 'deptGroupCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
       'EMPLOYEE': {},
       'EMPLOYEE_GROUP': {}
     };
@@ -99,6 +133,23 @@ class NewBudgetRulesDetail extends React.Component{
       })
     });
     return
+  }
+
+  //获取成本中心
+  getCostCenter(array){
+    httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
+      console.log(response)
+      response.data.map((item)=>{
+        let option = {
+          key: item.code,
+          label: item.name
+        };
+        array.addIfNotExist(option)
+        this.setState({
+          array
+        })
+      });
+    })
   }
 
   componentWillReceiveProps(nextprops){
@@ -220,6 +271,7 @@ class NewBudgetRulesDetail extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+    console.log(ruleParamsArray)
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -255,7 +307,13 @@ class NewBudgetRulesDetail extends React.Component{
                         case 'BGT_RULE_PARAMETER_ORG': ruleParameterCode = 2016;break;
                         case 'BGT_RULE_PARAMETER_DIM': ruleParameterCode = 2017;break
                       }
-                      this.getValueList(ruleParameterCode,ruleParamsArray);
+                      if(ruleParameterCode === 2017){
+                        console.log(123)
+                        this.getCostCenter(ruleParamsArray);
+                      }
+                      else {
+                        this.getValueList(ruleParameterCode,ruleParamsArray);
+                      }
                       //规则参数类型修改后，规则参数，上限值，下限值自动清空
                       this.props.form.setFieldsValue({"ruleParameter":""});
                       callback();

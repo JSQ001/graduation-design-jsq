@@ -10,6 +10,15 @@ import CodingRuleValue from 'containers/setting/coding-rule/coding-rule-value'
 import CompanyMaintain from 'containers/setting/company-maintain/company-maintain'
 import NewCompanyMaintain from 'containers/setting/company-maintain/new-company-maintain'
 import CompanyMaintainDetail from 'containers/setting/company-maintain/company-maintain-detail'
+import CompanyGroup from 'containers/setting/company-group/company-group'
+
+//公司组
+const companyGroup = {
+  key: 'company-group',
+  url: '/main/setting/company-group/company-group',
+  components: CompanyGroup,
+  parent: 'setting',
+};
 
 //新建值列表
 const newValueList = {
@@ -106,7 +115,7 @@ const newCompanyMaintain ={
 //公司维护详情
 const companyMaintainDetail ={
   key:'company-maintain-detail',
-  url:'/main/setting/company-maintain/company-maintain-detail/:companyCode',
+  url:'/main/setting/company-maintain/company-maintain-detail/:companyOId',
   components:CompanyMaintainDetail,
   parent: 'company-maintain'
 };
@@ -126,7 +135,7 @@ const companyMaintain ={
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup],
   icon: 'setting',
   admin: true
 };

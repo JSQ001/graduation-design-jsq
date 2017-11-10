@@ -86,7 +86,7 @@ class SetOfBooks extends React.Component {
   search = (result) => {
     this.setState({
       page: 0,
-      searchParams: Object.assign(this.state.searchParams, result)
+      searchParams: Object.assign({}, this.state.searchParams, result)
     }, ()=>{
       this.getList();
     })

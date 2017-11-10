@@ -89,7 +89,7 @@ class ListSelector extends React.Component {
   //得到数据
   getList(){
     let selectorItem = this.state.selectorItem;
-    let searchParams = Object.assign(this.state.searchParams,this.props.extraParams);
+    let searchParams = Object.assign({}, this.state.searchParams, this.props.extraParams);
     let url = `${selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url

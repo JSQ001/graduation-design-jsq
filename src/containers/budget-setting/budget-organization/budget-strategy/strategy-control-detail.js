@@ -76,8 +76,9 @@ class StrategyControlDetail extends React.Component {
 
     })
   }
+
   getList() {
-    let url = `${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyId=${this.state.strategyControlId}`;
+    let url = `${config.budgetUrl}/api/budget/control/strategy/mp/conds/query?page=${this.state.page}&size=${this.state.pageSize}&controlStrategyDetailId=${this.state.strategyControlId}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
     this.setState({ loading: true });
     httpFetch.get(url).then((response)=>{
@@ -115,6 +116,7 @@ class StrategyControlDetail extends React.Component {
       }
     })
   };
+
   showUpdateSlide = (flag) => {
     this.setState({
       showSlideFrame: flag,
@@ -156,6 +158,7 @@ class StrategyControlDetail extends React.Component {
     })
 
   };
+
   handleSearch = (value) => {
     console.log(value);
     this.setState({
@@ -168,6 +171,7 @@ class StrategyControlDetail extends React.Component {
       this.getList();
     })
   };
+
   handleRowClick = (record) => {
     record.strategyControlId = this.props.params.strategyControlId;
     this.setState({

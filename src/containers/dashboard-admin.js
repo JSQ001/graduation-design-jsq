@@ -51,7 +51,7 @@ class DashboardAdmin extends React.Component{
   render() {
     const { company } = this.props;
     return (
-      <div className="dashboard-admin">
+      <div className="dashboard-admin background-transparent">
         <Card>
           <div className="dashboard-head">
             <img src={company.logoURL}/>

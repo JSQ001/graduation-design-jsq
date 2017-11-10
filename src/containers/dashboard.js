@@ -29,16 +29,16 @@ class Dashboard extends React.Component{
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     let sprites = document.getElementsByClassName('sprite');
     let cards = document.getElementsByClassName('ant-card');
-    for(let i = 0; i < sprites.length; i++)
+    for (let i = 0; i < sprites.length; i++)
       spriteAnimation(sprites[i], this.state.spriteMap['aliyun' + (i + 1)], 75, 75, 60, 500, cards[i]);
   }
 
   render() {
     return (
-      <div className="dashboard">
+      <div className="dashboard background-transparent">
         <Row gutter={20}>
           <Col span={8}>
             <Card>

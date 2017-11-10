@@ -2,13 +2,25 @@ import ConfirmManagement from 'containers/financial-management/confirm-payment'
 import PaymentBatch from 'containers/financial-management/payment-batch'
 import FinanceReview from 'containers/financial-management/finance-review'
 import FinanceView from 'containers/financial-management/finance-view'
+import ExpenseReportDetail from 'containers/expense-report/expense-report-detail'
+
+//报销单详情
+const expenseReportDetailReview = {
+  key:'expense-report-detail-review',
+  url:'/main/financial-management/finance-review/expense-report-detail-review/:id',
+  components: ExpenseReportDetail,
+  parent: 'finance-review'
+};
 
 //单据审核
 const financeReview = {
   key:'finance-review',
   url:'/main/financial-management/finance-review',
   components: FinanceReview,
-  parent: 'financial-management'
+  parent: 'financial-management',
+  children: {
+    expenseReportDetailReview
+  }
 };
 
 //确认付款

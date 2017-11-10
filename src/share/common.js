@@ -25,9 +25,16 @@ Array.prototype.addIfNotExist = function(item){
 };
 
 //给String类型添加 '_self' 的getter， 使得 typeof a === 'string' && a['_self'] === a 成立
-String.prototype.__defineGetter__('_self', function(){
-  return this.toString();
-});
+if(String.prototype.__defineGetter__)
+  String.prototype.__defineGetter__('_self', function(){
+    return this.toString();
+  });
+else
+  Object.defineProperty(String.prototype, '_self', {
+    get: function(){
+      return this.toString();
+    }
+  });
 
 //金额过滤
 React.Component.prototype.filterMoney = (money, fixed = 2) => {

@@ -70,5 +70,8 @@
   "menu.company-maintain-detail":"company maintain detail",
   "menu.payment-batch": "Payment batch",
   "menu.finance-review": "Finance review",
-  "menu.finance-view": "Finance view"
+  "menu.finance-view": "Finance view",
+  "menu.expense-report-detail-review": "Expense report detail",
+  "menu.company-group": "Company group"
 }
+
