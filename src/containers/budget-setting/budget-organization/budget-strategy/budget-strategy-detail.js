@@ -52,19 +52,17 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   componentWillMount() {
-    if(this.props.organization.id && this.props.strategyId){
-      this.context.router.replace(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', this.props.strategyId));
+    if(this.props.organization.id && this.props.params.strategyId){
+      this.context.router.replace(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', this.props.params.strategyId));
       this.getBasicInfo();
       this.getList();
     }
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId}`).then((response) => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId || this.props.params.strategyId}`).then((response) => {
       if(response.status==200) {
-        this.setState({
-          infoData: response.data
-        })
+        this.setState({ infoData: response.data })
       }
     }).catch((e) => {
 
@@ -72,7 +70,7 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   getList() {
-    let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}`;
+    let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId || this.props.params.strategyId}&organizationId=${this.props.params.id}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
     this.setState({ loading: true });
     httpFetch.get(url).then((response) => {
@@ -86,7 +84,7 @@ class BudgetStrategyDetail extends React.Component {
         }
       })
     }).catch((e) => {
-      this.setState({ loading: false })
+
     })
   }
 
@@ -102,11 +100,11 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId));
+    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId).replace(':strategyControlId', record.id));
+    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId).replace(':strategyControlId', record.id));
   };
 
   handleSearch= (value) => {
