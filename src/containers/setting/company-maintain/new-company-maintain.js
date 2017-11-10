@@ -34,8 +34,7 @@ class WrappedNewCompanyMaintain extends React.Component {
           id: "setOfBooksId",
           options: [],
           method: 'get',
-          getUrl:`${config.baseUrl}/api/setOfBooks/query`,
-          //getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
           //getUrl: `${config.baseUrl}/api/refactor/tenant/company/register`,
           labelKey: 'setOfBooksCode',
           valueKey: 'id'
@@ -336,7 +335,8 @@ class WrappedNewCompanyMaintain extends React.Component {
         httpFetch.post(`${config.baseUrl}/api/refactor/tenant/company/register`, valuesData).then((res) => {
           this.setState({loading: false});
           message.success(`公司新建成功`);
-          this.context.router.replace(this.state.budgetJournalTypeDetailPage.url.replace(":typeId", res.data.id));
+          let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOId);
+          this.context.router.push(path);
         }).catch((e) => {
           if (e.response) {
             message.error(`新建失败`);

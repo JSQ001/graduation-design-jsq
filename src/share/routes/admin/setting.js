@@ -106,7 +106,7 @@ const newCompanyMaintain ={
 //公司维护详情
 const companyMaintainDetail ={
   key:'company-maintain-detail',
-  url:'/main/setting/company-maintain/company-maintain-detail/:companyCode',
+  url:'/main/setting/company-maintain/company-maintain-detail/:companyOId',
   components:CompanyMaintainDetail,
   parent: 'company-maintain'
 };

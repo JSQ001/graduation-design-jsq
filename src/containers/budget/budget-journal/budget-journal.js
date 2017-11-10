@@ -25,7 +25,6 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
@@ -34,6 +33,8 @@ class BudgetJournal extends React.Component {
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status', options: [], valueListCode: 2028},
+
 
       ],
 
@@ -97,7 +98,7 @@ class BudgetJournal extends React.Component {
       loading:true,
     })
 
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.page}&size=${this.state.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
 
       this.setState({
         data: response.data,

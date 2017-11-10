@@ -94,7 +94,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "status", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
         },
 
         {
@@ -128,7 +128,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`查询附件失败`);
+      message.error(e.response.message.data);
     })
   }
 
@@ -166,6 +166,7 @@ class BudgetJournalDetailSubmit extends React.Component {
   //返回状态
   getStatus=()=>{
     const infoData = this.state.infoData;
+    console.log(this.state.infoData);
     switch (infoData.status){
       case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
       case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
@@ -237,11 +238,15 @@ class BudgetJournalDetailSubmit extends React.Component {
     this.context.router.push(this.state.budgetJournalPage.url);
   }
 
+  //审批中返回，撤回按钮
+  getCheckingButton(){
+    return this.state.infoData.status=="CHECKIMG"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+  }
+
   render(){
     const { data, columns,infoData} = this.state;
     return(
       <div className="budget-journal-detail-submit">
-
         <div className="base-info">
           <div className="base-info-header">
             基本信息
@@ -333,7 +338,8 @@ class BudgetJournalDetailSubmit extends React.Component {
 
         <div className="footer-operate">
             <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
-            <Button className="button-Revocation" type="primary" disable={this.state.headerAndListData.dto.status=="CHECKING"?false:true} onClick={this.handleRevocation}>撤回</Button>
+            {this.getCheckingButton()}
+
         </div>
 
       </div>
