@@ -138,7 +138,7 @@ methodList.map(method => {
       headers: header,
       data: params
     };
-    return axios(url, Object.assign(options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
+    return axios(url, Object.assign({}, options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };
 });
 
