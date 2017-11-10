@@ -12,7 +12,7 @@
   "common.please.select": "请选择",
   "common.enabled": "启用",
   "common.disabled": "禁用",
-  "common.total": "共 {total} 条数据",
+  "common.total": "共搜索到 {total} 条数据",
   "common.total.selected": "已选 {total} 条",
   "common.status": "状态: {status}",
   "common.column.status": "状态",
