@@ -8,6 +8,7 @@ const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import SearchArea from 'components/search-area'
+import menuRoute from 'share/menuRoute'
 
 class FinanceReview extends React.Component {
   constructor(props) {
@@ -65,6 +66,7 @@ class FinanceReview extends React.Component {
       ],
       nowType: 'INVOICE',
       count: {},
+      expenseDetailReview: menuRoute.getRouteItem('expense-report-detail-review', 'key')
     };
   }
 
@@ -210,6 +212,10 @@ class FinanceReview extends React.Component {
     }
   };
 
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.expenseDetailReview.url.replace(':id', record.expenseReportOID))
+  };
+
   render(){
     const { data, loading, columns, pagination, searchForm } = this.state;
     const { formatMessage } = this.props.intl;
@@ -230,6 +236,7 @@ class FinanceReview extends React.Component {
                dataSource={data}
                bordered
                pagination={pagination}
+               onRowClick={this.handleRowClick}
                loading={loading}
                size="middle"
                rowKey="expenseReportOID"/>
@@ -238,6 +245,10 @@ class FinanceReview extends React.Component {
   }
 
 }
+
+FinanceReview.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {
