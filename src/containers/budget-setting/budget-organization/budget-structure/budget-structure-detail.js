@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
 
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Checkbox, Table, message  } from 'antd'
@@ -299,6 +300,11 @@ class BudgetStructureDetail extends React.Component{
     });
   };
 
+  //返回预算表页面
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=STRUCTURE');
+  };
+
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -335,6 +341,7 @@ class BudgetStructureDetail extends React.Component{
             pagination={pagination}
             size="middle"
             bordered/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
         <SlideFrame title="新建维度"
                     show={showSlideFrame}
@@ -357,6 +364,9 @@ class BudgetStructureDetail extends React.Component{
   }
 
 }
+BudgetStructureDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {
