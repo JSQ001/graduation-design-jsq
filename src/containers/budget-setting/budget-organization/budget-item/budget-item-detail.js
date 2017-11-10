@@ -5,6 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
@@ -49,7 +50,11 @@ class BudgetItemDetail extends React.Component{
       columns: [
         {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
         {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'} /*公司类型*/
+        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
+        {                        /*启用*/
+          title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
+          render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
+        },
       ],
     }
   }
@@ -137,6 +142,10 @@ class BudgetItemDetail extends React.Component{
     });
   };
 
+  //返回预算项目
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=ITEM');
+  };
 
   render(){
     const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector} = this.state;
@@ -159,6 +168,7 @@ class BudgetItemDetail extends React.Component{
           pagination={pagination}
           size="middle"
           bordered/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
         <ListSelector type="company_item"
                       visible={companyListSelector}
@@ -168,6 +178,9 @@ class BudgetItemDetail extends React.Component{
       </div>)
   }
 }
+BudgetItemDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {

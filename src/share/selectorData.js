@@ -187,7 +187,12 @@ const selectorData = {
   'budget_item_group':{
     title:"预算项目组",
     url:`${config.budgetUrl}/api/budget/groups/query`,
-    searchForm:[],
+    searchForm:[
+      {type: 'input', id: 'itemGroupCode', label: "预算项目组代码"},
+      {type: 'input', id: 'itemGroupName', label: "预算项目组名称"},
+      {type: 'input', id: 'itemGroupCodeFrom', label:"预算项目组代码从"},
+      {type: 'input', id: 'itemGroupNameTo', label: "预算项目组名称至"}
+    ],
     columns: [
       {title: '预算项目组代码', dataIndex: 'itemGroupCode'},
       {title: '预算项目组名称', dataIndex: 'itemGroupName'},
@@ -197,7 +202,11 @@ const selectorData = {
   'currency': {
     title: "币种",
     url: `${config.baseUrl}/api/company/standard/currency`,
-    searchForm: [],
+    searchForm: [
+      {type: 'input', id: 'currencyName', label: "币种名"},
+      {type: 'input', id: 'currency', label: "代码"},
+      {type: 'rate', id: 'currency', label: "生效汇率"},
+    ],
     columns: [
       {title: '币种名', dataIndex: 'currencyName'},
       {title: '代码', dataIndex: 'currency'},
@@ -249,6 +258,19 @@ const selectorData = {
     columns: [
       {title: '公司组代码', dataIndex: 'companyGroupCode'},
       {title: '公司组描述', dataIndex: 'companyGroupName'}
+    ],
+    key: 'id'
+  },
+  'department':{
+    title: "部门",
+    url: `${config.baseUrl}/api/DepartmentGroup/selectDepartmentByTenantId`,
+    searchForm: [
+      {type: 'input', id: 'custDeptNumber', label: '部门号', defaultValue: ''},
+      {type: 'input', id: 'name', label: '部门名称', defaultValue: ''},
+    ],
+    columns: [
+      {title: '部门号', dataIndex: 'custDeptNumber'},
+      {title: '部门名称', dataIndex: 'name'}
     ],
     key: 'id'
   },

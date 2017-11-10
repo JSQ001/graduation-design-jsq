@@ -3,7 +3,6 @@ import baseConfig from './base';
 const config = {
   appEnv: 'dev',
   budgetUrl: 'http://rjfin.haasgz.hand-china.com:30496',
-  //budgetUrl: 'http://192.168.1.18:9999',
   baseUrl: 'http://139.224.220.217:11013',
   // baseUrl: 'http://apiuat.huilianyi.com',
   payUrl: 'http://rjfin.haasgz.hand-china.com:30497'
