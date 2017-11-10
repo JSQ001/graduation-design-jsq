@@ -1,11 +1,10 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-import {Button,Table,Badge} from 'antd'
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
+import {Button, Table, Badge} from 'antd'
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-
 
 
 import SlideFrame from 'components/slide-frame'
@@ -22,45 +21,64 @@ class BudgetItemType extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {title: this.props.intl.formatMessage({id:"budget.organization"}), dataIndex: 'organizationName', key: 'organizationName',},
-        {title: this.props.intl.formatMessage({id:"budget.itemTypeCode"}), dataIndex: 'itemTypeCode', key: 'itemTypeCode',},
-        {title: this.props.intl.formatMessage({id:"budget.itemTypeName"}), dataIndex: 'itemTypeName', key: 'itemTypeName',},
-        {title: this.props.intl.formatMessage({id:"budget.isEnabled"}),dataIndex: 'isEnabled', key: 'isEnabled', render: (recode,text) => {return (<div > <Badge status={ recode?"success":"error"}/>{recode?"启用":"禁用"}</div>);}},
+        {
+          title: this.props.intl.formatMessage({id: "budget.organization"}),
+          dataIndex: 'organizationName',
+          key: 'organizationName',
+        },
+        {
+          title: this.props.intl.formatMessage({id: "budget.itemTypeCode"}),
+          dataIndex: 'itemTypeCode',
+          key: 'itemTypeCode',
+        },
+        {
+          title: this.props.intl.formatMessage({id: "budget.itemTypeName"}),
+          dataIndex: 'itemTypeName',
+          key: 'itemTypeName',
+        },
+        {
+          title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
+          dataIndex: 'isEnabled',
+          key: 'isEnabled',
+          render: (recode, text) => {
+            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+          }
+        },
       ],
       searchForm: [
-        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id:"budget.itemTypeCode"})},
-        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id:"budget.itemTypeName"})},
+        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id: "budget.itemTypeCode"})},
+        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id: "budget.itemTypeName"})},
       ],
       pageSize: 10,
-      page:0,
+      page: 0,
       pagination: {
         total: 0
       },
-      searchParams:{
-        itemTypeCode:'',
-        itemTypeName:'',
+      searchParams: {
+        itemTypeCode: '',
+        itemTypeName: '',
       },
       updateParams: {
-        itemTypeCode:'',
-        itemTypeName:'',
+        itemTypeCode: '',
+        itemTypeName: '',
       },
-      showSlideFrameNew:false,
-      showSlideFramePut:false,
-      loading:true
+      showSlideFrameNew: false,
+      showSlideFramePut: false,
+      loading: true
 
     };
   }
 
 
-  componentWillMount(){
+  componentWillMount() {
     this.getList()
   }
 
 //获得数据
-  getList(){
-    let url = `${config.budgetUrl}/api/budget/itemType/query?organizationId=${this.props.organization.id}&size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode||''}&itemTypeName=${this.state.searchParams.itemTypeName||''}`;
-    return httpFetch.get(url).then((response)=>{
-      response.data.map((item)=>{
+  getList() {
+    let url = `${config.budgetUrl}/api/budget/itemType/query?organizationId=${this.props.organization.id}&size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode || ''}&itemTypeName=${this.state.searchParams.itemTypeName || ''}`;
+    return httpFetch.get(url).then((response) => {
+      response.data.map((item) => {
         item.key = item.id;
       });
       this.setState({
@@ -77,23 +95,24 @@ class BudgetItemType extends React.Component {
 
   //分页点击
   onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
+    if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
         loading: true
-      }, ()=>{
+      }, () => {
         this.getList();
       })
   };
 
 
-
   //清空搜索区域
-  clear=()=>{
-    this.setState({searchParams: {
-      itemTypeCode:'',
-      itemTypeName:'',
-    }})
+  clear = () => {
+    this.setState({
+      searchParams: {
+        itemTypeCode: '',
+        itemTypeName: '',
+      }
+    })
   }
 
   //搜索
@@ -103,17 +122,17 @@ class BudgetItemType extends React.Component {
       itemTypeName: result.itemTypeName
     };
     this.setState({
-      searchParams:searchParams,
+      searchParams: searchParams,
       loading: true,
       page: 0,
-      current:1
-    }, ()=>{
+      current: 1
+    }, () => {
       this.getList();
     })
   };
 
-   handleCloseNewSlide = (params) => {
-     this.getList();
+  handleCloseNewSlide = (params) => {
+    this.getList();
     this.setState({
       showSlideFrameNew: false
     })
@@ -121,7 +140,7 @@ class BudgetItemType extends React.Component {
 
 
   handleCloseUpdateSlide = (params) => {
-      this.getList();
+    this.getList();
 
     this.setState({
       showSlideFramePut: false
@@ -141,31 +160,28 @@ class BudgetItemType extends React.Component {
     })
   };
 
-  newItemTypeShowSlide=()=>{
+  newItemTypeShowSlide = () => {
     this.setState({
-      updateParams:{},
-    },()=>{
+      updateParams: {},
+    }, () => {
       this.showSlideNew(true)
     })
   }
 
-  putItemTypeShowSlide=(recode)=>{
+  putItemTypeShowSlide = (recode) => {
     this.setState({
-      updateParams:recode,
-    },()=>{
+      updateParams: recode,
+    }, () => {
       this.showSlidePut(true)
     })
 
   }
 
 
-
-
-
-  render(){
-    const {columns,data ,pagination,searchForm,showSlideFramePut,showSlideFrameNew,loading,updateParams,isPut} =this.state
+  render() {
+    const {columns, data, pagination, searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
     const total = pagination.total
-    return(
+    return (
       <div className="versionsDefine">
         <div className="searchFrom">
           <SearchArea
@@ -176,13 +192,15 @@ class BudgetItemType extends React.Component {
         </div>
 
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
+          <div
+            className="table-header-title">{this.props.intl.formatMessage({id: 'common.total'}, {total: `${pagination.total}`})}</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.newItemTypeShowSlide}>{this.props.intl.formatMessage({id:"common.create"}) }</Button>
+            <Button type="primary"
+                    onClick={this.newItemTypeShowSlide}>{this.props.intl.formatMessage({id: "common.create"}) }</Button>
           </div>
         </div>
 
-        <div className="Table_div" style={{  backgroundColor:111  }}>
+        <div className="Table_div" style={{backgroundColor: 111}}>
           <Table
             columns={columns}
             dataSource={data}
@@ -194,14 +212,14 @@ class BudgetItemType extends React.Component {
           />
         </div>
 
-        <SlideFrame title={this.props.intl.formatMessage({id:"budget.newItemType"})}
+        <SlideFrame title={this.props.intl.formatMessage({id: "budget.newItemType"})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
 
-        <SlideFrame title={this.props.intl.formatMessage({id:"budget.editItemType"})}
+        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
                     show={showSlideFramePut}
                     content={WrappedPutBudgetItemType}
                     afterClose={this.handleCloseUpdateSlide}
@@ -217,7 +235,7 @@ class BudgetItemType extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    organization:state.budget.organization
+    organization: state.budget.organization
   }
 }
 

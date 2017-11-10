@@ -1,7 +1,7 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-import { Form, Switch, Icon, Input, Select, Button, Row, Col, message,DatePicker} from 'antd'
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
+import {Form, Switch, Icon, Input, Select, Button, Row, Col, message, DatePicker} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -15,54 +15,88 @@ class WrappedNewCompanyMaintain extends React.Component {
     this.state = {
       searchForm: [
 
-        {          /*公司代码*/
-          type: 'input',label: this.props.intl.formatMessage({id:"company.companyCode"}), id: "companyCode"
+        {
+          /*公司代码*/
+          type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
+        },
+        {
+          /*公司名称*/
+          type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", isRequired: true
+        },
+        {
+          /*公司类型*/
+          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,
+        },
+        {
+          /*账套*/
+          type: 'select',
+          label: this.props.intl.formatMessage({id: "company.setOfBooksName"}),
+          id: "setOfBooksId",
+          options: [],
+          method: 'get',
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          //getUrl: `${config.baseUrl}/api/refactor/tenant/company/register`,
+          labelKey: 'setOfBooksCode',
+          valueKey: 'id'
+        },
+        {
+          /*法人*/
+          type: 'select',
+          label: this.props.intl.formatMessage({id: "company.legalEntityName"}),
+          id: "legalEntityId",
+          options: [],
+          method: 'get',
+          getUrl: `${config.baseUrl}/api/all/legalentitys`,
+          labelKey: 'entityName',
+          valueKey: 'companyReceiptedOID'
+        },
+        {
+          /*公司级别*/
+          type: 'select',
+          label: this.props.intl.formatMessage({id: "company.companyLevelName"}),
+          id: "companyLevelId",
+          options: [],
+          method: 'get',
+          getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
+          labelKey: 'description',
+          valueKey: 'id'
+        },
+        {
+          /*上级机构*/
+          type: 'select',
+          label: this.props.intl.formatMessage({id: "company.parentCompanyName"}),
+          id: "parentCompanyId",
+          options: [],
+          method: 'get',
+          getUrl: `${config.baseUrl}/api/company/by/tenant`,
+          labelKey: 'name',
+          valueKey: 'id'
         },
 
-        {          /*公司名称*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.name"}), id: "name",
+        {
+          /*有效日期从*/
+          type: 'date',
+          label: this.props.intl.formatMessage({id: "company.startDateActive"}),
+          id: "startDateActive",
+          event: 'startDateActive',
+          isRequired: true,
         },
-        {          /*公司类型*/
-          type: 'select',label: this.props.intl.formatMessage({id:"company.companyType"}), id: "companyType",options: [], method: 'get',
+        {
+          /*有效日期至*/
+          type: 'date',
+          label: this.props.intl.formatMessage({id: "company.endDateActive"}),
+          id: "endDateActive",
+          event: 'endDateActive'
         },
-        {          /*账套*/
-          type: 'select', label: this.props.intl.formatMessage({id:"company.setOfBooksName"}), id:"setOfBooksName",options: [], method: 'get',
-          labelKey:'setOfBooksName',valueKey:'setOfBooksId'
-        },
-        {          /*法人*/
-          type: 'select', label: this.props.intl.formatMessage({id:"company.legalEntityName"}), id:"legalEntityName",options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/all/legalentitys`,
-          labelKey: 'legalEntityName',valueKey:'legalEntityName'
-        },
-        {          /*公司级别*/
-          type: 'select',label: this.props.intl.formatMessage({id:"company.companyLevelName"}), id:"companyLevelName",options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/companyLevel/selectByTenantId`,
-          labelKey: 'description',valueKey:'id'
-        },
-        {          /*上级机构*/
-          type: 'select', label: this.props.intl.formatMessage({id:"company.parentCompanyName"}), id:"parentCompanyName", options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/company/by/tenant`,
-          labelKey: 'name',valueKey:'id'
-        },
-
-        {          /*有效日期从*/
-          type: 'date', label: this.props.intl.formatMessage({id:"company.startDateActive"}), id: "startDateActive",event:'startDateActive'
-        },
-        {          /*有效日期至*/
-          type: 'date', label: this.props.intl.formatMessage({id:"company.endDateActive"}), id: "endDateActive",event:'endDateActive'
-        },
-        {         /*地址*/
-          type: 'input', label: this.props.intl.formatMessage({id:"company.address"}), id: "address", labelKey: 'address',
-        }
 
 
       ],
-      startDateActive:null,
-      endDateActive:null,
+      startDateActive: null,
+      endDateActive: null,
 
-      companyMaintainPage: menuRoute.getRouteItem('company-maintain','key'),                 //公司维护
-      newCompanyMaintainPage: menuRoute.getRouteItem('new-company-maintain','key'),         //公司新建
-      companyMaintainDetailPage: menuRoute.getRouteItem('company-maintain-detail','key'),  //公司详情
+      companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
+      newCompanyMaintainPage: menuRoute.getRouteItem('new-company-maintain', 'key'),          //公司新建
+      companyMaintainDetailPage: menuRoute.getRouteItem('company-maintain-detail', 'key'),    //公司详情
 
       loading: false,
       businessTypeOptions: []
@@ -70,22 +104,19 @@ class WrappedNewCompanyMaintain extends React.Component {
   }
 
 
+  componentWillMount() {
 
-  componentWillMount(){
-    this.getSystemValueList(2018).then(res => {
-      this.setState({ businessTypeOptions: res.data.values })
-    })
   }
 
   //处理表单事件
   handleEvent = (value, event) => {
-    switch(event){
-      case 'startDateActive':{
+    switch (event) {
+      case 'startDateActive': {
         this.setState({
           startDateActive: value,
         });
       }
-      case 'endDateActive':{
+      case 'endDateActive': {
         this.setState({
           endDateActive: value,
         });
@@ -95,24 +126,24 @@ class WrappedNewCompanyMaintain extends React.Component {
   };
 
   //处理时间
-  HandleDisabledDate = (value,event)=>{
-      if( event=='startDateActive'){
-        if(!this.state.endDateActive || !value){
-          return false
-        }
-        return value.valueOf()> this.state.endDateActive.valueOf();
+  HandleDisabledDate = (value, event) => {
+    if (event == 'startDateActive') {
+      if (!this.state.endDateActive || !value) {
+        return false
       }
-      else if( event=='endDateActive'){
-        if (!this.state.startDateActive || !value) {
-          return false;
-        }
-        return value.valueOf() <= this.state.startDateActive.valueOf();
+      return value.valueOf() > this.state.endDateActive.valueOf();
+    }
+    else if (event == 'endDateActive') {
+      if (!this.state.startDateActive || !value) {
+        return false;
       }
+      return value.valueOf() <= this.state.startDateActive.valueOf();
+    }
   }
 
   //得到值列表的值增加options
   getValueListOptions = (item) => {
-    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
+    if (item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)) {
       this.getSystemValueList(item.valueListCode).then(res => {
         let options = [];
         res.data.values.map(data => {
@@ -120,27 +151,26 @@ class WrappedNewCompanyMaintain extends React.Component {
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
-          if(searchItem.id === item.id)
+          if (searchItem.id === item.id)
             searchItem.options = options;
-          if(searchItem.type === 'items')
+          if (searchItem.type === 'items')
             searchItem.items.map(subItem => {
-              if(subItem.id === item.id)
+              if (subItem.id === item.id)
                 subItem.options = options;
             });
           return searchItem;
         });
-        this.setState({ searchForm });
+        this.setState({searchForm});
       })
     }
   };
 
 
-
   //给select增加options
   getOptions = (item) => {
-    if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
+    if (item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)) {
       let url = item.getUrl;
-      if(item.method === 'get' && item.getParams){
+      if (item.method === 'get' && item.getParams) {
         url += '?';
         let keys = Object.keys(item.getParams);
         keys.map(paramName => {
@@ -154,30 +184,29 @@ class WrappedNewCompanyMaintain extends React.Component {
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
-          if(searchItem.id === item.id)
+          if (searchItem.id === item.id)
             searchItem.options = options;
-          if(searchItem.type === 'items')
+          if (searchItem.type === 'items')
             searchItem.items.map(subItem => {
-              if(subItem.id === item.id)
+              if (subItem.id === item.id)
                 subItem.options = options;
             });
           return searchItem;
         });
-        this.setState({ searchForm });
+        this.setState({searchForm});
       })
     }
   };
 
 
-
   onChangeSelect = (item, value, index) => {
     let valueWillSet = {};
     let searchForm = this.state.searchForm;
-    if(index !== undefined){
+    if (index !== undefined) {
       searchForm[index].items = searchForm[index].items.map(searchItem => {
-        if(searchItem.id === item.id){
+        if (searchItem.id === item.id) {
           valueWillSet[searchItem.id] = value.key + '';
-          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+          if (searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)) {
             let dataOption = {};
             dataOption[item.valueKey] = value.key;
             dataOption[item.labelKey] = value.label;
@@ -188,9 +217,9 @@ class WrappedNewCompanyMaintain extends React.Component {
       });
     } else {
       searchForm = searchForm.map(searchItem => {
-        if(searchItem.id === item.id){
+        if (searchItem.id === item.id) {
           valueWillSet[searchItem.id] = value.key + '';
-          if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
+          if (searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)) {
             let dataOption = {};
             dataOption[item.valueKey] = value.key;
             dataOption[item.labelKey] = value.label;
@@ -200,39 +229,48 @@ class WrappedNewCompanyMaintain extends React.Component {
         return searchItem;
       });
     }
-    this.setState({ searchForm }, () => {
+    this.setState({searchForm}, () => {
       this.props.form.setFieldsValue(valueWillSet);
     });
-    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    let handle = item.event ? (event) => this.handleEvent(event, item.event) : () => {
+    };
     handle();
   };
 
   //渲染搜索表单组件
-  renderFormItem(item){
-    let handle = item.event ? (event) => this.handleEvent(event, item.event) : ()=>{};
-    let disabledDate = item.event?(event)=>this.HandleDisabledDate(event,item.event):()=>{};
-    switch(item.type){
+  renderFormItem(item) {
+    let handle = item.event ? (event) => this.handleEvent(event, item.event) : () => {
+    };
+    let disabledDate = item.event ? (event) => this.HandleDisabledDate(event, item.event) : () => {
+    };
+    switch (item.type) {
       //输入组件
-      case 'input':{
-        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
+      case 'input': {
+        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle}
+                      disabled={item.disabled}/>
+      }
+      case 'input_long': {
+        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle}
+                      disabled={item.disabled} style={{width: 600}}/>
       }
       //选择组件
-      case 'select':{
+      case 'select': {
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
                   disabled={item.disabled}
                   allowClear
                   labelInValue={!!item.entity}
-                  onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
-            {item.options.map((option)=>{
+                  onFocus={item.getUrl ? () => this.getOptions(item) : () => {
+                  }}>
+            {item.options.map((option) => {
               return <Option key={'' + option.key} title={JSON.stringify(option.value)}>{option.label}</Option>
             })}
           </Select>
         )
       }
       //值列表选择组件
-      case 'value_list':{
+      case 'value_list': {
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
@@ -240,24 +278,26 @@ class WrappedNewCompanyMaintain extends React.Component {
                   allowClear
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
-            {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            {item.options.map((option) => {
+              return <Option key={option.value}
+                             title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
       }
       //日期组件
-      case 'date':{
-        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled}  disabledDate={disabledDate}/>
+      case 'date': {
+        return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled} disabledDate={disabledDate}
+                           style={{width: '100%'}}/>
       }
     }
   }
 
-  getFields=()=>{
-    const { getFieldDecorator } = this.props.form;
+  getFields = () => {
+    const {getFieldDecorator} = this.props.form;
     const formItemLayout = {};
     const children = [];
-    this.state.searchForm.map((item, i)=>{
+    this.state.searchForm.map((item, i) => {
       children.push(
         <Col span={8} key={item.id}>
           {item.type === 'items' ? this.renderFormItem(item) :
@@ -279,25 +319,26 @@ class WrappedNewCompanyMaintain extends React.Component {
     return children;
   }
 
-
+//保存新建公司
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       console.log(values);
-      const valuesData={
+      const valuesData = {
         ...values,
-        "startDateActive": values['startDateActive']?values['startDateActive'].format('YYYY-MM-DD'):'',
-        "endDateActive": values['endDateActive']?values['endDateActive'].format('YYYY-MM-DD'):'',
+        "startDateActive": values['startDateActive'] ? values['startDateActive'].format('YYYY-MM-DD') : '',
+        "endDateActive": values['endDateActive'] ? values['endDateActive'].format('YYYY-MM-DD') : '',
       }
 
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.baseUrl}/api/refactor/tenant/company/register`, valuesData).then((res)=>{
+        httpFetch.post(`${config.baseUrl}/api/refactor/tenant/company/register`, valuesData).then((res) => {
           this.setState({loading: false});
           message.success(`公司新建成功`);
-          this.context.router.replace(this.state.budgetJournalTypeDetailPage.url.replace(":typeId", res.data.id));
-        }).catch((e)=>{
-          if(e.response){
+          let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOId);
+          this.context.router.push(path);
+        }).catch((e) => {
+          if (e.response) {
             message.error(`新建失败`);
             this.setState({loading: false});
           } else {
@@ -308,9 +349,11 @@ class WrappedNewCompanyMaintain extends React.Component {
     });
   };
 
-  render(){
-    const { getFieldDecorator } = this.props.form;
-    const { formatMessage } = this.props.intl;
+  render() {
+
+    const {getFieldDecorator} = this.props.form;
+    const {formatMessage} = this.props.intl;
+    const formItemLayout = {};
     return (
       <div onSubmit={this.handleSave}>
         <div className="common-top-area">
@@ -319,9 +362,26 @@ class WrappedNewCompanyMaintain extends React.Component {
               {this.getFields()}
             </Row>
             <Row>
+              <Col span={24}>
+                <FormItem {...formItemLayout} label="地址">
+                  {getFieldDecorator('address', {
+                    rules: [{
+                      required: true,
+                      message: '请输入',
+                    }],
+
+                  })(
+                    <Input  />
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
               <Col span={8}>
                 <Button htmlType="submit" type="primary">保存</Button>
-                <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');}}>取消</Button>
+                <Button style={{marginLeft: 8}} onClick={() => {
+                  this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');
+                }}>取消</Button>
               </Col>
             </Row>
           </Form>

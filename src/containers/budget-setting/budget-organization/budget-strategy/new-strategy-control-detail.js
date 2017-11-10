@@ -52,7 +52,6 @@ class NewStrategyControlDetail extends React.Component{
   componentWillReceiveProps(nextProps){
     const params = nextProps.params;
     if (params.isNew && !this.state.updateParams.strategyControlId) {  //新建
-      console.log(123);
       this.props.form.resetFields();
       this.setState({
         updateParams: params.newParams,

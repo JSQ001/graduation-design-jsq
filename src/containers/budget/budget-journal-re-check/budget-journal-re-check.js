@@ -13,9 +13,6 @@ import SearchArea from 'components/search-area.js';
 
 import "styles/budget/budget-journal-re-check/budget-journal-re-check.scss"
 
-
-const journalTypeCode = [];
-
 class BudgetJournalReCheck extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +25,6 @@ class BudgetJournalReCheck extends React.Component {
         page:0,
         total:0,
         pageSize:10,
-
       },
 
       searchForm: [
@@ -36,15 +32,10 @@ class BudgetJournalReCheck extends React.Component {
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
-
-
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
-          labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
-
-
+          labelKey: 'journalTypeName', valueKey: 'id'},
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
-
         {type: 'select', id:'versionId', label: '预算版本', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'versionName', valueKey: 'id'},
@@ -58,7 +49,6 @@ class BudgetJournalReCheck extends React.Component {
           getUrl: `${config.budgetUrl}/api/budget/journals/selectCheckedEmp`, getParams: {},
           labelKey: 'empName', valueKey: 'empOid'},
         {type:'date',id:'createData', label: '创建时间'}
-
       ],
 
       columns: [
@@ -100,17 +90,6 @@ class BudgetJournalReCheck extends React.Component {
               case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
             }
           }
-          /*render(recode){
-            switch (recode){
-              case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
-              case 'SUBMIT':{ return  <Tag color="#f50">提交</Tag>}
-              case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
-              case 'CHECKED':{return <Tag color="#234234">审核</Tag>}
-              case 'POSTED':{return <Tag color="#87d068">复核</Tag>}
-              case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
-              case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
-            }
-          }*/
         },
       ],
 
@@ -131,12 +110,9 @@ class BudgetJournalReCheck extends React.Component {
         loading: false,
         data: response.data,
         pagination: {
-          page: this.state.pagination.page,
-          current: this.state.pagination.current,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-          total: Number(response.headers['x-total-count']),
+          total: Number(response.headers['x-total-count']) ? Number(response.headers['x-total-count']) : 0,
+          onChange: this.onChangePager,
+          current: this.state.page + 1
         }
       },()=>{
 
@@ -145,27 +121,23 @@ class BudgetJournalReCheck extends React.Component {
   }
 
   //分页点击
-  onChangePager = (pagination,filters, sorter) =>{
-    this.setState({
-      pagination:{
-        page: pagination.current-1,
-        current: pagination.current,
-        pageSize: pagination.pageSize
-      }
-    }, ()=>{
-      this.getList();
-    })
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, ()=>{
+        this.getList();
+      })
   };
 
   //点击搜搜索
   handleSearch = (values) =>{
     values.createData;
-
     const valuesData={
       ...values,
       "createData":values['createData']?values['createData'].format('YYYY-MM-DD'):'',
     }
-    console.log(valuesData);
     this.setState({
       params:valuesData,
     },()=>{
@@ -181,7 +153,6 @@ class BudgetJournalReCheck extends React.Component {
 
   //跳转到详情
   HandleRowClick=(value)=>{
-    console.log(value);
     const journalCode =value.journalCode;
 
     let path=this.state.budgetJournalDetailReCheckDetailPage.url.replace(":journalCode",journalCode);
