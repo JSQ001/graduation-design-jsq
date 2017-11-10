@@ -391,7 +391,7 @@ class NewBudgetJournalFrom extends React.Component {
 
         <Form onSubmit={this.handleFrom} style={{}}>
           <Card title="基本信息" bordered={false} style={{with: "100%"}}>
-            <Row gutter={40}>
+            <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalCode"})}>
                   {getFieldDecorator('journalCode', {
@@ -445,7 +445,7 @@ class NewBudgetJournalFrom extends React.Component {
           </Card>
           <div style={{height: 16}}></div>
           <Card title="预算信息" bordered={false} style={{with: "100%"}}>
-            <Row gutter={40}>
+            <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalTypeId"})}>
                   {getFieldDecorator('journalTypeName', {
@@ -594,7 +594,7 @@ class NewBudgetJournalFrom extends React.Component {
           <div style={{height: 16}}></div>
 
           <Card title="附件信息" bordered={false} style={{with: "100%"}}>
-            <Row gutter={40}>
+            <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem
                   {...formItemLayout}

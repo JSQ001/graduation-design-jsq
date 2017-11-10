@@ -30,13 +30,8 @@ class BudgetJournalDetail extends React.Component {
       updateState:false,
       pageSize:10,
       page:0,
+      total:0,
       fileList:[],
-      pagination: {
-        current:0,
-        page:0,
-        total:0,
-        pageSize:10,
-      },
       selectorItem:{},
       selectedData:[],
       rowSelection: {
@@ -334,29 +329,11 @@ class BudgetJournalDetail extends React.Component {
         loading:false,
         headerAndListData:response.data,
         infoDate:infoData,
-        data:listData,
-        pagination: {
-          total:response.data.list.length ,
-          onChange: this.onChangePager,
-          pageSize: this.state.pageSize,
-          current: this.state.page + 1
-        }
+        data:listData
       })
     })
   }
 
-  //分页点击
-  onChangePager = (pagination,filters, sorter) =>{
-    this.setState({
-      pagination:{
-        page: pagination.current-1,
-        current: pagination.current,
-        pageSize: pagination.pageSize
-      }
-    }, ()=>{
-      this.getList();
-    })
-  };
 
 
   //保存编辑
@@ -525,7 +502,7 @@ class BudgetJournalDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.total}`})}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
@@ -536,7 +513,6 @@ class BudgetJournalDetail extends React.Component {
           </div>
           <Table columns={columns}
                   dataSource={data}
-                  pagination={pagination}
                   rowKey={record=>record.id}
                   bordered
                   size="middle"

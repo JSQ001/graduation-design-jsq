@@ -28,7 +28,7 @@ class BudgetJournal extends React.Component {
 
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
-          labelKey: 'journalTypeName', valueKey: 'journalTypeId'},
+          labelKey: 'journalTypeName', valueKey: 'id'},
 
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
@@ -75,19 +75,7 @@ class BudgetJournal extends React.Component {
               case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
             }
           }
-      /*   render(recode){
-              switch (recode){
-                case 'NEW':{ return <Tag color="#2db7f5">新建</Tag>}
-                case 'SUBMIT':{ return  <Tag color="#f50">提交审批</Tag>}
-                case 'SUNMITRETAR':{return <Tag color="#dd12333">提交撤回</Tag> }
-                case 'REJECT':{ return <Tag color="#e93652">拒绝</Tag>}
-                case 'CHECKED':{return <Tag color="#234234">审批完成</Tag>}
-                case 'CHECKING':{return <Tag color="#ffdd44">审批中</Tag>}
-                case 'POSTED':{return <Tag color="#87d068">复核</Tag>}
-                case 'BACKLASHSUBMIT':{return <Tag color="#871233">反冲提交</Tag>}
-                case 'BACKLASHCHECKED':{return <Tag color="#823344">反冲审核</Tag>}
-              }
-      }*/
+
     },
   ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项
@@ -125,9 +113,6 @@ class BudgetJournal extends React.Component {
 
   //分页点击
   onChangePager = (page) => {
-    console.log("BHNHG");
-    console.log(page);
-    console.log("!@#!@#!@#")
     if(page - 1 !== this.state.page)
       this.setState({
         page: page - 1,

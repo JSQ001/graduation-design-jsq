@@ -17,17 +17,10 @@ class BudgetJournalDetailSubmit extends React.Component {
     this.state = {
       loading: true,
       data: [],
+      total:0,
       headerAndListData: {},
       pageSize: 10,
       page: 0,
-      pagination: {
-        current: 0,
-        page: 0,
-        total: 0,
-        pageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: true,
-      },
       rowSelection: {
         type: 'checkbox',
         selectedRowKeys: [],
@@ -156,12 +149,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         headerAndListData:request.data,
         infoData:headerData,
         data:listData,
-        pagination: {
-          total:request.data.list.length ,
-          onChange: this.onChangePager,
-          pageSize: this.state.pageSize,
-          current: this.state.page + 1
-        }
+        total:request.data.list.length ,
       })
     })
   }
@@ -250,7 +238,7 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
   render(){
-    const { data, columns,pagination,infoData} = this.state;
+    const { data, columns,infoData} = this.state;
     return(
       <div className="budget-journal-detail-submit">
 
@@ -324,7 +312,6 @@ class BudgetJournalDetailSubmit extends React.Component {
 
         <Table columns={columns}
                dataSource={data}
-               pagination={pagination}
                bordered
                size="middle"
                rowKey={recode=>{return recode.id}}
