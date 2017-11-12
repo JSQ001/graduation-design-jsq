@@ -178,7 +178,7 @@ class BudgetJournalDetail extends React.Component {
     data.map((item)=>{
       sum+= item.functionalAmount;
     })
-    return "CNY"+" "+sum;
+    return "CNY"+" "+sum.toFixed(2);
   }
 
 
@@ -507,7 +507,7 @@ class BudgetJournalDetail extends React.Component {
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
               <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="Yes" cancelText="No">
-               <Button className="delete" >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
+               <Button className="delete" disable={!(this.state.selectedData.length>0)} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
             </div>
           </div>
@@ -516,6 +516,7 @@ class BudgetJournalDetail extends React.Component {
                   rowKey={record=>record.id}
                   bordered
                   size="middle"
+                  scroll={{ x: '150%' }}
                   onRowClick={this.handlePutData}
                   rowSelection={rowSelection}
                   loading={loading}

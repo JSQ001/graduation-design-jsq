@@ -11,6 +11,7 @@ import debounce from 'lodash.debounce';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import Chooser from 'components/chooser'
 let companyId ='';
 let rateData=1;
 
@@ -67,7 +68,7 @@ class NewBudgetJournalDetail extends React.Component {
       params:{},
       rate:12,
     };
-    this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
+
   }
   //表单的联动事件处理
   handleEvent(event,e){
@@ -77,7 +78,10 @@ class NewBudgetJournalDetail extends React.Component {
         event =JSON.parse(event);
         console.log(event);
         companyId = event.id;
-        let url=`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=${event.id}` ;
+        let url=`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=${event.id}`;
+        this.props.form.setFieldsValue({
+          unitId:''
+        });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
           if(searchItem.id === 'unitId')
@@ -107,11 +111,17 @@ class NewBudgetJournalDetail extends React.Component {
         this.props.form.setFieldsValue({
           rate:event.attribute11
         });
+        this.props.form.setFieldsValue({
+          functionalAmount:0
+        });
+        this.props.form.setFieldsValue({
+          amount:0
+        });
         return;
       }
       case 'amount':{
 
-        let functionalAmount =  event*rateData;
+        let functionalAmount = (event*rateData).toFixed(2);
 
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
@@ -248,6 +258,16 @@ class NewBudgetJournalDetail extends React.Component {
             })}
           </Select>
         )
+      }
+      case 'list':{
+        return <Chooser placeholder={item.placeholder}
+                        disabled={item.disabled}
+                        type={item.listType}
+                        labelKey={item.labelKey}
+                        valueKey={item.valueKey}
+                        listExtraParams={item.listExtraParams}
+                        selectorItem={item.selectorItem}
+                        single={item.single}/>
       }
       //数字选择InputNumber
       case 'inputNumber':{
