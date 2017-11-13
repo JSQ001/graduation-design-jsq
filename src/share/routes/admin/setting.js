@@ -11,15 +11,68 @@ import CompanyMaintain from 'containers/setting/company-maintain/company-maintai
 import NewCompanyMaintain from 'containers/setting/company-maintain/new-company-maintain'
 import CompanyMaintainDetail from 'containers/setting/company-maintain/company-maintain-detail'
 import CompanyGroup from 'containers/setting/company-group/company-group'
+import NewCompanyGroup from 'containers/setting/company-group/new-company-group'
+import CompanyGroupDetail from 'containers/setting/company-group/company-group-detail'
+import DepartmentGroup from 'containers/setting/department-group/department-group'
+import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
+import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
+
+//新建部门组
+const newDepartmentGroup = {
+  key: 'new-department-group',
+  url: '/main/setting/department-group/new-department-group',
+  components: NewDepartmentGroup,
+  parent: "department-group"
+};
+
+//部门组详情
+const departmentGroupDetail = {
+  key: 'department-group-detail',
+  url: '/main/setting/department-group/department-group-detail',
+  components: DepartmentGroupDetail,
+  parent: 'department-group'
+};
+
+//部门组
+const departmentGroup = {
+  key: 'department-group',
+  url: '/main/setting/department-group',
+  components: DepartmentGroup,
+  parent: 'setting',
+  children: {
+    newDepartmentGroup,
+    departmentGroupDetail
+  }
+};
+
+//新建公司组
+const newCompanyGroup = {
+  key: 'new-company-group',
+  url: '/main/setting/company-group/new-company-group',
+  components: NewCompanyGroup,
+  parent: 'company-group',
+};
+
+//公司组详情
+const companyGroupDetail = {
+  key: 'company-group-detail',
+  url: '/main/setting/company-group/company-group-detail',
+  components: CompanyGroupDetail,
+  parent: 'company-group',
+};
 
 
 
 //公司组
 const companyGroup = {
   key: 'company-group',
-  url: '/main/setting/company-group/company-group',
+  url: '/main/setting/company-group',
   components: CompanyGroup,
   parent: 'setting',
+  children: {
+    newCompanyGroup,
+    companyGroupDetail
+  }
 };
 
 //新建值列表
@@ -137,7 +190,7 @@ const companyMaintain ={
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup],
   icon: 'setting',
   admin: true
 };

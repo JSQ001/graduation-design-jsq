@@ -15,7 +15,7 @@ import 'styles/budget-setting/budget-organization/budget-structure/new-budget-st
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class NewCompanyGroup extends React.Component{
+class NewDepartmentGroup extends React.Component{
   constructor(props){
     super(props);
     this.state = {
@@ -184,7 +184,7 @@ class NewCompanyGroup extends React.Component{
   }
 }
 
-NewCompanyGroup.contextTypes = {
+NewDepartmentGroup.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -196,6 +196,6 @@ function mapStateToProps(state) {
 
 
 
-const WrappedNewCompanyGroup = Form.create()(NewCompanyGroup);
+const WrappedNewDepartmentGroup = Form.create()(NewDepartmentGroup);
 
-export default connect(mapStateToProps)(injectIntl(WrappedNewCompanyGroup));
+export default connect(mapStateToProps)(injectIntl(WrappedNewDepartmentGroup));
