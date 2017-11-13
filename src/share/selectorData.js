@@ -304,35 +304,48 @@ const selectorData = {
     ],
     key: 'id'
   },
-  //${config.baseUrl}/api/company/by/term?setOfBooksId=${this.props.company.setOfBooksId
-  'journal_Line_company': {
-    title: '选择公司',
-    url: `${config.baseUrl}/api/company/by/term`,
-    searchForm: [
-      {type: 'input', id: 'code', label: "公司代码"},
-      {type: 'input', id: 'name', label: "公司名称"},
-    ],
-    columns: [
-      {title: "公司代码", dataIndex: 'code'},
-      {title: "公司名称", dataIndex: 'name'},
-      {title:"描述",dataIndex:'description'}
 
-    ],
-    key: 'id'
-  },
-  'journal_Line_department':{
-    title: "选择部门",
-    url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
-    searchForm: [
-      {type: 'input', id:'id', label: '部门ID'},
-      {type: 'input', id:'name', label: '部门名称'},
-    ],
+  'cost_center_item': {
+    title: '成本中心',
+    url: `${config.baseUrl}/api/cost/centers/`,
+    searchForm: [],
     columns: [
-      {title: '部门ID', dataIndex: 'id'},
-      {title: '部门名称', dataIndex: 'name'}
+      {title: "成本中心代码", dataIndex: 'code'},
+      {title: "成本中心名称", dataIndex: 'name'}
     ],
-    key: 'id'
+    listKey: 'costCenterItems',
+    key: 'costCenterItemOID'
   },
+
+
+  'journal_Line_company': {
+  title: '选择公司',
+  url: `${config.baseUrl}/api/company/by/term`,
+  searchForm: [
+{type: 'input', id: 'code', label: "公司代码"},
+{type: 'input', id: 'name', label: "公司名称"},
+  ],
+  columns: [
+{title: "公司代码", dataIndex: 'code'},
+{title: "公司名称", dataIndex: 'name'},
+{title:"描述",dataIndex:'description'}
+
+  ],
+  key: 'id'
+},
+  'journal_Line_department':{
+  title: "选择部门",
+  url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
+  searchForm: [
+{type: 'input', id:'id', label: '部门ID'},
+{type: 'input', id:'name', label: '部门名称'},
+  ],
+  columns: [
+{title: '部门ID', dataIndex: 'id'},
+{title: '部门名称', dataIndex: 'name'}
+  ],
+  key: 'id'
+},
 
 };
 

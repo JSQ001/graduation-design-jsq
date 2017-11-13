@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
-import { Table, Badge, Button, Popover, message, Popconfirm } from 'antd';
+import { Table, Badge, Button, Popover, message } from 'antd';
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
@@ -36,10 +36,6 @@ class BudgetOrganization extends React.Component {
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
             <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
-            <span className="ant-divider" />
-            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.organization"}, {organizationName: record.organizationName})}>{/* 你确定要删除organizationName吗 */}
-              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
-            </Popconfirm>
           </span>)},  //操作
       ],
       pagination: {
@@ -73,13 +69,6 @@ class BudgetOrganization extends React.Component {
     this.setState({
       nowOrganization: record,
       showSlideFrame: true
-    })
-  };
-
-  deleteItem = (e, record) => {
-    httpFetch.delete(`${config.budgetUrl}/api/budget/organizations/${record.id}`).then(response => {
-      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.organizationName})); // name删除成功
-      this.getList();
     })
   };
 
