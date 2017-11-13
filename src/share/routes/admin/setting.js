@@ -12,6 +12,8 @@ import NewCompanyMaintain from 'containers/setting/company-maintain/new-company-
 import CompanyMaintainDetail from 'containers/setting/company-maintain/company-maintain-detail'
 import CompanyGroup from 'containers/setting/company-group/company-group'
 
+
+
 //公司组
 const companyGroup = {
   key: 'company-group',

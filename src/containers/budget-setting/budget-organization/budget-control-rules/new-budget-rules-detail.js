@@ -438,43 +438,6 @@ class NewBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-            validateStatus={validateStatusMap.parameterLowerLimit}
-            help={helpMap.parameterLowerLimit}>
-            {getFieldDecorator('parameterLowerLimit',
-              {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({id: "common.please.select"})
-                  },
-                  {
-                    validator: (item,value,callback)=>{
-                      console.log(value)
-                      if(typeof value === 'undefined'){
-                        validateStatusMap.parameterLowerLimit = "error";
-                        helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
-                      }
-                      callback();
-                    }
-                  }
-                ]
-              })(
-              <div>
-                {typeof ruleParamDetail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterLowerLimit")}/> :
-                  <Chooser
-                    placeholder={formatMessage({id:"common.please.select"})}
-                    type={ paramValueMap[ruleParamDetail.name].listType}
-                    listExtraParams= {{organizationId:this.state.organizationId}}
-                    labelKey={  paramValueMap[ruleParamDetail.name].codeKey}
-                    valueKey={  paramValueMap[ruleParamDetail.name].valueKey}
-                    single={true}
-                    value={detail.parameterLowerLimit}
-                    onChange={(value)=> this.handleValueChange(value,"parameterLowerLimit")}
-                  />}
-              </div>
-            )}
-          </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
             validateStatus={validateStatusMap.parameterUpperLimit}
             help={helpMap.parameterUpperLimit}>
@@ -507,6 +470,43 @@ class NewBudgetRulesDetail extends React.Component{
                     single={true}
                     value={detail.parameterUpperLimit}
                     onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
+                  />}
+              </div>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
+                    validateStatus={validateStatusMap.parameterLowerLimit}
+                    help={helpMap.parameterLowerLimit}>
+            {getFieldDecorator('parameterLowerLimit',
+              {
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({id: "common.please.select"})
+                  },
+                  {
+                    validator: (item,value,callback)=>{
+                      console.log(value)
+                      if(typeof value === 'undefined'){
+                        validateStatusMap.parameterLowerLimit = "error";
+                        helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
+                      }
+                      callback();
+                    }
+                  }
+                ]
+              })(
+              <div>
+                {typeof ruleParamDetail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterLowerLimit")}/> :
+                  <Chooser
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={ paramValueMap[ruleParamDetail.name].listType}
+                    listExtraParams= {{organizationId:this.state.organizationId}}
+                    labelKey={  paramValueMap[ruleParamDetail.name].codeKey}
+                    valueKey={  paramValueMap[ruleParamDetail.name].valueKey}
+                    single={true}
+                    value={detail.parameterLowerLimit}
+                    onChange={(value)=> this.handleValueChange(value,"parameterLowerLimit")}
                   />}
               </div>
             )}

@@ -133,18 +133,32 @@ const selectorData = {
   },
   'select_dimension':{
     title: '选择维度',
+    url: `${config.baseUrl}/api/cost/center/company`,
     searchForm: [
-      {type: 'input', id: 'dimensionCode', label: '维度代码'},
-      {type: 'input', id: 'dimensionName', label: '维度名称'},
+      {type: 'input', id: 'code', label: '维度代码'},
+      {type: 'input', id: 'name', label: '维度名称'},
     ],
     columns: [
-      {title: '维度代码', dataIndex: 'dimensionCode', width: '25%'},
-      {title: '维度名称', dataIndex: 'dimensionName', width: '25%'},
+      {title: '维度代码', dataIndex: 'code', width: '25%'},
+      {title: '维度名称', dataIndex: 'name', width: '25%'},
       {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
       {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
     ],
     key: 'id'
   },
+  'select_dimensionValue':{
+    title: '选择默认维值',
+    searchForm: [
+      {type: 'input', id: 'code', label: '维值代码'},
+      {type: 'input', id: 'name', label: '维值名称'},
+    ],
+    columns: [
+      {title: '维值代码', dataIndex: 'code', width: '25%'},
+      {title: '维值名称', dataIndex: 'name', width: '25%'},
+    ],
+    key: 'id'
+  },
+
   'budget_journal_type':{
     title: "预算日记账类型",
     url: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`,
