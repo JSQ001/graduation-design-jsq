@@ -466,7 +466,7 @@ class SearchArea extends React.Component{
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
-        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
+        <Col span={item.colSpan || 8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
@@ -575,6 +575,7 @@ class SearchArea extends React.Component{
           getParams: {}               ╲╲可选,getUrl所需要的参数
           single: false                ╲╲可选,当type为list时是否为单选
           valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
+          colSpan: ''                    ╲╲可选，自定义搜索项的宽度
         }
  */
 
