@@ -5,6 +5,7 @@ import { injectIntl } from 'react-intl';
 import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
+import Chooser from 'components/chooser.js'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import 'styles/budget-setting/budget-organization/budget-structure/new-dimension.scss'
@@ -22,7 +23,8 @@ class NewDimension extends React.Component{
       listSelectedData: [],
       layoutPosition:[], //值列表：布局位置
       extraParams: {},
-      loading: false
+      loading: false,
+      dimensionCode: {}
     };
   }
 
@@ -78,45 +80,18 @@ class NewDimension extends React.Component{
     }))
   };
 
-  handleFocus = () => {
-    console.log(1)
-
-    this.refs.blur.focus();
-    this.showList(true)
-  };
-
-  showList = (flag) =>{
+  //chooser选值
+  handleValueChange = (value)=>{
+    console.log(value)
     this.setState({
-      showSelectDimension: flag,
+      dimensionCode: value
     })
-  };
-
-  /**
-   * ListSelector确认点击事件，返回的结果包装为form需要的格式
-   * @param result
-   */
-  handleListOk = (result) => {
-    let formItem = {};
-    console.log(result)
-    let values = [];
-    result.result.map(item => {
-      values.push({
-        key: item[formItem.valueKey],
-        label: item[formItem.labelKey],
-        value: item
-      })
-    });
-    let value = {};
-    value[formItem.id] = values;
-    console.log(this.props.form)
-    this.props.form.setFieldsValue(value);
-    this.setState({ showListSelector: false });
-    formItem.handle && formItem.handle();
   };
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, showSelectDimension, listExtraParams, listSelectedData, layoutPosition } = this.state;
+    const {formatMessage} =this.props.intl;
+    const { isEnabled, dimensionCode, showSelectDimension, listExtraParams, listSelectedData, layoutPosition } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -140,19 +115,23 @@ class NewDimension extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="维度代码:">
             {getFieldDecorator('dimensionCode', {
+              initialValue: dimensionCode,
               rules: [
+                {required: true, message: formatMessage({id:"common.please.enter"}) }
               ],
-            })(
-              <Select
-                mode="multiple"
-                labelInValue
-                onFocus={this.handleFocus}
-                placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
-            )}
+            })(<Chooser
+                  type="select_dimension"
+                  single={true}
+                  labelKey="name"
+                  valueKey="code"
+                  value={dimensionCode}
+                  onChange={this.handleValueChange}
+                />)}
           </FormItem>
           <FormItem {...formItemLayout} label="维度名称:" >
             {getFieldDecorator('dimensionName', {
-              initialValue: 111
+              initialValue: dimensionCode.name
+
             })(
               <Input disabled/>
             )}
@@ -181,20 +160,18 @@ class NewDimension extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="默认维度代码:">
             {getFieldDecorator('defaultDimensionCode', {
+              initialValue: 1,
               rules: [{
 
               }],
             })(
-              <Select
-                mode="multiple"
-                labelInValue
-                onFocus={this.handleFocus}
+              <Chooser
+                type="select_dimension"
                 placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="默认维度名称:" >
-            {getFieldDecorator('dimensionName', {
-              initialValue: 111
+            {getFieldDecorator('defaultDimensionName', {
             })(
               <Input disabled/>
             )}
@@ -202,16 +179,8 @@ class NewDimension extends React.Component{
           <div className="slide-footer">
             <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
-            <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>
-        <ListSelector
-            visible={showSelectDimension}
-            type="select_dimension"
-            onCancel={()=>this.showList(false)}
-            onOk={this.handleListOk}
-            selectedData={listSelectedData}
-            extraParams={listExtraParams}/>
       </div>
     )
   }

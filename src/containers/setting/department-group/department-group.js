@@ -14,9 +14,7 @@ import menuRoute from 'share/menuRoute'
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
 
 
-let setOfBook = [];
-
-class CompanyGroup extends React.Component {
+class DepartmentGroup extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -36,19 +34,15 @@ class CompanyGroup extends React.Component {
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'select', options: setOfBook, id: 'setOfBook', label: "账套"},
-        {type: 'input', id: 'structureCode', label: formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
+        {type: 'input', id: 'structureCode', label: "部门组代码" }, /*预算表代码*/
         {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
       ],
       columns: [
         {          /*公司组代码*/
-          title: "公司组代码", key: "companyGroupCode", dataIndex: 'companyGroupCode'
+          title: "部门组代码", key: "companyGroupCode", dataIndex: 'companyGroupCode'
         },
         {          /*公司组描述*/
-          title: "公司组描述", key: "companyGroupName", dataIndex: 'companyGroupName'
-        },
-        {          /*账套*/
-          title: "账套", key: "setOfBooksId", dataIndex: 'setOfBooksId'
+          title: "部门组名称", key: "companyGroupName", dataIndex: 'companyGroupName'
         },
 
         {           /*状态*/
@@ -87,28 +81,20 @@ class CompanyGroup extends React.Component {
   };
 
   componentWillMount(){
-    //获取账套
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-      console.log(response)
-      response.data.map((item)=>{
-        let option = {
-          label: item.setOfBooksCode +" - "+item.setOfBooksName,
-          value: item.id
-        };
-        setOfBook.addIfNotExist(option)
-      })
-    });
+
     this.getList();
   }
 
-  //获取公司组数据
+  //获取部门组数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.baseUrl}/api/company/group/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    const {searchForm, pagination} = this.state;
+    let params = searchForm;
+    let url = `${config.baseUrl}api/DepartmentGroup/selectByTenantId?page=${pagination.page}&size=${pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
     httpFetch.get(url).then((response)=>{
+      console.log(response)
       response.data.map((item,index)=>{
         item.key = item.id;
       });
@@ -188,9 +174,9 @@ class CompanyGroup extends React.Component {
 
 }
 
-CompanyGroup.contextTypes = {
+DepartmentGroup.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {
@@ -198,4 +184,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(CompanyGroup));
+export default connect(mapStateToProps)(injectIntl(DepartmentGroup));

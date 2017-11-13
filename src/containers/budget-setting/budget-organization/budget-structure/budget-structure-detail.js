@@ -53,7 +53,7 @@ class BudgetStructureDetail extends React.Component{
         showSizeChanger:true,
         showQuickJumper:true,
       },
-      label:"",
+      label:"dimension",
       columns:[],
       infoList: [
         {type: 'input', id: 'organizationName',isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
@@ -138,7 +138,8 @@ class BudgetStructureDetail extends React.Component{
       if(response.status === 200){
         this.setState({
           columns: this.state.columnGroup.dimension,
-          structure: response.data
+          structure: response.data,
+          label: 'dimension'
         });
       }
     });
@@ -151,6 +152,8 @@ class BudgetStructureDetail extends React.Component{
         }
       }
     });
+
+    this.getList()
   }
 
   //保存所做的修改
@@ -244,10 +247,26 @@ class BudgetStructureDetail extends React.Component{
           })
         }
       })
-      :null
-      /*httpFetch.get(`${config.budgetUrl}`).then((response)=>{
-
-      })*/
+      :
+      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}`).then((response)=>{
+        if(response.status === 200) {
+          response.data.map((item)=>{
+            item.key = item.id
+          });
+          this.setState({
+            loading: false,
+            data: response.data,
+            pagination: {
+              current: 1,
+              page: 0,
+              total: Number(response.headers['x-total-count']),
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }
+          })
+        }
+      })
   };
 
 
