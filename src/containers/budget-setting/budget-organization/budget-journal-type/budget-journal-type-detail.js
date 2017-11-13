@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Tabs, Button, Row, Col, message, Badge, Table, Checkbox } from 'antd';
+import { Tabs, Button, message, Icon, Table, Checkbox } from 'antd';
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
@@ -77,7 +77,8 @@ class BudgetJournalTypeDetail extends React.Component {
       pageSize: 10,
       nowStatus: 'STRUCTURE',
       showListSelector: false,
-      newData: []
+      newData: [],
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
     };
   }
 
@@ -269,6 +270,11 @@ class BudgetJournalTypeDetail extends React.Component {
                loading={loading}
                bordered
                size="middle"/>
+
+        <a className="back" onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');}}><
+          Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
+
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}
@@ -279,6 +285,10 @@ class BudgetJournalTypeDetail extends React.Component {
   }
 
 }
+
+BudgetJournalTypeDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {
