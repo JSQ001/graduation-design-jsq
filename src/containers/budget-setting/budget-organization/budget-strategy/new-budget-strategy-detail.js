@@ -96,7 +96,7 @@ class NewBudgetStrategyDetail extends React.Component {
               </FormItem>
             </Col>
             <Col span={8} style={{ display: 'inline-block'}}>
-              <FormItem label="明细代码">
+              <FormItem label="规则代码">
                 {getFieldDecorator('detailCode', {
                   rules: [{
                     required: true,
