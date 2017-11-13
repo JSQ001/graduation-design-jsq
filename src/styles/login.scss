@@ -10,15 +10,15 @@
     position: fixed;
     z-index: -1;
     left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
   }
   .login-area{
     position: absolute;
     width: 20vw;
     top: 20vh;
-    right: 10vw;
+    left: 70vw;
     text-align: center;
     .login-logo-text{
       font-size: 32px;
@@ -54,7 +54,7 @@
   }
   #scene{
     position: absolute;
-    right: 45vw;
+    left: 15vw;
     top: 10vh;
     width: 40vw;
     height: 80vh;
@@ -79,6 +79,8 @@
     position: absolute;
     right: 40vw;
     bottom: 20vh;
+    left: 15vw;
+    width: 40vw;
     text-align: right;
     .description-title{
       font-size: 28px;
@@ -94,6 +96,8 @@
   }
   .message{
     position: absolute;
+    width: 20vw;
+    left: 70vw;
     right: 10vw;
     bottom: 20vh;
     text-align: right;

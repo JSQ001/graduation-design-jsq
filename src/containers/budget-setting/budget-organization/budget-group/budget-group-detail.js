@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Table, Form, Select, Button, Row, Col, message, Popconfirm } from 'antd'
+import { Table, Form, Select, Button, Icon, message, Popconfirm } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -55,7 +55,8 @@ class BudgetGroupDetail extends React.Component {
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
       },
-      editing: false
+      editing: false,
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key')  //预算组织详情的页面项
     };
   }
 
@@ -251,6 +252,11 @@ class BudgetGroupDetail extends React.Component {
                bordered
                size="middle"
                rowSelection={rowSelection}/>
+
+        <a className="back" onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=GROUP');}}>
+          <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
+
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}
