@@ -298,13 +298,23 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'code'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title:"描述",dataIndex:'description'}
       /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
     ],
     key: 'id'
   },
-
+  'cost_center_item': {
+    title: '成本中心',
+    url: `${config.baseUrl}/api/cost/centers/`,
+    searchForm: [],
+    columns: [
+      {title: "成本中心代码", dataIndex: 'code'},
+      {title: "成本中心名称", dataIndex: 'name'}
+    ],
+    listKey: 'costCenterItems',
+    key: 'costCenterItemOID'
+  }
 };
 
 export default selectorData;

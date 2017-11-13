@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Tabs, Button, message, Icon, Table, Checkbox } from 'antd';
+import { Tabs, Button, message, Icon, Table, Checkbox, Badge } from 'antd';
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
@@ -16,6 +16,7 @@ import BasicInfo from 'components/basic-info'
 class BudgetJournalTypeDetail extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       updateState: false,
       saving: false,
@@ -55,7 +56,12 @@ class BudgetJournalTypeDetail extends React.Component {
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
-            {title: "预选项目描述", dataIndex: "itemName", width: '70%'}
+            {title: "预算项目描述", dataIndex: "itemName", width: '50%'},
+            {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '20%',
+              render: isEnabled => (
+                <Badge status={isEnabled ? 'success' : 'error'}
+                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+              )}, //状态
           ]
         },
         COMPANY: {
@@ -65,8 +71,10 @@ class BudgetJournalTypeDetail extends React.Component {
           extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
             {title: "公司代码", dataIndex: "companyCode", width: '30%'},
-            {title: "公司简称", dataIndex: "companyName", width: '50%'},
-            {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>},
+            {title: "公司名称", dataIndex: "companyName", width: '50%'},
+            {title: "启用", dataIndex: "isEnabled", width: '20%',
+              render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>
+            },
           ]
         }
       },
@@ -259,7 +267,7 @@ class BudgetJournalTypeDetail extends React.Component {
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据</div>
+          <div className="table-header-title">共搜索到 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew} loading={saving}>添 加</Button>
           </div>
