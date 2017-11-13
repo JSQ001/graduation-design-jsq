@@ -3,6 +3,8 @@ import AccountPeriodDefine from 'containers/finance-setting/account-period-defin
 import SetOfBooks from 'containers/finance-setting/set-of-books/set-of-books'
 import AccountPeriodControl from 'containers/finance-setting/account-period-control/account-period-control'
 import AccountPeriodDetail from 'containers/finance-setting/account-period-control/account-period-detail'
+import ContractTypeDefine from 'containers/finance-setting/contract-type-define/contract-type-define'
+import CompanyDistribution from 'containers/finance-setting/contract-type-define/company-distribution'
 
 //单据提醒管理
 const beepTimer = {
@@ -48,10 +50,27 @@ const accountPeriodControl = {
   children:{accountPeriodDetail}
 };
 
+//公司分配
+const companyDistribution = {
+  key:'company-distribution',
+  url:'/main/finance-setting/contract-type-define/company-distribution',
+  components: CompanyDistribution,
+  parent: 'contract-type-define'
+};
+
+//合同类型定义
+const contractTypeDefine = {
+  key:'contract-type-define',
+  url:'/main/finance-setting/contract-type-define',
+  components: ContractTypeDefine,
+  parent: 'finance-setting',
+  children:{companyDistribution}
+};
+
 //财务设置
 const financeSetting = {
   key:'finance-setting',
-  subMenu: [beepTimer, accountPeriodDefine, setOfBooks, accountPeriodControl],
+  subMenu: [beepTimer, accountPeriodDefine, setOfBooks, accountPeriodControl, contractTypeDefine],
   icon: 'setting',
   admin: true
 };

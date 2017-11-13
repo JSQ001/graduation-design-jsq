@@ -72,5 +72,7 @@
   "menu.finance-review": "单据审核",
   "menu.finance-view": "单据查看",
   "menu.expense-report-detail-review": "报销单详情",
-  "menu.company-group": "公司组"
+  "menu.company-group": "公司组",
+  "menu.contract-type-define": "合同类型定义",
+  "menu.company-distribution": "公司分配"
 }
