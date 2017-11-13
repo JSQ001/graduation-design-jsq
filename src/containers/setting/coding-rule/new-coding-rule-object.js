@@ -17,7 +17,8 @@ class NewCodingRuleObject extends React.Component {
     this.state = {
       loading: false,
       documentCategoryOptions: [],
-      codingRuleObject: menuRoute.getRouteItem('coding-rule-object', 'key')
+      codingRuleObject: menuRoute.getRouteItem('coding-rule-object', 'key'),
+      codingRule: menuRoute.getRouteItem('coding-rule', 'key')
     };
   }
 
@@ -30,7 +31,7 @@ class NewCodingRuleObject extends React.Component {
         httpFetch.post(`${config.budgetUrl}/api/budget/coding/rule/objects`, values).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //新建成功
-          this.context.router.push(this.state.codingRuleObject.url);
+          this.context.router.push(this.state.codingRule.url.replace(':id', res.data.id));
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.message}`);
@@ -44,7 +45,7 @@ class NewCodingRuleObject extends React.Component {
   };
 
   componentWillMount(){
-    this.getSystemValueList(2106).then(res => {
+    this.getSystemValueList(2023).then(res => {
       this.setState({ documentCategoryOptions: res.data.values })
     });
   }

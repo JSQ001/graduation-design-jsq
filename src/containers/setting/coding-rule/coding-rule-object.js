@@ -27,7 +27,7 @@ class CodingRule extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2106, options: []}
+        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2023, options: []}
       ],
       searchParams: {
         documentCategoryCode: '',
