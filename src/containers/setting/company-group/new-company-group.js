@@ -53,19 +53,17 @@ class NewCompanyGroup extends React.Component{
 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.organizationId = this.state.organization.id;
         console.log(values)
-        httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
+        httpFetch.post(`${config.baseUrl}/api/company/group`,values).then((response)=>{
           if(response) {
             console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-            response.data.organizationName = values.organizationName;
-            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id).replace(':structureId',response.data.id));
-            this.setState({loading:true})
+            this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url.replace(':id',response.data.id));
+            this.setState({loading:false})
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
             this.setState({loading: false});
           }
           else {
@@ -94,7 +92,6 @@ class NewCompanyGroup extends React.Component{
     const { getFieldDecorator } = this.props.form;
     const { statusCode, organization, loading, setOfBooks  } = this.state;
     const { formatMessage } = this.props.intl;
-    console.log(setOfBooks)
     return(
       <div className="new-budget-structure">
         <div className="budget-structure-header">
@@ -106,9 +103,8 @@ class NewCompanyGroup extends React.Component{
                   colon={true}
                   help="注：部门组代码保存后将不可修改">
                   {getFieldDecorator('companyGroupCode', {
-                    initialValue: organization.organizationName,
                     rules:[
-                      { required:true }
+                      { required:true, message: formatMessage({id:"common.please.enter"}) }
                     ]
                   })(
                     <Input placeholder={formatMessage({id:"common.please.enter"})} />)
@@ -123,9 +119,6 @@ class NewCompanyGroup extends React.Component{
                   {getFieldDecorator('companyGroupName', {
                     rules:[
                       {required:true,message:formatMessage({id:"common.please.enter"})},
-                      {
-                        validator:(item,value,callback)=>this.validateStructureCode(item,value,callback)
-                      }
                     ]
                   })(
                     <Input placeholder={formatMessage({id:"common.please.enter"})}/>)
@@ -136,7 +129,7 @@ class NewCompanyGroup extends React.Component{
                 <FormItem
                   label="账套" /* 账套*/
                   colon={true}>
-                  {getFieldDecorator('structureName', {
+                  {getFieldDecorator('setOfBooksId', {
                     rules:[
                       {required:true,message:formatMessage({id:"common.please.enter"})},
                     ]
@@ -155,7 +148,7 @@ class NewCompanyGroup extends React.Component{
                 <FormItem
                   label={formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
-                  {getFieldDecorator("isEnabled", {
+                  {getFieldDecorator("enabled", {
                     initialValue: true,
                     valuePropName: 'checked',
                     rules:[

@@ -25,7 +25,8 @@ class CompanyGroupDetail extends React.Component{
       loading: true,
       buttonLoading: false,
       companyListSelector: false,  //控制公司选则弹框
-      budgetItem:{},
+      companyGroup:{},
+      setOfBooks: {},
       data: [],
       edit: false,
       visible: false,
@@ -59,15 +60,29 @@ class CompanyGroupDetail extends React.Component{
   }
 
   componentWillMount(){
-    //根据路径上的id,查出该条预算项目完整数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
+    //根据路径上的id,查出该条完整数据
+    httpFetch.get(`${config.baseUrl}/api/company/group/${this.props.params.id}`).then((response)=>{
       if(response.status === 200){
-        response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
-        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttributeName};
-        this.setState({
-          budgetItem: response.data
-        })
+         console.log(response)
+         this.setState({
+            companyGroup: response.data
+         })
       }
+    });
+    //查询账套
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
+      console.log(response)
+      let setOfBooks = [];
+      response.data.map((item)=>{
+        let option = {
+          value: item.setOfBooksCode +" - "+item.setOfBooksName,
+          id: item.id
+        };
+        setOfBooks.addIfNotExist(option)
+      });
+      this.setState({
+        setOfBooks:setOfBooks
+      });
     });
     this.getList();
   }
@@ -95,9 +110,9 @@ class CompanyGroupDetail extends React.Component{
     })
   };
 
-  //查询已经分配过的公司
+  //查询公司组子公司
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
+    httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/dto?companyGroupId=${this.props.params.id}`).then((response)=>{
       console.log(response)
       if(response.status === 200){
         this.setState({
@@ -121,27 +136,7 @@ class CompanyGroupDetail extends React.Component{
     })
   };
 
-  //处理公司弹框点击ok,分配公司
-  handleListOk = (result) => {
-    let companyIds = [];
-    let resourceIds = [];
-    resourceIds.push(parseInt(this.props.params.itemId));
-    result.result.map((item)=>{
-      companyIds.push(item.id)
-    });
-    let param = [];
-    param.push({"companyIds": companyIds, "resourceIds": resourceIds});
-    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      if(response.status === 200){
-        this.showListSelector(false);
-        this.setState({
-          loading: true
-        },this.getList())
-      }
-    });
-  };
 
-  //返回预算项目
   handleBack = () => {
     this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').url);
   };
@@ -202,7 +197,7 @@ class CompanyGroupDetail extends React.Component{
   }
 
   render(){
-    const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector, selectedRowKeys} = this.state;
+    const { edit, pagination, companyGroup, columns, data, visible, infoList, budgetItem, companyListSelector, selectedRowKeys} = this.state;
 
     const rowSelection = {
       selectedRowKeys,
@@ -215,7 +210,7 @@ class CompanyGroupDetail extends React.Component{
       <div className="budget-item-detail">
         <BasicInfo
           infoList={infoList}
-          infoData={budgetItem}
+          infoData={companyGroup}
           updateHandle={this.handleUpdate}
           updateState={edit}/>
         <div className="table-header">
@@ -234,11 +229,6 @@ class CompanyGroupDetail extends React.Component{
           bordered/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
-        <ListSelector type="company_item"
-                      visible={companyListSelector}
-                      onOk={this.handleListOk}
-                      extraParams={{itemId: this.props.params.itemId}}
-                      onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }
 }

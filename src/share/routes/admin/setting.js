@@ -56,7 +56,7 @@ const newCompanyGroup = {
 //公司组详情
 const companyGroupDetail = {
   key: 'company-group-detail',
-  url: '/main/setting/company-group/company-group-detail',
+  url: '/main/setting/company-group/company-group-detail/:id',
   components: CompanyGroupDetail,
   parent: 'company-group',
 };
