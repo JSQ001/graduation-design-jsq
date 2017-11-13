@@ -58,6 +58,15 @@ class NewBudgetJournalType extends React.Component {
           <Form>
             <Row gutter={40}>
               <Col span={8}>
+                <FormItem label="预算组织">
+                  {getFieldDecorator("organizationName", {
+                    initialValue: this.props.organization.organizationName
+                  })(
+                    <Input disabled />
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={8}>
                 <FormItem label="预算日记账类型代码">
                   {getFieldDecorator("journalTypeCode", {
                     rules: [{

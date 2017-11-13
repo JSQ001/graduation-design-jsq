@@ -79,8 +79,12 @@ class Main extends React.Component{
   handleModeMenuClick = (e) => {
     switch (e.key){
       case 'bloc':
-        //TODO:切换回默认公司，account内存默认公司
-        this.props.dispatch(setTenantMode(true));
+        httpFetch.post(`${config.baseUrl}/api/company/change/${this.props.user.employeeID}`).then(() => {
+          httpFetch.getInfo().then(() => {
+            this.props.dispatch(setTenantMode(true));
+            this.context.router.replace(this.state.dashboardPage.url);
+          });
+        });
         break;
       case 'change':
         this.setState({ showListSelector: true })
