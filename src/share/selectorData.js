@@ -85,7 +85,7 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
@@ -98,7 +98,7 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
@@ -225,7 +225,7 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
@@ -241,7 +241,7 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
     key: 'id'
