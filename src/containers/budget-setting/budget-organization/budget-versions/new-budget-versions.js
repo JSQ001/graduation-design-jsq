@@ -2,12 +2,12 @@
  * Created by 13576 on 2017/9/18.
  */
 import React from 'React'
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
-import { Form, Input, Switch, Button,Col,Row,Select,DatePicker,Alert,notification,Icon,message} from 'antd'
+import {Form, Input, Switch, Button, Col, Row, Select, DatePicker, Alert, notification, Icon, message} from 'antd'
 import 'styles/budget-setting/budget-organization/budget-versions/new-budget-versions.scss'
 
 const FormItem = Form.Item;
@@ -16,35 +16,35 @@ const sd = this;
 
 class NewBudgetVersions extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
-      versionCodeError:false,
-      statusError:false,
-      newData:[],
-      checkoutCodeData:[],
+      versionCodeError: false,
+      statusError: false,
+      newData: [],
+      checkoutCodeData: [],
       loading: false,
-      budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail','key'),    //预算版本详情的页面项
+      budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail', 'key'),    //预算版本详情的页面项
       budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
 
   }
 
 
   //检查处理提交数据
-  handleSave = (e) =>{
+  handleSave = (e) => {
     this.setState({loading: true});
     e.preventDefault();
-    let value =this.props.form.getFieldsValue();
-    if(!this.state.statusError){
-      const dataValue=value['versionDate']
-      const toleValues={
+    let value = this.props.form.getFieldsValue();
+    if (!this.state.statusError) {
+      const dataValue = value['versionDate']
+      const toleValues = {
         ...value,
-        'versionDate': value['versionDate']?value['versionDate'].format('YYYY-MM-DD'):'',
-        'organizationId':this.props.organization.id
+        'versionDate': value['versionDate'] ? value['versionDate'].format('YYYY-MM-DD') : '',
+        'organizationId': this.props.organization.id
       }
 
       this.saveData(toleValues);
@@ -52,46 +52,43 @@ class NewBudgetVersions extends React.Component {
   };
 
   //保存数据
-  saveData(value){
-    httpFetch.post(`${config.budgetUrl}/api/budget/versions`,value).then((response)=>{
+  saveData(value) {
+    httpFetch.post(`${config.budgetUrl}/api/budget/versions`, value).then((response) => {
       let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", response.data.id)
-      message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:"预算版本"}));
+      message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: "预算版本"}));
       setTimeout(() => {
-        this.setState({loading:false }, () => this.context.router.push(path))
-      },200)
+        this.setState({loading: false}, () => this.context.router.push(path))
+      }, 200)
 
-    } ).catch(e=>{
-      this.setState({loading:false});
-      if(e.response){
+    }).catch(e => {
+      this.setState({loading: false});
+      if (e.response) {
 
-        message.error(this.props.intl.formatMessage({id:"common.save.filed"})+""+`${e.response.data.message}`)
+        message.error(this.props.intl.formatMessage({id: "common.save.filed"}) + "" + `${e.response.data.message}`)
 
       }
     });
   }
 
 
-
 //取消
-  CancelHandle = (e) =>{
+  CancelHandle = (e) => {
     e.preventDefault();
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
   };
 
 
+  render() {
 
-  render(){
-
-    const { getFieldDecorator } = this.props.form;
+    const {getFieldDecorator} = this.props.form;
     const versionCodeError = false
     return (
 
       <div className="new-budget-versions">
-
         <div className="new-budget-versions-help">
           <Alert
-            message={this.props.intl.formatMessage({id:"common.help"})}
-            description={this.props.intl.formatMessage({id:"budget.newVersion.info"})}
+            message={this.props.intl.formatMessage({id: "common.help"})}
+            description={this.props.intl.formatMessage({id: "budget.newVersion.info"})}
             type=""
             showIcon
           />
@@ -102,52 +99,52 @@ class NewBudgetVersions extends React.Component {
             <Row gutter={40}>
 
 
-              <Col span={8} style={{ display: 'inline-block'}}>
+              <Col span={8} style={{display: 'inline-block'}}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.organization"})}
+                  label={this.props.intl.formatMessage({id: "budget.organization"})}
                 >
                   {getFieldDecorator('organizationName',
                     {
-                      initialValue:this.props.organization.organizationName,
+                      initialValue: this.props.organization.organizationName,
                       rules: [
-                        { required: true,}
+                        {required: true,}
                       ],
                     })(
-                    <Input disabled={true} />
+                    <Input disabled={true}/>
                   )}
                 </FormItem>
               </Col>
 
-              <Col span={8} style={{ display: 'inline-block'}}>
+              <Col span={8} style={{display: 'inline-block'}}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.versionCode"})}
+                  label={this.props.intl.formatMessage({id: "budget.versionCode"})}
                 >
                   {getFieldDecorator('versionCode', {
-                      rules: [{ required: true, message: this.props.intl.formatMessage({id:"common.please.enter"}) },]
+                    rules: [{required: true, message: this.props.intl.formatMessage({id: "common.please.enter"})},]
                   })(
                     <Input />
                   )}
                 </FormItem>
               </Col>
 
-              <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label={this.props.intl.formatMessage({id:"budget.versionName"})}
+              <Col span={8} style={{display: 'inline-block'}}>
+                <FormItem label={this.props.intl.formatMessage({id: "budget.versionName"})}
                 >
                   {getFieldDecorator('versionName', {
-                    rules: [{ required: true, message: this.props.intl.formatMessage({id:"common.please.enter"}) }],
+                    rules: [{required: true, message: this.props.intl.formatMessage({id: "common.please.enter"})}],
                   })(<Input />)}
 
                 </FormItem>
               </Col>
 
-              <Col span={8} style={{ display: 'inline-block'}}>
+              <Col span={8} style={{display: 'inline-block'}}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.versionStatus"})}
+                  label={this.props.intl.formatMessage({id: "budget.versionStatus"})}
 
                 >
                   {getFieldDecorator('status', {
-                    initialValue:"NEW",
-                    rules: [{ required: true, }],
+                    initialValue: "NEW",
+                    rules: [{required: true,}],
                   })(
                     <Select
                       placeholder=""
@@ -162,57 +159,57 @@ class NewBudgetVersions extends React.Component {
               </Col>
 
 
-              <Col span={8}  style={{ display: 'inline-block'}}>
-                <FormItem label={this.props.intl.formatMessage({id:"budget.versionDescription"})}
+              <Col span={8} style={{display: 'inline-block'}}>
+                <FormItem label={this.props.intl.formatMessage({id: "budget.versionDescription"})}
 
                 >
-                  {getFieldDecorator('description',{
-
-                  })(<Input />)}
+                  {getFieldDecorator('description', {})(<Input />)}
                 </FormItem>
               </Col>
 
 
-
-              <Col span={8} style={{ display: 'inline-block'}}>
+              <Col span={8} style={{display: 'inline-block'}}>
                 <FormItem
 
-                  label={this.props.intl.formatMessage({id:"budget.versionDate"})}
+                  label={this.props.intl.formatMessage({id: "budget.versionDate"})}
                 >
                   {getFieldDecorator('versionDate',
                     {
-                      valuePropName:"defaultValue",
+                      valuePropName: "defaultValue",
                     }
                   )(
-                    <DatePicker  style={{width:315}}/>
+                    <DatePicker style={{width: 315}}/>
                   )}
                 </FormItem>
               </Col>
 
 
-              <Col span={8}  style={{ display: 'inline-block'}}>
+              <Col span={8} style={{display: 'inline-block'}}>
                 <FormItem
-                  label={this.props.intl.formatMessage({id:"budget.isEnabled"})}
+                  label={this.props.intl.formatMessage({id: "budget.isEnabled"})}
                 >
                   {getFieldDecorator('isEnabled', {
-                      valuePropName:"checked",
-                      initialValue:true
+                      valuePropName: "checked",
+                      initialValue: true
                     }
                   )(
-                    <Switch  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}/>
+                    <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross"/>}/>
                   )}
                 </FormItem>
               </Col>
 
 
             </Row>
-            <Row  gutter={40}>
+            <Row gutter={40}>
 
             </Row>
 
             <div className="">
-              <Button type="primary" htmlType="submit" loading={this.state.loading} >{this.props.intl.formatMessage({id:"common.save"})}</Button>
-              <Button style={{ marginLeft: 8 }} onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=VERSIONS');}}>取消</Button>
+              <Button type="primary" htmlType="submit"
+                      loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>
+              <Button style={{marginLeft: 8}} onClick={() => {
+                this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=VERSIONS');
+              }}>取消</Button>
 
             </div>
 
@@ -229,12 +226,12 @@ class NewBudgetVersions extends React.Component {
 }
 
 
-NewBudgetVersions.contextTypes={
-  router:React.PropTypes.object
+NewBudgetVersions.contextTypes = {
+  router: React.PropTypes.object
 }
 
 
-const WrappedNewBudgetVersions= Form.create()(NewBudgetVersions);
+const WrappedNewBudgetVersions = Form.create()(NewBudgetVersions);
 
 function mapStateToProps(state) {
   return {

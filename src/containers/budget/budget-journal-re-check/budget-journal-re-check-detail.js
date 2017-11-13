@@ -6,19 +6,12 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
 const Step =Steps.Step;
-import SearchArea from 'components/search-area.js';
+
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-
-import selectorData from 'share/selectorData'
-import ListSelector from 'components/list-selector'
-import BasicInfo from 'components/basic-info'
-import SlideFrame from 'components/slide-frame.js'
-import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js'
-import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js'
 
 
 class BudgetJournalReCheckDetail extends React.Component {
@@ -31,14 +24,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       headerAndListData: {},
       pageSize: 10,
       page: 0,
-      pagination: {
-        current: 0,
-        page: 0,
-        total: 0,
-        pageSize: 10,
-        showSizeChanger: true,
-        showQuickJumper: true,
-      },
+      total:0,
       rowSelection: {
         type: 'checkbox',
         selectedRowKeys: [],
@@ -121,12 +107,8 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "status", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
         },
-       /* {
-
-          title: this.props.intl.formatMessage({id: "budget.unit"}), key: "unit", dataIndex: 'unit'
-        },*/
         {
           /*备注*/
           title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
@@ -143,8 +125,6 @@ class BudgetJournalReCheckDetail extends React.Component {
   }
 
   componentWillMount=()=>{
-    console.log(this.props.params.journalCode);
-
     this.getDataByBudgetJournalCode();
   }
 
@@ -165,11 +145,8 @@ class BudgetJournalReCheckDetail extends React.Component {
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
     const budgetJournalCode =this.props.params.journalCode;
-    console.log(budgetJournalCode);
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
-      console.log(request.data)
       let listData = request.data.list;
-      console.log(listData);
       let headerData =request.data.dto;
       headerData.attachmentOID.map((item)=>{
         this.getFileByAttachmentOID(item);
@@ -179,12 +156,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         headerAndListData:request.data,
         infoData:headerData,
         data:listData,
-        pagination: {
-          total:request.data.list.length ,
-          onChange: this.onChangePager,
-          pageSize: this.state.pageSize,
-          current: this.state.page + 1
-        }
+        total:listData.length
       })
     })
   }
@@ -194,10 +166,7 @@ class BudgetJournalReCheckDetail extends React.Component {
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
-    console.log(data);
-
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
-      console.log(request.data)
       message.success("已经通过")
 
         let path=this.state.budgetJournalDetailReCheckPage.url;
@@ -214,10 +183,8 @@ class BudgetJournalReCheckDetail extends React.Component {
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
-    console.log(data);
 
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
-      console.log(request.data)
       message.success("已经驳回");
       let path=this.state.budgetJournalDetailReCheckPage.url;
        this.context.router.push(path);
@@ -232,7 +199,6 @@ class BudgetJournalReCheckDetail extends React.Component {
   //返回列表页
   HandleReturn=()=>{
        let path=this.state.budgetJournalDetailReCheckPage.url;
-         console.log(path);
        this.context.router.push(path);
   }
 
@@ -288,8 +254,6 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   //获取附件
   getFile=()=>{
-
-    console.log(12332321312312);
     const fileList = this.state.fileList;
     let file_arr=[];
     fileList.map((link)=>{
@@ -313,7 +277,7 @@ class BudgetJournalReCheckDetail extends React.Component {
 
 
   render(){
-    const { data, columns,pagination,infoData} = this.state;
+    const { data, columns,infoData} = this.state;
     return(
       <div className="budget-journal-re-check-detail">
 
@@ -387,7 +351,6 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         <Table columns={columns}
                dataSource={data}
-               pagination={pagination}
                bordered
                size="middle"
                rowKey={recode=>{return recode.id}}

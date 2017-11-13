@@ -2,9 +2,9 @@
  * Created by 13576 on 2017/9/21.
  */
 import React from 'react';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
-import {Button,Table,Badge,Popconfirm,Form,DatePicker,Col,Row,Switch,notification,Input,message,Icon} from 'antd';
+import {connect} from 'react-redux';
+import {injectIntl} from 'react-intl';
+import {Button,Form,Switch, Input,message, Icon} from 'antd';
 const FormItem = Form.Item;
 
 import config from 'config';
@@ -19,48 +19,46 @@ class NewBudgetItemType extends React.Component {
     this.state = {
       params: {},
       isEnabled: true,
-      isPut:false,
-      loading:false,
+      isPut: false,
+      loading: false,
 
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
     console.log(this.props.organization)
   }
 
 
-
-
   //新建
-  handleSave= (e) =>{
+  handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading:true});
-        let toValue={
-          'isEnabled':values.isEnabled,
-          'itemTypeName':values.itemTypeName,
-          'itemTypeCode':values.itemTypeCode,
-          'organizationId':this.props.organization.id
+        this.setState({loading: true});
+        let toValue = {
+          'isEnabled': values.isEnabled,
+          'itemTypeName': values.itemTypeName,
+          'itemTypeCode': values.itemTypeCode,
+          'organizationId': this.props.organization.id
         }
         console.log(toValue);
-        httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/itemType`, toValue).then((res) => {
           this.setState({loading: false});
           this.props.form.resetFields();
-            this.props.close(true);
-            message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:`${this.props.intl.formatMessage({id:"budget.itemType"})}`}));
-          console.log( this.props.id);
-        }).catch((e)=>{
+          this.props.close(true);
+          message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
+          console.log(this.props.id);
+        }).catch((e) => {
           this.setState({loading: false});
 
-          message.error(this.props.intl.formatMessage({id:"common.save.filed"}));
+          message.error(this.props.intl.formatMessage({id: "common.save.filed"}));
         })
       }
     });
   }
 
-  onCancel = () =>{
+  onCancel = () => {
     this.props.close();
   };
 
@@ -70,12 +68,12 @@ class NewBudgetItemType extends React.Component {
     }))
   }
 
-  render(){
-    const { getFieldDecorator } = this.props.form;
-    const { params, isEnabled,isPut} = this.state;
+  render() {
+    const {getFieldDecorator} = this.props.form;
+    const {params, isEnabled, isPut} = this.state;
     const formItemLayout = {
-      labelCol: { span: 6,offset:1 },
-      wrapperCol: { span: 14, offset: 1 },
+      labelCol: {span: 6, offset: 1},
+      wrapperCol: {span: 14, offset: 1},
     };
     return (
 
@@ -83,52 +81,55 @@ class NewBudgetItemType extends React.Component {
       <div className="new-value">
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout}
-             label={this.props.intl.formatMessage({id:"budget.isEnabled"})}>
+                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
-              initialValue:isEnabled
+              valuePropName: "defaultChecked",
+              initialValue: isEnabled
             })(
               <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? this.props.intl.formatMessage({id:"common.enabled"}) :this.props.intl.formatMessage({id:"common.disabled"}) }</span>
+                <Switch defaultChecked={isEnabled} checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
+                <span className="enabled-type" style={{
+                  marginLeft: 20,
+                  width: 100
+                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.organization"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.organization"})}>
             {getFieldDecorator('organizationName', {
-              rules: [{
-
-              }],
-              initialValue:this.props.organization.organizationName
+              rules: [{}],
+              initialValue: this.props.organization.organizationName
 
             })(
-              <Input  disabled/>
+              <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeCode"})} >
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeCode"})}>
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true,
-                message: this.props.intl.formatMessage({id:"common.please.enter"})
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
             })(
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:"budget.itemTypeName"})} >
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeName"})}>
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
-                message: this.props.intl.formatMessage({id:"common.please.enter"})
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
             })(
-              <Input placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}  />
+              <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}/>
             )}
           </FormItem>
 
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
+            <Button type="primary" htmlType="submit"
+                    loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>
+            <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id: "common.cancel"})}</Button>
           </div>
         </Form>
       </div>
@@ -138,15 +139,15 @@ class NewBudgetItemType extends React.Component {
 
 
 /*NewBudgetItemType.propTypes = {
-  isPut:React.PropTypes.bool,
-  text:React.PropTypes.object
-};*/
+ isPut:React.PropTypes.bool,
+ text:React.PropTypes.object
+ };*/
 
 
 const WrappedNewBudgetItemType = Form.create()(NewBudgetItemType);
 function mapStateToProps(state) {
   return {
-    organization:state.budget.organization
+    organization: state.budget.organization
   }
 }
 export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetItemType));

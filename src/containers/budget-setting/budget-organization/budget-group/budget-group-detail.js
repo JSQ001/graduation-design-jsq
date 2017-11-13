@@ -83,7 +83,7 @@ class BudgetGroupDetail extends React.Component {
 
   updateHandleInfo = (params) => {
     this.setState({ editing: true });
-    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign(this.state.groupData, params)).then(response => {
+    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign({}, this.state.groupData, params)).then(response => {
       message.success('修改成功');
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({
