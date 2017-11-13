@@ -55,7 +55,7 @@ const selectorData = {
     ],
     columns: [
       {title: "公司代码", dataIndex: 'code'},
-      {title: "公司明称", dataIndex: 'name'},
+      {title: "公司名称", dataIndex: 'name'},
       {title: "公司描述", dataIndex: 'description'}
     ],
     key: 'id'

@@ -165,7 +165,7 @@ class BudgetOrganization extends React.Component {
           eventHandle={this.searchEventHandle}/>
 
         <div className="table-header">
-          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>{formatMessage({id:"common.create"})}</Button> {/* 新建 */}
           </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
-import { Table, Button, Badge } from 'antd';
+import { Table, Button, Badge, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 
 import menuRoute from 'share/menuRoute'
@@ -31,7 +31,7 @@ class CodingRuleDetail extends React.Component {
       },
       updateState: false,
       infoList: [
-        {type: 'input', label: '单据类型', id: 'documentCategoryCode', disabled: true},
+        {type: 'input', label: '单据类型', id: 'documentTypeName', disabled: true},
         {type: 'input', label: '应用公司', id: 'companyName', disabled: true},
         {type: 'switch', label: '状态', id: 'isEnabled'},
       ],
@@ -79,8 +79,20 @@ class CodingRuleDetail extends React.Component {
       })
   };
 
-  updateInfo = () => {
-    this.setState({updateState: true, editing: false})
+  updateInfo = (params) => {
+    this.setState({editing: true});
+    httpFetch.put(`${config.budgetUrl}/api/budget/coding/rule/objects`, Object.assign({}, this.state.infoData, params)).then(res => {
+      this.setState({updateState: true, editing: false});
+      this.props.form.resetFields();
+      message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: ''}));  //保存成功
+    }).catch((e)=> {
+      if (e.response) {
+        message.error(`保存失败, ${e.response.data.message}`);
+        this.setState({editing: false});
+      } else {
+        console.log(e)
+      }
+    })
   };
 
   handleRowClick = (record) => {
