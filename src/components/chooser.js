@@ -147,7 +147,7 @@ Chooser.propTypes = {
   onChange: React.PropTypes.func,  //进行选择后的回调
   single: React.PropTypes.bool,  //是否单选
   value: React.PropTypes.array,  //已选择的值，需要传入完整目标数组
-  showNumber: React.PropTypes.bool  //是否只显示已选XX条
+  showNumber: React.PropTypes.bool  //是否只显示'已选XX条'
 };
 
 Chooser.defaultProps = {
