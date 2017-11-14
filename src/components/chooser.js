@@ -23,17 +23,26 @@ class Chooser extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps = (nextProps) => {
-    if(nextProps.value && nextProps.value.length !== this.state.value.length){
-      let values = [];
-      nextProps.value.map(item => {
-        values.push({
-          key: item[this.props.valueKey] + '',
-          label: item[this.props.labelKey],
-          value: item
+    if(nextProps.value){
+      let lengthChange = nextProps.value.length !== this.state.value.length;
+      let innerChange = false;
+      if(nextProps.value.length === this.state.value.length){
+        nextProps.value.map((nextItem, index) => {
+          innerChange = innerChange || this.state.value[index][this.props.valueKey] !== nextItem[this.props.valueKey]
         })
-      });
-      this.onChange(nextProps.value);
-      this.setState({ value: values });
+      }
+      if(lengthChange || innerChange){
+        let values = [];
+        nextProps.value.map(item => {
+          values.push({
+            key: item[this.props.valueKey] + '',
+            label: item[this.props.labelKey],
+            value: item
+          })
+        });
+        this.onChange(nextProps.value);
+        this.setState({ value: values });
+      }
     }
     if(!nextProps.value || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
       this.onChange([]);
