@@ -49,8 +49,12 @@ class ContractTypeDefine extends React.Component{
       if (res.status === 200) {
         let searchForm = this.state.searchForm;
         let searchParams = this.state.searchParams;
-        // searchForm[0].defaultValue = res.data[0].setOfBooksCode;
         searchForm[0].defaultValue = res.data[0].setOfBooksId;
+        searchForm[0].options = [{
+          temp: true,
+          label: res.data[0].setOfBooksCode,
+          value: res.data[0].setOfBooksId
+        }];
         searchParams.setOfBooksId = res.data[0].setOfBooksId;
         this.setState({ searchForm, searchParams }, () => {
           this.getList()
