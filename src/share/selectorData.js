@@ -158,7 +158,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-
   'budget_journal_type':{
     title: "预算日记账类型",
     url: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`,
@@ -335,10 +334,9 @@ const selectorData = {
     ],
     key: 'id'
   },
-
   'cost_center_item': {
     title: '成本中心',
-    url: `${config.baseUrl}/api/cost/centers/`,
+    url: `${config.baseUrl}/api/my/cost/center/items/`,
     searchForm: [],
     columns: [
       {title: "成本中心代码", dataIndex: 'code'},
@@ -349,12 +347,12 @@ const selectorData = {
   },
 
 
-  'journal_Line_company': {
+  'journal_line_company': {
     title: '选择公司',
     url: `${config.baseUrl}/api/company/by/term`,
     searchForm: [
-    {type: 'input', id: 'code', label: "公司代码"},
-    {type: 'input', id: 'name', label: "公司名称"},
+      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
     ],
     columns: [
       {title: "公司代码", dataIndex: 'code'},
@@ -363,15 +361,15 @@ const selectorData = {
     ],
   key: 'id'
 },
-  'journal_Line_department':{
+  'journal_line_department':{
   title: "选择部门",
   url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
   searchForm: [
-    {type: 'input', id:'id', label: '部门ID'},
+    {type: 'input', id:'code', label: '部门代码'},
     {type: 'input', id:'name', label: '部门名称'},
   ],
   columns: [
-    {title: '部门ID', dataIndex: 'id'},
+    {title: '部门代码', dataIndex: 'id'},
     {title: '部门名称', dataIndex: 'name'}
   ],
   key: 'id'
