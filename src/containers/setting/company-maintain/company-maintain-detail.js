@@ -50,7 +50,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
       data: [],
       tabsData: {
         BANK:{
-          url: `${config.baseUrl}/api/budget/journal/type/assign/structures/query`,
+          url: ``,
           columns:
             [
               {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
@@ -63,10 +63,10 @@ class WrappedCompanyMaintainDetail extends React.Component {
             ]
         },
         USER:{
-          url: `${config.baseUrl}/api/users/all/`,
+          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           columns:
             [
-              {title: "姓名", key: "fullName", dataIndex: 'name', width: '16%'},                   /*姓名*/
+              {title: "姓名", key: "fullName", dataIndex: 'fullName', width: '16%'},                   /*姓名*/
               {title: "工号", key: "id", dataIndex: 'id', width: '8%'},                             /*工号*/
               {title: "部门", key: "departmentName", dataIndex: 'departmentName', width: '10%'},    /*部门*/
               {title: "联系方式", key: "mobile", dataIndex: 'mobile', width: '10%'},                /*联系方式*/
@@ -89,7 +89,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
 
 
   componentWillMount() {
-    this.getCompanyByCode(this.props.params.companyCode);
+    this.getCompanyByCompanyOID(this.props.params.companyOId);
     this.getList(this.state.nowStatus);
   }
 
@@ -100,6 +100,18 @@ class WrappedCompanyMaintainDetail extends React.Component {
       this.setState({
         infoData: response.data
       })
+    })
+  }
+
+  //根据companyDId获取公司
+  getCompanyByCompanyOID (companyOID){
+    httpFetch.get(`${config.baseUrl}/api/companies/${companyOID}`).then((response) => {
+      console.log(response.data);
+      this.setState({
+        infoData: response.data
+      })
+    }).catch((e)=>{
+      message.error(e.response.data.message);
     })
   }
 
@@ -174,11 +186,11 @@ class WrappedCompanyMaintainDetail extends React.Component {
   };
 
   render() {
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
-                   infoData={typeData}
+                   infoData={infoData}
                    updateHandle={this.updateHandleInfo}
                    updateState={updateState}
                    loading={editing}/>
@@ -194,7 +206,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
         <Table columns={tabsData[nowStatus].columns}
                dataSource={data}
                pagination={pagination}
-             /*  loading={loading}*/
+               loading={loading}
                bordered
                size="middle"/>
       </div>

@@ -35,6 +35,7 @@ class BudgetJournalDetail extends React.Component {
       fileList:[],
       selectorItem:{},
       selectedData:[],
+      selectedRowKeys:[],
       rowSelection: {
         type:'checkbox',
         selectedRowKeys: [],
@@ -185,7 +186,7 @@ class BudgetJournalDetail extends React.Component {
   onSelectChange = (selectedRowKeys, selectedRows) => {
     let { rowSelection } = this.state;
     rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({ rowSelection });
+    this.setState({ rowSelection,selectedRowKeys});
   };
 
 

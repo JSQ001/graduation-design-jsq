@@ -40,6 +40,8 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   componentWillMount() {
+    console.log(this.props.company)
+    console.log(this.props.user)
     this.getPeriodStrategy();
     this.getPeriodQuarter();
     this.getPeriod();
@@ -145,17 +147,17 @@ class NewBudgetJournalFrom extends React.Component {
             "organizationName": this.props.organization.organizationName,
             "structureId": value.structureId,
             "structureName": "structureName",
-            "periodYear": 2017,
+          /*  "periodYear": 2017,
             "periodQuarter":1,
-           "periodName": 200709,
+           "periodName": 200709,*/
             "description": "",
             "reversedFlag": "N",
             "sourceBudgetHeaderId": undefined,
             "sourceType": undefined,
             "employeeId": this.props.user.id,
             "employeeName": this.props.user.fullName,
-            "periodNumber": 1,
-            "unitId": "1",
+          /*  "periodNumber": 1,
+            "unitId": "",*/
             "unitName": "periodNumber",
             'versionId': value.versionName[0].id,
             'versionName': value.versionName[0].versionName,
@@ -320,10 +322,10 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType = (value) => {
-
+    console.log(value);
     if (value.length > 0) {
       console.log(value);
-      let valueData = value[0];
+     let valueData = value[0];
       this.setState({
         idSelectJournal: true,
         structureFlag: false
@@ -435,6 +437,19 @@ class NewBudgetJournalFrom extends React.Component {
                   )}
                 </FormItem>
               </Col>
+              <Col span={8}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.unitId"})}>
+                  {getFieldDecorator('departmentName',{
+                    rules: [{
+                      required: true,
+                      message: '',
+                    }],
+                    initialValue: this.props.user.departmentName
+                  })(
+                    <Input disabled={true}/>
+                  )}
+                </FormItem>
+              </Col>
             </Row>
           </Card>
           <div className="divider"> </div>
@@ -451,7 +466,7 @@ class NewBudgetJournalFrom extends React.Component {
                     <Chooser
                       type='budget_journal_type'
                       labelKey='journalTypeName'
-                      valueKey='journalTypeId'
+                      valueKey='id'
                       single={true}
                       listExtraParams={{"organizationId": this.props.organization.id}}
                       onChange={this.handleJournalType}

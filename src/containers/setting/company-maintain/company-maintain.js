@@ -167,7 +167,8 @@ class CompanyMaintain extends React.Component {
 
   //跳转到详情
   HandleRowClick = (value) => {
-    let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOId);
+    console.log(value);
+    let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOID);
     this.context.router.push(path);
   }
 
