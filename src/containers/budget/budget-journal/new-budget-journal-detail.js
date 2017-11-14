@@ -189,10 +189,11 @@ class NewBudgetJournalDetail extends React.Component {
           this.state.rate=nextProps.params.rate;
           rateData=nextProps.params.rate;
       }
-      this.setState({ params:nextProps.params });
       this.getStrategyControl();
-      if(nextProps.params!=this.state.params){
-         this.props.form.resetFields();
+      if(nextProps.params.id !== this.state.params.id){
+        this.setState({ params: nextProps.params },() => {
+          this.props.form.setFieldsValue(nextProps.params)
+        });
       }
     }
     else
