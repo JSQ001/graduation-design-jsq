@@ -262,7 +262,6 @@ class BudgetBalance extends React.Component {
     if(params[index].type === 'BGT_RULE_PARAMETER_DIM'){
       costCenterSelectorItem.selectorItem.url = selectorData['cost_center_item'].url + value;
     }
-    console.log(costCenterSelectorItem)
     this.setState({ params, costCenterSelectorItem });
   };
 
