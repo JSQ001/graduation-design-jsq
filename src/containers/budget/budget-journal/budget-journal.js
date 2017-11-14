@@ -8,7 +8,6 @@ import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal.scss"
 
-
 class BudgetJournal extends React.Component {
   constructor(props) {
     super(props);

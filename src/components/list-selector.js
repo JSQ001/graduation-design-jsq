@@ -18,6 +18,7 @@ import SearchArea from 'components/search-area'
  * @params searchForm  联动searchForm组件的参数，配置顶部搜索区域搜索项
  * @params columns  表格列配置
  * @params key  数据主键
+ * @params listKey  列表在接口返回值内的变量名，如果接口直接返回数组则置空
  */
 import selectorData from 'share/selectorData'
 
@@ -95,11 +96,12 @@ class ListSelector extends React.Component {
       url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
     return httpFetch.get(url).then((response)=>{
-      response.data.map((item)=>{
+      let data = selectorItem.listKey ? response.data[selectorItem.listKey] : response.data;
+      data.map((item)=>{
         item.key = item[selectorItem.key];
       });
       this.setState({
-        data: response.data,
+        data: data,
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
