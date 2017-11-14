@@ -77,15 +77,15 @@ class NewBudgetJournalDetail extends React.Component {
     searchFrom.map((item)=>{
       if(item.id=="periodYear"){
         item["disabled"]=this.props.params.periodStrategy=="MONTH"?true:false
-        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
+        item["isRequired"]=true
       }
       if(item.id=="periodQuarter"){
         item["disabled"]=this.props.params.periodStrategy=="QUARTER"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?false:true
+        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false
       }
       if(item.id =="periodName"){
        item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?false:true
+        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
       }
     })
 
@@ -93,7 +93,6 @@ class NewBudgetJournalDetail extends React.Component {
       searchFrom:searchFrom
     })
   }
-
 
   chooserChangeHandle(value,e){
     if(value.length>0){
@@ -112,6 +111,10 @@ class NewBudgetJournalDetail extends React.Component {
         this.setState({
           searchFrom:searchFrom
         })
+
+        this.props.form.setFieldsValue({
+          unitId: ''
+        });
       }
 
     }
@@ -133,18 +136,6 @@ class NewBudgetJournalDetail extends React.Component {
         labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true,
         listExtraParams:{companyId: ''}
       },
-
-      /*公司*/
-      /*  {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
-       labelKey: 'name', valueKey: 'id',event:'company',
-       url: `${config.baseUrl}/api/company/by/term?setOfBooksId=${this.props.company.setOfBooksId}`
-       },*/
-      /*部门*/
-      /*  {type: 'select', id:'unitId', label:this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
-       labelKey: 'name', valueKey: 'id',event:'unitId',
-       url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
-       },*/
-      /*预算项目*/
       {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
         labelKey:'itemName',valueKey:'id',
         url:`${config.budgetUrl}/api/budget/items/find/all`,
@@ -152,7 +143,7 @@ class NewBudgetJournalDetail extends React.Component {
       /*期间*/
       {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
         labelKey:'periodName',valueKey:'periodName',event:'periodName',
-        url:`${config.budgetUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
+        url:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
         disabled:true,
       },
       /*季度*/
@@ -166,7 +157,7 @@ class NewBudgetJournalDetail extends React.Component {
         disabled:true,
       },
       /*年度*/
-      {type: 'select', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
+      {type: 'select_year', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
         disabled:true,options: yearOptions,event: 'YEAR_CHANGE'
       },
       /*币种*/
@@ -183,7 +174,7 @@ class NewBudgetJournalDetail extends React.Component {
       /*数量*/
       {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
       /*备注*/
-      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"}), isRequired: true, options: []},
+      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})},
       /*维度*/
 
       ]
@@ -191,8 +182,6 @@ class NewBudgetJournalDetail extends React.Component {
     this.setState({ searchForm })
 
   }
-
-
 
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && nextProps.params!=={} ){
@@ -209,7 +198,6 @@ class NewBudgetJournalDetail extends React.Component {
     else
       this.setState({ params : {} });
   };
-
 
   clear = () => {
     this.props.form.resetFields();
@@ -297,15 +285,26 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //选择组件
       case 'select':{
+      return (
+        <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
+                onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+          {item.options.map((option)=>{
+            return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
+          })}
+        </Select>
+      )
+    }
+
+      case 'select_year':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
-                  onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
-              return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
+              return <Option key={option.key} value={option.key}>{option.label}</Option>
             })}
           </Select>
         )
       }
+
       //值列表选择组件
       case 'value_list':{
         return (
@@ -448,8 +447,6 @@ class NewBudgetJournalDetail extends React.Component {
         periodNameData=params.periodName;
       }
 
-
-      // let currency =JSON.parse(value.currency);
       let  valueData = {
           "companyId": companyId,
           "companyName":companyName,
@@ -498,7 +495,6 @@ class NewBudgetJournalDetail extends React.Component {
 
       }
       let data;
-
       if(params.isNew){
         data={
           ...valueData,
@@ -519,13 +515,7 @@ class NewBudgetJournalDetail extends React.Component {
     this.props.close();
   }
 
-  handleCompany=()=>{
-
-  }
-
-
   render(){
-    const formItemLayout={}
     return (
       <div className="new-budget-journal-detail">
         <Form onSubmit={this.HandleSubmit}>
