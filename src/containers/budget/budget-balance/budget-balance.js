@@ -169,7 +169,14 @@ class BudgetBalance extends React.Component {
         listExtraParams: {},
         selectorItem: undefined
       },
-      'UNIT': {},
+      'UNIT': {
+        listType: 'journal_line_department',
+        labelKey: 'name',
+        valueKey: 'id',
+        codeKey: 'companyGroupCode',
+        listExtraParams: {companyId: this.props.company.id},
+        selectorItem: undefined
+      },
       'UNIT_GROUP': {
         listType: 'department_group',
         labelKey: 'description',
@@ -246,7 +253,7 @@ class BudgetBalance extends React.Component {
     this.setState({ params });
   };
 
-  //修改参数，同时晴空参数值
+  //修改参数，同时清空参数值
   handleChangeParams = (value, index) => {
     let { params, costCenterSelectorItem } = this.state;
     params[index].params = value;
@@ -367,6 +374,7 @@ class BudgetBalance extends React.Component {
 
   //验证通过后将state.params的值包装至values
   validate = (callback) => {
+    const { costCenterSelectorItem } = this.state;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if(!err){
         let searchForm = [].concat(this.state.searchForm);
@@ -393,7 +401,7 @@ class BudgetBalance extends React.Component {
             queryParameterList: []
           };
           param.value.map(value => {
-            let paramItem = paramValueMap[param.params];
+            let paramItem = param.type === 'BGT_RULE_PARAMETER_DIM' ? costCenterSelectorItem : paramValueMap[param.params];
             let queryParameter = {
               parameterValueId: paramItem.listType === 'currency' ? null : (paramItem.valueKey ? value[paramItem.valueKey] : null),
               parameterValueCode: paramItem.listType === 'currency' ? value[paramItem.valueKey] : (paramItem.codeKey ? value[paramItem.codeKey] : null),

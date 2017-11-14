@@ -133,15 +133,28 @@ const selectorData = {
   },
   'select_dimension':{
     title: '选择维度',
+    url: `${config.baseUrl}/api/cost/center/company`,
     searchForm: [
-      {type: 'input', id: 'dimensionCode', label: '维度代码'},
-      {type: 'input', id: 'dimensionName', label: '维度名称'},
+      {type: 'input', id: 'code', label: '维度代码'},
+      {type: 'input', id: 'name', label: '维度名称'},
     ],
     columns: [
-      {title: '维度代码', dataIndex: 'dimensionCode', width: '25%'},
-      {title: '维度名称', dataIndex: 'dimensionName', width: '25%'},
+      {title: '维度代码', dataIndex: 'code', width: '25%'},
+      {title: '维度名称', dataIndex: 'name', width: '25%'},
       {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
       {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
+    ],
+    key: 'id'
+  },
+  'select_dimensionValue':{
+    title: '选择默认维值',
+    searchForm: [
+      {type: 'input', id: 'code', label: '维值代码'},
+      {type: 'input', id: 'name', label: '维值名称'},
+    ],
+    columns: [
+      {title: '维值代码', dataIndex: 'code', width: '25%'},
+      {title: '维值名称', dataIndex: 'name', width: '25%'},
     ],
     key: 'id'
   },
@@ -299,6 +312,23 @@ const selectorData = {
     columns: [
       {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+      /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
+    ],
+    key: 'id'
+  },
+  'company_group_lov': {
+    title: '添加公司',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
       {title:"描述",dataIndex:'description'}
       /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
     ],
