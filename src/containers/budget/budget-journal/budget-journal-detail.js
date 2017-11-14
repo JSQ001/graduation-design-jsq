@@ -35,6 +35,7 @@ class BudgetJournalDetail extends React.Component {
       fileList:[],
       selectorItem:{},
       selectedData:[],
+      selectedRowKeys:[],
       rowSelection: {
         type:'checkbox',
         selectedRowKeys: [],
@@ -185,7 +186,7 @@ class BudgetJournalDetail extends React.Component {
   onSelectChange = (selectedRowKeys, selectedRows) => {
     let { rowSelection } = this.state;
     rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({ rowSelection });
+    this.setState({ rowSelection,selectedRowKeys});
   };
 
 
@@ -402,25 +403,22 @@ class BudgetJournalDetail extends React.Component {
     console.log(value);
     this.setState({
       showSlideFrameNew:false,
-    })
+    });
       let data = this.state.data;
       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
-      if(value.isNew){
-          headerAndListData.list.addIfNotExist(value);
-          data.addIfNotExist(value);
-          listData.addIfNotExist(value);
-        }
-      else{
-
-      let list = headerAndListData.list;
-      for(let a=0;a<list.length;a++){
-        if(list[a].id==value.id){
-          list[a]=value;
+      if(value && value.isNew){
+        headerAndListData.list.addIfNotExist(value);
+        data.addIfNotExist(value);
+        listData.addIfNotExist(value);
+      } else{
+        let list = headerAndListData.list;
+        for(let a=0;a<list.length;a++){
+          if(value && list[a].id === value.id){
+            list[a]=value;
         }
       }
       headerAndListData.list=list;
-
     }
 
     //获取总金额
@@ -503,7 +501,6 @@ class BudgetJournalDetail extends React.Component {
 
   //编辑行
   handlePutData=(value)=>{
-    console.log(value);
     let company =[];
     let companyData={
       "name":value.companyName,
@@ -540,7 +537,6 @@ class BudgetJournalDetail extends React.Component {
       "periodStrategy":this.state.headerAndListData.dto.periodStrategy,
       "isNew":false
     }
-    console.log(valueData);
     this.setState({
       params:valueData,
       showSlideFrameNew:true,
