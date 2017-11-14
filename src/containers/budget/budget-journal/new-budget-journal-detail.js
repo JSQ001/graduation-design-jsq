@@ -77,15 +77,15 @@ class NewBudgetJournalDetail extends React.Component {
     searchFrom.map((item)=>{
       if(item.id=="periodYear"){
         item["disabled"]=this.props.params.periodStrategy=="MONTH"?true:false
-        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
+        item["isRequired"]=true
       }
       if(item.id=="periodQuarter"){
         item["disabled"]=this.props.params.periodStrategy=="QUARTER"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?false:true
+        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false
       }
       if(item.id =="periodName"){
        item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?false:true
+        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
       }
     })
 
