@@ -103,14 +103,16 @@ class NewDimension extends React.Component{
 
   //选择维度
   handleDimensionCode = (value)=>{
-    console.log(value)
-    let selectorItem = this.state.selectorItem;
-    selectorItem.url = `${config.baseUrl}/api/cost/centers/${value[0].costCenterOID}`;
-    this.setState({
-      dimensionCode: value,
-      selectorItem
-    });
-    console.log(selectorItem)
+    if(value.length!==0){
+      console.log(value)
+      let selectorItem = this.state.selectorItem;
+      selectorItem.url = `${config.baseUrl}/api/cost/centers/${value[0].costCenterOID}`;
+      this.setState({
+        dimensionCode: value,
+        selectorItem
+      });
+      console.log(selectorItem)
+    }
   };
 
   handleDimensionValue = (value)=>{
@@ -151,7 +153,7 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="维度代码:">
                 {getFieldDecorator('dimensionCode', {
-                  //initialValue: dimensionCode,
+                  initialValue: dimensionCode,
                   rules: [{
                    required: true, message: formatMessage({id:"common.please.select"})
                   },{
