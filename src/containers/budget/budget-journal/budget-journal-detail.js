@@ -220,10 +220,11 @@ class BudgetJournalDetail extends React.Component {
   //删除预算日记账行
   handleDeleteLine=()=>{
     let data = this.state.selectedData;
+    console.log(data);
      let  selectedData=[];
      data.map((item)=>{
-       if(item.id){
-         let id ={"id":item.id}
+       if(item){
+         let id ={"id":item}
          selectedData.addIfNotExist(id)
        }
      })
