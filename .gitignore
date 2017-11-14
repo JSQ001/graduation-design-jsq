@@ -30,7 +30,7 @@ node_modules
 bower_components/
 
 # Dist folder
-dist/
+# dist/
 
 # IDE/Editor data
 .idea/
