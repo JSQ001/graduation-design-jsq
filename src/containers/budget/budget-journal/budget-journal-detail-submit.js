@@ -188,7 +188,7 @@ class BudgetJournalDetailSubmit extends React.Component {
     data.map((item)=>{
       sum+= item.functionalAmount;
     })
-    return "CNY"+" "+sum;
+    return "CNY"+" "+sum.toFixed(2);
   }
 
 

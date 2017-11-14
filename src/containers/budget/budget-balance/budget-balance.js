@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Form, Row, Col, Input, Select, DatePicker, Switch, Icon, Table, Popconfirm, Modal, message, Checkbox } from 'antd'
+import { Button, Form, Row, Col, Input, Select, Spin, Icon, Table, Popconfirm, Modal, message, Checkbox } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -52,8 +52,7 @@ class BudgetBalance extends React.Component {
       paramsKey: 0,
       paramTypeMap: {
         'BGT_RULE_PARAMETER_BUDGET': 2015,
-        'BGT_RULE_PARAMETER_ORG': 2016,
-        'BGT_RULE_PARAMETER_DIM': 2017
+        'BGT_RULE_PARAMETER_ORG': 2016
       },
       paramValueMap: {},
       showSaveModal: false,
@@ -62,7 +61,15 @@ class BudgetBalance extends React.Component {
       condition: null,
       saving: false,
       searching: false,
-      saveNewCondition: true
+      saveNewCondition: true,
+      costCenterSelectorItem: {  //成本中心所需要的selectorItem，url需要在params的onChange里手动添加
+        listType: 'cost_center_item',
+        labelKey: 'name',
+        valueKey: 'id',
+        codeKey: 'code',
+        listExtraParams: undefined,
+        selectorItem: Object.assign({}, selectorData['cost_center_item'])
+      },
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
@@ -186,13 +193,14 @@ class BudgetBalance extends React.Component {
 
   //渲染下方表格内的选项框及Chooser
   renderColumns = (index, dataIndex) => {
-    const { queryLineListTypeOptions, queryLineListParamOptions, params, paramValueMap } = this.state;
+    const { queryLineListTypeOptions, queryLineListParamOptions, params, paramValueMap, costCenterSelectorItem } = this.state;
     switch(dataIndex){
       case 'type':{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={(value) => this.handleChangeType(value, index)}
-                  value={params[index].type}>
+                  value={params[index].type}
+                  notFoundContent={<Spin size="small" />}>
             {queryLineListTypeOptions.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             })}
@@ -205,7 +213,8 @@ class BudgetBalance extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={(value) => this.handleChangeParams(value, index)}
                   value={params[index].params}
-                  onFocus={() => this.handleFocusParamSelect(index)}>
+                  onFocus={() => this.handleFocusParamSelect(index)}
+                  notFoundContent={<Spin size="small" />}>
             {paramOptions ? paramOptions.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             }) : null}
@@ -213,7 +222,8 @@ class BudgetBalance extends React.Component {
         );
       }
       case 'value':{
-        let param = params[index].params ? paramValueMap[params[index].params] : null;
+        //如果为维度相关项目，则为成本中心selectorItem
+        let param = params[index].params ? (params[index].type === 'BGT_RULE_PARAMETER_DIM' ? costCenterSelectorItem : paramValueMap[params[index].params]) : null;
         return <Chooser disabled={param === null}
                         onChange={(value) => this.handleChangeValue(value, index)}
                         type={param ? param.listType : null}
@@ -238,10 +248,14 @@ class BudgetBalance extends React.Component {
 
   //修改参数，同时晴空参数值
   handleChangeParams = (value, index) => {
-    let { params } = this.state;
+    let { params, costCenterSelectorItem } = this.state;
     params[index].params = value;
     params[index].value = [];
-    this.setState({ params });
+    //手动添加成本中心selectorItem所需要的url
+    if(params[index].type === 'BGT_RULE_PARAMETER_DIM'){
+      costCenterSelectorItem.selectorItem.url = selectorData['cost_center_item'].url + value;
+    }
+    this.setState({ params, costCenterSelectorItem });
   };
 
   //修改参数值
@@ -257,14 +271,25 @@ class BudgetBalance extends React.Component {
     let type = typeParam ? typeParam : params[index].type;
     if(type !== ''){
       if(!queryLineListParamOptions[type]){
-        this.getSystemValueList(paramTypeMap[type]).then(res => {
-          let options = [];
-          res.data.values.map(data => {
-            options.push({label: data.messageKey, value: data.code})
+        if(type === 'BGT_RULE_PARAMETER_DIM'){
+          httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then(res => {
+            let options = [];
+            res.data.map(data => {
+              options.push({label: data.name, value: data.costCenterOID})
+            });
+            queryLineListParamOptions[type] = options;
+            this.setState({ queryLineListParamOptions });
+          })
+        } else {
+          this.getSystemValueList(paramTypeMap[type]).then(res => {
+            let options = [];
+            res.data.values.map(data => {
+              options.push({label: data.messageKey, value: data.code})
+            });
+            queryLineListParamOptions[type] = options;
+            this.setState({ queryLineListParamOptions });
           });
-          queryLineListParamOptions[type] = options;
-          this.setState({ queryLineListParamOptions });
-        });
+        }
       }
     }
   };
@@ -708,7 +733,7 @@ class BudgetBalance extends React.Component {
           <div className="table-header">
             <div className="table-header-title">查询维度</div>
             <div className="table-header-buttons">
-              <Button onClick={this.handleNew}>添 加</Button>
+              <Button onClick={this.handleNew} disabled={params.length === 20}>添 加</Button>
             </div>
           </div>
           <Table columns={columns}
