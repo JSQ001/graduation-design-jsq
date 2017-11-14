@@ -97,7 +97,6 @@ class NewBudgetJournalDetail extends React.Component {
   chooserChangeHandle(value,e){
     if(value.length>0){
       if(e=="company"){
-        console.log(this.state.params);
         let searchFrom =this.state.searchForm;
         searchFrom.map((item)=>{
           if(item.id=="unitId"){
@@ -125,62 +124,32 @@ class NewBudgetJournalDetail extends React.Component {
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
-      yearOptions.push({label: i, key: i})
-
+      yearOptions.push({label: i, key: String(i)})
     let searchForm =[
-      {type: 'list', id: 'company', listType: 'journal_line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), /*公司*/
-      labelKey: 'name', valueKey: 'id',single:'true',event:'company',isRequired: true,
-      listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
-      },
-      {type: 'list', id: 'unitId', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),  /*部门*/
-        labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true,
-        listExtraParams:{companyId: ''}
-      },
+      {type: 'list', id: 'company', listType: 'journal_line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
+        valueKey: 'id',single:'true',event:'company',isRequired: true, listExtraParams:{setOfBooksId:this.props.company.setOfBooksId}},//公司
+      {type: 'list', id: 'unitId', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
+        labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true, listExtraParams:{companyId: ''}},//部门
       {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id',
-        url:`${config.budgetUrl}/api/budget/items/find/all`,
-      },
-      /*期间*/
+        labelKey:'itemName',valueKey:'id', url:`${config.budgetUrl}/api/budget/items/find/all`},
       {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
-        labelKey:'periodName',valueKey:'periodName',event:'periodName',
-        url:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
-        disabled:true,
-      },
-      /*季度*/
-      {
-        type: 'value_list',
-        id: 'periodQuarter',
-        label: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
-        isRequired: true,
-        options: [],
-        valueListCode: 2021,
-        disabled:true,
-      },
-      /*年度*/
+        labelKey:'periodName',valueKey:'periodName',event:'periodName', disabled:true,
+        url:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`}, //期间
+      {type: 'value_list', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
+        options: [], valueListCode: 2021, disabled:true}, //季度
       {type: 'select_year', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
-        disabled:true,options: yearOptions,event: 'YEAR_CHANGE'
-      },
-      /*币种*/
+        disabled:true, options: yearOptions,event: 'YEAR_CHANGE'}, //年度
       {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
-        labelKey:'attribute5',valueKey:'attribute4',
-        url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
-      },
-      /*汇率*/
-      {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},
-      /*金额*/
-      {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
-      /*本位金额*/
-      {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0,disabled: true},
-      /*数量*/
-      {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
-      /*备注*/
-      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})},
-      /*维度*/
-
-      ]
-
+        labelKey:'attribute5',valueKey:'attribute4', url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`}, //币种
+      {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
+        step:10.00, defaultValue:0, event:'amount'},  //金额
+      {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
+        step:10.00, isRequired: true, defaultValue:0, disabled: true}, //本位金额
+      {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0}, //数量
+      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
+    ];
     this.setState({ searchForm })
-
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -333,7 +302,7 @@ class NewBudgetJournalDetail extends React.Component {
                         valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
                         selectorItem={item.selectorItem}
-                        single={item.single}
+                        single={Boolean(item.single)}
                         onChange={chooserHandle}
         />
       }
