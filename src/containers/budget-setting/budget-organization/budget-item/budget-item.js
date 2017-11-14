@@ -61,9 +61,6 @@ class BudgetItem extends React.Component {
       ],
 
       columns: [
-        {          /*预算组织*/
-          title: formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
-        },
         {          /*预算项目代码*/
           title: formatMessage({id:"budget.itemCode"}), key: "itemCode", dataIndex: 'itemCode'
         },
