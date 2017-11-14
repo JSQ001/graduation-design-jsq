@@ -166,7 +166,7 @@ class NewBudgetJournalDetail extends React.Component {
         disabled:true,
       },
       /*年度*/
-      {type: 'select', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
+      {type: 'select_year', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
         disabled:true,options: yearOptions,event: 'YEAR_CHANGE'
       },
       /*币种*/
@@ -297,15 +297,26 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //选择组件
       case 'select':{
+      return (
+        <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
+                onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+          {item.options.map((option)=>{
+            return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
+          })}
+        </Select>
+      )
+    }
+
+      case 'select_year':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
-                  onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
-              return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
+              return <Option key={option.key} value={option.key}>{option.label}</Option>
             })}
           </Select>
         )
       }
+
       //值列表选择组件
       case 'value_list':{
         return (

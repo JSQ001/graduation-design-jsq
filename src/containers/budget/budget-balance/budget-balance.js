@@ -85,8 +85,9 @@ class BudgetBalance extends React.Component {
     });
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
-    for(let i = nowYear - 20; i <= nowYear + 20; i++)
+    for(let i = nowYear - 20; i <= nowYear + 20; i++){
       yearOptions.push({label: i, key: i})
+    }
     let organizationIdParams = {organizationId : this.state.organizationId};
     let searchForm = [
       {type: 'select', id:'versionId', label: '预算版本', isRequired: true, options: [], method: 'get',
@@ -98,7 +99,7 @@ class BudgetBalance extends React.Component {
       {type: 'select', id:'scenarioId', label: '预算场景', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: organizationIdParams,
         labelKey: 'scenarioName', valueKey: 'id'},
-      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: yearOptions, event: 'YEAR_CHANGE'},
+      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: yearOptions},
       {type: 'items', id: 'dateRange', items: [
         {type: 'select', id: 'periodLowerLimit', label: '期间从', isRequired: true, options: [], method: 'get', disabled: true,
         getUrl: `${config.baseUrl}/api/periods/query/periods/year`, getParams: {year: new Date().getFullYear()},
