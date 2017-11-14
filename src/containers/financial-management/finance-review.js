@@ -66,7 +66,8 @@ class FinanceReview extends React.Component {
       ],
       nowType: 'INVOICE',
       count: {},
-      expenseDetailReview: menuRoute.getRouteItem('expense-report-detail-review', 'key')
+      expenseDetailReview: menuRoute.getRouteItem('expense-report-detail-review', 'key'),
+      loanDetailReview: menuRoute.getRouteItem('loan-request-detail-review', 'key')
     };
   }
 
