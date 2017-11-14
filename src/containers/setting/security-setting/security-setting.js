@@ -182,12 +182,11 @@ class SecuritySetting extends React.Component{
         },this.getList())
       }
     }).catch((e)=>{
-        if(e.response){
-          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-          this.setState({loading: false});
-        }else {
-          console.log(e)
-    }})
+      if(e.response){
+        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+      }
+      this.setState({loading: false});
+    })
   };
 
   render(){
