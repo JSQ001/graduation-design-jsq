@@ -11,10 +11,20 @@ import config from 'config'
 
 import menuRoute from 'share/menuRoute'
 
-import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
+import 'styles/setting/company-group/company-group.scss';
 
 
 let setOfBook = [];
+httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
+  console.log(response)
+  response.data.map((item)=>{
+    let option = {
+      label: item.setOfBooksCode +" - "+item.setOfBooksName,
+      value: item.id
+    };
+    setOfBook.addIfNotExist(option)
+  })
+});
 
 class CompanyGroup extends React.Component {
   constructor(props) {
@@ -37,8 +47,8 @@ class CompanyGroup extends React.Component {
       },
       searchForm: [
         {type: 'select', options: setOfBook, id: 'setOfBook', label: "账套"},
-        {type: 'input', id: 'structureCode', label: formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
-        {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
+        {type: 'input', id: 'companyGroupCode', label: "公司组代码" }, /*预算表代码*/
+        {type: 'input', id: 'companyGroupName', label: "公司组名称" }, /*预算表名称*/
       ],
       columns: [
         {          /*公司组代码*/
@@ -87,17 +97,6 @@ class CompanyGroup extends React.Component {
   };
 
   componentWillMount(){
-    //获取账套
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-      console.log(response)
-      response.data.map((item)=>{
-        let option = {
-          label: item.setOfBooksCode +" "+item.setOfBooksName,
-          value: item.id
-        };
-        setOfBook.addIfNotExist(option)
-      })
-    });
     this.getList();
   }
 
@@ -110,18 +109,13 @@ class CompanyGroup extends React.Component {
     }
     httpFetch.get(url).then((response)=>{
       response.data.map((item,index)=>{
-        item.key = item.structureCode;
+        item.key = item.id;
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
         data: response.data,
-        pagination: {
-          total: Number(response.headers['x-total-count']),
-          current: this.state.pagination.current,
-          page: this.state.pagination.page,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-        },
+        pagination,
         loading: false
       })
     })
@@ -156,19 +150,15 @@ class CompanyGroup extends React.Component {
     })
   };
 
+  //新建公司组
   handleCreate = () =>{
-    if(this.props.organization.isEnabled) {
-      this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
-    }else{
-      notification["error"]({
-        description: this.props.intl.formatMessage({id:"structure.validateCreate"})  /*请维护当前账套下的预算组织*/
-      })
-    }
+    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.newCompanyGroup.url);
   };
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':structureId', record.id));
+    console.log(record)
+    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url.replace(':id',record.id));
   };
 
   render(){

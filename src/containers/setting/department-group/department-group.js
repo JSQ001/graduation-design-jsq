@@ -1,19 +1,20 @@
 /**
- * created by jsq on 2017/9/18
+ * created by jsq on 2017/11/9
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge, notification, Popover  } from 'antd';
+import { Button, Table, Badge, notification, Popover, Popconfirm, message  } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 
 import menuRoute from 'share/menuRoute'
 
-import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
+import 'styles/setting/department-group/department-group.scss';
 
-class BudgetStructure extends React.Component {
+
+class DepartmentGroup extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -33,31 +34,17 @@ class BudgetStructure extends React.Component {
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'input', id: 'structureCode', label: formatMessage({id: 'budget.structureCode'}) }, /*预算表代码*/
+        {type: 'input', id: 'structureCode', label: "部门组代码" }, /*预算表代码*/
         {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
       ],
       columns: [
-        {          /*预算表代码*/
-          title: formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
+        {          /*公司组代码*/
+          title: "部门组代码", key: "companyGroupCode", dataIndex: 'companyGroupCode'
         },
-        {          /*预算表名称*/
-          title: formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
+        {          /*公司组描述*/
+          title: "部门组名称", key: "companyGroupName", dataIndex: 'companyGroupName'
         },
-        {          /*编制期段*/
-          title: formatMessage({id:"budget.periodStrategy"}), key: "periodStrategy", dataIndex: 'periodStrategy', width: '10%',
-          render: (recode)=>{
-            if(recode === "MONTH")
-              return formatMessage({id:"periodStrategy.month"}) /*月度*/
-            if(recode === "QUARTER")
-              return formatMessage({id:"periodStrategy.quarter"}) /*季度*/
-            if(recode === "YEAR")
-              return formatMessage({id:"periodStrategy.year"}) /*年度*/
-          }
-        },
-        {           /*备注*/
-          title: formatMessage({id:"budget.structureDescription"}), key: "description", dataIndex: 'description',
-          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
-        },
+
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}),
           key: 'status',
@@ -67,35 +54,55 @@ class BudgetStructure extends React.Component {
             <Badge status={isEnabled ? 'success' : 'error'}
                    text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )
-        }
+        },
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+          <span>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
+            <span className="ant-divider" />
+            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
+            </Popconfirm>
+          </span>)},  //操作
       ],
     }
   }
+
+
+  editItem = (e, record) =>{
+    console.log(record)
+
+  };
+
+  deleteItem = (e, record) => {
+    httpFetch.delete(`${config.budgetUrl}/api/company/group/${record.id}`).then(response => {
+      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.companyGroupName})); // name删除成功
+      this.getList();
+    })
+  };
+
   componentWillMount(){
+
     this.getList();
   }
 
-  //获取预算表数据
+  //获取部门组数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    const {searchParams, pagination} = this.state;
+    let url = `${config.baseUrl}/api/DepartmentGroup/selectByInput?page=${pagination.page}&size=${pagination.pageSize}`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
+    console.log(url)
     httpFetch.get(url).then((response)=>{
+      console.log(response)
       response.data.map((item,index)=>{
-        item.key = item.structureCode;
+        item.key = item.id;
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
         data: response.data,
-        pagination: {
-          total: Number(response.headers['x-total-count']),
-          current: this.state.pagination.current,
-          page: this.state.pagination.page,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-        },
+        pagination,
         loading: false
       })
     })
@@ -130,19 +137,14 @@ class BudgetStructure extends React.Component {
     })
   };
 
+  //新建公司组
   handleCreate = () =>{
-    if(this.props.organization.isEnabled) {
-      this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
-    }else{
-      notification["error"]({
-        description: this.props.intl.formatMessage({id:"structure.validateCreate"})  /*请维护当前账套下的预算组织*/
-      })
-    }
+    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.newCompanyGroup.url);
   };
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.id).replace(':structureId', record.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url);
   };
 
   render(){
@@ -158,23 +160,23 @@ class BudgetStructure extends React.Component {
           </div>
         </div>
         <Table
-            loading={loading}
-            dataSource={data}
-            columns={columns}
-            pagination={pagination}
-            onChange={this.onChangePager}
-            onRowClick={this.handleRowClick}
-            size="middle"
-            bordered/>
+          loading={loading}
+          dataSource={data}
+          columns={columns}
+          pagination={pagination}
+          onChange={this.onChangePager}
+          onRowClick={this.handleRowClick}
+          size="middle"
+          bordered/>
       </div>
     )
   }
 
 }
 
-BudgetStructure.contextTypes = {
+DepartmentGroup.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {
@@ -182,4 +184,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetStructure));
+export default connect(mapStateToProps)(injectIntl(DepartmentGroup));
