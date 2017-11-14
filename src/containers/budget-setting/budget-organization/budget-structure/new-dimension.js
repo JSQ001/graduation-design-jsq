@@ -13,6 +13,7 @@ const { TextArea } = Input;
 const Option = Select.Option;
 
 
+
 class NewDimension extends React.Component{
   constructor(props) {
     super(props);
@@ -100,6 +101,7 @@ class NewDimension extends React.Component{
     }))
   };
 
+  //选择维度
   handleDimensionCode = (value)=>{
     console.log(value)
     let selectorItem = this.state.selectorItem;
@@ -149,7 +151,7 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="维度代码:">
                 {getFieldDecorator('dimensionCode', {
-                  initialValue: dimensionCode,
+                  //initialValue: dimensionCode,
                   rules: [{
                    required: true, message: formatMessage({id:"common.please.select"})
                   },{

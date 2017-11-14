@@ -43,8 +43,6 @@ class NewCompanyGroup extends React.Component{
     });
   }
 
-
-  //新建预算表
   handleSave = (e) =>{
     e.preventDefault();
     this.setState({
@@ -63,7 +61,7 @@ class NewCompanyGroup extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
             this.setState({loading: false});
           }
           else {

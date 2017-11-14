@@ -90,9 +90,12 @@ class CompanyGroup extends React.Component {
   };
 
   deleteItem = (e, record) => {
-    httpFetch.delete(`${config.budgetUrl}/api/company/group/${record.id}`).then(response => {
+    this.setState({loading: true});
+    httpFetch.delete(`${config.baseUrl}/api/company/group/${record.id}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.companyGroupName})); // name删除成功
-      this.getList();
+      this.setState({
+        loading: false
+      },this.getList());
     })
   };
 
