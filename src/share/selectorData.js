@@ -318,9 +318,9 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'company_group': {
+  'company_group_lov': {
     title: '添加公司',
-    url: `${config.budgetUrl}/api/company/by/condition`,
+    url: `${config.baseUrl}/api/company/by/condition`,
     searchForm: [
       {type: 'input', id: 'code', label: "公司代码"},
       {type: 'input', id: 'name', label: "公司名称"},

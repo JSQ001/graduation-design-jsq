@@ -11,7 +11,7 @@ import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
-import 'styles/budget-setting/budget-organization/budget-item/budget-item-detail.scss';
+import 'styles/setting/department-group/department-group-detail.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;

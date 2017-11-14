@@ -11,7 +11,7 @@ import config from 'config'
 
 import menuRoute from 'share/menuRoute'
 
-import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
+import 'styles/setting/department-group/department-group.scss';
 
 
 class DepartmentGroup extends React.Component {
@@ -87,12 +87,12 @@ class DepartmentGroup extends React.Component {
 
   //获取部门组数据
   getList(){
-    const {searchForm, pagination} = this.state;
-    let params = searchForm;
-    let url = `${config.baseUrl}api/DepartmentGroup/selectByTenantId?page=${pagination.page}&size=${pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    const {searchParams, pagination} = this.state;
+    let url = `${config.baseUrl}/api/DepartmentGroup/selectByInput?page=${pagination.page}&size=${pagination.pageSize}`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
+    console.log(url)
     httpFetch.get(url).then((response)=>{
       console.log(response)
       response.data.map((item,index)=>{

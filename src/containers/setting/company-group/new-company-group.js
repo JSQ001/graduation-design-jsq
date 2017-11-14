@@ -9,7 +9,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
-import 'styles/budget-setting/budget-organization/budget-structure/new-budget-structure.scss';
+import 'styles/setting/company-group/new-company-group.scss';
 
 
 const FormItem = Form.Item;

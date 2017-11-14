@@ -11,7 +11,7 @@ import { Form, Button, Select, Checkbox, Input, Switch, Icon, Badge, Tabs, Table
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
-import 'styles/budget-setting/budget-organization/budget-item/budget-item-detail.scss';
+import 'styles/setting/company-group/company-group-detail.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -41,7 +41,7 @@ class CompanyGroupDetail extends React.Component{
       data: [],
       edit: false,
       lov: {
-        type: "company_group",
+        type: "company_group_lov",
         visible: false,
         listSelectedData:{}
       },
@@ -197,9 +197,20 @@ class CompanyGroupDetail extends React.Component{
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
+  //控制是否弹出公司列表
+  showListSelector = (flag) =>{
+    let lov = this.state.lov;
+    lov.visible = flag;
+    this.setState({lov})
+  };
+
+  //处理公司弹框点击ok,添加公司
+  handleListOk = (result) => {
+    let company = [];
+  };
+
   render(){
     const { edit, lov, pagination, companyGroup, columns, data, infoList, selectedRowKeys} = this.state;
-
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -219,7 +230,7 @@ class CompanyGroupDetail extends React.Component{
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
             <Button disabled onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
-            </div>
+          </div>
         </div>
         <Table
           dataSource={data}
@@ -232,10 +243,10 @@ class CompanyGroupDetail extends React.Component{
         <ListSelector
           visible={lov.visible}
           type={lov.type}
-          onCancel={()=>this.showList(false)}
+          onCancel={()=>this.showListSelector(false)}
           onOk={this.handleListOk}
-          selectedData={lov.listSelectedData}
-          extraParams={{companyGroupId: companyGroup.id, setOfBooksId: companyGroup.setOfBooksId}}/>
+         // selectedData={lov.listSelectedData}
+          extraParams={{"companyGroupId": companyGroup.id, "setOfBooksId": companyGroup.setOfBooksId}}/>
       </div>)
   }
 }
