@@ -95,7 +95,6 @@ class ListSelector extends React.Component {
       url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
     return httpFetch.get(url).then((response)=>{
-      console.log(response)
       response.data.map((item)=>{
         item.key = item[selectorItem.key];
       });

@@ -318,6 +318,23 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'company_group': {
+    title: '添加公司',
+    url: `${config.budgetUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司明称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+      /* {title: "公司类型", dataIndex: 'companyTypeName'}*/
+    ],
+    key: 'id'
+  },
 
 };
 

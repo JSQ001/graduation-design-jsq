@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+import { Form, Button, Select, Checkbox, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
@@ -16,6 +16,18 @@ import 'styles/budget-setting/budget-organization/budget-item/budget-item-detail
 const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
+
+let setOfBooks = [];
+httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
+  console.log(response)
+  response.data.map((item)=>{
+    let option = {
+      label: item.setOfBooksCode +" - "+item.setOfBooksName,
+      value: item.id
+    };
+    setOfBooks.addIfNotExist(option)
+  })
+});
 
 class CompanyGroupDetail extends React.Component{
   constructor(props){
@@ -26,10 +38,13 @@ class CompanyGroupDetail extends React.Component{
       buttonLoading: false,
       companyListSelector: false,  //控制公司选则弹框
       companyGroup:{},
-      setOfBooks: {},
       data: [],
       edit: false,
-      visible: false,
+      lov: {
+        type: "company_group",
+        visible: false,
+        listSelectedData:{}
+      },
       selectedRowKeys: [],
       selectedEntityOIDs: [],   //已选择的列表项的OIDs
       pagination: {
@@ -43,8 +58,8 @@ class CompanyGroupDetail extends React.Component{
       infoList: [
         {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
         {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
-        {type: 'select',options: [] , id: 'setOfBook', required:true, label:"账套"},
-        {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
+        {type: 'select',options: setOfBooks  , id: 'setOfBook', required:true, label:"账套"},
+        {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
       columns: [
@@ -66,25 +81,9 @@ class CompanyGroupDetail extends React.Component{
          console.log(response)
          this.setState({
             companyGroup: response.data
-         })
+         },this.getList())
       }
     });
-    //查询账套
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-      console.log(response)
-      let setOfBooks = [];
-      response.data.map((item)=>{
-        let option = {
-          value: item.setOfBooksCode +" - "+item.setOfBooksName,
-          id: item.id
-        };
-        setOfBooks.addIfNotExist(option)
-      });
-      this.setState({
-        setOfBooks:setOfBooks
-      });
-    });
-    this.getList();
   }
 
 
@@ -131,8 +130,10 @@ class CompanyGroupDetail extends React.Component{
 
   //控制是否弹出公司列表
   showListSelector = (flag) =>{
+    let lov = this.state.lov;
+    lov.visible = flag;
     this.setState({
-      companyListSelector: flag
+      lov
     })
   };
 
@@ -197,7 +198,7 @@ class CompanyGroupDetail extends React.Component{
   }
 
   render(){
-    const { edit, pagination, companyGroup, columns, data, visible, infoList, budgetItem, companyListSelector, selectedRowKeys} = this.state;
+    const { edit, lov, pagination, companyGroup, columns, data, infoList, selectedRowKeys} = this.state;
 
     const rowSelection = {
       selectedRowKeys,
@@ -205,7 +206,7 @@ class CompanyGroupDetail extends React.Component{
       onSelect: this.onSelectRow,
       onSelectAll: this.onSelectAllRow
     };
-
+    console.log(companyGroup)
     return(
       <div className="budget-item-detail">
         <BasicInfo
@@ -228,7 +229,13 @@ class CompanyGroupDetail extends React.Component{
           size="middle"
           bordered/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
-
+        <ListSelector
+          visible={lov.visible}
+          type={lov.type}
+          onCancel={()=>this.showList(false)}
+          onOk={this.handleListOk}
+          selectedData={lov.listSelectedData}
+          extraParams={{companyGroupId: companyGroup.id, setOfBooksId: companyGroup.setOfBooksId}}/>
       </div>)
   }
 }
