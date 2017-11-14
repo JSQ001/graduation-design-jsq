@@ -27,7 +27,7 @@ class BudgetScenarios extends React.Component {
       },
       loading: true,
       columns: [
-        {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
+        // {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
         {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>},
