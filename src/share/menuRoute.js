@@ -15,7 +15,9 @@ const menuAdminIndexUrl = '/main/dashboard-admin';
 
 //非管理员模式下菜单
 import dashboard from 'share/routes/normal/dashboard'  //仪表盘
+import myAccount from 'share/routes/normal/my-account'  //我的账本
 import expenseReport from 'share/routes/normal/expense-report'  //报销单
+import request from 'share/routes/normal/request'  //申请单
 import financialManagement from 'share/routes/normal/finacial-management'  //财务管理
 import budgetSetting from 'share/routes/normal/budget-setting'  //预算设置
 import budget from 'share/routes/normal/budget'  //预算
@@ -43,7 +45,9 @@ import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
  */
 const menu = [
   dashboard,  //仪表盘
+  myAccount,  //我的账本
   expenseReport,  //报销单
+  request,  //申请单
   financialManagement,  //财务管理
   budgetSetting,  //预算设置
   budget,  //预算

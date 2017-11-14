@@ -98,7 +98,13 @@ class BudgetOrganization extends React.Component {
 
   //分页点击
   onChangePager = (page) => {
-
+    if (page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1,
+        loading: true
+      }, () => {
+        this.getList();
+      })
   };
 
   handleRowClick = (record) => {

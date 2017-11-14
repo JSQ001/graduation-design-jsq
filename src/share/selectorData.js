@@ -342,7 +342,6 @@ const selectorData = {
       {title: "成本中心代码", dataIndex: 'code'},
       {title: "成本中心名称", dataIndex: 'name'}
     ],
-    listKey: 'costCenterItems',
     key: 'costCenterItemOID'
   },
 

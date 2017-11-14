@@ -1,10 +1,4 @@
-/**
- * Created by lwj on 2017/9/6.
- */
-
 import React  from 'react'
-import httpFetch from 'share/httpFetch'
-import config from 'config'
 
 class MyAccount extends React.Component{
     constructor(props){
@@ -14,9 +8,7 @@ class MyAccount extends React.Component{
     render(){
       return(
         <div>
-          <div>
-          </div>
-
+          <h3 className="header-title">我的账本</h3>
         </div>
       )
     }

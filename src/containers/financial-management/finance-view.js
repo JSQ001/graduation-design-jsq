@@ -221,8 +221,6 @@ class FinanceView extends React.Component{
       if (e.response) {
         this.setState({ exportLoading: false });
         message.error(`导出失败，${e.response.message}`)
-      } else {
-        console.log(e)
       }
     })
   };

@@ -2,40 +2,48 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message, Spin } from 'antd'
+import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
-class NewBudgetOrganization extends React.Component {
+class UpdateBudgetOrganization extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      budgetOrganization: menuRoute.getRouteItem('budget-organization','key'),    //组织定义的页面项
-      loading: false,
-      setOfBooks: [],
+      loading: false
     };
   }
+
+  onCancel = () => {
+    this.props.close();
+  };
 
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/organizations`, values).then((res)=>{
+        let params = {
+          id: this.props.params.id,
+          isEnabled: values.isEnabled,
+          organizationCode: this.props.params.organizationCode,
+          organizationName: values.organizationName,
+          tenantId: this.props.params.tenantId,
+          setOfBooksId: this.props.params.setOfBooksId,
+          versionNumber: this.props.params.versionNumber
+        };
+        httpFetch.put(`${config.budgetUrl}/api/budget/organizations`,params).then((res)=>{
           this.setState({loading: false});
-          message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
-          this.context.router.replace(this.state.budgetOrganization.url);
+          message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: values.organizationName}));  //保存成功
+          this.props.close(true);
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.message}`);
-          } else {
-            console.log(e)
+            message.error(`保存失败, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -43,17 +51,10 @@ class NewBudgetOrganization extends React.Component {
     });
   };
 
-  componentWillMount(){
-    //TODO: tenant模式
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then(res => {
-      this.setState({ setOfBooks: res.data })
-    })
-  }
-
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { setOfBooks, budgetOrganization } = this.state;
+    const {} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 10, offset: 1 },
@@ -68,28 +69,23 @@ class NewBudgetOrganization extends React.Component {
         />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label={formatMessage({id: 'budget.set.of.books'})/* 账套 */}>
-            {getFieldDecorator('setOfBooksId', {
+            {getFieldDecorator('setOfBooksName', {
               rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.select'})  //请选择
-              }]
+                required: true
+              }],
+              initialValue: this.props.params.setOfBooksName
             })(
-              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}  notFoundContent={<Spin size="small" />}>
-                {setOfBooks.map((option)=>{
-                  return <Option key={option.id}>{option.setOfBooksCode}</Option>
-                })}
-              </Select>
+              <Select disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.code'})/* 预算组织代码 */}>
             {getFieldDecorator('organizationCode', {
               rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.enter'}),  //请输入
+                required: true
               }],
-              initialValue: ''
+              initialValue: this.props.params.organizationCode
             })(
-              <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
+              <Input disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.name'})/* 预算组织名称 */}>
@@ -98,24 +94,23 @@ class NewBudgetOrganization extends React.Component {
                 required: true,
                 message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
-              initialValue: ''
+              initialValue: this.props.params.organizationName
             })(
               <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
-              initialValue: true
+              initialValue: this.props.params.isEnabled,
+              valuePropName: 'checked'
             })(
-              <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('isEnabled') ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})}
           </FormItem>
-          <FormItem wrapperCol={{ offset: 7 }}>
-            <Row gutter={1}>
-              <Col span={3}><Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button></Col>
-              <Col span={3}><Button onClick={() => {this.context.router.replace(budgetOrganization.url);}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button></Col>
-            </Row>
-          </FormItem>
+          <div className="slide-footer">
+            <Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
+            <Button onClick={this.onCancel}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
+          </div>
         </Form>
       </div>
     )
@@ -126,11 +121,6 @@ class NewBudgetOrganization extends React.Component {
 function mapStateToProps() {
   return {}
 }
+const WrappedUpdateBudgetOrganization = Form.create()(UpdateBudgetOrganization);
 
-NewBudgetOrganization.contextTypes = {
-  router: React.PropTypes.object
-};
-
-const WrappedNewBudgetOrganization = Form.create()(NewBudgetOrganization);
-
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetOrganization));
+export default connect(mapStateToProps)(injectIntl(WrappedUpdateBudgetOrganization));
