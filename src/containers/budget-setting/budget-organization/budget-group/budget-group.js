@@ -17,10 +17,9 @@ class BudgetGroup extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '预算项目组代码', dataIndex: 'itemGroupCode', width: '30%'},
-        {title: '预算项目组描述', dataIndex: 'itemGroupName', width: '40%'},
-        {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />},
-        {title: '操作', key: 'operation', width: '15%', render: () => <a href="#">删除</a>,}
+        {title: '预算项目组代码', dataIndex: 'itemGroupCode', width: '35%'},
+        {title: '预算项目组描述', dataIndex: 'itemGroupName', width: '50%'},
+        {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0

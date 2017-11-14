@@ -383,12 +383,10 @@ class NewAccountPeriod extends React.Component {
             this.getList();
           }
         }).catch((e)=>{
-            if(e.response){
-              message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
-            this.setState({loading: false});
-          } else {
-            console.log(e)
+          if(e.response){
+            message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
           }
+          this.setState({loading: false});
         })
       }
     });
@@ -415,10 +413,8 @@ class NewAccountPeriod extends React.Component {
         }).catch((e)=>{
           if(e.response){
             message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });

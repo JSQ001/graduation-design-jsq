@@ -49,11 +49,9 @@ class NewBudgetStrategyDetail extends React.Component {
           }
         }).catch((e)=>{
           if(e.response){
-            this.setState({loading: false});
             message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.message}`);
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });

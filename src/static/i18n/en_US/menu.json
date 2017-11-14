@@ -9,6 +9,8 @@
   "menu.my-account": "My account",
   "menu.expense-report": "Expense report",
   "menu.edit-report": "Edit report",
+  "menu.request": "Request",
+  "menu.loan-request-detail": "Loan request detail",
   "menu.budget": "Budget",
   "menu.budget-setting": "Budget setting",
   "menu.new-budget-organization": "New budget organization",
@@ -80,8 +82,4 @@
   "menu.department-group-detail": "Department group detail",
   "menu.contract-type-define": "Contract type define",
   "menu.company-distribution": "Company distribution"
-
-
-
 }
-

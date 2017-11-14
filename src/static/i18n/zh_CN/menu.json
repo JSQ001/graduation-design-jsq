@@ -9,6 +9,8 @@
   "menu.my-account": "我的账本",
   "menu.expense-report": "报销单",
   "menu.edit-report": "编辑报销单",
+  "menu.request": "申请单",
+  "menu.loan-request-detail": "借款单详情",
   "menu.budget": "预算",
   "menu.budget-setting": "预算设置",
   "menu.new-budget-organization": "新建预算组织定义",
@@ -80,5 +82,4 @@
   "menu.department-group-detail": "部门组详情",
   "menu.contract-type-define": "合同类型定义",
   "menu.company-distribution": "公司分配"
-
 }

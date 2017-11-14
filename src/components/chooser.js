@@ -28,7 +28,7 @@ class Chooser extends React.Component {
       let innerChange = false;
       if(nextProps.value.length === this.state.value.length){
         nextProps.value.map((nextItem, index) => {
-          innerChange = innerChange || this.state.value[index].key != nextItem[this.props.valueKey]
+          innerChange = innerChange || this.state.value[index].key !== (nextItem[this.props.valueKey] + '');
         })
       }
       if(lengthChange || innerChange){
@@ -44,7 +44,7 @@ class Chooser extends React.Component {
         this.setState({ value: values });
       }
     }
-    if(!nextProps.value || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
+    if((!nextProps.value && this.state.value.length > 0) || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
       this.onChange([]);
       this.setState({ value: [] })
     }
