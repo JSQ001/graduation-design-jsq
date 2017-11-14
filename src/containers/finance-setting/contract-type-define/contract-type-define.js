@@ -1,6 +1,6 @@
 import React from "react";
 import { injectIntl } from 'react-intl';
-import { Form, Button, Table } from 'antd'
+import { Form, Button, Table, Badge } from 'antd'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 
@@ -29,8 +29,15 @@ class ContractTypeDefine extends React.Component{
         {title: '合同类型名称', dataIndex: 'contractTypeName'},
         {title: '合同大类', dataIndex: 'contractCategory'},
         {title: '账套', dataIndex: 'setOfBooksId'},
-        {title: '状态', dataIndex: 'isEnabled'},
-        {title: '操作', dataIndex: 'id'}
+        {title: '状态', dataIndex: 'isEnabled',
+          render: status => <Badge status={status ? 'success' : 'error'} text={status ? '启用' : '禁用'} />},
+        {title: '操作', dataIndex: 'id', render: (id, record) => (
+          <span>
+            <a onClick={() => this.handleEdit(record)}>编辑</a>
+            <span className="ant-divider"/>
+            <a>公司分配</a>
+          </span>
+        )}
       ],
       data: [],
       page: 0,
@@ -65,7 +72,7 @@ class ContractTypeDefine extends React.Component{
 
   getList = () => {
     const { searchParams, page, pageSize } = this.state;
-    let url = `${config.baseUrl}/api/contract/type/${searchParams.setOfBooksId}/query?page=${page}&size=${pageSize}`;
+    let url = `${config.contractUrl}/api/contract/type/${searchParams.setOfBooksId}/query?page=${page}&size=${pageSize}`;
     for(let searchKey in searchParams) {
       searchKey !== 'setOfBooksId' && (url += searchParams[searchKey] ? `&${searchKey}=${searchParams[searchKey]}` : '')
     }
@@ -107,10 +114,25 @@ class ContractTypeDefine extends React.Component{
     })
   };
 
+  onClear = () => {
+
+  };
+
   showSlide = (flag) => {
     this.setState({ showSlideFrame: flag })
   };
 
+  //关闭侧滑后的回调
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.getList();
+    }
+    this.setState({
+      showSlideFrame: false
+    })
+  };
+
+  //新建合同类型
   handleNew = () => {
     this.setState({
       editContractType: {},
@@ -118,27 +140,38 @@ class ContractTypeDefine extends React.Component{
     });
   };
 
+  //编辑合同类型
+  handleEdit = (record) => {
+    this.setState({ editContractType: record }, () => {
+      this.showSlide(true)
+    })
+  };
+
   render() {
     const { loading, searchForm, columns, data, pagination, showSlideFrame, editContractType } = this.state;
     return (
       <div className="contract-type-define">
         <SearchArea searchForm={searchForm}
-                    submitHandle={this.onSearch}/>
+                    submitHandle={this.onSearch}
+                    clearHandle={this.onClear}/>
         <div className="table-header">
           <div className="table-header-title">{`共搜索到 ${pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>新 建</Button>
           </div>
         </div>
-        <Table columns={columns}
-               dataScource={data}
+        <Table rowKey={record => record.id}
+               columns={columns}
+               dataSource={data}
                loading={loading}
                bordered
                size="middle"/>
-        <SlideFrame title={editContractType.setOfBooksId ? "编辑合同类型" :  "新建合同类型"}
+        <SlideFrame title={editContractType.id ? "编辑合同类型" :  "新建合同类型"}
                     show={showSlideFrame}
                     content={NewContractType}
-                    onClose={() => this.showSlide(false)}/>
+                    onClose={() => this.showSlide(false)}
+                    afterClose={this.handleCloseSlide}
+                    params={editContractType}/>
       </div>
     )
   }
