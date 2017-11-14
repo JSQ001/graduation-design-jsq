@@ -152,7 +152,7 @@ class NewBudgetJournalDetail extends React.Component {
       /*期间*/
       {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
         labelKey:'periodName',valueKey:'periodName',event:'periodName',
-        url:`${config.budgetUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
+        url:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
         disabled:true,
       },
       /*季度*/
