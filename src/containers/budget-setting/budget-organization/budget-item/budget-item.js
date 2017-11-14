@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select, Popover } from 'antd';
+import { Button, Table, Select, Popover, Badge } from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
 import httpFetch from 'share/httpFetch';
@@ -24,6 +24,7 @@ class BudgetItem extends React.Component {
       companyListSelector: false,
       searchParams:{
         itemCode: "",
+        itemName: "",
         itemCodeFrom: "",
         itemCodeTo: "",
         itemTypeCode: "",
@@ -40,14 +41,7 @@ class BudgetItem extends React.Component {
       },
       searchForm: [
         {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'budget.itemCode'}) }, /*预算项目代码*/
-        {type: 'select', id: 'itemCodeFrom',
-          label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
-          options: itemCode
-        },
-        {type: 'select', id: 'itemCodeTo',
-          label: formatMessage({id: 'budget.itemCodeTo'}), /*预算项目代码至*/
-          options: itemCode
-        },
+        {type: 'input', id: 'itemName', label: this.props.intl.formatMessage({id:"budget.itemName"}) },
         {type: 'list', id: 'itemTypeName',
           listType: 'budget_item_type',
           labelKey: 'itemTypeName',
@@ -56,12 +50,17 @@ class BudgetItem extends React.Component {
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id}
         },
+        {type: 'select', id: 'itemCodeFrom',
+          label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
+          options: itemCode
+        },
+        {type: 'select', id: 'itemCodeTo',
+          label: formatMessage({id: 'budget.itemCodeTo'}), /*预算项目代码至*/
+          options: itemCode
+        },
       ],
 
       columns: [
-        {          /*预算组织*/
-          title: formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
-        },
         {          /*预算项目代码*/
           title: formatMessage({id:"budget.itemCode"}), key: "itemCode", dataIndex: 'itemCode'
         },
@@ -83,7 +82,7 @@ class BudgetItem extends React.Component {
           }
         },
         {          /*备注*/
-          title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description',
+          title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description', width: "10%",
           render: description => (
             <span>
               {description ?
@@ -92,6 +91,16 @@ class BudgetItem extends React.Component {
               </Popover> : '-'}
             </span>)
         },
+        {           /*状态*/
+          title: formatMessage({id:"common.column.status"}),
+          key: 'status',
+          width: '10%',
+          dataIndex: 'isEnabled',
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          )
+        }
       ],
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
@@ -114,6 +123,7 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
+
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
@@ -145,6 +155,7 @@ class BudgetItem extends React.Component {
     this.setState({
       searchParams:{
         itemCode: values.itemCode,
+        itemName: values.itemName,
         itemCodeFrom: values.itemCodeFrom,
         itemCodeTo: values.itemCodeTo,
         itemTypeId: typeof values.itemTypeName === "undefined" ? "" : values.itemTypeName[0],

@@ -516,6 +516,38 @@ class UpdateBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
+          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
+                    validateStatus={validateStatusMap.parameterUpperLimit}
+                    help={helpMap.parameterUpperLimit}>
+            {getFieldDecorator('parameterUpperLimit', {
+              initialValue: defaultLimit.parameterUpperLimit,
+              rules: [
+                {
+                  required: true,
+                },
+                {
+                  validator:(item,value,callback)=>{
+                    console.log(value)
+                    console.log(ruleParam)
+                    if(typeof value !== 'undefined'){
+                      ruleParam.parameterUpperLimit = value;
+                      this.setState({
+                        changed: true,
+                        ruleParam
+                      })
+                    }
+                    callback();
+                  }
+                }
+              ]
+            })(
+              <div>
+                {
+                  this.renderParam("parameterUpperLimit")
+                }
+              </div>
+            )}
+          </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
             validateStatus={validateStatusMap.parameterLowerLimit}
             help={helpMap.parameterLowerLimit}>
@@ -547,38 +579,7 @@ class UpdateBudgetRulesDetail extends React.Component{
               </div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
-            validateStatus={validateStatusMap.parameterUpperLimit}
-            help={helpMap.parameterUpperLimit}>
-            {getFieldDecorator('parameterUpperLimit', {
-              initialValue: defaultLimit.parameterUpperLimit,
-              rules: [
-                {
-                  required: true,
-                },
-                {
-                  validator:(item,value,callback)=>{
-                    console.log(value)
-                    console.log(ruleParam)
-                    if(typeof value !== 'undefined'){
-                      ruleParam.parameterUpperLimit = value;
-                      this.setState({
-                        changed: true,
-                        ruleParam
-                      })
-                    }
-                    callback();
-                  }
-                }
-              ]
-            })(
-              <div>
-                {
-                  this.renderParam("parameterUpperLimit")
-                }
-              </div>
-            )}
-          </FormItem>
+
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.invalidDate'})  /*失效日期*/}>
             {getFieldDecorator('invalidDate', {
               initialValue: ruleParamDetail.invalidDate ? moment( ruleParamDetail.invalidDate, 'YYYY-MM-DD') : null
