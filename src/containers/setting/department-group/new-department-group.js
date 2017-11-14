@@ -9,13 +9,13 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
-import 'styles/setting/company-group/new-company-group.scss';
+import 'styles/setting/department-group/new-department-group.scss';
 
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class NewCompanyGroup extends React.Component{
+class NewDepartmentGroup extends React.Component{
   constructor(props){
     super(props);
     this.state = {
@@ -53,17 +53,19 @@ class NewCompanyGroup extends React.Component{
 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.organizationId = this.state.organization.id;
         console.log(values)
-        httpFetch.post(`${config.baseUrl}/api/company/group`,values).then((response)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
             console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-            this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url.replace(':id',response.data.id));
-            this.setState({loading:false})
+            response.data.organizationName = values.organizationName;
+            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id).replace(':structureId',response.data.id));
+            this.setState({loading:true})
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
+            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
             this.setState({loading: false});
           }
           else {
@@ -92,6 +94,7 @@ class NewCompanyGroup extends React.Component{
     const { getFieldDecorator } = this.props.form;
     const { statusCode, organization, loading, setOfBooks  } = this.state;
     const { formatMessage } = this.props.intl;
+    console.log(setOfBooks)
     return(
       <div className="new-budget-structure">
         <div className="budget-structure-header">
@@ -103,8 +106,9 @@ class NewCompanyGroup extends React.Component{
                   colon={true}
                   help="注：部门组代码保存后将不可修改">
                   {getFieldDecorator('companyGroupCode', {
+                    initialValue: organization.organizationName,
                     rules:[
-                      { required:true, message: formatMessage({id:"common.please.enter"}) }
+                      { required:true }
                     ]
                   })(
                     <Input placeholder={formatMessage({id:"common.please.enter"})} />)
@@ -119,6 +123,9 @@ class NewCompanyGroup extends React.Component{
                   {getFieldDecorator('companyGroupName', {
                     rules:[
                       {required:true,message:formatMessage({id:"common.please.enter"})},
+                      {
+                        validator:(item,value,callback)=>this.validateStructureCode(item,value,callback)
+                      }
                     ]
                   })(
                     <Input placeholder={formatMessage({id:"common.please.enter"})}/>)
@@ -129,7 +136,7 @@ class NewCompanyGroup extends React.Component{
                 <FormItem
                   label="账套" /* 账套*/
                   colon={true}>
-                  {getFieldDecorator('setOfBooksId', {
+                  {getFieldDecorator('structureName', {
                     rules:[
                       {required:true,message:formatMessage({id:"common.please.enter"})},
                     ]
@@ -148,7 +155,7 @@ class NewCompanyGroup extends React.Component{
                 <FormItem
                   label={formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
                   colon={false}>
-                  {getFieldDecorator("enabled", {
+                  {getFieldDecorator("isEnabled", {
                     initialValue: true,
                     valuePropName: 'checked',
                     rules:[
@@ -177,7 +184,7 @@ class NewCompanyGroup extends React.Component{
   }
 }
 
-NewCompanyGroup.contextTypes = {
+NewDepartmentGroup.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -189,6 +196,6 @@ function mapStateToProps(state) {
 
 
 
-const WrappedNewCompanyGroup = Form.create()(NewCompanyGroup);
+const WrappedNewDepartmentGroup = Form.create()(NewDepartmentGroup);
 
-export default connect(mapStateToProps)(injectIntl(WrappedNewCompanyGroup));
+export default connect(mapStateToProps)(injectIntl(WrappedNewDepartmentGroup));

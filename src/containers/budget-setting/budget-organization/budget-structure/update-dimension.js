@@ -18,7 +18,6 @@ class NewDimension extends React.Component{
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
-      listSelectedData: [],
       extraParams: {},
       loading: false
     };
@@ -99,7 +98,8 @@ class NewDimension extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, showSelectDimension, listExtraParams, listSelectedData } = this.state;
+    const {formatMessage} = this.props.intl;
+    const { isEnabled, showSelectDimension, defaultDimension } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -128,7 +128,7 @@ class NewDimension extends React.Component{
                 mode="multiple"
                 labelInValue
                 onFocus={this.handleFocus}
-                placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+                placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="维度名称:" >
@@ -141,15 +141,18 @@ class NewDimension extends React.Component{
           <FormItem {...formItemLayout} label="布局位置:">
             {getFieldDecorator('layoutPosition', {
               rules: [{
-
+                required: true, message: formatMessage({id:"common.please.select"})
               }],
             })(
-              <Select placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+              <Select placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="布局顺序:">
             {getFieldDecorator('layoutPriority', {
-              rules: [{
+              rules: [
+                {
+                  required: true, message: formatMessage({id:"common.please.enter"})
+                },{
                 validator:(item,value,callback)=>{
                   callback()
                 }
@@ -158,10 +161,10 @@ class NewDimension extends React.Component{
               <InputNumber placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="默认维度代码:">
+          <FormItem {...formItemLayout} label="默认维值代码:">
             {getFieldDecorator('defaultDimensionCode', {
               rules: [{
-
+                required: true
               }],
             })(
               <Select
@@ -171,9 +174,9 @@ class NewDimension extends React.Component{
                 placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="默认维度名称:" >
+          <FormItem {...formItemLayout} label="默认维值名称:" >
             {getFieldDecorator('dimensionName', {
-              initialValue: 111
+              initialValue: defaultDimension
             })(
               <Input disabled/>
             )}
@@ -183,13 +186,6 @@ class NewDimension extends React.Component{
             <Button onClick={this.onCancel}>取消</Button>
           </div>
         </Form>
-        <ListSelector
-          visible={showSelectDimension}
-          type="select_dimension"
-          onCancel={()=>this.showList(false)}
-          onOk={this.handleListOk}
-          selectedData={listSelectedData}
-          extraParams={listExtraParams}/>
       </div>
     )
   }
