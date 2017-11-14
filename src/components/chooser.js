@@ -28,7 +28,7 @@ class Chooser extends React.Component {
       let innerChange = false;
       if(nextProps.value.length === this.state.value.length){
         nextProps.value.map((nextItem, index) => {
-          innerChange = innerChange || this.state.value[index][this.props.valueKey] !== nextItem[this.props.valueKey]
+          innerChange = innerChange || this.state.value[index].key != nextItem[this.props.valueKey]
         })
       }
       if(lengthChange || innerChange){
