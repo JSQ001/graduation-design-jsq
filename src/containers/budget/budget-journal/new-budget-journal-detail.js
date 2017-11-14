@@ -192,7 +192,12 @@ class NewBudgetJournalDetail extends React.Component {
       this.getStrategyControl();
       if(nextProps.params.id !== this.state.params.id){
         this.setState({ params: nextProps.params },() => {
-          this.props.form.setFieldsValue(nextProps.params)
+          let params = this.props.form.getFieldsValue();
+          for(let name in params){
+            let result = {};
+            result[name] = nextProps.params[name];
+            this.props.form.setFieldsValue(result)
+          }
         });
       }
     }
