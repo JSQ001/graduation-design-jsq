@@ -106,7 +106,7 @@ class FinanceView extends React.Component{
           }
         })
       }
-    }).then((e) => {
+    }).catch((e) => {
 
     })
   }
@@ -217,7 +217,7 @@ class FinanceView extends React.Component{
         this.setState({ exportLoading: false });
         message.success('导出成功')
       }
-    }).then((e) => {
+    }).catch((e) => {
       if (e.response) {
         this.setState({ exportLoading: false });
         message.error(`导出失败，${e.response.message}`)

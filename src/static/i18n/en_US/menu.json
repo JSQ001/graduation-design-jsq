@@ -72,6 +72,8 @@
   "menu.finance-review": "Finance review",
   "menu.finance-view": "Finance view",
   "menu.expense-report-detail-review": "Expense report detail",
-  "menu.company-group": "Company group"
+  "menu.company-group": "Company group",
+  "menu.contract-type-define": "Contract type define",
+  "menu.company-distribution": "Company distribution"
 }
 

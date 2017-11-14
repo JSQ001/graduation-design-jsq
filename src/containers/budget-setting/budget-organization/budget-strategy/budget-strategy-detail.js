@@ -27,9 +27,11 @@ class BudgetStrategyDetail extends React.Component {
       updateState: false,
       baseInfoLoading: false,
       columns: [
-        {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
+        {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '7%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName",
+        {title: "控制策略", dataIndex: "controlMethod", key: "controlMethod",
+          render: method => <span>{method.label}</span>},
+        {title: "控制规则描述", dataIndex: "detailName", key: "detailName",
           render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode",
           render: message => <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover>},
