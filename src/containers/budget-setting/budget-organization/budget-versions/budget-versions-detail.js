@@ -55,7 +55,7 @@ class BudgetVersionsDetail extends React.Component {
       infoList: [
         {
           type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.versionCode"}),
+          label: this.props.intl.formatMessage({id: "budget.organization"}),
           id: 'organizationName',
           message: this.props.intl.formatMessage({id: "common.please.enter"}),
           disabled: true

@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Checkbox   } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
@@ -41,7 +41,7 @@ class BudgetItemDetail extends React.Component{
         {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
         {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
         {type: 'input', id: 'itemName', isRequired:true, label: formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
-        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"项目类型"},
+        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"预算项目类型："},
         {type: 'select',options: [] , id: 'variationAttribute',disabled: true, label: formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
         {type: 'input', id: 'description', label: formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
         {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},

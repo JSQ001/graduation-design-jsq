@@ -142,6 +142,7 @@ class BudgetStructureDetail extends React.Component{
         });
       }
     });
+    this.getList();
     //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${this.props.params.structureId}`).then((response)=>{
       if(response.status === 200){
@@ -230,24 +231,31 @@ class BudgetStructureDetail extends React.Component{
           response.data.map((item)=>{
             item.key = item.id
           });
+          let pagination = this.state.pagination;
+          pagination.total = Number(response.headers['x-total-count']);
           this.setState({
             loading: false,
             data: response.data,
-            pagination: {
-              current: 1,
-              page: 0,
-              total: Number(response.headers['x-total-count']),
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-            }
+            pagination
           })
         }
       })
-      :null
-      /*httpFetch.get(`${config.budgetUrl}`).then((response)=>{
-
-      })*/
+      :
+      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}`).then((response)=>{
+        if(response.status === 200){
+          console.log(response.data)
+          response.data.map((item)=>{
+            item.key = item.id
+          });
+          let pagination = this.state.pagination;
+          pagination.total = Number(response.headers['x-total-count']);
+          this.setState({
+            loading: false,
+            data: response.data,
+            pagination
+          })
+        }
+      })
   };
 
 
@@ -347,7 +355,8 @@ class BudgetStructureDetail extends React.Component{
                     show={showSlideFrame}
                     content={NewDimension}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.showSlide(false)}/>
+                    onClose={() => this.showSlide(false)}
+                    params={structure}/>
         <SlideFrame title="编辑维度"
                     show={showSlideFrameUpdate}
                     content={NewDimension}

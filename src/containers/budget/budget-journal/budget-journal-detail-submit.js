@@ -84,13 +84,14 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount'
+          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
         },
         {
           /*本币今额*/
           title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
           key: "functionalAmount",
-          dataIndex: 'functionalAmount'
+          dataIndex: 'functionalAmount',
+          render: this.filterMoney
         },
         {
           /*数字*/
@@ -188,7 +189,7 @@ class BudgetJournalDetailSubmit extends React.Component {
     data.map((item)=>{
       sum+= item.functionalAmount;
     })
-    return "CNY"+" "+sum;
+    return "CNY"+" "+sum.toFixed(2);
   }
 
 
@@ -294,16 +295,8 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id: "budget.periodYear"})}：</div>
-              <div>{infoData.periodYear}</div>
-            </Col>
-            <Col span={8}>
               <div className="base-info-title">编制期段:</div>
               <div className="beep-info-text">{this.getPeriodStrategy()}</div>
-            </Col>
-            <Col span={8}>
-              <div className="base-info-title">{this.getPeriodStrategy()}</div>
-              <div className="beep-info-text">{this.getPeriod()}</div>
             </Col>
             <Col span={8}>
               <div className="base-info-title">附件:</div>
@@ -319,6 +312,7 @@ class BudgetJournalDetailSubmit extends React.Component {
                dataSource={data}
                bordered
                size="middle"
+               scroll={{ x: '150%' }}
                rowKey={recode=>{return recode.id}}
 
         />

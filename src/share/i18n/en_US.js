@@ -15,6 +15,7 @@ import securitySetting from 'static/i18n/en_US/setting/security-setting.json'
 import accountPeriodDefine from 'static/i18n/en_US/finance-setting/account-period-define.json'
 import accountPeriodControl from 'static/i18n/en_US/finance-setting/account-period-control.json'
 import companyMaintain from 'static/i18n/en_US/setting/company-maintain.json'
+import financeView from 'static/i18n/en_US/financial-management/finance-view.json'
 
 
 
@@ -35,7 +36,8 @@ const i18nList = [
   securitySetting, //安全配置
   accountPeriodDefine, //会计期间定义
   accountPeriodControl, //会计期间控制
-  companyMaintain //公司维护
+  companyMaintain, //公司维护
+  financeView //单据查看
 
 ];
 
