@@ -10,86 +10,19 @@ const Option = Select.Option;
 import debounce from 'lodash.debounce';
 
 import 'styles/budget/budget-journal/new-budget-journal-detail.scss'
-
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import Chooser from 'components/chooser'
-let companyId ='';
 let rateData=1;
-
 
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading:false,
-      companyId:'',
-      searchForm: [
-
-        {type: 'list', id: 'company', listType: 'journal_Line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), /*公司*/
-          labelKey: 'name', valueKey: 'id',single:'true',event:'company',isRequired: true,
-          listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
-        },
-        {type: 'list', id: 'unitId', listType: 'journal_Line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),  /*部门*/
-          labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true,
-          listExtraParams:{companyId: ''}
-        },
-
-        /*公司*/
-        /*  {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
-         labelKey: 'name', valueKey: 'id',event:'company',
-         url: `${config.baseUrl}/api/company/by/term?setOfBooksId=${this.props.company.setOfBooksId}`
-         },*/
-        /*部门*/
-        /*  {type: 'select', id:'unitId', label:this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
-         labelKey: 'name', valueKey: 'id',event:'unitId',
-         url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
-         },*/
-        /*预算项目*/
-        {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-          labelKey:'itemName',valueKey:'id',
-          url:`${config.budgetUrl}/api/budget/items/find/all`,
-        },
-        /*期间*/
-        {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
-          labelKey:'periodName',valueKey:'periodName',event:'periodName',
-          url:`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
-          disabled:true,
-        },
-        /*季度*/
-        {
-          type: 'value_list',
-          id: 'periodQuarter',
-          label: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
-          isRequired: true,
-          options: [],
-          valueListCode: 2021,
-          disabled:true,
-        },
-        /*年度*/
-        {type: 'input', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
-          disabled:true,
-        },
-        /*币种*/
-        {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
-          labelKey:'attribute5',valueKey:'attribute4',
-          url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
-        },
-        /*汇率*/
-        {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},
-        /*金额*/
-        {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
-        /*本位金额*/
-        {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0,disabled: true},
-        /*数量*/
-        {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
-        /*备注*/
-        {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"}), isRequired: true, options: []},
-        /*维度*/
-      ],
-      typeOptions: [],
-      params:{},
       rate:0,
+      loading:false,
+      searchForm:[],
+      params:{},
     };
 
   }
@@ -119,37 +52,27 @@ class NewBudgetJournalDetail extends React.Component {
         console.log(event)
         event =JSON.parse(event);
         rateData =event.attribute11;
+        let rate =event.attribute11;
+        this.setState({ rate })
         this.props.form.setFieldsValue({
           rate:event.attribute11
         });
-        this.props.form.setFieldsValue({
-          functionalAmount:0
-        });
-        this.props.form.setFieldsValue({
-          amount:0
-        });
+
         return;
       }
       case 'amount':{
-
-        let functionalAmount = (event*rateData).toFixed(2);
-
+        console.log(event)
+        let functionalAmount = event*rateData;
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
         return;
       }
-      case 'rate':{
-        this.setState({
-          rate:String(event)
-        })
-        return;
-      }
+
     }
   }
 
   getStrategyControl=()=>{
-    console.log(this.props.params.periodStrategy);
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
       if(item.id=="periodYear"){
@@ -172,8 +95,6 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
 
-
-
   chooserChangeHandle(value,e){
     if(value.length>0){
       if(e=="company"){
@@ -181,7 +102,6 @@ class NewBudgetJournalDetail extends React.Component {
         let searchFrom =this.state.searchForm;
         searchFrom.map((item)=>{
           if(item.id=="unitId"){
-            //listExtraParams:{companyId: ''}
             item["listExtraParams"]={companyId:value[0].id}
             item["disabled"]=false
             return
@@ -199,11 +119,88 @@ class NewBudgetJournalDetail extends React.Component {
 
   componentWillMount(){
 
+    let nowYear = new Date().getFullYear();
+    let yearOptions = [];
+    for(let i = nowYear - 20; i <= nowYear + 20; i++)
+      yearOptions.push({label: i, key: i})
+
+    let searchForm =[
+      {type: 'list', id: 'company', listType: 'journal_Line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), /*公司*/
+      labelKey: 'name', valueKey: 'id',single:'true',event:'company',isRequired: true,
+      listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
+      },
+      {type: 'list', id: 'unitId', listType: 'journal_Line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),  /*部门*/
+        labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true,
+        listExtraParams:{companyId: ''}
+      },
+
+      /*公司*/
+      /*  {type: 'select', id:'company', label: this.props.intl.formatMessage({id:"budget.companyId"}),isRequired: true, options: [],
+       labelKey: 'name', valueKey: 'id',event:'company',
+       url: `${config.baseUrl}/api/company/by/term?setOfBooksId=${this.props.company.setOfBooksId}`
+       },*/
+      /*部门*/
+      /*  {type: 'select', id:'unitId', label:this.props.intl.formatMessage({id:"budget.unitId"}), isRequired: true, options: [],
+       labelKey: 'name', valueKey: 'id',event:'unitId',
+       url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?companyId=`
+       },*/
+      /*预算项目*/
+      {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
+        labelKey:'itemName',valueKey:'id',
+        url:`${config.budgetUrl}/api/budget/items/find/all`,
+      },
+      /*期间*/
+      {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
+        labelKey:'periodName',valueKey:'periodName',event:'periodName',
+        url:`${config.budgetUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
+        disabled:true,
+      },
+      /*季度*/
+      {
+        type: 'value_list',
+        id: 'periodQuarter',
+        label: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
+        isRequired: true,
+        options: [],
+        valueListCode: 2021,
+        disabled:true,
+      },
+      /*年度*/
+      {type: 'select', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
+        disabled:true,options: yearOptions,event: 'YEAR_CHANGE'
+      },
+      /*币种*/
+      {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
+        labelKey:'attribute5',valueKey:'attribute4',
+        url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`
+      },
+      /*汇率*/
+      {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},
+      /*金额*/
+      {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true, step:10.00,defaultValue:0,event:'amount'},
+      /*本位金额*/
+      {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}), step:10.00,isRequired: true,defaultValue:0,disabled: true},
+      /*数量*/
+      {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0},
+      /*备注*/
+      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"}), isRequired: true, options: []},
+      /*维度*/
+
+      ]
+
+    this.setState({ searchForm })
+
   }
+
+
 
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && nextProps.params!=={} ){
-      this.setState({ params : nextProps.params });
+      if(nextProps.params.isNew===false){
+          this.state.rate=nextProps.params.rate;
+          rateData=nextProps.params.rate;
+      }
+      this.setState({ params:nextProps.params });
       this.getStrategyControl();
       if(nextProps.params!=this.state.params){
          this.props.form.resetFields();
@@ -304,7 +301,6 @@ class NewBudgetJournalDetail extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
                   onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
             {item.options.map((option)=>{
-              // let a  = [option.key,option.label]
               return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
             })}
           </Select>
@@ -338,7 +334,7 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //数字选择InputNumber
       case 'inputNumber':{
-        return <InputNumber disabled={item.disabled}  min={0} step={item.step}/>
+        return <InputNumber disabled={item.disabled}  min={0} step={item.step} onChange={handle}/>
       }
     }
   }

@@ -1,4 +1,12 @@
 .budget-journal-detail{
+  th.column-amount,
+  td.column-amount {
+    text-align: right !important;
+  }
+  th.column-functionalAmount,
+  td.column-functionalAmount {
+    text-align: right !important;
+  }
   .budget-journal-cent{
     .table-header-buttons{
       .delete{
