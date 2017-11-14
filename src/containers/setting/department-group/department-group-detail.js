@@ -1,5 +1,5 @@
 /**
- *  created by jsq on 2017/9/22
+ *  created by jsq on 2017/11/10
  */
 import React from 'react';
 import { connect } from 'react-redux'
@@ -7,17 +7,17 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Checkbox   } from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
-import 'styles/budget-setting/budget-organization/budget-item/budget-item-detail.scss';
+import 'styles/setting/department-group/department-group-detail.scss';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 
-class BudgetItemDetail extends React.Component{
+class DepartmentGroupDetail extends React.Component{
   constructor(props){
     super(props);
     const { formatMessage } = this.props.intl;
@@ -29,6 +29,8 @@ class BudgetItemDetail extends React.Component{
       data: [],
       edit: false,
       visible: false,
+      selectedRowKeys: [],
+      selectedEntityOIDs: [],   //已选择的列表项的OIDs
       pagination: {
         current: 1,
         page: 0,
@@ -38,12 +40,9 @@ class BudgetItemDetail extends React.Component{
         showQuickJumper:true,
       },
       infoList: [
-        {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
-        {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
-        {type: 'input', id: 'itemName', isRequired:true, label: formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
-        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"预算项目类型："},
-        {type: 'select',options: [] , id: 'variationAttribute',disabled: true, label: formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
-        {type: 'input', id: 'description', label: formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
+        {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
+        {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
+        {type: 'select',options: [] , id: 'setOfBook', required:true, label:"账套"},
         {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
@@ -144,27 +143,92 @@ class BudgetItemDetail extends React.Component{
 
   //返回预算项目
   handleBack = () => {
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=ITEM');
+    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').url);
   };
 
+  //列表选择更改
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys });
+  };
+
+  //选择一行
+  //选择逻辑：每一项设置selected属性，如果为true则为选中
+  //同时维护selectedEntityOIDs列表，记录已选择的OID，并每次分页、选择的时候根据该列表来刷新选择项
+  onSelectRow = (record, selected) => {
+    let temp = this.state.selectedEntityOIDs;
+    if(selected)
+      temp.push(record.id);
+    else
+      temp.delete(record.id);
+    this.setState({
+      selectedEntityOIDs: temp,
+      batchCompany: temp.length>0 ? false : true
+    })
+  };
+
+  //全选
+  onSelectAllRow = (selected) => {
+    let temp = this.state.selectedEntityOIDs;
+    if(selected){
+      this.state.data.map(item => {
+        temp.addIfNotExist(item.id)
+      })
+    } else {
+      this.state.data.map(item => {
+        temp.delete(item.id)
+      })
+    }
+    this.setState({
+      selectedEntityOIDs: temp,
+      batchCompany: temp.length>0 ? false : true
+    })
+  };
+
+  //换页后根据OIDs刷新选择框
+  refreshRowSelection(){
+    let selectedRowKeys = [];
+    this.state.selectedEntityOIDs.map(selectedEntityOID => {
+      this.state.data.map((item, index) => {
+        if(item.id === selectedEntityOID)
+          selectedRowKeys.push(index);
+      })
+    });
+    this.setState({ selectedRowKeys });
+  }
+
+  //清空选择框
+  clearRowSelection(){
+    this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
+  }
+
   render(){
-    const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector} = this.state;
+    const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector, selectedRowKeys} = this.state;
+
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+      onSelect: this.onSelectRow,
+      onSelectAll: this.onSelectAllRow
+    };
+
     return(
       <div className="budget-item-detail">
         <BasicInfo
-            infoList={infoList}
-            infoData={budgetItem}
-            updateHandle={this.handleUpdate}
-            updateState={edit}/>
+          infoList={infoList}
+          infoData={budgetItem}
+          updateHandle={this.handleUpdate}
+          updateState={edit}/>
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'structure.addCompany'})}</Button>  {/*添加公司*/}
-          </div>
+            <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
+            <Button disabled onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            </div>
         </div>
         <Table
           dataSource={data}
           columns={columns}
+          rowSelection={rowSelection}
           pagination={pagination}
           size="middle"
           bordered/>
@@ -178,7 +242,7 @@ class BudgetItemDetail extends React.Component{
       </div>)
   }
 }
-BudgetItemDetail.contextTypes = {
+DepartmentGroupDetail.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -188,7 +252,7 @@ function mapStateToProps(state) {
   }
 }
 
-const WrappedBudgetItemDetail = Form.create()(BudgetItemDetail);
+const WrappedDepartmentGroupDetail = Form.create()(DepartmentGroupDetail);
 
-export default connect(mapStateToProps)(injectIntl(WrappedBudgetItemDetail));
+export default connect(mapStateToProps)(injectIntl(WrappedDepartmentGroupDetail));
 
