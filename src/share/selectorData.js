@@ -342,7 +342,6 @@ const selectorData = {
       {title: "成本中心代码", dataIndex: 'code'},
       {title: "成本中心名称", dataIndex: 'name'}
     ],
-    listKey: 'costCenterItems',
     key: 'costCenterItemOID'
   },
 
@@ -362,18 +361,20 @@ const selectorData = {
   key: 'id'
 },
   'journal_line_department':{
-  title: "选择部门",
-  url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
-  searchForm: [
-    {type: 'input', id:'code', label: '部门代码'},
-    {type: 'input', id:'name', label: '部门名称'},
-  ],
-  columns: [
-    {title: '部门代码', dataIndex: 'id'},
-    {title: '部门名称', dataIndex: 'name'}
-  ],
-  key: 'id'
-},
+
+    title: "选择部门",
+    url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
+    searchForm: [
+      {type: 'input', id:'deptCode', label: '部门代码'},
+      {type: 'input', id:'deptName', label: '部门名称'},
+    ],
+    columns: [
+      {title: '部门代码', dataIndex: 'code'},
+      {title: '部门名称', dataIndex: 'name'}
+    ],
+    key: 'id'
+  },
+
 
 };
 
