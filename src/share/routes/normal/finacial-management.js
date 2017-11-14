@@ -3,12 +3,20 @@ import PaymentBatch from 'containers/financial-management/payment-batch'
 import FinanceReview from 'containers/financial-management/finance-review'
 import FinanceView from 'containers/financial-management/finance-view'
 import ExpenseReportDetail from 'containers/expense-report/expense-report-detail'
+import LoanRequestDetail from 'containers/request/loan-request-detail'
 
 //报销单详情
 const expenseReportDetailReview = {
   key:'expense-report-detail-review',
   url:'/main/financial-management/finance-review/expense-report-detail-review/:id',
   components: ExpenseReportDetail,
+  parent: 'finance-review'
+};
+
+const loanRequestDetailReview = {
+  key:'loan-request-detail-review',
+  url:'/main/financial-management/finance-review/loan-request-detail-review/:id',
+  components: LoanRequestDetail,
   parent: 'finance-review'
 };
 
@@ -19,7 +27,8 @@ const financeReview = {
   components: FinanceReview,
   parent: 'financial-management',
   children: {
-    expenseReportDetailReview
+    expenseReportDetailReview,
+    loanRequestDetailReview
   }
 };
 

@@ -141,7 +141,7 @@ class ListSelector extends React.Component {
   checkSelectorItem(selectorItem){
     let searchParams = {};
     selectorItem.searchForm.map(form => {
-      searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searhParams
+      searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searchParams
     });
     this.setState({ selectorItem, searchParams }, () => {
       this.getList();
@@ -218,6 +218,34 @@ class ListSelector extends React.Component {
     this.setState({ selectedData });
   };
 
+  //点击行时的方法，遍历遍历selectedData，根据是否选中进行遍历遍历selectedData和rowSelection的插入或删除操作
+  handleRowClick = (record) => {
+    let { selectedData, selectorItem, rowSelection } = this.state;
+    if(this.props.single){
+      selectedData = [record];
+      rowSelection.selectedRowKeys = [record[selectorItem.key]]
+    } else {
+      let haveIt = false;
+      selectedData.map((selected, index) => {
+        if(selected[selectorItem.key] == record[selectorItem.key]){
+          selectedData.splice(index, 1);
+          haveIt = true;
+        }
+      });
+      if(!haveIt){
+        selectedData.push(record);
+        rowSelection.selectedRowKeys.push(record[selectorItem.key])
+      } else {
+        rowSelection.selectedRowKeys.map((item, index) => {
+          if(item == record[selectorItem.key]){
+            rowSelection.selectedRowKeys.splice(index, 1);
+          }
+        })
+      }
+    }
+    this.setState({ selectedData, rowSelection });
+  };
+
   //选择当页全部时的判断
   onSelectAll = (selected, selectedRows, changeRows) => {
     changeRows.map(changeRow => this.onSelectItem(changeRow, selected));
@@ -240,6 +268,7 @@ class ListSelector extends React.Component {
           </div>
         </div>
         <Table columns={columns}
+               onRowClick={this.handleRowClick}
                dataSource={data}
                pagination={pagination}
                loading={loading}
