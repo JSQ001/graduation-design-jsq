@@ -64,11 +64,8 @@ class NewCompanyGroup extends React.Component{
         }).catch((e)=>{
           if(e.response){
             message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
-            this.setState({loading: false});
           }
-          else {
-            console.log(e)
-          }
+          this.setState({loading: false});
         })
       }
     });

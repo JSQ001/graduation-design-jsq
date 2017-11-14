@@ -1,18 +1,10 @@
-import MyAccount from 'containers/expense-report/my-account'
-
-//我的账本
-const myAccount = {
-  key: 'my-account',
-  url:'/main/expense-report/my-account',
-  components:MyAccount,
-  parent:'expense-report'
-};
-
+import ExpenseReport from 'containers/expense-report/expense-report'
 
 //报销单
 const expenseReport = {
-  key: 'expense-report',
-  subMenu: [myAccount],
+  key:'expense-report',
+  url: '/main/expense-report',
+  components: ExpenseReport,
   icon: 'file-text'
 };
 

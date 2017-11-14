@@ -365,8 +365,8 @@ const selectorData = {
     title: "选择部门",
     url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
     searchForm: [
-      {type: 'input', id:'deptCode', label: '部门代码'},
-      {type: 'input', id:'deptName', label: '部门名称'},
+      {type: 'input', id:'deptCode', label: '部门代码',defaultValue: ''},
+      {type: 'input', id:'deptName', label: '部门名称',defaultValue: ''},
     ],
     columns: [
       {title: '部门代码', dataIndex: 'code'},

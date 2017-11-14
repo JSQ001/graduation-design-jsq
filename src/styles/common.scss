@@ -211,6 +211,9 @@ table{
 .list-selector .ant-modal-body{
   height: 70vh;
   overflow-y: scroll;
+  .ant-table-tbody{
+    cursor: pointer;
+  }
 }
 
 

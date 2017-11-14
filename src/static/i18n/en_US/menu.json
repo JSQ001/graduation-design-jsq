@@ -9,6 +9,8 @@
   "menu.my-account": "My account",
   "menu.expense-report": "Expense report",
   "menu.edit-report": "Edit report",
+  "menu.request": "Request",
+  "menu.loan-request-detail": "Loan request detail",
   "menu.budget": "Budget",
   "menu.budget-setting": "Budget setting",
   "menu.new-budget-organization": "New budget organization",
@@ -72,6 +74,7 @@
   "menu.finance-review": "Finance review",
   "menu.finance-view": "Finance view",
   "menu.expense-report-detail-review": "Expense report detail",
+  "menu.loan-request-detail-review": "Loan request detail",
   "menu.company-group": "Company group",
   "menu.new-company-group": "New company group",
   "menu.company-group-detail": "Company group detail",
@@ -80,8 +83,4 @@
   "menu.department-group-detail": "Department group detail",
   "menu.contract-type-define": "Contract type define",
   "menu.company-distribution": "Company distribution"
-
-
-
 }
-

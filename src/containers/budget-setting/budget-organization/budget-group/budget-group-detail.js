@@ -34,7 +34,7 @@ class BudgetGroupDetail extends React.Component {
       ],
       infoList: [
         {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true, isRequired: true},
-        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', isRequired: true},
+        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', disabled: true, isRequired: true},
         {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入', isRequired: true},
         {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
@@ -93,6 +93,9 @@ class BudgetGroupDetail extends React.Component {
         updateState: true
       });
     }).catch(e => {
+      if(e.response){
+        message.error(`新建失败, ${e.response.data.message}`);
+      }
       this.setState({
         editing: false,
         updateState: false

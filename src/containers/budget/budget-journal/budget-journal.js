@@ -141,7 +141,6 @@ class BudgetJournal extends React.Component {
 
   //跳转到详情
   HandleRowClick=(value)=>{
-    console.log(value);
     const journalCode =value.journalCode;
     if(value.status=="NEW" || value.status=="REJECT"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
@@ -166,7 +165,7 @@ class BudgetJournal extends React.Component {
             <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
-        <Table
+        <Table rowKey={record => record.id}
           loading={loading}
           dataSource={data}
           columns={columns}
