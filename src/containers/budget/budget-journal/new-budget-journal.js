@@ -38,69 +38,6 @@ class NewBudgetJournalFrom extends React.Component {
   }
 
 
-  //跳转到预算日记账详情
-  handleLastStep = (value) => {
-    const data = value;
-    console.log(value);
-    const period = value.periodName ? JSON.parse(value.periodName) : '';
-    const periodName = period.periodName;
-    const periodYear = period.periodYear;
-    //处理期间
-    let periodNameData;
-    console.log(periodName);
-    if (periodName != '' && periodName != null && periodName != undefined) {
-
-      const periodNameArray = periodName.split("-");
-      for (let i = 0; i < periodNameArray.length; i++) {
-        console.log(periodNameArray[i]);
-        if (periodNameArray[i] != periodYear) {
-          periodNameData = periodYear + "" + periodNameArray[i]
-        }
-      }
-    } else {
-      periodNameData = '';
-    }
-
-
-    console.log(this.props.user);
-    let userData = {
-      "dto": {
-        "companyId": this.props.company.id,
-        "companyName": this.props.company.name,
-        "organizationId": this.props.organization.id,
-        "organizationName": this.props.organization.organizationName,
-        "structureId": value.structureId,
-        "structureName": "structureName",
-        "periodYear": value.periodYear != '' ? value.periodYear : period.periodYear,
-        "periodQuarter": value.periodQuarter != '' ? value.periodQuarter : period.quarterNum,
-        "periodName": periodNameData,
-        "description": "",
-        "reversedFlag": "N",
-        "sourceBudgetHeaderId": undefined,
-        "sourceType": undefined,
-        "employeeId": this.props.user.id,
-        "employeeName": this.props.user.fullName,
-        "periodNumber": period.quarterNum ? period.quarterNum : '',
-        "unitId": "1",
-        "unitName": "periodNumber",
-        'versionId': value.versionName[0].id,
-        'versionName': value.versionName[0].versionName,
-        'scenarioId': value.scenarioName[0].id,
-        'scenarioName': value.scenarioName[0].scenarioName,
-        "status": "NEW",
-        "journalTypeId": value.journalTypeName[0].id,
-        "journalTypeName": value.journalTypeName[0].journalTypeName,
-        "periodStrategy": value.periodStrategy,
-        "versionNumber": "1",
-        "attachmentOID": this.state.attachmentOID,
-      }
-      ,
-      "list": []
-    };
-    console.log(userData);
-    this.saveHeard(userData);
-  };
-
 
   componentWillMount() {
     this.getPeriodStrategy();
@@ -149,7 +86,7 @@ class NewBudgetJournalFrom extends React.Component {
     console.log(this.props.user);
     console.log(this.props.company);
     //
-    httpFetch.get(`http://139.224.220.217:9084/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then((response) => {
+    httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then((response) => {
       console.log(response.data);
       let periodPeriod = [];
       response.data.map((item) => {
@@ -179,8 +116,65 @@ class NewBudgetJournalFrom extends React.Component {
   //处理表单数据
   handleFrom = (e) => {
     e.preventDefault();
-    let value = this.props.form.getFieldsValue();
-    this.handleLastStep(value);
+    this.props.form.validateFieldsAndScroll((err, value) => {
+      if (!err) {
+        const period = value.periodName ? JSON.parse(value.periodName) : '';
+        const periodName = period.periodName;
+        const periodYear = period.periodYear;
+        //处理期间
+        let periodNameData;
+        console.log(periodName);
+        if (periodName != '' && periodName != null && periodName != undefined) {
+
+          const periodNameArray = periodName.split("-");
+          for (let i = 0; i < periodNameArray.length; i++) {
+            console.log(periodNameArray[i]);
+            if (periodNameArray[i] != periodYear) {
+              periodNameData = periodYear + "" + periodNameArray[i]
+            }
+          }
+        } else {
+          periodNameData = '';
+        }
+
+        let userData = {
+          "dto": {
+            "companyId": this.props.company.id,
+            "companyName": this.props.company.name,
+            "organizationId": this.props.organization.id,
+            "organizationName": this.props.organization.organizationName,
+            "structureId": value.structureId,
+            "structureName": "structureName",
+            "periodYear": 2017,
+            "periodQuarter":1,
+           "periodName": 200709,
+            "description": "",
+            "reversedFlag": "N",
+            "sourceBudgetHeaderId": undefined,
+            "sourceType": undefined,
+            "employeeId": this.props.user.id,
+            "employeeName": this.props.user.fullName,
+            "periodNumber": 1,
+            "unitId": "1",
+            "unitName": "periodNumber",
+            'versionId': value.versionName[0].id,
+            'versionName': value.versionName[0].versionName,
+            'scenarioId': value.scenarioName[0].id,
+            'scenarioName': value.scenarioName[0].scenarioName,
+            "status": "NEW",
+            "journalTypeId": value.journalTypeName[0].id,
+            "journalTypeName": value.journalTypeName[0].journalTypeName,
+            "periodStrategy": value.periodStrategy,
+            "versionNumber": "1",
+            "attachmentOID": this.state.attachmentOID,
+          }
+          ,
+          "list": []
+        };
+        console.log(userData);
+        this.saveHeard(userData);
+      }
+    })
   };
 
 
@@ -386,11 +380,11 @@ class NewBudgetJournalFrom extends React.Component {
       <div className="new-budget-journal">
         <div className="budget-journal-title">
           <div><h1>预算日记账</h1></div>
-          <div className="budget-journal-title-detail"><h5>用于预算录入，提交审批</h5></div>
+          <div className="budget-journal-title-detail">用于预算录入，提交审批</div>
         </div>
-
+        <div className="divider"> </div>
         <Form onSubmit={this.handleFrom} style={{}}>
-          <Card title="基本信息" bordered={false} style={{with: "100%"}}>
+          <Card title="基本信息"  style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalCode"})}>
@@ -430,7 +424,7 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.companyId"})}>
-                  {getFieldDecorator('companyId', {
+                  {getFieldDecorator('companyId',{
                     rules: [{
                       required: true,
                       message: 'this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"journalTypeName"}',
@@ -443,8 +437,8 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
             </Row>
           </Card>
-          <div style={{height: 16}}></div>
-          <Card title="预算信息" bordered={false} style={{with: "100%"}}>
+          <div className="divider"> </div>
+          <Card title="预算信息"  style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalTypeId"})}>
@@ -497,11 +491,11 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
 
-              <Col span={8}>
+{/*              <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodYear"})}>
                   {getFieldDecorator('periodYear', {
                     rules: [{
-                      required: true,
+                      required:! this.state.periodYearFlag,
                       message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "年度"})
                     }],
 
@@ -517,7 +511,7 @@ class NewBudgetJournalFrom extends React.Component {
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodQuarter"})}>
                   {getFieldDecorator('periodQuarter', {
                     rules: [{
-                      required: true,
+                      required:!this.state.periodQuarterFlag,
                       message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "季度"})
                     }],
 
@@ -530,12 +524,12 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
 
 
-              {/*periodName*/}
+              periodName
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodName"})}>
                   {getFieldDecorator('periodName', {
                     rules: [{
-                      required: true,
+                      required:!this.state.periodFlag,
                       message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "期间"})
                     }],
 
@@ -545,18 +539,18 @@ class NewBudgetJournalFrom extends React.Component {
                     </Select>
                   )}
                 </FormItem>
-              </Col>
+              </Col>*/}
 
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.version"})}>
                   {getFieldDecorator('versionName', {
                     rules: [{
-                      required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "versionId"})
+                      required:true,
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算版本"})
                     }],
 
                   })(
-                    <Chooser
+                   <Chooser
                       type='budget_versions'
                       labelKey='versionName'
                       valueKey='id'
@@ -571,8 +565,8 @@ class NewBudgetJournalFrom extends React.Component {
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.scenarios"})}>
                   {getFieldDecorator('scenarioName', {
                     rules: [{
-                      required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "scenarioId"})
+                      required:true,
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算场景"})
                     }],
 
                   })(
@@ -581,7 +575,8 @@ class NewBudgetJournalFrom extends React.Component {
                       labelKey='scenarioName'
                       valueKey='id'
                       single={true}
-                      listExtraParams={{"organizationId": this.props.organization.id}}
+                      listExtraParams={{"organizationId": this.props.organization.id}
+                  }
 
                     />
                   )}
@@ -591,9 +586,10 @@ class NewBudgetJournalFrom extends React.Component {
             </Row>
           </Card>
 
-          <div style={{height: 16}}></div>
+          <div className="divider"> </div>
 
-          <Card title="附件信息" bordered={false} style={{with: "100%"}}>
+
+          <Card title="附件信息" style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem
@@ -614,19 +610,16 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
             </Row>
           </Card>
+          <div className="divider" style={{height:60}}> </div>
 
-
-          <FormItem wrapperCol={{offset: 7}}>
-          </FormItem>
           <div className="footer-operate">
             <Button type="primary" htmlType="submit" loading={this.state.loading}
                     style={{marginRight: '10px'}}>下一步</Button>
             <Button style={{marginRight: '10px'}} onClick={this.HandleClear}>取消</Button>
 
           </div>
+          s
         </Form>
-        <div style={{height:50}}/>
-
       </div>
     )
   }
