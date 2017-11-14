@@ -137,14 +137,10 @@ class BudgetJournalDetail extends React.Component {
             </Popover>)
         },
         {          /*金额*/
-          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',width:'6%',render: this.filterMoney
         },
         {          /*本币今额*/
-          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'6%',
-          render: functionalAmount => (
-            <Popover content={functionalAmount}>
-              {functionalAmount}
-            </Popover>)
+          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'10%',render: this.filterMoney
         },
         {          /*数字*/
           title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',width:'6%'
@@ -168,13 +164,21 @@ class BudgetJournalDetail extends React.Component {
 
 //获得总金额
   getAmount= () =>{
-    const data = this.state.data;
     let sum =0;
-    data.map((item)=>{
+    this.state.data.map((item)=>{
       sum+= item.functionalAmount;
     })
-    return "CNY"+" "+sum.toFixed(2);
+    let data ="CNY"+" "+sum.toFixed(2);
+    const selectedDataNew =this.state.selectedData;
+    let selectedData={
+      ...selectedDataNew,
+      "totalAmount":data
+    }
+    this.state.setState({
+      selectedData})
   }
+
+
 
 
   //选项改变时的回调，重置selection
@@ -328,7 +332,6 @@ class BudgetJournalDetail extends React.Component {
           "versionName":versionName,
           "scenarioName":scenarioName,
           "budgetStructure":budgetStructure,
-         // "periodYear":periodYear,
           "file":this.state.fileList,
           "periodStrategy":periodStrategy,
           "totalAmount":amountData
@@ -419,11 +422,23 @@ class BudgetJournalDetail extends React.Component {
 
     }
 
+    //获取总金额
+    let sum =0;
+    listData.map((item)=>{
+      sum+= item.functionalAmount;
+    })
+    let newData ="CNY"+" "+sum.toFixed(2);
+    const selectedDataNew =this.state.selectedData;
+    let selectedData={
+      ...selectedDataNew,
+      "totalAmount":newData
+    }
 
     this.setState({
       data:data,
       headerAndListData: headerAndListData,
-      listData:listData
+      listData:listData,
+      selectedData
     });
   }
 
