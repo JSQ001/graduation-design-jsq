@@ -82,5 +82,9 @@
   "menu.new-department-group": "New department group",
   "menu.department-group-detail": "Department group detail",
   "menu.contract-type-define": "Contract type define",
-  "menu.company-distribution": "Company distribution"
+  "menu.company-distribution": "Company distribution",
+  "menu.approve": "Approve",
+  "menu.approve-contract": "Contract",
+  "menu.contract": "Contract",
+  "menu.my-contract": "My contract"
 }
