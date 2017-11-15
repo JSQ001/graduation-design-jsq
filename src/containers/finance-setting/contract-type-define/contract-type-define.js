@@ -2,6 +2,7 @@ import React from "react";
 import { injectIntl } from 'react-intl';
 import { Form, Button, Table, Badge } from 'antd'
 import config from 'config'
+import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
 import SearchArea from 'components/search-area'
@@ -35,7 +36,7 @@ class ContractTypeDefine extends React.Component{
           <span>
             <a onClick={() => this.handleEdit(record)}>编辑</a>
             <span className="ant-divider"/>
-            <a>公司分配</a>
+            <a onClick={this.handleDistribute}>公司分配</a>
           </span>
         )}
       ],
@@ -47,6 +48,7 @@ class ContractTypeDefine extends React.Component{
       },
       showSlideFrame: false,
       editContractType: {},
+      companyDistribution:  menuRoute.getRouteItem('company-distribution','key'),    //公司分配
     }
   }
 
@@ -147,6 +149,11 @@ class ContractTypeDefine extends React.Component{
     })
   };
 
+  //分配公司
+  handleDistribute = () => {
+    this.context.router.push(this.state.companyDistribution.url);
+  };
+
   render() {
     const { loading, searchForm, columns, data, pagination, showSlideFrame, editContractType } = this.state;
     return (
@@ -176,6 +183,10 @@ class ContractTypeDefine extends React.Component{
     )
   }
 }
+
+ContractTypeDefine.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedContractTypeDefine = Form.create()(injectIntl(ContractTypeDefine));
 
