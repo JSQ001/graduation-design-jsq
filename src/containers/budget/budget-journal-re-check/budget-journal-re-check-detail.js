@@ -308,6 +308,10 @@ class BudgetJournalReCheckDetail extends React.Component {
               <div className="base-info-title">申请人</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
+           <Col span={8}>
+             <div className="base-info-title">部门:</div>
+             <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
+           </Col>
             <Col span={8}>
             <div className="base-info-title">创建日期</div>
             <div className="beep-info-text">{infoData.createdDate}</div>
