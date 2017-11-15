@@ -63,7 +63,7 @@ class BudgetStrategyDetail extends React.Component {
 
   getBasicInfo() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId || this.props.params.strategyId}`).then((response) => {
-      if(response.status==200) {
+      if(response.status === 200) {
         this.setState({ infoData: response.data })
       }
     }).catch((e) => {
@@ -121,13 +121,15 @@ class BudgetStrategyDetail extends React.Component {
       this.getList();
     })
   };
+
+  //更新基本信息
   handleUpdate = (params) => {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlStrategyCode || !params.controlStrategyName) return;
     this.setState({ baseInfoLoading: true }, () => {
       httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
-        if(response.status == 200) {
+        if(response.status === 200) {
           message.success('保存成功');
           this.getBasicInfo();
           this.setState({ updateState: true, baseInfoLoading: false },() => {
@@ -135,14 +137,15 @@ class BudgetStrategyDetail extends React.Component {
           })
         }
       }).catch((e) => {
+        this.setState({ updateState: false, baseInfoLoading: false });
         if(e.response){
-          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          message.error(`保存失败, ${e.response.data.validationErrors[0] ? e.response.data.validationErrors[0].message : e.response.data.message}`);
         }
-        this.setState({ updateState: false, baseInfoLoading: false })
       })
     });
   };
 
+  //返回到预算组织详情页
   handleBack = () => {
     this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id) + '?tab=STRATEGY');
   };

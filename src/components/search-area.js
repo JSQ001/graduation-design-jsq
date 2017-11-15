@@ -219,9 +219,10 @@ class SearchArea extends React.Component{
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.value;
-            dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            searchItem.options = [];
+            dataOption[item.type === 'value_list' ? 'code' : item.valueKey] = value.value;
+            dataOption[item.type === 'value_list' ? 'messageKey' : item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, value: value.value, data: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -232,9 +233,10 @@ class SearchArea extends React.Component{
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
+            searchItem.options = [];
             dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, value: value.value, data: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -268,7 +270,7 @@ class SearchArea extends React.Component{
    */
   setValues = (options) => {
     Object.keys(options).map(key => {
-      let searchForm = this.state.searchForm;
+      let searchForm = [].concat(this.state.searchForm);
       searchForm.map((searchItem, index) => {
         if(searchItem.id === key){
           if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')

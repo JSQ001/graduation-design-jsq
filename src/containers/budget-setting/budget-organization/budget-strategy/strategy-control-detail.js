@@ -2,10 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 import debounce from 'lodash.debounce'
-import { Form, Button, Table, Input, message } from 'antd'
-const Search = Input.Search
+import { Form, Button, Table, Input, message, Icon } from 'antd'
+const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame'
@@ -36,8 +37,8 @@ class StrategyControlDetail extends React.Component {
         {title: '比较', dataIndex: 'range', key: 'range'},
         {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy'},
         {title: '方式', dataIndex: 'manner', key: 'manner'},
-        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner=='绝对额' ? value : '-'}},
-        {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner=='百分比' ? value+'%' : value}},
+        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner === '绝对额' ? value : '-'}},
+        {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner === '百分比' ? value+'%' : value}},
       ],
       data: [],
       showSlideFrame: false,
@@ -49,6 +50,7 @@ class StrategyControlDetail extends React.Component {
       newParams: {},
       keyWords: '',
       isNew: false, //判断侧滑是新建或编辑
+      budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
     };
     this.handleSearch = debounce(this.handleSearch, 250);
   }
@@ -133,14 +135,14 @@ class StrategyControlDetail extends React.Component {
     })
   };
 
+  //更新基本信息
   handleUpdate = (params) => {
     params.id = this.state.strategyControlId;
     params.versionNumber = this.state.infoData.versionNumber;
-    console.log(params);
     if(!params.controlMethod || !params.messageCode || !params.detailName) return;
     this.setState({ baseInfoLoading: true }, () => {
       httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
-        if(response.status==200) {
+        if(response.status === 200) {
           message.success('保存成功');
           this.getBasicInfo();
           this.setState({ updateState: true, baseInfoLoading: false }, () => {
@@ -148,13 +150,12 @@ class StrategyControlDetail extends React.Component {
           })
         }
       }).catch((e)=>{
+        this.setState({ updateState: false, baseInfoLoading: false });
         if(e.response){
-          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          message.error(`保存失败, ${e.response.data.validationErrors[0] ? e.response.data.validationErrors[0].message : e.response.data.message}`);
         }
-        this.setState({ updateState: false, baseInfoLoading: false })
       })
     })
-
   };
 
   handleSearch = (value) => {
@@ -177,6 +178,10 @@ class StrategyControlDetail extends React.Component {
     }, () => {
       this.showUpdateSlide(true)
     })
+  };
+
+  handleBack = () => {
+    this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   render() {
@@ -213,10 +218,15 @@ class StrategyControlDetail extends React.Component {
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showUpdateSlide(false)}
                     params={{newParams, isNew}}/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
       </div>
     )
   }
 }
+
+StrategyControlDetail.contextTypes={
+  router:React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

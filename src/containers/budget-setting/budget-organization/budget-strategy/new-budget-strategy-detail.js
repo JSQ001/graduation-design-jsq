@@ -42,10 +42,10 @@ class NewBudgetStrategyDetail extends React.Component {
         values.controlStrategyId = this.props.params.strategyId;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
           console.log(res);
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({loading: false});
             message.success(this.props.intl.formatMessage({id: 'common.create.success'},{name: ''}) /* 新建成功 */);
-            this.handleCancle();
+            this.handleCancel();
           }
         }).catch((e)=>{
           if(e.response){
@@ -57,15 +57,15 @@ class NewBudgetStrategyDetail extends React.Component {
     });
   };
 
-  handleCancle = () => {
+  handleCancel = () => {
     this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleMethodChange = (value) => {
     let controlMethodNotice = '';
-    if(value == 'BLOCK') {
+    if(value === 'BLOCK') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，禁止提交';
-    } else if(value == 'ALLOWED') {
+    } else if(value === 'ALLOWED') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，进行提示';
     } else {
       controlMethodNotice = '不做任何控制';
@@ -140,9 +140,7 @@ class NewBudgetStrategyDetail extends React.Component {
                   rules: [{
                     required: true,
                     message: '请选择'
-                  }],
-                  initialValue: ''
-                })(
+                  }]})(
                   <Select placeholder="请选择">
                     {messageCodeOptions && messageCodeOptions.map((option)=>{
                       return <Option key={option.value}>{option.messageKey}</Option>
@@ -154,10 +152,6 @@ class NewBudgetStrategyDetail extends React.Component {
             <Col span={8} style={{ display: 'inline-block'}}>
               <FormItem label="事件">
                 {getFieldDecorator('expWfEvent', {
-                  /*rules: [{
-                    required: true,
-                    message: '请输入'
-                  }],*/
                   initialValue: ''
                 })(
                   <Input placeholder="请输入" />
@@ -167,7 +161,7 @@ class NewBudgetStrategyDetail extends React.Component {
           </Row>
           <div>
             <Button type="primary" htmlType="submit" style={{marginRight:'20px'}} loading={this.state.loading}>保存</Button>
-            <Button onClick={this.handleCancle}>取消</Button>
+            <Button onClick={this.handleCancel}>取消</Button>
           </div>
         </Form>
       </div>
