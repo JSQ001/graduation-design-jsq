@@ -29,15 +29,12 @@ class NewBudgetJournalDetail extends React.Component {
 
   //表单的联动事件处理
   handleEvent(event,e){
-    console.log(event);
     switch (e){
       case 'company':{
-        console.log(event)
       }
       case 'periodName':{
         event =JSON.parse(event);
         let searchForm =this.state.searchForm;
-        console.log(searchForm);
         this.props.form.setFieldsValue({
           periodYear:event.periodYear
         });
@@ -49,7 +46,6 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'currency':{
-        console.log(event)
         event =JSON.parse(event);
         rateData =event.attribute11;
         let rate =event.attribute11;
@@ -61,7 +57,6 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'amount':{
-        console.log(event)
         let functionalAmount = event*rateData;
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
@@ -203,7 +198,6 @@ class NewBudgetJournalDetail extends React.Component {
   };
   //获select得值列表里面的数据
   setOptionsToFormItemSelect=(item,url)=>{
-    console.log(item);
     let params = {};
     let path = item.url;
     let organizationId ;
@@ -217,14 +211,12 @@ class NewBudgetJournalDetail extends React.Component {
       res.data.map(data => {
         options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
       });
-      console.log(options)
       let searchForm = this.state.searchForm;
       searchForm = searchForm.map(searchItem => {
         if(searchItem.id === item.id)
           searchItem.options = options;
         return searchItem;
       });
-      console.log(searchForm);
       this.setState({ searchForm });
     })
   }
@@ -256,7 +248,7 @@ class NewBudgetJournalDetail extends React.Component {
     switch(item.type){
       //输入组件
       case 'input':{
-        return <Input placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
+        return <Input  placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
       }
       //选择组件
       case 'select':{
@@ -308,7 +300,7 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //数字选择InputNumber
       case 'inputNumber':{
-        return <InputNumber disabled={item.disabled}  min={0} step={item.step} onChange={handle}/>
+        return <InputNumber disabled={item.disabled}  min={0} step={item.step} onChange={handle} style={{width:200}}/>
       }
     }
   }
@@ -343,12 +335,9 @@ class NewBudgetJournalDetail extends React.Component {
   }
   //提交保存
   HandleSubmit=(e)=>{
-    console.log(this.props.user);
-    const params =this.state.params;
+    const params =this.props.params;
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, value) => {
-
-      console.log(value);
+    this.props.form.validateFieldsAndScroll((err,value) => {
       let companyId;
       let companyName;
       let itemId;
@@ -397,31 +386,11 @@ class NewBudgetJournalDetail extends React.Component {
 
       if(value.periodName.indexOf(":")>1 ){
         let periodNameFromData = JSON.parse(value.periodName);
-       let periodName=periodNameFromData.periodName;
-
-        //处理期间
-       if(periodName!=''&& periodName!=null && periodName!=undefined) {
-          const periodNameArray = periodName.split("-");
-          for (let i = 0; i < periodNameArray.length; i++) {
-            console.log(periodNameArray[i])
-            if (periodNameArray[i].length==4 &&  Number(periodNameArray[i])) {
-              if(i==0){
-                periodNameData = periodNameArray[0]+""+periodNameArray[1];
-              }else {
-                periodNameData = periodNameArray[1]+""+periodNameArray[0];
-              }
-              console.log(periodName.periodYear);
-            }
-          }
-        }else {
-          periodNameData='';
-        }
-
+        periodNameData=periodNameFromData.periodName;
       }
       else {
         periodNameData=params.periodName;
       }
-
       let  valueData = {
           "companyId": companyId,
           "companyName":companyName,

@@ -4,29 +4,10 @@
 import React from 'React'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import {
-  Form,
-  Table,
-  Button,
-  notification,
-  Icon,
-  Checkbox,
-  Badge,
-  Row,
-  Col,
-  Input,
-  Switch,
-  Dropdown,
-  Alert,
-  Modal,
-  Upload,
-  Select,
-  DatePicker,
-  message
-} from 'antd';
-const Option = Select.Option;
-const FormItem = Form.Item;
+import {Table, Button, Checkbox, Alert, message,Icon} from 'antd';
 
+
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 
@@ -104,7 +85,8 @@ class BudgetVersionsDetail extends React.Component {
       edit: false,
       formData: {},
       page: 0,
-      pageSize: 10
+      pageSize: 10,
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
 
     }
 
@@ -330,6 +312,11 @@ class BudgetVersionsDetail extends React.Component {
                  loading={loading}
           />
 
+
+          <a className="back" onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=VERSIONS');}}>
+            <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+          </a>
+
           <ListSelector visible={this.state.showImportFrame}
                         onOk={this.submitHandle}
                         onCancel={this.CancelHandle}
@@ -344,6 +331,9 @@ class BudgetVersionsDetail extends React.Component {
 
 }
 
+BudgetVersionsDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {

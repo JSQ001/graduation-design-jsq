@@ -147,17 +147,12 @@ class NewBudgetJournalFrom extends React.Component {
             "organizationName": this.props.organization.organizationName,
             "structureId": value.structureId,
             "structureName": "structureName",
-          /*  "periodYear": 2017,
-            "periodQuarter":1,
-           "periodName": 200709,*/
             "description": "",
             "reversedFlag": "N",
             "sourceBudgetHeaderId": undefined,
             "sourceType": undefined,
             "employeeId": this.props.user.id,
             "employeeName": this.props.user.fullName,
-          /*  "periodNumber": 1,
-            "unitId": "",*/
             "unitName": "periodNumber",
             'versionId': value.versionName[0].id,
             'versionName': value.versionName[0].versionName,
@@ -203,7 +198,6 @@ class NewBudgetJournalFrom extends React.Component {
     const po = (month < 2 ? 2 : month);
     const quarter = parseInt((po - 1) / 3 + 1);
     console.log(values);
-
     this.state.structureGroup.map((item) => {
       if (item.id == values) {
         const periodStrategy = item.periodStrategy;
@@ -255,8 +249,6 @@ class NewBudgetJournalFrom extends React.Component {
             periodQuarterFlag: false,
           })
         }
-
-
         this.props.form.setFieldsValue({
           periodStrategy: periodStrategy,
         });
@@ -264,54 +256,6 @@ class NewBudgetJournalFrom extends React.Component {
     });
 
   };
-
-//选择期间，获取年度和季度
-  handleSelectPeriodName = (value) => {
-    console.log(value);
-
-  };
-
-
-  //选择期间编制期间段，的时候获取年度，季度，和期间
-  handSelectPeriodStrategy = (values) => {
-    console.log(values);
-    const data = new Date();
-    const year = data.getFullYear();
-    const month = data.getMonth() + 1;
-    const po = (month < 2 ? 2 : month);
-    const quarter = (po - 1) / 3 + 1;
-
-
-    if (values == "YEAR") {
-      this.props.form.setFieldsValue({
-        periodYear: year
-      })
-
-    } else if (values == "QUARTER") {
-      this.props.form.setFieldsValue({
-        periodYear: year
-      });
-
-      this.props.form.setFieldsValue({
-        periodQuarter: quarter
-      })
-
-    } else {
-      this.props.form.setFieldsValue({
-        periodYear: year
-      });
-
-      this.props.form.setFieldsValue({
-        periodQuarter: quarter
-      });
-
-      this.props.form.setFieldsValue({
-        periodName: month
-      })
-
-    }
-  };
-
 
   //取消
   HandleClear = () => {
@@ -499,7 +443,7 @@ class NewBudgetJournalFrom extends React.Component {
                     }],
 
                   })(
-                    <Select onSelect={this.handSelectPeriodStrategy} disabled={periodStrategyFlag}>
+                    <Select disabled={periodStrategyFlag}>
                       {periodStrategyOptions}
                     </Select>
                   )}
