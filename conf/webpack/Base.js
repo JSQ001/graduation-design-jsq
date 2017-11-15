@@ -88,10 +88,7 @@ class WebpackBaseConfig {
         inline: true,
         port: 8000
       },
-      entry: [
-        'react-hot-loader/patch',
-        './index.js'
-      ],
+      entry: './index.js',
       module: {
         rules: [
           {
