@@ -323,6 +323,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
             <Collapse.Panel header="审批历史" key="1">
+              <div>预算</div>
               <Steps direction="vertical" size="small" >
                 <Step title="Finished" description="This is a description." />
                 <Step title="In Progress" description="This is a description." />
