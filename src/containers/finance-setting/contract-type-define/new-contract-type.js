@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Input, Switch, Button, Icon, Select } from 'antd'
+import { Form, Input, Switch, Button, Icon, Select, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import config from 'config'
@@ -15,6 +15,9 @@ class NewContractType extends React.Component{
       setOfBooks: [],
       defaultSetOfBooks: null,
       contractCategory: [],
+      defaultValue: {
+        isEnabled: true
+      },
     }
   }
 
@@ -31,41 +34,109 @@ class NewContractType extends React.Component{
     });
   }
 
-  switchChange = (isEnabled) => {
-    this.setState({ isEnabled })
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.params.id &&
+      (nextProps.params.id !== this.state.defaultValue.id ||
+        nextProps.params.versionNumber !== this.state.defaultValue.versionNumber)) {  //编辑
+      this.setState({ defaultValue: nextProps.params }, () => {
+        this.setState({ isEnabled: this.state.defaultValue.isEnabled });
+        for (let key in this.props.form.getFieldsValue()) {
+          let params = {};
+          params[key] = this.state.defaultValue[key];
+          this.props.form.setFieldsValue(params)
+        }
+      })
+    } else if (!nextProps.params.id && this.state.defaultValue.id) {  //新建
+      this.setState({
+        isEnabled: true,
+        defaultValue: {isEnabled: true}
+      }, () => {
+        this.props.form.resetFields()
+      })
+    }
+  }
+
+  //状态改变
+  switchChange = (status) => {
+    this.setState({ isEnabled: status })
   };
 
+  //新建保存
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values);
+        values.isEnabled = this.state.isEnabled;
+        let params = [];
+        params.push(values);
+        this.setState({ loading: true });
+        httpFetch.post(`${config.contractUrl}/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('保存成功');
+            this.props.form.resetFields();
+            this.props.close(true)
+          }
+        }).catch((e) => {
+          if (e.response) {
+            message.error(`保存失败，${e.response.data.validationErrors[0].message}`);
+            this.setState({ loading: false })
+          }
+        })
+      }
+    })
+  };
+
+  //更新保存
+  handleUpdate = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        values.isEnabled = this.state.isEnabled;
+        values.id = this.state.defaultValue.id;
+        values.versionNumber = this.state.defaultValue.versionNumber;
+        let params = [];
+        params.push(values);
+        this.setState({ loading: true });
+        httpFetch.put(`${config.contractUrl}/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('保存成功');
+            this.props.form.resetFields();
+            this.props.close(true)
+          }
+        }).catch((e) => {
+          if (e.response) {
+            message.error(`保存失败，${e.response.data.validationErrors[0].message}`);
+            this.setState({ loading: false })
+          }
+        })
       }
     })
   };
 
   onCancel = () => {
-    // this.setState({});
+    this.props.form.resetFields();
     this.props.close()
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, isEnabled, setOfBooks, defaultSetOfBooks, contractCategory } = this.state;
+    const { loading, setOfBooks, defaultSetOfBooks, contractCategory, defaultValue } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 }
     };
     return (
       <div className="new-contract-type">
-        <Form style={{marginTop:'30px'}} onSubmit={this.handleSave}>
+        <Form style={{marginTop:'30px'}} onSubmit={ this.state.defaultValue.id ? this.handleUpdate :this.handleSave }>
           <FormItem {...formItemLayout} label="账套">
             {getFieldDecorator('setOfBooksId', {
               rules: [{
                 required: true,
                 message: '请选择'
               }],
-              initialValue: defaultSetOfBooks
+              initialValue: defaultValue.setOfBooksId || defaultSetOfBooks
             })(
               <Select>
                 {setOfBooks.map((option)=>{
@@ -79,7 +150,8 @@ class NewContractType extends React.Component{
               rules: [{
                 required: true,
                 message: '请选择'
-              }]
+              }],
+              initialValue: defaultValue.contractCategory
             })(
               <Select placeholder="请选择">
                 {contractCategory.map((option)=>{
@@ -94,7 +166,7 @@ class NewContractType extends React.Component{
                 required: true,
                 message: '请输入'
               }],
-              initialValue: ''
+              initialValue: defaultValue.contractTypeCode
             })(
               <Input placeholder="请输入" />
             )}
@@ -105,22 +177,19 @@ class NewContractType extends React.Component{
                 required: true,
                 message: '请输入'
               }],
-              initialValue: ''
+              initialValue: defaultValue.contractTypeName
             })(
               <Input placeholder="请输入" />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="状态">
             {getFieldDecorator('isEnabled', {
-              initialValue: ''
+              valuePropName: 'checked',
+              initialValue: defaultValue.isEnabled
             })(
-              <div>
-                <Switch defaultChecked={true}
-                        checkedChildren={<Icon type="check"/>}
-                        unCheckedChildren={<Icon type="cross" />}
-                        onChange={this.switchChange}/>
-                <span style={{position:'relative',top:'2px',left:'10px'}}>{ isEnabled ? '启用' : '禁用' }</span>
-              </div>
+              <Switch checkedChildren={<Icon type="check"/>}
+                      unCheckedChildren={<Icon type="cross" />}
+                      onChange={this.switchChange}/>
             )}
           </FormItem>
           <div className="slide-footer">

@@ -71,16 +71,14 @@ class NewStrategyControlDetail extends React.Component{
         operatorValue: params.newParams.operator,
         valueValue: params.newParams.value,
         periodStrategyValue: this.handlePeriodStrategy(params.newParams.periodStrategy)
+      }, () => {
+        let values = this.props.form.getFieldsValue();
+        for(let name in values){
+          let result = {};
+          result[name] = params.newParams[name];
+          this.props.form.setFieldsValue(result)
+        }
       });
-      let defaultDate = {
-        object: params.newParams.object,
-        range: params.newParams.range,
-        manner: params.newParams.manner,
-        operator: params.newParams.operator,
-        value: params.newParams.value,
-        periodStrategy: params.newParams.periodStrategy
-      };
-      this.props.form.setFieldsValue(defaultDate)
     }
   }
   onCancel = () =>{
@@ -290,7 +288,7 @@ class NewStrategyControlDetail extends React.Component{
             {renderValue}
           </FormItem>
           <FormItem {...formItemLayout} label="控制期段">
-            <Col span={20} style={{marginRight:'20px'}}>
+            <Col span={20} style={{margin:'0 20px 0 0'}}>
               <FormItem>
                 {getFieldDecorator('periodStrategy', {
                   rules: [{

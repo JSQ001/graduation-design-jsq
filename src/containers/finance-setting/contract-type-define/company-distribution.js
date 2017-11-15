@@ -22,40 +22,14 @@ class CompanyDistribution extends React.Component{
         {title: '公司类型', dataIndex: '3'},
         {title: '账套', dataIndex: '4'},
         {title: '付款条件', dataIndex: '5', render: condition => <Input defaultValue={condition}/>},
-        {title: '启用', dataIndex: '6', render: isEnabled => <Checkbox defaultChecked={isEnabled}></Checkbox>}
+        {title: '启用', dataIndex: '6', width: '8%', render: isEnabled => <Checkbox defaultChecked={isEnabled}></Checkbox>}
       ],
       data: [],
     }
   }
 
   componentWillMount() {
-    this.setState({
-      companyTypeInfo: {
-        setOfBooksId: 'CNY_LEDGER',
-        contractTypeCode: '123123444',
-        contractTypeName: '上海XX有限公司',
-        isEnabled: true,
-      },
-      data: [
-        {
-          id: '111',
-          1: '122222',
-          2: '上海甄汇信息科技有限公司',
-          3: '123',
-          4: 'ZTKIKI',
-          5: 'ZTKIKI',
-          6: true
-        }, {
-          id: '222',
-          1: '122222',
-          2: '上海甄汇信息科技有限公司',
-          3: '123',
-          4: 'ASDSC',
-          5: 'ASDSC',
-          6: false
-        }
-      ]
-    })
+
   }
 
   handleDistribution = () => {
