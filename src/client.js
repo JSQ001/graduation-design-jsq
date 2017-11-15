@@ -29,7 +29,7 @@ const store = configureStore.reduxStore();
  *                         汇联易中控重构项目入口
  */
 ReactDOM.render(
-  <AppContainer>
+  <AppContainer warnings={false}>
     <Provider store={store}>
       <App/>
     </Provider>
@@ -41,7 +41,7 @@ if (module.hot) {
   module.hot.accept('./containers/App', () => {
     const NextApp = require('./containers/App').default; // eslint-disable-line global-require
     ReactDOM.render(
-      <AppContainer>
+      <AppContainer warnings={false}>
         <Provider store={store}>
           <NextApp />
         </Provider>

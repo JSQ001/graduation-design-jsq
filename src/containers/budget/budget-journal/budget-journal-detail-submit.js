@@ -61,7 +61,6 @@ class BudgetJournalDetailSubmit extends React.Component {
         {
           /*期间*/
           title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
-
         },
         {
           /*季度*/
@@ -275,6 +274,10 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
+              <div className="base-info-title">部门:</div>
+              <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
+            </Col>
+            <Col span={8}>
               <div className="base-info-title">创建日期:</div>
               <div className="beep-info-text">{infoData.createdDate}</div>
             </Col>
@@ -320,6 +323,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
             <Collapse.Panel header="审批历史" key="1">
+              <div>预算</div>
               <Steps direction="vertical" size="small" >
                 <Step title="Finished" description="This is a description." />
                 <Step title="In Progress" description="This is a description." />
