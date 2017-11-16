@@ -86,5 +86,7 @@
   "menu.approve": "审批",
   "menu.approve-contract": "合同",
   "menu.contract": "合同",
-  "menu.my-contract": "我的合同"
+  "menu.my-contract": "我的合同",
+  "menu.new-contract": "合同创建",
+  "menu.contract-detail": "合同详情"
 }

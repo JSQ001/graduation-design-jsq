@@ -79,8 +79,8 @@ class NewBudgetStrategyDetail extends React.Component {
     return (
       <div className="new-budget-strategy-detail">
         <Form onSubmit={this.handleSave}>
-          <Row gutter={40}>
-            <Col span={8} style={{ display: 'inline-block'}}>
+          <Row>
+            <Col span={7}>
               <FormItem label="序号">
                 {getFieldDecorator('detailSequence', {
                   rules: [{
@@ -93,7 +93,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="规则代码">
                 {getFieldDecorator('detailCode', {
                   rules: [{
@@ -106,7 +106,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="控制策略" help={controlMethodNotice}>
                 {getFieldDecorator('controlMethod', {
                   rules: [{
@@ -121,7 +121,9 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+          </Row>
+          <Row>
+            <Col span={7}>
               <FormItem label="控制规则描述">
                 {getFieldDecorator('detailName', {
                   rules: [{
@@ -134,7 +136,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="消息">
                 {getFieldDecorator('messageCode', {
                   rules: [{
@@ -149,7 +151,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="事件">
                 {getFieldDecorator('expWfEvent', {
                   initialValue: ''

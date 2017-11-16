@@ -86,5 +86,7 @@
   "menu.approve": "Approve",
   "menu.approve-contract": "Contract",
   "menu.contract": "Contract",
-  "menu.my-contract": "My contract"
+  "menu.my-contract": "My contract",
+  "menu.new-contract": "New contract",
+  "menu.contract-detail": "Contract detail"
 }
