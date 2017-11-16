@@ -19,6 +19,7 @@ class NewBudgetStrategyDetail extends React.Component {
       controlMethodNotice: '',
       controlMethodOptions: [],
       messageCodeOptions: [],
+      controlMethodValue: '',
       budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //控制策略详情
     }
   }
@@ -38,10 +39,13 @@ class NewBudgetStrategyDetail extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading: true});
         values.controlStrategyId = this.props.params.strategyId;
+        if (values.controlMethod !== 'NO_MESSAGE' && !values.messageCode) {
+          message.error('请选择消息');
+          return;
+        }
+        this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
-          console.log(res);
           if(res.status === 200){
             this.setState({loading: false});
             message.success(this.props.intl.formatMessage({id: 'common.create.success'},{name: ''}) /* 新建成功 */);
@@ -69,13 +73,14 @@ class NewBudgetStrategyDetail extends React.Component {
       controlMethodNotice = '如果满足触发条件，当单据提交时，进行提示';
     } else {
       controlMethodNotice = '不做任何控制';
+      this.props.form.setFieldsValue({messageCode: null})
     }
-    this.setState({ controlMethodNotice })
+    this.setState({ controlMethodNotice, controlMethodValue: value })
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { controlMethodNotice, controlMethodOptions, messageCodeOptions } = this.state;
+    const { controlMethodNotice, controlMethodOptions, messageCodeOptions, controlMethodValue } = this.state;
     return (
       <div className="new-budget-strategy-detail">
         <Form onSubmit={this.handleSave}>
@@ -140,10 +145,10 @@ class NewBudgetStrategyDetail extends React.Component {
               <FormItem label="消息">
                 {getFieldDecorator('messageCode', {
                   rules: [{
-                    required: true,
+                    required: controlMethodValue === 'NO_MESSAGE' ? false : true,
                     message: '请选择'
                   }]})(
-                  <Select placeholder="请选择">
+                  <Select placeholder="请选择" disabled={controlMethodValue === 'NO_MESSAGE' ? true : false}>
                     {messageCodeOptions && messageCodeOptions.map((option)=>{
                       return <Option key={option.value}>{option.messageKey}</Option>
                     })}

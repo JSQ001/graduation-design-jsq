@@ -1,10 +1,12 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select } from 'antd'
+import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
+
+import Upload from 'components/upload'
 
 class NewContract extends React.Component{
   constructor(props) {
@@ -12,12 +14,31 @@ class NewContract extends React.Component{
     this.state = {
       loading: false,
       user: {},
+      partnerCategoryOptions: [], //合同方类型选项
+      currencyOptions: [], //币种
     }
   }
 
   componentWillMount() {
-    this.setState({ user: this.props.user },() =>{console.log(this.state.user)})
+    this.setState({ user: this.props.user });
+    this.getSystemValueList(2107).then(res => { //合同方类型
+      let partnerCategoryOptions = res.data.values;
+      this.setState({ partnerCategoryOptions })
+    });
+    this.service.getCurrencyList().then((res) => {  //币种
+      let currencyOptions = res.data;
+      this.setState({ currencyOptions })
+    })
   }
+
+  handleSave = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values)
+      }
+    })
+  };
 
   onCancel = () => {
 
@@ -25,19 +46,18 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user } = this.state;
+    const { loading, user, partnerCategoryOptions, currencyOptions } = this.state;
     return (
       <div className="new-contract" style={{marginBottom:'80px'}}>
-        <Form>
-          <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
-            <FormItem label="创建人">
-              {getFieldDecorator('organizationName', {
-                initialValue: user.fullName
-              })(
-                <Input disabled style={{width:'300px'}}/>
-              )}
-            </FormItem>
-          </Card>
+        <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
+          <Row>
+            <Col span={7}>
+              <div style={{lineHeight: '32px'}}>创建人:</div>
+              <Input value={user.fullName} disabled />
+            </Col>
+          </Row>
+        </Card>
+        <Form onSubmit={this.handleSave}>
           <Card title="合同信息" noHovering style={{marginBottom:'20px'}}>
             <Row>
               <Col span={15}>
@@ -109,25 +129,41 @@ class NewContract extends React.Component{
             </Row>
             <Row>
               <Col span={7}>
-                <FormItem label="合同金额">
-                  {getFieldDecorator('amount', {
-                    rules: [{
-                      required: true,
-                      message: '请输入'
-                    }],
-                  })(
-                    <Input placeholder="请输入"/>
-                  )}
-                </FormItem>
+                <Row>
+                  <Col span={7}>
+                    <FormItem label="币种">
+                      {getFieldDecorator('currency', {
+                        rules: [{
+                          required: true,
+                          message: '请选择'
+                        }]
+                      })(
+                        <Select placeholder="请选择">
+                          {currencyOptions.map((option) => {
+                            return <Option value={option.otherCurrency} key={option.otherCurrency}>{option.otherCurrency}</Option>
+                          })}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col span={16} offset={1}>
+                    <FormItem label="金额">
+                      {getFieldDecorator('amount', {
+                        rules: [{
+                          required: true,
+                          message: '请输入'
+                        }],
+                      })(
+                        <InputNumber placeholder="请输入" style={{width: '100%'}}/>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Row>
               </Col>
               <Col span={7} offset={1}>
                 <FormItem label="有效期限">
                   {getFieldDecorator('startDate')(
-                    <RangePicker
-                      showTime={{ format: 'HH:mm' }}
-                      format="YYYY-MM-DD"
-                      placeholder={['请选择', '请选择']}
-                    />
+                    <RangePicker placeholder={['请选择', '请选择']} style={{width:'100%'}}/>
                   )}
                 </FormItem>
               </Col>
@@ -143,7 +179,11 @@ class NewContract extends React.Component{
                       message: '请输入'
                     }],
                   })(
-                    <Input placeholder="请输入"/>
+                    <Select placeholder="请输入">
+                      {partnerCategoryOptions.map((option) => {
+                        return <Option key={option.value}>{option.messageKey}</Option>
+                      })}
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -162,19 +202,23 @@ class NewContract extends React.Component{
             </Row>
           </Card>
           <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
-            <FormItem>
-              {getFieldDecorator('organizationName', {
-                initialValue: user.fullName
-              })(
-                <Input disabled style={{width:'300px'}}/>
-              )}
-            </FormItem>
+            <Row>
+              <Col span={7}>
+                <FormItem>
+                  {getFieldDecorator('attachmentOID', {
+                    initialValue: user.fullName
+                  })(
+                    <Upload attachmentType="CONTRACT" fileNum={9}/>
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
           </Card>
           <Card title="其他信息" noHovering>
             <Row>
               <Col span={7}>
                 <FormItem label="责任部门">
-                  {getFieldDecorator('partnerCategory')(
+                  {getFieldDecorator('partnerCategory1')(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
