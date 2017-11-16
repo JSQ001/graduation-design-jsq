@@ -1,8 +1,9 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
+import {connect} from 'react-redux'
+import {injectIntl} from 'react-intl';
 
-import { Table, message, Tabs, Popover } from 'antd'
+import {Table, message, Tabs, Popover} from 'antd'
+
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
@@ -21,25 +22,42 @@ class FinanceReview extends React.Component {
       pagination: {
         total: 0
       },
-      columns: [
+      invoiceColumns: [
         {title: "序号", dataIndex: "index", width: '8%'},
         {title: "申请人", dataIndex: "applicantName", width: '8%'},
         {title: "提交日期", dataIndex: "submittedDate", width: '10%', render: date => new Date(date).format('yyyy-MM-dd')},
-        {title: '单据类型', dataIndex: 'formName', width: '13%', render: formName => (
+        {
+          title: '单据类型', dataIndex: 'formName', width: '13%', render: formName => (
           <Popover content={formName}>
             {formName}
           </Popover>
-        )},
+        )
+        },
         {title: '报销单号', dataIndex: 'parentBusinessCode', width: '15%'},
         {title: "币种", dataIndex: "currencyCode", width: '8%'},
         {title: "总金额", dataIndex: "totalAmount", width: '15%', render: this.filterMoney},
         {title: "支付币种", key: "currency", width: '8%', render: text => this.props.companyConfiguration.currencyCode},
         {title: "待支付金额", dataIndex: "baseCurrencyRealPaymentAmount", width: '15%', render: this.filterMoney},
       ],
+      borrowColumns: [
+        {title: "序号", dataIndex: "index", width: '10%'},
+        {title: "申请人", dataIndex: "applicantName", width: '10%'},
+        {title: "提交日期", dataIndex: "submittedDate", width: '20%', render: date => new Date(date).format('yyyy-MM-dd')},
+        {
+          title: '单据类型', dataIndex: 'formName', width: '20%', render: formName => (
+          <Popover content={formName}>
+            {formName}
+          </Popover>
+        )
+        },
+        {title: '报销单号', dataIndex: 'businessCode', width: '20%'},
+        {title: "币种", dataIndex: "currencyCode", width: '10%', render: text => this.props.companyConfiguration.currencyCode},
+        {title: "借款金额", dataIndex: "paymentAmount", width: '10%', render: this.filterMoney}
+      ],
       status: 'prending_audit',   //当前状态
       tabs: [
-        {key: 'prending_audit', name:'待审核'},
-        {key: 'audit_pass', name:'已审核'}],
+        {key: 'prending_audit', name: '待审核'},
+        {key: 'audit_pass', name: '已审核'}],
       searchParams: {
         applicantOID: null,
         businessCode: null,
@@ -49,19 +67,37 @@ class FinanceReview extends React.Component {
       },
       searchForm: [
         {
-          type: 'radio', id: 'type', label: '单据类型', options: [{label: '报销单', value: 'INVOICE'}, {label: '借款单', value: 'BORROW'}],
-          event: 'CHANGE_TYPE', defaultValue: 'INVOICE'
+          type: 'radio',
+          id: 'type',
+          label: '单据类型',
+          options: [{label: '报销单', value: 'INVOICE'}, {label: '借款单', value: 'BORROW'}],
+          event: 'CHANGE_TYPE',
+          defaultValue: 'INVOICE'
         },
         {type: 'date', id: 'dateFrom', label: '日期从'},
         {type: 'date', id: 'dateTo', label: '日期到'},
         {type: 'input', id: 'formID', label: '单号'},
         {
-          type: 'combobox', id: 'user', label: '员工', placeholder: '请输入姓名／工号', options: [],
-          searchUrl: `${config.baseUrl}/api/search/users`, method: 'get', searchKey: 'keyword', labelKey: 'fullName', valueKey: 'userOID'
+          type: 'combobox',
+          id: 'user',
+          label: '员工',
+          placeholder: '请输入姓名／工号',
+          options: [],
+          searchUrl: `${config.baseUrl}/api/search/users`,
+          method: 'get',
+          searchKey: 'keyword',
+          labelKey: 'fullName',
+          valueKey: 'userOID'
         },
         {
-          type: 'multiple', id: 'legalEntity', label: '法人实体', options: [],
-          getUrl: `${config.baseUrl}/api/v2/my/company/receipted/invoices?page=0&size=100`, method: 'get', labelKey: 'companyName', valueKey: 'companyReceiptedOID'
+          type: 'multiple',
+          id: 'legalEntity',
+          label: '法人实体',
+          options: [],
+          getUrl: `${config.baseUrl}/api/v2/my/company/receipted/invoices?page=0&size=100`,
+          method: 'get',
+          labelKey: 'companyName',
+          valueKey: 'companyReceiptedOID'
         }
       ],
       nowType: 'INVOICE',
@@ -71,7 +107,7 @@ class FinanceReview extends React.Component {
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
     let countResult = {};
     this.state.tabs.map(item => {
       countResult[item.key] = {
@@ -85,7 +121,7 @@ class FinanceReview extends React.Component {
   }
 
   //得到单据数量
-  getCount(){
+  getCount() {
     let result = {};
     let fetchArray = [];
     this.state.tabs.map(type => {
@@ -96,7 +132,7 @@ class FinanceReview extends React.Component {
         }
       }));
     });
-    return Promise.all(fetchArray).then(()=>{
+    return Promise.all(fetchArray).then(() => {
       this.setState({count: result});
       this.refreshSearchCount(result[this.state.status].expenseReportCount, result[this.state.status].loanApplicationCount);
     })
@@ -118,17 +154,17 @@ class FinanceReview extends React.Component {
   }
 
   onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
+    if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
         loading: true
-      }, ()=>{
+      }, () => {
         this.getList();
       })
   };
 
   getList = () => {
-    this.setState({ loading: true });
+    this.setState({loading: true});
     let temp = this.state.searchParams;
     temp.status = this.state.status;
     httpFetch.post(`${config.baseUrl}/api/${this.state.nowType === 'INVOICE' ? 'v2/expense/reports' : 'loan/application'}/finance/admin/search?page=${this.state.page}&size=${this.state.pageSize}`, temp).then(res => {
@@ -143,16 +179,18 @@ class FinanceReview extends React.Component {
           total: Number(res.headers['x-total-count']),
           onChange: this.onChangePager,
           current: this.state.page + 1
-        }});
+        }
+      });
     })
   };
 
   //渲染Tab头
-  renderTabs(){
+  renderTabs() {
     return (
       this.state.tabs.map(tab => {
         let typeCount = this.state.count[tab.key];
-        return <TabPane tab={`${tab.name}（${typeCount.expenseReportCount + typeCount.loanApplicationCount}）`} key={tab.key}/>
+        return <TabPane tab={`${tab.name}（${typeCount.expenseReportCount + typeCount.loanApplicationCount}）`}
+                        key={tab.key}/>
       })
     )
   }
@@ -166,7 +204,7 @@ class FinanceReview extends React.Component {
       loading: true,
       page: 0,
       status: key
-    },()=>{
+    }, () => {
       this.getList()
     });
   };
@@ -185,27 +223,29 @@ class FinanceReview extends React.Component {
       searchParams: searchParams,
       loading: true,
       page: 0
-    }, ()=>{
+    }, () => {
       this.getList();
     })
   };
 
   clear = () => {
-    this.setState({searchParams: {
-      applicantOID: "",
-      businessCode: "",
-      corporationOIDs: [],
-      endDate: null,
-      startDate: null
-    }})
+    this.setState({
+      searchParams: {
+        applicantOID: "",
+        businessCode: "",
+        corporationOIDs: [],
+        endDate: null,
+        startDate: null
+      }
+    })
   };
 
   searchEventHandle = (event, value) => {
-    switch(event){
+    switch (event) {
       case 'CHANGE_TYPE': {
-        if(value === this.state.nowType)
+        if (value === this.state.nowType)
           return;
-        this.setState({page: 0, nowType: value, loading: true}, ()=>{
+        this.setState({page: 0, nowType: value, loading: true}, () => {
           this.getList();
         });
         break;
@@ -214,12 +254,16 @@ class FinanceReview extends React.Component {
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.expenseDetailReview.url.replace(':id', record.expenseReportOID))
+    const { nowType } = this.state;
+    if(nowType === 'INVOICE')
+      this.context.router.push(this.state.expenseDetailReview.url.replace(':id', record.expenseReportOID));
+    else
+      this.context.router.push(this.state.loanDetailReview.url.replace(':id', record.applicationOID));
   };
 
-  render(){
-    const { data, loading, columns, pagination, searchForm } = this.state;
-    const { formatMessage } = this.props.intl;
+  render() {
+    const {data, loading, invoiceColumns ,borrowColumns, pagination, searchForm, nowType} = this.state;
+    const {formatMessage} = this.props.intl;
     return (
       <div>
         <Tabs onChange={this.onChangeTabs}>
@@ -231,16 +275,17 @@ class FinanceReview extends React.Component {
                     eventHandle={this.searchEventHandle}/>
         <div className="divider"/>
         <div className="table-header">
-          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
+          <div className="table-header-title">{formatMessage({id: "common.total"}, {total: pagination.total})}</div>
+          {/* 共total条数据 */}
         </div>
-        <Table columns={columns}
+        <Table columns={nowType === 'INVOICE' ? invoiceColumns : borrowColumns}
                dataSource={data}
                bordered
                pagination={pagination}
                onRowClick={this.handleRowClick}
                loading={loading}
                size="middle"
-               rowKey="expenseReportOID"/>
+               rowKey={nowType === 'INVOICE' ? 'expenseReportOID' : 'applicationOID'}/>
       </div>
     )
   }
@@ -253,7 +298,8 @@ FinanceReview.contextTypes = {
 
 function mapStateToProps(state) {
   return {
-    companyConfiguration: state.login.companyConfiguration
+    companyConfiguration: state.login.companyConfiguration,
+    profile: state.login.profile
   }
 }
 
