@@ -183,14 +183,24 @@ class Main extends React.Component{
     }
   }
 
+  handleMenuClick = (e) => {
+    if(e.key === this.state.openKeys[0])
+      this.setState({openKeys: []});
+    else
+      this.setState({openKeys: [e.key]})
+  };
+
   renderMenu(){
     const { adminMode } = this.state;
     return (
-      <Menu theme="dark" mode="inline" selectedKeys={this.state.selectedKeys} openKeys={this.state.openKeys} onClick={(e) => {this.setState({selectedKeys: [e.key]})}}>
+      <Menu theme="dark" mode="inline"
+            selectedKeys={this.state.selectedKeys}
+            openKeys={this.state.openKeys}
+            onClick={(e) => {this.setState({selectedKeys: [e.key]})}}>
         {this.state.menu.map(item =>
           item.subMenu ? (
             ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <SubMenu
-              key={item.key} onTitleClick={(e) => {this.setState({openKeys: [e.key]})}}
+              key={item.key} onTitleClick={this.handleMenuClick}
               title={<span><Icon type={item.icon} /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>

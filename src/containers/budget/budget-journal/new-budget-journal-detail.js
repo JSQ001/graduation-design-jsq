@@ -121,7 +121,7 @@ class NewBudgetJournalDetail extends React.Component {
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
       yearOptions.push({label: i, key: String(i)})
     let searchForm =[
-      {type: 'list', id: 'company', listType: 'journal_line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
+      {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
         valueKey: 'id',single:'true',event:'company',isRequired: true, listExtraParams:{setOfBooksId:this.props.company.setOfBooksId}},//公司
       {type: 'list', id: 'unitId', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
         labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true, listExtraParams:{companyId: ''}},//部门
