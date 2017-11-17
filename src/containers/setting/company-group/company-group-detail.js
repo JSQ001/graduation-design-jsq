@@ -17,18 +17,6 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 
-let setOfBooks = [];
-httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-  console.log(response)
-  response.data.map((item)=>{
-    let option = {
-      label: item.setOfBooksCode +" - "+item.setOfBooksName,
-      value: item.id
-    };
-    setOfBooks.addIfNotExist(option)
-  })
-});
-
 class CompanyGroupDetail extends React.Component{
   constructor(props){
     super(props);
@@ -58,7 +46,8 @@ class CompanyGroupDetail extends React.Component{
       infoList: [
         {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
         {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
-        {type: 'select',options: setOfBooks  , id: 'setOfBook', required:true, label:"账套"},
+        {type: 'select', id: 'setOfBook', label: formatMessage({id:"budget.set.of.books"}) + " :", options: [],
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
         {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 

@@ -21,7 +21,7 @@ server {
         proxy_pass $ARTEMIS_URL/api/;
     }
 
-    location /api/budget/ {
+    location /api/budget/  {
         proxy_pass $BUDGET_URL/api/budget/;
     }
 

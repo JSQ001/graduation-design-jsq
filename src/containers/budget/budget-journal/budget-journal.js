@@ -27,13 +27,10 @@ class BudgetJournal extends React.Component {
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
-
-        {type: 'input', id: 'journalCode',
-          label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
+        {type: 'input', id: 'journalCode', label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status', options: [], valueListCode: 2028},
-
 
       ],
 
@@ -49,16 +46,6 @@ class BudgetJournal extends React.Component {
         },
         {          /*预算表*/
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
-        },
-        {          /*预算期间*/
-          title: "期间", key: "periodName", dataIndex: 'periodName',
-          render(recode,text){
-            switch (text.periodStrategy){
-              case 'MONTH':{ return `${text.periodName?text.periodName:''}`}
-              case 'QUARTER':{ return `${text.periodYear}年-${text.periodQuarterName?text.periodQuarterName:''}`}
-              case 'YEAR':{ return `${text.periodYear}年`}
-            }
-          }
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
@@ -141,7 +128,6 @@ class BudgetJournal extends React.Component {
 
   //跳转到详情
   HandleRowClick=(value)=>{
-    console.log(value);
     const journalCode =value.journalCode;
     if(value.status=="NEW" || value.status=="REJECT"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
@@ -166,7 +152,7 @@ class BudgetJournal extends React.Component {
             <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
-        <Table
+        <Table rowKey={record => record.id}
           loading={loading}
           dataSource={data}
           columns={columns}

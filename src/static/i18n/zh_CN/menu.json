@@ -9,6 +9,8 @@
   "menu.my-account": "我的账本",
   "menu.expense-report": "报销单",
   "menu.edit-report": "编辑报销单",
+  "menu.request": "申请单",
+  "menu.loan-request-detail": "借款单详情",
   "menu.budget": "预算",
   "menu.budget-setting": "预算设置",
   "menu.new-budget-organization": "新建预算组织定义",
@@ -28,7 +30,7 @@
   "menu.new-budget-journal":"新建预算日记账",
   "menu.budget-journal-type": "预算日记账类型定义",
   "menu.new-budget-journal-type": "新建预算日记账类型",
-  "menu.budget-journal-type-detail": "预算日记账详情",
+  "menu.budget-journal-type-detail": "预算日记账类型详情",
   "menu.new-budget-group": "新建预算项目组",
   "menu.budget-group-detail": "预算项目组详情",
   "menu.new-budget-structure": "新建预算表",
@@ -72,6 +74,7 @@
   "menu.finance-review": "单据审核",
   "menu.finance-view": "单据查看",
   "menu.expense-report-detail-review": "报销单详情",
+  "menu.loan-request-detail-review": "申请单详情",
   "menu.company-group": "公司组",
   "menu.new-company-group": "新建公司组",
   "menu.company-group-detail": "公司组详情",
@@ -80,5 +83,4 @@
   "menu.department-group-detail": "部门组详情",
   "menu.contract-type-define": "合同类型定义",
   "menu.company-distribution": "公司分配"
-
 }

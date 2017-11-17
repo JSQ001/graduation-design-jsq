@@ -136,7 +136,6 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
-
   hoverDom.onmouseenter = function(){
     let enterInterval = setInterval(() => {
       clearInterval(dom.leaveInterval);
@@ -170,6 +169,7 @@ React.Component.prototype.service = {
     return httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectByInput`)
   }
 };
+
 
 
 

@@ -137,10 +137,8 @@ class BudgetStrategyDetail extends React.Component {
       }).catch((e) => {
         if(e.response){
           message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-          this.setState({ updateState: false, baseInfoLoading: false })
-        } else {
-          console.log(e)
         }
+        this.setState({ updateState: false, baseInfoLoading: false })
       })
     });
   };

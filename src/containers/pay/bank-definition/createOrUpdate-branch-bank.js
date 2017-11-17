@@ -68,11 +68,8 @@ class NewBranchBank extends React.Component{
         }).catch((e)=>{
           if(e.response){
             message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
           }
-          else {
-            console.log(e)
-          }
+          this.setState({loading: false});
         })
           :
           httpFetch.post(`${config.payUrl}/api/cash/bank/branches`,values).then((response)=>{
@@ -87,11 +84,8 @@ class NewBranchBank extends React.Component{
           }).catch((e)=>{
             if(e.response){
               message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-              this.setState({loading: false});
             }
-            else {
-              console.log(e)
-            }
+            this.setState({loading: false});
           })
 
       }

@@ -35,10 +35,8 @@ class NewBudgetStrategy extends React.Component {
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });

@@ -55,7 +55,8 @@ const httpFetch = {
       }
     }).then(checkStatus).catch(e => {
       message.error(e.response.data.error_description);
-      location.href = '/';
+      if(location.href.substr(8, location.href.length - 1).split('/').length !== 2)
+        location.href = '/';
     }).then(response => {
       localStorage.token = response.data.access_token;
       localStorage.refresh_token = response.data.refresh_token;

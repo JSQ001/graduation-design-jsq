@@ -35,6 +35,7 @@ class BudgetJournalDetail extends React.Component {
       fileList:[],
       selectorItem:{},
       selectedData:[],
+      selectedRowKeys:[],
       rowSelection: {
         type:'checkbox',
         selectedRowKeys: [],
@@ -52,6 +53,10 @@ class BudgetJournalDetail extends React.Component {
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', disabled: true},
         /*申请人*/
         {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', disabled: true},
+        /*公司*/
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyName', disabled: true},
+        /*部门*/
+        {type: 'input', label: this.props.intl.formatMessage({id:"budget.unitId"}), id: 'unitName', disabled: true},
         /*创建时间*/
         {type: 'date', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', disabled: true},
         /*预算日记账类型*/
@@ -84,12 +89,6 @@ class BudgetJournalDetail extends React.Component {
         },
         /*编辑期段*/
         {type: 'value_list', id: 'periodStrategy', label: '编制期段', options: [], valueListCode: 2002,disabled: true},
-        /*预算年度*/
-        {type:'input',id:'periodYear',label:'预算年度',disabled: true,},
-        /*预算季度*/
-        {type:'input',id:'periodQuarterName',label:'预算季度',disabled: true,},
-        /*期间*/
-       {type:'input',id:'periodName',label:'期间',disabled: true},
         /*附件*/
         {type:'file',label:'附件',id:'file',disabled: true},
 
@@ -162,6 +161,11 @@ class BudgetJournalDetail extends React.Component {
     };
   }
 
+  componentWillMount(){
+    //根据编制期代码拿数据
+    this.getDataByBudgetJournalCode();
+  }
+
 //获得总金额
   getAmount= () =>{
     let sum =0;
@@ -182,17 +186,13 @@ class BudgetJournalDetail extends React.Component {
 
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys, selectedRows) => {
+  onSelectChange = (selectedRowKeys) => {
     let { rowSelection } = this.state;
     rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({ rowSelection });
+    this.setState({ rowSelection,selectedRowKeys});
   };
 
-
-
   onSelectItem=(record,selected)=>{
-    console.log(record);
-    console.log(selected);
     let temp = this.state.selectedData;
     if(selected)
       temp.push(record.id);
@@ -240,11 +240,6 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
-  componentWillMount(){
-    //根据编制期代码拿数据
-    this.getDataByBudgetJournalCode();
-
-  }
 
 //根据attachmentOID，查询附件
   getFile=(value)=>{
@@ -310,7 +305,6 @@ class BudgetJournalDetail extends React.Component {
           "value":period
         }
 
-
         //状态
         let statusData={};
       if(headerData.status=="NEW"){
@@ -338,8 +332,10 @@ class BudgetJournalDetail extends React.Component {
           "totalAmount":amountData
         }
 
-        //params
-
+     /*  let params={
+         "isNew":true,
+         "budgetStructure":headerData.budgetStructure
+        }*/
 
       this.setState({
         loading:false,
@@ -385,16 +381,23 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
-  showSlideFrameNewData=()=>{
-    let params ={
-      "isNew":true,
-      "periodStrategy":this.state.headerAndListData.dto.periodStrategy
+  showSlideFrameNewData=()=> {
+    let params = {
+      "isNew": true,
+      "periodStrategy": this.state.headerAndListData.dto.periodStrategy
     }
     this.setState({
-      params:params,
-      showSlideFrameNew:true,
-    })
+      params: params,
+
+    },()=>{
+      console.log(12345)
+      this.setState({
+        showSlideFrameNew: true,
+      })
+    });
+
   }
+
 
 
   //获得表单数据
@@ -402,25 +405,22 @@ class BudgetJournalDetail extends React.Component {
     console.log(value);
     this.setState({
       showSlideFrameNew:false,
-    })
+    });
       let data = this.state.data;
       let listData=this.state.listData;
       let headerAndListData = this.state.headerAndListData;
-      if(value.isNew){
-          headerAndListData.list.addIfNotExist(value);
-          data.addIfNotExist(value);
-          listData.addIfNotExist(value);
-        }
-      else{
-
-      let list = headerAndListData.list;
-      for(let a=0;a<list.length;a++){
-        if(list[a].id==value.id){
-          list[a]=value;
+      if(value && value.isNew){
+        headerAndListData.list.addIfNotExist(value);
+        data.addIfNotExist(value);
+        listData.addIfNotExist(value);
+      } else{
+        let list = headerAndListData.list;
+        for(let a=0;a<list.length;a++){
+          if(value && list[a].id === value.id){
+            list[a]=value;
         }
       }
       headerAndListData.list=list;
-
     }
 
     //获取总金额
@@ -467,8 +467,8 @@ class BudgetJournalDetail extends React.Component {
       message.success("成功");
       this.getDataByBudgetJournalCode();
 
-    }).catch(e => {
-      message.error("失败")
+    }).catch((e)=>{
+      console.log(e.response.data.message)
     })
 
   }
@@ -503,7 +503,6 @@ class BudgetJournalDetail extends React.Component {
 
   //编辑行
   handlePutData=(value)=>{
-    console.log(value);
     let company =[];
     let companyData={
       "name":value.companyName,
@@ -540,12 +539,17 @@ class BudgetJournalDetail extends React.Component {
       "periodStrategy":this.state.headerAndListData.dto.periodStrategy,
       "isNew":false
     }
-    console.log(valueData);
     this.setState({
       params:valueData,
       showSlideFrameNew:true,
     })
 
+  }
+
+ //返回预算日记账查询
+  handleReturn = () =>{
+    let path=this.state.budgetJournalPage.url;
+    this.context.router.push(path);
   }
 
 
@@ -589,6 +593,7 @@ class BudgetJournalDetail extends React.Component {
             <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
               <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
             </Popconfirm>
+            <Button onClick={this.handleReturn}>返回</Button>
           </div>
         </div>
 

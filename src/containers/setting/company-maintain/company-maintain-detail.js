@@ -50,7 +50,8 @@ class WrappedCompanyMaintainDetail extends React.Component {
       data: [],
       tabsData: {
         BANK:{
-          url: `${config.baseUrl}/api/budget/journal/type/assign/structures/query`,
+          url: ``,
+          rowSelection:{},
           columns:
             [
               {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
@@ -62,11 +63,19 @@ class WrappedCompanyMaintainDetail extends React.Component {
               {title: "开户地", key: "7", dataIndex: '7', width: '16%'},                 /*开户地*/
             ]
         },
+        rowSelectionData:[],
         USER:{
-          url: `${config.baseUrl}/api/users/all/`,
+          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
+          rowSelection:{
+            type:'checkbox',
+            selectedRowKeys: [],
+            onChange: this.onSelectChange,
+            onSelect: this.onSelectItem,
+            onSelectAll: this.onSelectAll
+          },
           columns:
             [
-              {title: "姓名", key: "fullName", dataIndex: 'name', width: '16%'},                   /*姓名*/
+              {title: "姓名", key: "fullName", dataIndex: 'fullName', width: '16%'},                   /*姓名*/
               {title: "工号", key: "id", dataIndex: 'id', width: '8%'},                             /*工号*/
               {title: "部门", key: "departmentName", dataIndex: 'departmentName', width: '10%'},    /*部门*/
               {title: "联系方式", key: "mobile", dataIndex: 'mobile', width: '10%'},                /*联系方式*/
@@ -86,10 +95,26 @@ class WrappedCompanyMaintainDetail extends React.Component {
     }
   }
 
+  //选项改变时的回调，重置selection
+  onSelectChange = (selectedRowKeys) => {
+    let rowSelection = this.state.tabsData.USER.rowSelection;
+    rowSelection.selectedRowKeys = selectedRowKeys;
+    this.setState({});
+  };
+
+
+  onSelectItem = () =>{
+
+  }
+
+  onSelectAll = () =>{
+
+  }
+
 
 
   componentWillMount() {
-    this.getCompanyByCode(this.props.params.companyCode);
+    this.getCompanyByCompanyOID(this.props.params.companyOId);
     this.getList(this.state.nowStatus);
   }
 
@@ -100,6 +125,18 @@ class WrappedCompanyMaintainDetail extends React.Component {
       this.setState({
         infoData: response.data
       })
+    })
+  }
+
+  //根据companyDId获取公司
+  getCompanyByCompanyOID (companyOID){
+    httpFetch.get(`${config.baseUrl}/api/companies/${companyOID}`).then((response) => {
+      console.log(response.data);
+      this.setState({
+        infoData: response.data
+      })
+    }).catch((e)=>{
+      message.error(e.response.data.message);
     })
   }
 
@@ -173,12 +210,54 @@ class WrappedCompanyMaintainDetail extends React.Component {
     })
   };
 
+  renderTable(){
+    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+
+    if(this.state.nowStatus === "USER"){
+      return    <Table columns={tabsData[nowStatus].columns}
+                       dataSource={data}
+                       pagination={pagination}
+                       loading={loading}
+                       bordered
+                       size="middle"
+                       rowSelection={tabsData[nowStatus].rowSelection}/>
+    }
+    else {
+      return     <Table columns={tabsData[nowStatus].columns}
+                        dataSource={data}
+                        pagination={pagination}
+                        loading={loading}
+                        bordered
+                        size="middle"
+                    />
+    }
+  }
+
+  //渲染按钮
+  renderButton(){
+    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    if(this.state.nowStatus === "USER"){
+        return (
+          <div>
+          <Button type="primary" onClick={this.handleNew}>员工导入</Button>
+          <Button>移动</Button>
+          </div>
+        )
+    }else {
+      return(
+        <div>
+          <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+        </div>
+      )
+    }
+  }
+
   render() {
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
-                   infoData={typeData}
+                   infoData={infoData}
                    updateHandle={this.updateHandleInfo}
                    updateState={updateState}
                    loading={editing}/>
@@ -188,15 +267,11 @@ class WrappedCompanyMaintainDetail extends React.Component {
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+
           </div>
         </div>
-        <Table columns={tabsData[nowStatus].columns}
-               dataSource={data}
-               pagination={pagination}
-             /*  loading={loading}*/
-               bordered
-               size="middle"/>
+        {this.renderTable()}
+
       </div>
     )
   }

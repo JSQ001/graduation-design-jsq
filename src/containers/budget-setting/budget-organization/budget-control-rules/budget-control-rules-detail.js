@@ -250,11 +250,8 @@ class BudgetControlRulesDetail extends React.Component{
     }).catch((e)=>{
       if(e.response){
         message.error(`修改失败, ${e.response.data.errorCode}`);
-        this.setState({loading: false});
       }
-      else {
-        console.log(e)
-      }
+      this.setState({loading: false});
     })
   };
 
