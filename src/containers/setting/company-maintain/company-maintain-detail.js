@@ -240,14 +240,15 @@ class WrappedCompanyMaintainDetail extends React.Component {
         return (
           <div>
           <Button type="primary" onClick={this.handleNew}>员工导入</Button>
-          <Button onClick={}>移动</Button>
+          <Button>移动</Button>
           </div>
         )
     }else {
-      return
-      <div>
-      <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
-      </div>
+      return(
+        <div>
+          <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+        </div>
+      )
     }
   }
 
