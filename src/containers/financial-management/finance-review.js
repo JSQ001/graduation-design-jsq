@@ -103,7 +103,10 @@ class FinanceReview extends React.Component {
       nowType: 'INVOICE',
       count: {},
       expenseDetailReview: menuRoute.getRouteItem('expense-report-detail-review', 'key'),
-      loanDetailReview: menuRoute.getRouteItem('loan-request-detail-review', 'key')
+      loanDetailReview: menuRoute.getRouteItem('loan-request-detail-review', 'key'),
+      expenseForms: [],
+      loanForms: [],
+      checkboxListForm: {id: 'formOIDs', items: []}
     };
   }
 
@@ -118,6 +121,7 @@ class FinanceReview extends React.Component {
     this.setState({count: countResult});
     this.getCount();
     this.getList();
+    this.getForms();
   }
 
   //得到单据数量
@@ -184,6 +188,25 @@ class FinanceReview extends React.Component {
     })
   };
 
+  getForms = () => {
+    let { checkboxListForm } = this.state;
+    Promise.all([
+      httpFetch.get(`${config.baseUrl}/api/custom/forms/company/expense/report/all?enabledFlag=2`),
+      httpFetch.get(`${config.baseUrl}/api/custom/forms/company/loan/application/all?enabledFlag=2`)
+    ]).then(res => {
+      let expenseForms = [];
+      let loanForms = [];
+      res[0].data.map(item => {
+        expenseForms.push({label: item.formName, value: item.formOID})
+      });
+      res[1].data.map(item => {
+        loanForms.push({label: item.formName, value: item.formOID})
+      });
+      checkboxListForm.items = [{label: '表单类型', key: 'form', options: expenseForms, checked: []}];
+      this.setState({ expenseForms, loanForms, checkboxListForm })
+    })
+  };
+
   //渲染Tab头
   renderTabs() {
     return (
@@ -245,6 +268,9 @@ class FinanceReview extends React.Component {
       case 'CHANGE_TYPE': {
         if (value === this.state.nowType)
           return;
+        let { checkboxListForm, expenseForms, loanForms } = this.state;
+        checkboxListForm.items = [{label: '表单类型', key: 'form', options: value === 'INVOICE' ? expenseForms : loanForms, checked: []}];
+        this.setState({ checkboxListForm });
         this.setState({page: 0, nowType: value, loading: true}, () => {
           this.getList();
         });
@@ -262,7 +288,7 @@ class FinanceReview extends React.Component {
   };
 
   render() {
-    const {data, loading, invoiceColumns ,borrowColumns, pagination, searchForm, nowType} = this.state;
+    const {data, loading, invoiceColumns ,borrowColumns, pagination, searchForm, nowType, checkboxListForm} = this.state;
     const {formatMessage} = this.props.intl;
     return (
       <div>
@@ -270,6 +296,7 @@ class FinanceReview extends React.Component {
           {this.renderTabs()}
         </Tabs>
         <SearchArea searchForm={searchForm}
+                    checkboxListForm={[checkboxListForm]}
                     submitHandle={this.search}
                     clearHandle={this.clear}
                     eventHandle={this.searchEventHandle}/>
