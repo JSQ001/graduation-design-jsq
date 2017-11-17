@@ -243,7 +243,6 @@ class BudgetJournalTypeDetail extends React.Component {
       message.success('修改成功');
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
-      console.log(data);
       this.setState({
         typeData: data,
         updateState: true,
@@ -255,7 +254,7 @@ class BudgetJournalTypeDetail extends React.Component {
   };
 
   render(){
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
@@ -273,7 +272,7 @@ class BudgetJournalTypeDetail extends React.Component {
           </div>
         </div>
         <Table columns={tabsData[nowStatus].columns}
-               dataSource={newData.concat(data)}
+               dataSource={data}
                pagination={pagination}
                loading={loading}
                bordered
