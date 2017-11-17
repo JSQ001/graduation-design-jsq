@@ -23,9 +23,9 @@ class StrategyControlDetail extends React.Component {
       infoList: [
         {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
         {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
-        {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005},
+        {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005, event: 'controlMethod'},
         {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
-        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true},
+        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true, disabled: false},
         {type: 'input', label: '事件：', id: 'expWfEvent'},
       ],
       infoData: {},
@@ -70,12 +70,8 @@ class StrategyControlDetail extends React.Component {
   getBasicInfo() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((response) => {
       if(response.status==200) {
-        this.setState({
-          infoData: response.data
-        })
+        this.setState({ infoData: response.data })
       }
-    }).catch((e) => {
-
     })
   }
 
@@ -140,6 +136,7 @@ class StrategyControlDetail extends React.Component {
     params.id = this.state.strategyControlId;
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlMethod || !params.messageCode || !params.detailName) return;
+    params.controlMethod === 'NO_MESSAGE' && (params.messageCode = null);
     this.setState({ baseInfoLoading: true }, () => {
       httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
         if(response.status === 200) {
@@ -184,6 +181,19 @@ class StrategyControlDetail extends React.Component {
     this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
+  //处理修改基本信息
+  eventHandle = (e) => {
+    console.log(e);
+    let infoList = this.state.infoList;
+    infoList.map((item) => {
+      if (item.id === 'messageCode') {
+        item.disabled = e === 'NO_MESSAGE' ? true : false
+        item.isRequired = e === 'NO_MESSAGE' ? false : true
+      }
+    });
+    this.setState({ infoList })
+  };
+
   render() {
     const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, baseInfoLoading, newParams, isNew } = this.state;
     return (
@@ -192,6 +202,7 @@ class StrategyControlDetail extends React.Component {
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
                    updateState={updateState}
+                   eventHandle={this.eventHandle}
                    loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>

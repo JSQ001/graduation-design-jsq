@@ -6,6 +6,9 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
 
+import config from 'config'
+import httpFetch from "share/httpFetch";
+
 import Upload from 'components/upload'
 
 class NewContract extends React.Component{
@@ -16,6 +19,7 @@ class NewContract extends React.Component{
       user: {},
       partnerCategoryOptions: [], //合同方类型选项
       currencyOptions: [], //币种
+      companyIdOptions: [], //公司
     }
   }
 
@@ -28,6 +32,12 @@ class NewContract extends React.Component{
     this.service.getCurrencyList().then((res) => {  //币种
       let currencyOptions = res.data;
       this.setState({ currencyOptions })
+    });
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
+      httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
+        let companyIdOptions = res.data;
+        this.setState({ companyIdOptions })
+      })
     })
   }
 
@@ -46,7 +56,7 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user, partnerCategoryOptions, currencyOptions } = this.state;
+    const { loading, user, partnerCategoryOptions, currencyOptions, companyIdOptions } = this.state;
     return (
       <div className="new-contract" style={{marginBottom:'80px'}}>
         <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
@@ -95,7 +105,9 @@ class NewContract extends React.Component{
                     }],
                   })(
                     <Select placeholder="请选择">
-
+                      {companyIdOptions.map((option) => {
+                        return <Option key={option.companyOID}>{option.legalEntityName}</Option>
+                      })}
                     </Select>
                   )}
                 </FormItem>

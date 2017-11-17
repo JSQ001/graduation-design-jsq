@@ -12,6 +12,7 @@ class MyContract extends React.Component{
     super(props);
     this.state = {
       loading: false,
+      setOfBooksId: null,
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'contractName', label: '合同名称'},
@@ -54,7 +55,18 @@ class MyContract extends React.Component{
   }
 
   componentWillMount() {
-    this.getList()
+    let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
+    httpFetch.get(url).then((res) => {
+      if (res.status === 200) {
+        this.setState({ setOfBooksId: res.data[0].setOfBooksId }, () => {
+          this.getList();
+          httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.state.setOfBooksId}`).then((res) => {  //公司
+            // let currencyOptions = res.data;
+            // this.setState({ currencyOptions })
+          })
+        })
+      }
+    })
   }
 
   getList = () => {

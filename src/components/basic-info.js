@@ -157,8 +157,8 @@ class BasicInfo extends React.Component{
     this.setState({ cardShow: true })
   };
 
-  handelEvent=(event,e)=>{
-    this.props.eventHandle(event,e);
+  handelEvent = (e, event) => {
+    this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
   };
 
   render() {
