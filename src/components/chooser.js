@@ -40,12 +40,12 @@ class Chooser extends React.Component {
             value: item
           })
         });
-        this.onChange(nextProps.value);
+        // this.onChange(nextProps.value);
         this.setState({ value: values });
       }
     }
     if((!nextProps.value && this.state.value.length > 0) || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
-      this.onChange([]);
+      // this.onChange([]);
       this.setState({ value: [] })
     }
   };
@@ -69,9 +69,8 @@ class Chooser extends React.Component {
         listSelectedData.push(value.value)
       });
     }
-    this.setState({
-      showListSelector: true,
-      listSelectedData
+    this.setState({ listSelectedData }, () => {
+      this.setState({  showListSelector: true })
     })
   };
 

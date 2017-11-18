@@ -29,6 +29,7 @@ class BudgetBalanceResult extends React.Component {
         {title: '保留额', dataIndex: 'expReserveAmount', render: (expReserveAmount, record) => expReserveAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'R')}>{this.filterMoney(expReserveAmount)}</a> : this.filterMoney(expReserveAmount)},
         {title: '发生额', dataIndex: 'expUsedAmount', render: (expUsedAmount, record) => expUsedAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'U')}>{this.filterMoney(expUsedAmount)}</a> : this.filterMoney(expUsedAmount)},
         {title: '可用额', dataIndex: 'expAvailableAmount', render: expAvailableAmount => this.filterMoney(expAvailableAmount)},
+        {title: '预算进度', dataIndex: 'schedule'},
         {title: '部门', dataIndex: 'unitName'},
         {title: '部门组', dataIndex: 'unitGroupName'},
         {title: '员工', dataIndex: 'employeeName'},
@@ -87,6 +88,7 @@ class BudgetBalanceResult extends React.Component {
       if(res.data){
         data = res.data.queryResultList.map((item, index) => {
           item.key = this.state.page * this.state.pageSize + index;
+          item.schedule = item.bgtAmount === 0 ? 0 : (item.expReserveAmount + item.expUsedAmount) / item.bgtAmount;
           return item;
         });
         total = res.data.queryResultCurrencyList

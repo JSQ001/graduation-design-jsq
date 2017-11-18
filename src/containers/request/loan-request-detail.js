@@ -8,7 +8,7 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 import 'styles/request/loan-request-detail.scss'
 
-import { Tabs, Icon, Spin, message, Row, Col, Timeline } from 'antd'
+import { Tabs, Icon, Spin, message, Row, Col, Timeline, Button, Table } from 'antd'
 const TabPane = Tabs.TabPane;
 
 class LoanRequestDetail extends React.Component{
@@ -26,7 +26,15 @@ class LoanRequestDetail extends React.Component{
       topLoading: true,
       bottomLoading: true,
       fields: [],
-      approvalHistorys: []
+      approvalHistorys: [],
+      repaymentList: [],
+      repaymentColumns: [
+        {title: '日期', dataIndex: 'createDate'},
+        {title: '还款单号', dataIndex: 'businessCode'},
+        {title: '还款方式', dataIndex: 'type'},
+        {title: '币种', dataIndex: 'curreny'},
+        {title: '状态', dataIndex: 'status'},
+      ]
     }
   }
 
@@ -62,11 +70,12 @@ class LoanRequestDetail extends React.Component{
     httpFetch.get(`${config.baseUrl}/api/loan/application/${this.props.params.id}`).then(res => {
       this.setState({ form: res.data }, () => {
         res.data.custFormValues && this.getFieldsValue();
+        res.data.loanApplication && res.data.loanApplication.repaymentList && this.setState({ repaymentList: res.data.loanApplication.repaymentList })
       });
       httpFetch.get(`${config.baseUrl}/api/users/oids?userOIDs=${res.data.applicantOID}`).then(applicantRes => {
         if(applicantRes.data && applicantRes.data.length > 0){
           this.setState({ applicant: applicantRes.data[0] }, () => {
-            this.getHistoryStatus()
+            this.getApprovalStatus()
           });
         }
         this.setState({ topLoading: false });
@@ -80,7 +89,7 @@ class LoanRequestDetail extends React.Component{
     })
   }
 
-  getHistoryStatus = () => {
+  getApprovalStatus = () => {
     const { approvalHistorys } = this.state.form;
     approvalHistorys.map(history => {
       let operation = history.operation;
@@ -190,7 +199,7 @@ class LoanRequestDetail extends React.Component{
   };
 
   render(){
-    const { form, applicant, topLoading, bottomLoading, fields, approvalHistorys } = this.state;
+    const { form, applicant, topLoading, bottomLoading, fields, approvalHistorys, repaymentList, repaymentColumns } = this.state;
     const writeoffArtificialDTO = this.state.form.writeoffArtificialDTO ? this.state.form.writeoffArtificialDTO : {hasWriteoffAmount: 0, stayWriteoffAmount: 0};
     return(
       <div className="loan-request-detail background-transparent">
@@ -232,8 +241,8 @@ class LoanRequestDetail extends React.Component{
               </Spin>
             </div>
           </TabPane>
-          <TabPane tab="审批历史" key="history">
-            <div className="tab-container history-tab">
+          <TabPane tab="审批历史" key="approval">
+            <div className="tab-container approval-tab">
               <h3 className="header-title" style={{ fontSize: 16 }}>审批历史</h3>
               <Spin spinning={topLoading}>
                 <Timeline>
@@ -249,6 +258,16 @@ class LoanRequestDetail extends React.Component{
                     )
                   })}
                 </Timeline>
+              </Spin>
+            </div>
+          </TabPane>
+          <TabPane tab="还款历史" key="history">
+            <div className="tab-container history-tab">
+              <h3 className="header-title" style={{ fontSize: 16 }}>还款历史</h3>
+              <Spin spinning={topLoading}>
+                {writeoffArtificialDTO.stayWriteoffAmount > 0 ? <Button type="primary">去还款</Button> : null}
+                {/*<Table dataSource={repaymentList}*/}
+                       {/*columns={}/>*/}
               </Spin>
             </div>
           </TabPane>
