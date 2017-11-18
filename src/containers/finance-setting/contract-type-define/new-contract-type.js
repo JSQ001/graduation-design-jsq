@@ -28,7 +28,7 @@ class NewContractType extends React.Component{
         defaultSetOfBooks: res.data[0].setOfBooksId
       })
     });
-    this.getSystemValueList(2019).then(res => { //合同大类
+    this.getSystemValueList(2202).then(res => { //合同大类
       let contractCategory = res.data.values;
       this.setState({ contractCategory })
     });

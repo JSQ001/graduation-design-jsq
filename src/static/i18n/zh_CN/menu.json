@@ -82,5 +82,11 @@
   "menu.new-department-group": "新建部门组",
   "menu.department-group-detail": "部门组详情",
   "menu.contract-type-define": "合同类型定义",
-  "menu.company-distribution": "公司分配"
+  "menu.company-distribution": "公司分配",
+  "menu.approve": "审批",
+  "menu.approve-contract": "合同",
+  "menu.contract": "合同",
+  "menu.my-contract": "我的合同",
+  "menu.new-contract": "合同创建",
+  "menu.contract-detail": "合同详情"
 }
