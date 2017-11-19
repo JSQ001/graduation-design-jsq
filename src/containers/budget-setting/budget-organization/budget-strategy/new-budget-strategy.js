@@ -27,16 +27,16 @@ class NewBudgetStrategy extends React.Component {
         this.setState({loading: true});
         values.organizationId = this.props.params.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({loading: false});
-            message.success('操作成功');
+            message.success('新建成功');
             this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', res.data.id));
           }
         }).catch((e)=>{
-          if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-          }
           this.setState({loading: false});
+          if(e.response){
+            message.error(`新建失败, ${e.response.data.message}`);
+          }
         })
       }
     });
@@ -50,7 +50,7 @@ class NewBudgetStrategy extends React.Component {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
     }))
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;

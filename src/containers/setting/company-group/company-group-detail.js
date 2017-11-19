@@ -29,7 +29,7 @@ class CompanyGroupDetail extends React.Component{
       data: [],
       edit: false,
       lov: {
-        type: "company_group_lov",
+        type: "company",
         visible: false,
         listSelectedData:{}
       },
