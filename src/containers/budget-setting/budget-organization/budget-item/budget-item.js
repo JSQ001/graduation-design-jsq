@@ -84,12 +84,7 @@ class BudgetItem extends React.Component {
         {          /*备注*/
           title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description', width: "10%",
           render: description => (
-            <span>
-              {description ?
-                <Popover content={description}>
-                {description}
-              </Popover> : '-'}
-            </span>)
+            <span>{description ? <Popover content={description}>{description} </Popover> : '-'} </span>)
         },
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}),

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
+import { Form, Input, Switch, Button, Icon, Checkbox, message, Select, InputNumber } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import httpFetch from 'share/httpFetch'

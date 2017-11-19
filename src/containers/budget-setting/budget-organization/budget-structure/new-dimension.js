@@ -16,6 +16,7 @@ const Option = Select.Option;
 class NewDimension extends React.Component{
   constructor(props) {
     super(props);
+    this.flag = false
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
@@ -63,10 +64,15 @@ class NewDimension extends React.Component{
       if (!err) {
         this.setState({loading: true});
         console.log(values)
-        values.dimensionId = values.dimensionCode[0].costCenterOID;
+
+        values.dimensionId = values.dimensionCode[0].id;
         values.structureId = this.props.params.id;
-        values.defaultDimValueId = values.defaultDimensionCode[0].costCenterOID
-        httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
+        let value = this.props.form.getFieldValue("defaultDimensionCode")
+        console.log(value)
+       /* if(values.defaultDimensionCode.length>0){
+          values.defaultDimValueId = values.defaultDimensionCode[0].id;
+        }*/
+      /*  httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
           if(res.status == 200){
@@ -79,12 +85,13 @@ class NewDimension extends React.Component{
           }
           this.setState({loading: false});
         })
-      }
+     */ }
     });
   };
 
   onCancel = () =>{
     this.props.form.resetFields();
+    this.props.form.setFieldsValue({"dimensionCode":[]});
     this.setState({
       defaultDimension: [],
       dimensionCode: []
@@ -100,13 +107,15 @@ class NewDimension extends React.Component{
 
   handleDimensionCode = (value)=>{
     console.log(value)
-    let selectorItem = this.state.selectorItem;
-    selectorItem.url = `${config.baseUrl}/api/cost/centers/${value[0].costCenterOID}`;
-    this.setState({
-      dimensionCode: value,
-      selectorItem
-    });
-    console.log(selectorItem)
+    if(value.length>0){
+      this.flag = true;
+      let selectorItem = this.state.selectorItem;
+      selectorItem.url = `${config.baseUrl}/api/my/cost/center/items/${value[0].costCenterOID}`;
+      this.setState({
+        dimensionCode: value,
+        selectorItem
+      });
+    }
   };
 
   handleDimensionValue = (value)=>{
@@ -147,7 +156,6 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="维度代码:">
                 {getFieldDecorator('dimensionCode', {
-                  initialValue: dimensionCode,
                   rules: [{
                    required: true, message: formatMessage({id:"common.please.select"})
                   },{
@@ -161,7 +169,7 @@ class NewDimension extends React.Component{
                   placeholder={ formatMessage({id:"common.please.enter"}) }
                   type={"select_dimension"}
                   single={true}
-                  labelKey="name"
+                  labelKey="code"
                   valueKey="code"
                   onChange={this.handleDimensionCode}/>)}
               </FormItem>
@@ -216,19 +224,45 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="默认维值代码:">
                 {getFieldDecorator('defaultDimensionCode', {
-                  initialValue: defaultDimension,
-                  rules: [{
-                    required: true, message: formatMessage({id:"common.please.select"})
-                  }],
+                  rules: [
+                    {
+                      validator:(item,value,callback)=>{
+                        console.log(value)
+                        console.log(dimensionCode)
+
+                        callback()
+                      }
+                    }],
                 })(
+                  <div>
+                    {
+                      typeof this.props.form.getFieldValue("dimensionCode") === 'undefined' ?
+                        <Input/>
+                        :
+                        <Chooser
+                          placeholder={formatMessage({id:"common.please.select"})}
+                          type={"select_dimensionValue"}
+                          single={true}
+                          labelKey="code"
+                          valueKey="code"
+                          selectorItem={selectorItem}
+                          onChange={this.handleDimensionValue}/>
+                    }
+                  </div>
+                  /*dimensionCode.length===0 ?
+                    <Input placeholder={formatMessage({id:"common.please.select"})}/>
+                    :*/
+                /*  this.flag ?
                   <Chooser
                     placeholder={formatMessage({id:"common.please.select"})}
                     type={"select_dimensionValue"}
                     single={true}
-                    labelKey="name"
+                    labelKey="code"
                     valueKey="code"
                     selectorItem={selectorItem}
                     onChange={this.handleDimensionValue}/>
+                    :
+                    <Input/>*/
                 )}
               </FormItem>
             </Col>
