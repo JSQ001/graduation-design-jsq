@@ -22,6 +22,8 @@ import financialManagement from 'share/routes/normal/finacial-management'  //财
 import budgetSetting from 'share/routes/normal/budget-setting'  //预算设置
 import budget from 'share/routes/normal/budget'  //预算
 import pay from 'share/routes/normal/pay'  //支付
+import contract from 'share/routes/normal/contract'  //合同
+import approve from 'share/routes/normal/approve'  //审批
 
 //管理员模式下菜单
 import dashboardAdmin from 'share/routes/admin/dashboard-admin'  //管理员仪表盘
@@ -52,6 +54,8 @@ const menu = [
   budgetSetting,  //预算设置
   budget,  //预算
   pay,  //支付
+  contract, //合同
+  approve, //审批
   /** 以下是管理员模式下的菜单 **/
   dashboardAdmin,  //管理员仪表盘
   setting,  //基础设置

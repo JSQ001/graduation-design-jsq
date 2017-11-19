@@ -28,7 +28,7 @@ class ContractTypeDefine extends React.Component{
       columns : [
         {title: '合同类型代码', dataIndex: 'contractTypeCode'},
         {title: '合同类型名称', dataIndex: 'contractTypeName'},
-        {title: '合同大类', dataIndex: 'contractCategory'},
+        {title: '合同大类', dataIndex: 'contractCategoryName'},
         {title: '账套', dataIndex: 'setOfBooksId'},
         {title: '状态', dataIndex: 'isEnabled',
           render: status => <Badge status={status ? 'success' : 'error'} text={status ? '启用' : '禁用'} />},
