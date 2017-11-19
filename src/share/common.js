@@ -118,6 +118,8 @@ Date.prototype.format = function (fmt) {
  * 2109 付款状态
  * 2110 退款状态
  * 2111 支付日志操作类型
+ * 2201 合同状态
+ * 2202 合同大类
  * @param code 值列表代码
  */
 React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config.baseUrl}/api/custom/enumeration/system/by/type?systemCustomEnumerationType=${code}`);
