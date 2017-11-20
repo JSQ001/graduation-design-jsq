@@ -22,7 +22,7 @@ class CodingRuleValue extends React.Component {
       pageSize: 10,
       columns: [
         {title: "顺序号", dataIndex: "sequence", width: '15%'},
-        {title: "参数名称", dataIndex: "segmentType", width: '15%'},
+        {title: "参数名称", dataIndex: "segmentTypeName", width: '15%'},
         {title: "参数值", dataIndex: "value", width: '50%'},
         {title: "状态", dataIndex: 'isEnabled', width: '10%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)},
@@ -61,6 +61,7 @@ class CodingRuleValue extends React.Component {
   componentWillMount(){
     this.getList();
     httpFetch.get(`${config.budgetUrl}/api/budget/coding/rules/${this.props.params.ruleId}`).then(res => {
+      res.data.resetFrequence = {label: res.data.resetFrequenceName, value: res.data.resetFrequence};
       this.setState({ infoData: res.data })
     })
   }
@@ -112,6 +113,7 @@ class CodingRuleValue extends React.Component {
   updateInfo = (params) => {
     this.setState({editing: true});
     httpFetch.put(`${config.budgetUrl}/api/budget/coding/rules`, Object.assign({}, this.state.infoData, params)).then(res => {
+      res.data.resetFrequence = {label: res.data.resetFrequenceName, value: res.data.resetFrequence};
       this.setState({updateState: true, editing: false, infoData: res.data});
       message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: ''}));  //保存成功
     }).catch((e)=> {

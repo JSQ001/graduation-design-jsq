@@ -24,6 +24,7 @@ class NewDimension extends React.Component{
       loading: false,
       dimensionCode: [],
       defaultDimension: [],
+      dimensionValue:{},
       selectorItem:{
         title: '选择默认维值',
         url: `${config.baseUrl}/api/cost/center/item/`,
@@ -58,20 +59,24 @@ class NewDimension extends React.Component{
   }
 
   handleSave = (e) =>{
+    const { defaultDimension} = this.state;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
         console.log(values)
-        values.dimensionId = values.dimensionCode[0].costCenterOID;
+        values.dimensionId = values.dimensionCode[0].id;
         values.structureId = this.props.params.id;
-        values.defaultDimValueId = values.defaultDimensionCode[0].costCenterOID
-        httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
+        if(defaultDimension.length>0){
+          values.defaultDimValueId = defaultDimension[0].id;
+        }
+
+        httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
-            message.success('操作成功');
+            message.success('保存成功');
           }
         }).catch((e)=>{
           if(e.response){
@@ -85,6 +90,7 @@ class NewDimension extends React.Component{
 
   onCancel = () =>{
     this.props.form.resetFields();
+    this.props.form.setFieldsValue({"dimensionCode":[]});
     this.setState({
       defaultDimension: [],
       dimensionCode: []
@@ -100,13 +106,17 @@ class NewDimension extends React.Component{
 
   handleDimensionCode = (value)=>{
     console.log(value)
-    let selectorItem = this.state.selectorItem;
-    selectorItem.url = `${config.baseUrl}/api/cost/centers/${value[0].costCenterOID}`;
-    this.setState({
-      dimensionCode: value,
-      selectorItem
-    });
-    console.log(selectorItem)
+    if(value.length>0){
+      let selectorItem = this.state.selectorItem;
+      selectorItem.url = `${config.baseUrl}/api/my/cost/center/items/${value[0].costCenterOID}`;
+
+      this.setState({
+        dimensionCode: value,
+        selectorItem,
+        dimensionValue:{},
+        defaultDimension: []
+      });
+    }
   };
 
   handleDimensionValue = (value)=>{
@@ -116,10 +126,21 @@ class NewDimension extends React.Component{
     })
   };
 
+  //没有选择维度时，提示
+  validateValue = ()=>{
+    let dimensionValue = {
+      help: "请先选择维度代码",
+      validateStatus: 'warning'
+    };
+    this.setState({
+      dimensionValue
+    })
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { isEnabled, dimensionCode, defaultDimension, layoutPosition, selectorItem } = this.state;
+    const {dimensionValue, isEnabled, dimensionCode, defaultDimension, layoutPosition, selectorItem } = this.state;
     const formItemLayout = {
       labelCol: { span: 9 },
       wrapperCol: { span: 14, offset: 1 },
@@ -147,7 +168,6 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="维度代码:">
                 {getFieldDecorator('dimensionCode', {
-                  initialValue: dimensionCode,
                   rules: [{
                    required: true, message: formatMessage({id:"common.please.select"})
                   },{
@@ -161,7 +181,7 @@ class NewDimension extends React.Component{
                   placeholder={ formatMessage({id:"common.please.enter"}) }
                   type={"select_dimension"}
                   single={true}
-                  labelKey="name"
+                  labelKey="code"
                   valueKey="code"
                   onChange={this.handleDimensionCode}/>)}
               </FormItem>
@@ -214,21 +234,36 @@ class NewDimension extends React.Component{
           </Row>
           <Row gutter={18}>
             <Col span={18}>
-              <FormItem {...formItemLayout} label="默认维值代码:">
+              <FormItem {...formItemLayout} label="默认维值代码:"
+                help={dimensionValue.help}
+                validateStatus={dimensionValue.validateStatus}>
                 {getFieldDecorator('defaultDimensionCode', {
-                  initialValue: defaultDimension,
-                  rules: [{
-                    required: true, message: formatMessage({id:"common.please.select"})
-                  }],
+                  rules: [
+                    {
+                      validator:(item,value,callback)=>{
+                        console.log(value)
+                        console.log(dimensionCode)
+
+                        callback()
+                      }
+                    }],
                 })(
-                  <Chooser
-                    placeholder={formatMessage({id:"common.please.select"})}
-                    type={"select_dimensionValue"}
-                    single={true}
-                    labelKey="name"
-                    valueKey="code"
-                    selectorItem={selectorItem}
-                    onChange={this.handleDimensionValue}/>
+                  <div>
+                    {
+                      typeof this.props.form.getFieldValue("dimensionCode") === 'undefined' ?
+                        <Input onFocus={this.validateValue} placeholder={formatMessage({id:"common.please.select"})}/>
+                        :
+                        <Chooser
+                          placeholder={formatMessage({id:"common.please.select"})}
+                          type={"select_dimensionValue"}
+                          single={true}
+                          labelKey="code"
+                          valueKey="code"
+                          selectorItem={selectorItem}
+                          value={defaultDimension}
+                          onChange={this.handleDimensionValue}/>
+                    }
+                  </div>
                 )}
               </FormItem>
             </Col>

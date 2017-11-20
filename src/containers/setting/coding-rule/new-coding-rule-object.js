@@ -60,7 +60,7 @@ class NewCodingRuleObject extends React.Component {
       <div>
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="单据类型">
-            {getFieldDecorator('documentCategoryCode', {
+            {getFieldDecorator('documentTypeCode', {
               rules: [{
                 required: true,
                 message: formatMessage({id: 'common.please.select'})  //请选择
@@ -80,7 +80,7 @@ class NewCodingRuleObject extends React.Component {
                 message: formatMessage({id: 'common.please.select'}),  //请选择
               }]
             })(
-              <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode"/>
+              <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode" listExtraParams={{setOfBooksId: this.props.company.setOfBooksId}}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
@@ -103,8 +103,10 @@ class NewCodingRuleObject extends React.Component {
 
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    company: state.login.company
+  }
 }
 
 NewCodingRuleObject.contextTypes = {

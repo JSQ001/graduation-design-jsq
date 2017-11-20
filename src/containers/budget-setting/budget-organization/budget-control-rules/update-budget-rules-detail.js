@@ -410,6 +410,7 @@ class UpdateBudgetRulesDetail extends React.Component{
             validateStatus={validateStatusMap.ruleParameter}
             help={helpMap.ruleParameter}>
             {getFieldDecorator('ruleParameter', {
+              initialValue: ruleParamDetail.ruleParameter,
               rules: [{
                 required: true,
                 message: formatMessage({id:"common.please.select"})
@@ -438,7 +439,7 @@ class UpdateBudgetRulesDetail extends React.Component{
                   }
                 }
               ],
-              initialValue: ruleParamDetail.ruleParameter
+
             })(
               <Select
                 onFocus={this.handleSelectParam}
