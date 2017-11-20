@@ -1,9 +1,0 @@
-{
-  "helios": "helios",
-  "login.username": "Username",
-  "login.password": "Password",
-  "login.forget": "Find password",
-  "login.wrong": "Wrong username or password, please check and enter again :)",
-  "login.error": "Oops, service error occurs, please try it later :(",
-  "main.welcome": "Welcome，{name}"
-}
