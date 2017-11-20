@@ -16,7 +16,6 @@ const Option = Select.Option;
 class NewDimension extends React.Component{
   constructor(props) {
     super(props);
-    this.flag = false
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
@@ -25,6 +24,7 @@ class NewDimension extends React.Component{
       loading: false,
       dimensionCode: [],
       defaultDimension: [],
+      dimensionValue:{},
       selectorItem:{
         title: '选择默认维值',
         url: `${config.baseUrl}/api/cost/center/item/`,
@@ -59,25 +59,24 @@ class NewDimension extends React.Component{
   }
 
   handleSave = (e) =>{
+    const { defaultDimension} = this.state;
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
         console.log(values)
-
         values.dimensionId = values.dimensionCode[0].id;
         values.structureId = this.props.params.id;
-        let value = this.props.form.getFieldValue("defaultDimensionCode")
-        console.log(value)
-       /* if(values.defaultDimensionCode.length>0){
-          values.defaultDimValueId = values.defaultDimensionCode[0].id;
-        }*/
-      /*  httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
+        if(defaultDimension.length>0){
+          values.defaultDimValueId = defaultDimension[0].id;
+        }
+
+        httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
-            message.success('操作成功');
+            message.success('保存成功');
           }
         }).catch((e)=>{
           if(e.response){
@@ -85,7 +84,7 @@ class NewDimension extends React.Component{
           }
           this.setState({loading: false});
         })
-     */ }
+      }
     });
   };
 
@@ -108,12 +107,14 @@ class NewDimension extends React.Component{
   handleDimensionCode = (value)=>{
     console.log(value)
     if(value.length>0){
-      this.flag = true;
       let selectorItem = this.state.selectorItem;
       selectorItem.url = `${config.baseUrl}/api/my/cost/center/items/${value[0].costCenterOID}`;
+
       this.setState({
         dimensionCode: value,
-        selectorItem
+        selectorItem,
+        dimensionValue:{},
+        defaultDimension: []
       });
     }
   };
@@ -125,10 +126,21 @@ class NewDimension extends React.Component{
     })
   };
 
+  //没有选择维度时，提示
+  validateValue = ()=>{
+    let dimensionValue = {
+      help: "请先选择维度代码",
+      validateStatus: 'warning'
+    };
+    this.setState({
+      dimensionValue
+    })
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { isEnabled, dimensionCode, defaultDimension, layoutPosition, selectorItem } = this.state;
+    const {dimensionValue, isEnabled, dimensionCode, defaultDimension, layoutPosition, selectorItem } = this.state;
     const formItemLayout = {
       labelCol: { span: 9 },
       wrapperCol: { span: 14, offset: 1 },
@@ -222,7 +234,9 @@ class NewDimension extends React.Component{
           </Row>
           <Row gutter={18}>
             <Col span={18}>
-              <FormItem {...formItemLayout} label="默认维值代码:">
+              <FormItem {...formItemLayout} label="默认维值代码:"
+                help={dimensionValue.help}
+                validateStatus={dimensionValue.validateStatus}>
                 {getFieldDecorator('defaultDimensionCode', {
                   rules: [
                     {
@@ -237,7 +251,7 @@ class NewDimension extends React.Component{
                   <div>
                     {
                       typeof this.props.form.getFieldValue("dimensionCode") === 'undefined' ?
-                        <Input/>
+                        <Input onFocus={this.validateValue} placeholder={formatMessage({id:"common.please.select"})}/>
                         :
                         <Chooser
                           placeholder={formatMessage({id:"common.please.select"})}
@@ -246,23 +260,10 @@ class NewDimension extends React.Component{
                           labelKey="code"
                           valueKey="code"
                           selectorItem={selectorItem}
+                          value={defaultDimension}
                           onChange={this.handleDimensionValue}/>
                     }
                   </div>
-                  /*dimensionCode.length===0 ?
-                    <Input placeholder={formatMessage({id:"common.please.select"})}/>
-                    :*/
-                /*  this.flag ?
-                  <Chooser
-                    placeholder={formatMessage({id:"common.please.select"})}
-                    type={"select_dimensionValue"}
-                    single={true}
-                    labelKey="code"
-                    valueKey="code"
-                    selectorItem={selectorItem}
-                    onChange={this.handleDimensionValue}/>
-                    :
-                    <Input/>*/
                 )}
               </FormItem>
             </Col>

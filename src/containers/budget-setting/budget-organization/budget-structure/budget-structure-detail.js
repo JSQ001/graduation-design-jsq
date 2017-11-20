@@ -14,7 +14,7 @@ import { Form, Button, Select, Input, Switch, Icon, Badge, Tabs, Checkbox, Table
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
 import SlideFrame from "components/slide-frame";
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
-import UpdateDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
+import UpdateDimension from 'containers/budget-setting/budget-organization/budget-structure/update-dimension'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
@@ -144,7 +144,6 @@ class BudgetStructureDetail extends React.Component{
 
     //获取某预算表某行的数据
     httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
-      console.log(response)
       let periodStrategy = {label:response.data.periodStrategyName,value:response.data.periodStrategy};
       response.data.periodStrategy = periodStrategy;
       if(response.status === 200){
@@ -233,7 +232,6 @@ class BudgetStructureDetail extends React.Component{
 
   getList = ()=>{
     let params = this.state.params;
-    console.log(params)
     this.state.label === "company" ?
       httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/companies/query?structureId=${this.props.params.structureId}`).then((response)=>{
         if(response.status === 200) {
@@ -252,7 +250,6 @@ class BudgetStructureDetail extends React.Component{
       :
       httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}`).then((response)=>{
         if(response.status === 200){
-          console.log(response.data)
           response.data.map((item)=>{
             item.key = item.id
           });
@@ -288,7 +285,12 @@ class BudgetStructureDetail extends React.Component{
 
   //点击行，进入维度编辑页面
   handleRowClick = (record, index, event) =>{
-
+    console.log(record)
+    let defaultDimensionCode = [];
+    let defaultDimensionValue = [];
+    defaultDimensionCode.push({ id: record.dimensionId, code: record.defaultDimValueCode,key: record.dimensionId});
+    defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
+    record.defaultDimensionCode = defaultDimensionCode;
     this.setState({
       showSlideFrameUpdate: true,
       dimension:record
@@ -305,7 +307,7 @@ class BudgetStructureDetail extends React.Component{
   handleCloseSlideUpdate = (params) => {
     console.log(params)
     this.setState({
-      showSlideFrame: false,
+      showSlideFrameUpdate: false,
       loading: typeof params === 'undefined' ? false : true
     });
     if(params) {
@@ -352,7 +354,7 @@ class BudgetStructureDetail extends React.Component{
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { infoList, flag, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
+    const { infoList, dimension, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
 
     return(
 
@@ -394,7 +396,8 @@ class BudgetStructureDetail extends React.Component{
                     show={showSlideFrameUpdate}
                     content={UpdateDimension}
                     afterClose={this.handleCloseSlideUpdate}
-                    onClose={() => this.showSlideUpdate(false)}/>
+                    onClose={() => this.showSlideUpdate(false)}
+                    params={dimension}/>
 
         <ListSelector type={lov.type}
                       visible={lov.visible}
