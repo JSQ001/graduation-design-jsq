@@ -50,7 +50,7 @@ class SlideFrame extends React.Component{
         className: 'slide-frame animated hide'
       });
       this.props.afterClose(params);
-    }, 500)
+    }, 501)
   };
 
   /**
