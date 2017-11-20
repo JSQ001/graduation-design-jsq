@@ -196,6 +196,8 @@ class CompanyGroupDetail extends React.Component{
   //处理公司弹框点击ok,添加公司
   handleListOk = (result) => {
     let company = [];
+    console.log(result.result)
+    this.showListSelector(false)
   };
 
   render(){
@@ -218,7 +220,7 @@ class CompanyGroupDetail extends React.Component{
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
-            <Button disabled onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            <Button disabled onClick={()=>this.showListSelector(false)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
           </div>
         </div>
         <Table

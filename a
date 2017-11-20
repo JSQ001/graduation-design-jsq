@@ -1,0 +1,380 @@
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{0} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{1} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{2} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{3} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (start): checkout refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{4} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{5} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (start): checkout refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{6} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from 004529aebfce05b43282ffcb6e49674d8d183a48 to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{7} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: reset: moving to 004529aebfce05b43282ffcb6e49674d8d183a48
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc[m
+Reflog: HEAD@{8} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: reset: moving to 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:00:23 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{9} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to 004529aebfce05b43282ffcb6e49674d8d183a48
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{10} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{11} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (start): checkout refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{12} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{13} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (start): checkout refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{14} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{15} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{16} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from 004529aebfce05b43282ffcb6e49674d8d183a48 to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{17} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to 004529aebfce05b43282ffcb6e49674d8d183a48
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{18} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (finish): returning to refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{19} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: rebase -i (start): checkout refs/heads/develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{20} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: reset: moving to 004529aebfce05b43282ffcb6e49674d8d183a48
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 9d75d2ee5d2934ad72dced99fb4b635a983cad86[m
+Reflog: HEAD@{21} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:00:55 2017 +0800
+
+    修改预算表bug
+
+[33mcommit 004529aebfce05b43282ffcb6e49674d8d183a48[m
+Reflog: HEAD@{22} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: pull --progress --no-stat -v --progress origin develop: Merge made by the 'recursive' strategy.
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:02:15 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+
+[33mcommit 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc[m
+Reflog: HEAD@{23} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:00:23 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 9d75d2ee5d2934ad72dced99fb4b635a983cad86[m
+Reflog: HEAD@{24} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: 修改预算表bug
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Fri Nov 17 15:00:55 2017 +0800
+
+    修改预算表bug
+
+[33mcommit 051284978d22a9197136080300252e268b28d92f[m
+Reflog: HEAD@{25} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: 修改预算表bug
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Thu Nov 16 17:49:17 2017 +0800
+
+    修改预算表bug
+
+[33mcommit 1580cbe41d52f5fe615f16b81b5d0b801bb5b9ac[m
+Reflog: HEAD@{26} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Thu Nov 16 17:14:49 2017 +0800
+
+    修改预算表bug
+
+[33mcommit 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc[m
+Reflog: HEAD@{27} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:00:23 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 1580cbe41d52f5fe615f16b81b5d0b801bb5b9ac[m
+Reflog: HEAD@{28} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: 修改预算表bug
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Thu Nov 16 17:14:49 2017 +0800
+
+    修改预算表bug
+
+[33mcommit 5b9578debc44113709f48dc269c54753c4843736[m
+Reflog: HEAD@{29} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:54:38 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc[m
+Reflog: HEAD@{30} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:00:23 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 5b9578debc44113709f48dc269c54753c4843736[m
+Reflog: HEAD@{31} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:54:38 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit d16461cfd60233a59297684a6395d6fa1bf30b4f[m
+Reflog: HEAD@{32} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: merge develop: Merge made by the 'recursive' strategy.
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:03:17 2017 +0800
+
+    Merge branch 'develop' into develop-jsq
+
+[33mcommit 4bff6e53278befadaf6e8f5d0db2966cf7c79439[m
+Reflog: HEAD@{33} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 14:52:37 2017 +0800
+
+    修改chooser
+
+[33mcommit 7e69dffaf16bdb0effdcc71935f2d62d218fb0fc[m
+Reflog: HEAD@{34} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit (merge): Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 15:00:23 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop
+    
+    # Conflicts:
+    #       src/share/selectorData.js
+
+[33mcommit 45387ac1de8fa1a974a2b6602d00eaedcd2c7e08[m
+Reflog: HEAD@{35} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:48:24 2017 +0800
+
+    恢复优璇的文件
+
+[33mcommit 4bff6e53278befadaf6e8f5d0db2966cf7c79439[m
+Reflog: HEAD@{36} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 14:52:37 2017 +0800
+
+    修改chooser
+
+[33mcommit 45387ac1de8fa1a974a2b6602d00eaedcd2c7e08[m
+Reflog: HEAD@{37} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:48:24 2017 +0800
+
+    恢复优璇的文件
+
+[33mcommit 4bff6e53278befadaf6e8f5d0db2966cf7c79439[m
+Reflog: HEAD@{38} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: 修改chooser
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 14:52:37 2017 +0800
+
+    修改chooser
+
+[33mcommit 96db5e584426b87fae967694fa5530134d7a80d4[m
+Reflog: HEAD@{39} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:55:25 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop-jsq
+    
+    # Conflicts:
+    #       src/containers/budget/budget-journal/new-budget-journal-detail.js
+    #       src/share/selectorData.js
+
+[33mcommit 45387ac1de8fa1a974a2b6602d00eaedcd2c7e08[m
+Reflog: HEAD@{40} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop-jsq to develop
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:48:24 2017 +0800
+
+    恢复优璇的文件
+
+[33mcommit 96db5e584426b87fae967694fa5530134d7a80d4[m
+Reflog: HEAD@{41} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit (merge): Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:55:25 2017 +0800
+
+    Merge branch 'develop' of https://gitlab.huilianyi.com/ran.zhang/huilianyi-refactoring into develop-jsq
+    
+    # Conflicts:
+    #       src/containers/budget/budget-journal/new-budget-journal-detail.js
+    #       src/share/selectorData.js
+
+[33mcommit 187469dadaa6a67d467d05f9ae799c0a26b36fbe[m
+Reflog: HEAD@{42} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: checkout: moving from develop to develop-jsq
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:39:55 2017 +0800
+
+    恢复优璇的文件
+
+[33mcommit 45387ac1de8fa1a974a2b6602d00eaedcd2c7e08[m
+Reflog: HEAD@{43} (蒋松秋 <songqiu.jiang@hand-china.com>)
+Reflog message: commit: 恢复优璇的文件
+Author: 蒋松秋 <songqiu.jiang@hand-china.com>
+Date:   Tue Nov 14 11:48:24 2017 +0800
+
+    恢复优璇的文件
