@@ -33,11 +33,11 @@ class StrategyControlDetail extends React.Component {
       baseInfoLoading: false,
       columns: [
         {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode', render:()=>{return '公式'}},
-        {title: '控制对象', dataIndex: 'object', key: 'object'},
-        {title: '比较', dataIndex: 'range', key: 'range'},
-        {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy'},
-        {title: '方式', dataIndex: 'manner', key: 'manner'},
-        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner === '绝对额' ? value : '-'}},
+        {title: '控制对象', dataIndex: 'object', key: 'object', render: value => <span>{value.label}</span>},
+        {title: '比较', dataIndex: 'range', key: 'range', render: value => <span>{value.label}</span>},
+        {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy', render: value => <span>{value.label}</span>},
+        {title: '方式', dataIndex: 'manner', key: 'manner', render: value => <span>{value.label}</span>},
+        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner === '绝对额' ? value.label : '-'}},
         {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner === '百分比' ? value+'%' : value}},
       ],
       data: [],
@@ -69,7 +69,7 @@ class StrategyControlDetail extends React.Component {
 
   getBasicInfo() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((response) => {
-      if(response.status==200) {
+      if(response.status === 200) {
         this.setState({ infoData: response.data })
       }
     })

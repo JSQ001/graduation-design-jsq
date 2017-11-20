@@ -218,7 +218,7 @@ class NewStrategyControlDetail extends React.Component{
             })(
               <Select onChange={(value)=>{this.setState({ operatorValue:value })}} placeholder="请选择">
                 {operatorOptions.map((option)=>{
-                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                  return <Option key={option.value}>{option.messageKey}</Option>
                 })}
               </Select>
             )}
@@ -246,7 +246,7 @@ class NewStrategyControlDetail extends React.Component{
             })(
               <Select onChange={(value)=>{this.setState({ objectValue: value })}} placeholder="请选择">
                 {controlObjectOptions.map((option)=>{
-                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                  return <Option key={option.value}>{option.messageKey}</Option>
                 })}
               </Select>
             )}
@@ -261,7 +261,7 @@ class NewStrategyControlDetail extends React.Component{
             })(
               <Select onChange={(value)=>{this.setState({ rangeValue: value })}} placeholder="请选择">
                 {rangeOptions.map((option)=>{
-                  return <Option key={option.messageKey}>{option.messageKey}</Option>
+                  return <Option key={option.value}>{option.messageKey}</Option>
                 })}
               </Select>
             )}
@@ -278,7 +278,7 @@ class NewStrategyControlDetail extends React.Component{
                 })(
                   <Select onChange={(value)=>{this.setState({ mannerValue: value })}} placeholder="请选择">
                     {mannerOptions.map((option)=>{
-                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
@@ -299,7 +299,7 @@ class NewStrategyControlDetail extends React.Component{
                 })(
                   <Select onChange={this.handlePeriodStrategy} placeholder="请选择">
                     {periodStrategyOptions.map((option)=>{
-                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
