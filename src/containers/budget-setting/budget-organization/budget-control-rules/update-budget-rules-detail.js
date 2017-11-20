@@ -175,16 +175,15 @@ class UpdateBudgetRulesDetail extends React.Component{
       upperValue[paramValueMap[param.ruleParameter].codeKey] = param.parameterUpperLimit;
       parameterUpperLimit.push(upperValue);
       this.detail.parameterUpperLimit = parameterUpperLimit;
-
       this.setState({
-        ruleParamDetail: this.props.params,
+        ruleParamDetail: param,
         paramValueMap: paramValueMap,
       });
     }
   }
 
   componentWillReceiveProps(nextprops){
-   /* let { ruleParameterTypeArray, ruleParamsArray, summaryOrDetailArray, filtrateMethodArray,valueListMap, paramValueMap} = this.state;
+    let { ruleParameterTypeArray, ruleParamsArray, summaryOrDetailArray, filtrateMethodArray,valueListMap, paramValueMap} = this.state;
     let param = nextprops;
     console.log(param)
     if(typeof  param.ruleParameterType!=="undefined") {
@@ -218,10 +217,9 @@ class UpdateBudgetRulesDetail extends React.Component{
       this.detail.parameterUpperLimit = parameterUpperLimit;
 
       this.setState({
-        ruleParamDetail: this.props.params,
-        paramValueMap: paramValueMap,
+        ruleParamDetail: param,
       });
-    }*/
+    }
   }
 
 
@@ -274,6 +272,7 @@ class UpdateBudgetRulesDetail extends React.Component{
      });*/
     this.props.form.validateFieldsAndScroll((err, values) => {
       console.log(values)
+      console.log(ruleParamDetail)
       values.controlRuleId = ruleParamDetail.controlRuleId;
       values.id = ruleParamDetail.id;
       values.versionNumber = ruleParamDetail.versionNumber;
@@ -295,7 +294,8 @@ class UpdateBudgetRulesDetail extends React.Component{
           if(res.status === 200){
             message.success('操作成功');
             this.props.form.resetFields();
-            this.props.close(true);
+            this.onCancel();
+
           }
         }).catch((e)=>{
           if(e.response){
@@ -306,8 +306,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       }
     });
   };
-  handleUpdate = (values) =>{
-  };
+
   onCancel = () =>{
     this.setState({
       limitParam:{
@@ -406,6 +405,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
+   
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -543,8 +543,7 @@ class UpdateBudgetRulesDetail extends React.Component{
                 }
               ]
             })(
-              <div>
-                {typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
+                typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
                   this.detail.type === 'BGT_RULE_PARAMETER_DIM' ?
                     <Chooser
                       placeholder={formatMessage({id:"common.please.select"})}
@@ -553,7 +552,6 @@ class UpdateBudgetRulesDetail extends React.Component{
                       labelKey= 'name'
                       valueKey= 'id'
                       single={true}
-                      value={this.detail.parameterUpperLimit}
                       onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
                     />
                     :
@@ -561,14 +559,12 @@ class UpdateBudgetRulesDetail extends React.Component{
                     placeholder={formatMessage({id:"common.please.select"})}
                     type={paramValueMap[this.detail.name].listType}
                     listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
-                    labelKey={ paramValueMap[this.detail.name].codeKey}
-                    valueKey={ paramValueMap[this.detail.name].valueKey}
+                    labelKey={ paramValueMap[this.detail.name].valueKey}
+                    valueKey={ paramValueMap[this.detail.name].codeKey}
                     single={true}
-                    value={this.detail.parameterUpperLimit}
                     onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
                   />
-                }
-              </div>
+
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
@@ -610,8 +606,8 @@ class UpdateBudgetRulesDetail extends React.Component{
                     placeholder={formatMessage({id:"common.please.select"})}
                     type={ paramValueMap[this.detail.name].listType}
                     listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
-                    labelKey={ paramValueMap[this.detail.name].codeKey}
-                    valueKey={ paramValueMap[this.detail.name].valueKey}
+                    labelKey={ paramValueMap[this.detail.name].valueKey}
+                    valueKey={ paramValueMap[this.detail.name].codeKey}
                     single={true}
                     value={this.detail.parameterLowerLimit}
                     onChange={(value)=>this.handleValueChange(value,"parameterLowerLimit")}
