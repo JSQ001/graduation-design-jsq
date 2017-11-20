@@ -141,7 +141,8 @@ class NewBudgetRulesDetail extends React.Component{
       console.log(response)
       response.data.map((item)=>{
         let option = {
-          key: item.code,
+          id: item.id,
+          value: item.name,
           label: item.name
         };
         array.addIfNotExist(option)
@@ -271,7 +272,6 @@ class NewBudgetRulesDetail extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
-    console.log(ruleParamsArray)
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -309,6 +309,7 @@ class NewBudgetRulesDetail extends React.Component{
                       }
                       if(ruleParameterCode === 2017){
                         console.log(123)
+                        ruleParamsArray.splice(0,ruleParamsArray.length);
                         this.getCostCenter(ruleParamsArray);
                       }
                       else {
@@ -461,6 +462,18 @@ class NewBudgetRulesDetail extends React.Component{
             })(
               <div>
                 {typeof ruleParamDetail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
+                  ruleParamDetail.type === 'BGT_RULE_PARAMETER_DIM' ?
+                    <Chooser
+                      placeholder={formatMessage({id:"common.please.select"})}
+                      type='cost_center_item_by_id'
+                      listExtraParams= {{costCenterId:costCenterId}}
+                      labelKey= 'name'
+                      valueKey= 'id'
+                      single={true}
+                      // value={this.detail.parameterUpperLimit}
+                      onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
+                    />
+                    :
                   <Chooser
                     placeholder={formatMessage({id:"common.please.select"})}
                     type={ paramValueMap[ruleParamDetail.name].listType}

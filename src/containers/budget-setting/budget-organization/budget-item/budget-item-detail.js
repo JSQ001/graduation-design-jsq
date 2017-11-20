@@ -103,9 +103,12 @@ class BudgetItemDetail extends React.Component{
     httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
       console.log(response)
       if(response.status === 200){
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
         this.setState({
           loading: false,
-          data: response.data
+          data: response.data,
+          pagination
         })
       }
     })

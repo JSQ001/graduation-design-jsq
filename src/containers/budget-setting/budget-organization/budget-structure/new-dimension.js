@@ -80,7 +80,7 @@ class NewDimension extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -146,6 +146,7 @@ class NewDimension extends React.Component{
       wrapperCol: { span: 14, offset: 1 },
     };
     const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
+
     return (
       <div className="new-budget-scenarios">
         <Form onSubmit={this.handleSave}>
@@ -202,11 +203,12 @@ class NewDimension extends React.Component{
             <Col span={18}>
               <FormItem {...formItemLayout} label="布局位置:">
                 {getFieldDecorator('layoutPosition', {
+                  initialValue: "DOCUMENTS_LINE",
                   rules: [{
                     required: true, message:formatMessage({id:"common.please.select"})
                   }],
                 })(
-                  <Select placeholder={formatMessage({id:"common.please.select"})}>
+                  <Select disabled  placeholder={formatMessage({id:"common.please.select"})}>
                     {options}
                   </Select>
                 )}
@@ -260,7 +262,7 @@ class NewDimension extends React.Component{
                           labelKey="code"
                           valueKey="code"
                           selectorItem={selectorItem}
-                          value={defaultDimension}
+                         // value={defaultDimension}
                           onChange={this.handleDimensionValue}/>
                     }
                   </div>

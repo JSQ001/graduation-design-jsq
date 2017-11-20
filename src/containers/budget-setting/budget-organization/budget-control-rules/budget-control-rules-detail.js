@@ -126,7 +126,7 @@ class BudgetControlRulesDetail extends React.Component{
       //console.log(e)
     });
     //加载页面时，获取启用的控制策略
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
       if(response.status === 200){
         response.data.map((item)=>{
           let strategy = {

@@ -14,11 +14,12 @@ import Chooser from 'components/chooser.js'
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
 const FormItem = Form.Item;
 const Option = Select.Option;
-let detail = {};
+
 
 class UpdateBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
+    this.detail = {};
     this.state = {
       lower: true,
       upper: true,
@@ -32,6 +33,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       summaryOrDetailHelp: '',
       showParamsType: false,
       listSelectedData: [],
+      costCenterId: null,
       formItem:{
         changed: false,
         ruleParameterType: false,
@@ -52,11 +54,10 @@ class UpdateBudgetRulesDetail extends React.Component{
       paramValueMap: {},
       validateStatusMap:{},
       helpMap:{},
-      limitParam:{
-        parameterLowerLimit: true,
-        parameterUpperLimit: true,
+      defaultLimitValue:{
+        parameterLowerLimit: [],
+        parameterUpperLimit: [],
       },
-      defaultLimit:{}
     }
   }
   componentWillMount() {
@@ -135,23 +136,41 @@ class UpdateBudgetRulesDetail extends React.Component{
     this.getValueList(valueListMap.filtrateMethod, filtrateMethodArray);
     this.getValueList(valueListMap.summaryOrDetail, summaryOrDetailArray);
 
-    console.log(this.props.params)
-    if(typeof  this.props.params.ruleParameterType!=="undefined") {
+    let param = this.props.params;
+    console.log(param)
+    if(typeof  param.ruleParameterType!=="undefined") {
       this.getValueList(valueListMap[this.props.params.ruleParameterType], ruleParamsArray);
+
+      this.detail.name = param.ruleParameter;
+      this.detail.type = param.ruleParameterType;
+
+      switch (param.ruleParameterType) {
+        case 'BGT_RULE_PARAMETER_BUDGET':
+          this.detail.ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET;
+          break;
+        case 'BGT_RULE_PARAMETER_ORG':
+          this.detail.ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;
+          break;
+        case 'BGT_RULE_PARAMETER_DIM':
+          this.detail.ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;
+          break
+      }
+
+      let parameterLowerLimit = [];
+      let lowerValue = {};
+      lowerValue[paramValueMap[param.ruleParameter].codeKey] = param.parameterLowerLimit;
+      parameterLowerLimit.push(lowerValue);
+      this.detail.parameterLowerLimit = parameterLowerLimit;
+
+      let parameterUpperLimit = [];
+      let upperValue = {};
+      upperValue[paramValueMap[param.ruleParameter].codeKey] = param.parameterUpperLimit;
+      parameterUpperLimit.push(upperValue);
+      this.detail.parameterUpperLimit = parameterUpperLimit;
 
       this.setState({
         ruleParamDetail: this.props.params,
         paramValueMap: paramValueMap,
-        defaultLimit:{
-          parameterLowerLimit: this.props.params.parameterLowerLimit,
-          parameterUpperLimit: this.props.params.parameterUpperLimit
-        },
-        ruleParam: {
-          type: this.props.params.ruleParameterType,
-          name: this.props.params.ruleParameter,
-          parameterLowerLimit: this.props.params.parameterLowerLimit,
-          parameterUpperLimit: this.props.params.parameterUpperLimit
-        }
       });
     }
   }
@@ -166,6 +185,7 @@ class UpdateBudgetRulesDetail extends React.Component{
     this.getSystemValueList(code).then((response)=>{
       response.data.values.map((item)=>{
         let option = {
+          key: item.code,
           id: item.code,
           value: item.messageKey
         };
@@ -177,6 +197,25 @@ class UpdateBudgetRulesDetail extends React.Component{
     });
     return
   }
+
+  //获取成本中心
+  getCostCenter(array){
+    httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
+      console.log(response)
+      response.data.map((item)=>{
+        let option = {
+          id: item.id,
+          value: item.name,
+          label: item.name
+        };
+        array.addIfNotExist(option)
+        this.setState({
+          array
+        })
+      });
+    })
+  }
+
   handleSubmit = (e)=>{
     e.preventDefault();
     const { loading, formItem, ruleParamDetail, validateStatusMap, helpMap, defaultLimit, ruleParam, paramValueMap,} = this.state;
@@ -219,7 +258,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         console.log(23)
         values.parameterLowerLimit = ruleParamDetail.parameterLowerLimit
       }
-      if (!err) {
+     /* if (!err) {
         values.parameterLowerLimit = detail.parameterLowerLimit[0][paramValueMap[ruleParam.name].codeKey];
         values.parameterUpperLimit = detail.parameterUpperLimit[0][paramValueMap[ruleParam.name].codeKey];
         console.log(values)
@@ -255,7 +294,7 @@ class UpdateBudgetRulesDetail extends React.Component{
             }
           })
         }
-      }
+      }*/
     });
   };
   handleUpdate = (values) =>{
@@ -281,10 +320,10 @@ class UpdateBudgetRulesDetail extends React.Component{
     if(value.length!==0){
       console.log(value)
       console.log(key)
-      detail[key] = value;
+      this.detail[key] = value;
       let formItem = this.state.formItem;
       formItem[key] = true;
-      this.props.form.setFieldsValue({"parameterLowerLimit": detail.parameterLowerLimit,"parameterUpperLimit":detail.parameterUpperLimit})
+     //this.props.form.setFieldsValue({"parameterLowerLimit": this.detail.parameterLowerLimit,"parameterUpperLimit":detail.parameterUpperLimit})
     }
   };
 
@@ -318,30 +357,34 @@ class UpdateBudgetRulesDetail extends React.Component{
     })
   };
 
-  renderParam(key){
-    const {formItem, ruleParamDetail, ruleParam, paramValueMap, limitParam, defaultLimit} = this.state;
-    if(limitParam[key]){
-      return <Select onFocus={()=>this.changeLimitParam(key)} defaultValue={ defaultLimit[key]}/>
-    }else{
-      if(typeof ruleParam.name === 'undefined'){
-        return <Input  placeholder={this.props.intl.formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue(key)}/>
-      }else {
-        console.log(ruleParam)
-        return <Chooser
-                  type={(typeof ruleParam.name === 'undefined'|| ruleParam.name==="" ) ? "aa" : paramValueMap[ruleParam.name].listType}
-                  listExtraParams= {{organizationId : this.props.organization.id}}
-                  labelKey={(typeof ruleParam.name === 'undefined'|| ruleParam.name==="" ) ? "aa" : paramValueMap[ruleParam.name].codeKey}
-                  valueKey={(typeof ruleParam.name === 'undefined'|| ruleParam.name==="" ) ? "aa" : paramValueMap[ruleParam.name].valueKey}
-                  single={true}
-                  onChange={(value)=>this.handleValueChange(value,key)}
-                  value={detail[key]}/>
-      }
+  //选择规则参数
+  handleSelectParam = (value)=>{
+    console.log(this.detail)
+    if(this.detail.ruleParameterCode === 2017){
+      this.state.ruleParamsArray.splice(0,this.state.ruleParamsArray.length);
+      this.getCostCenter(this.state.ruleParamsArray);
     }
-  }
+    else {
+      this.getValueList(this.detail.ruleParameterCode,this.state.ruleParamsArray);
+    }
+    let ruleParameterType = this.props.form.getFieldValue("ruleParameterType");
+
+   /* //没有选择规则参数类型，提示：请先选择规则参数类型
+    if(typeof ruleParameterType === 'undefined'){
+      let { validateStatusMap, helpMap} = this.state;
+      validateStatusMap.ruleParameter= "warning";
+      helpMap.ruleParameter = "请先选择规则参数类型";
+      this.setState({
+        validateStatusMap,
+        helpMap
+      })
+    }*/
+  };
+
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { loading, defaultLimit, limitParam, validateStatusMap, helpMap,formItem, ruleParam, valueListMap, paramValueMap, ruleParamDetail, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
+    const { loading,costCenterId, defaultLimitValue, limitParam, validateStatusMap, helpMap,formItem, ruleParam, valueListMap, paramValueMap, ruleParamDetail, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp, ruleParameterTypeArray, filtrateMethodArray, summaryOrDetailArray, ruleParamsArray } = this.state;
     const { formatMessage } = this.props.intl;
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -360,38 +403,21 @@ class UpdateBudgetRulesDetail extends React.Component{
                 {
                   validator: (item,value,callback)=> {
                     console.log(value)
-                    if(ruleParam.type !== value){
-                      formItem.changed = true;
-                      formItem.ruleParameterType = true;
-                      limitParam.parameterLowerLimit = false;
-                      limitParam.parameterUpperLimit = false;
+                    this.props.form.setFieldsValue({"ruleParameter": ""});
+                    this.detail.parameterUpperLimit = [];
+                    this.detail.parameterLowerLimit = [];
+                    switch (value) {
+                      case 'BGT_RULE_PARAMETER_BUDGET':
+                        this.detail.ruleParameterCode  = valueListMap.BGT_RULE_PARAMETER_BUDGET;
+                        break;
+                      case 'BGT_RULE_PARAMETER_ORG':
+                        this.detail.ruleParameterCode  = valueListMap.BGT_RULE_PARAMETER_ORG;
+                        break;
+                      case 'BGT_RULE_PARAMETER_DIM':
+                        this.detail.ruleParameterCode  = valueListMap.BGT_RULE_PARAMETER_DIM;
+                        break
                     }
-                    if (formItem.ruleParameterType) {
-                      let temp = {};
-                      detail = {};
-                      temp.type = value;
-                      this.props.form.setFieldsValue({"ruleParameter": ""});
-                      this.setState({
-                        ruleParam: temp,
-                        formItem,
-                        limitParam,
-                        defaultLimit: {}
-                      });
-                      let ruleParameterCode;
-                      switch (value) {
-                        case 'BGT_RULE_PARAMETER_BUDGET':
-                          ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_BUDGET;
-                          break;
-                        case 'BGT_RULE_PARAMETER_ORG':
-                          ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_ORG;
-                          break;
-                        case 'BGT_RULE_PARAMETER_DIM':
-                          ruleParameterCode = valueListMap.BGT_RULE_PARAMETER_DIM;
-                          break
-                      }
-                      this.getValueList(ruleParameterCode, ruleParamsArray);
-                      callback();
-                    }
+                    this.detail.type = value;
                     callback();
                   }
                 }
@@ -418,23 +444,12 @@ class UpdateBudgetRulesDetail extends React.Component{
                 {
                   validator: (item,value,callback)=> {
                     console.log(value)
-                    if(ruleParam.name !== value){
-                      formItem.ruleParameter = true;
-                      limitParam.parameterUpperLimit = false;
-                      limitParam.parameterLowerLimit = false;
-                    }
-                    if (formItem.ruleParameter) {
-                      detail = {};
-                      ruleParam.name = value;
-                      helpMap.parameterUpperLimit = "";
-                      helpMap.parameterLowerLimit = "";
-                      validateStatusMap.parameterLowerLimit = "";
-                      validateStatusMap.parameterUpperLimit = "";
-                      this.setState({
-                        ruleParam,
-                        defaultLimit: {}
-                      });
-                    }
+                    this.setState({
+                      costCenterId: value
+                    });
+                    this.detail.name = value
+                    this.detail.parameterUpperLimit = [];
+                    this.detail.parameterLowerLimit = [];
                     callback()
                   }
                 }
@@ -518,30 +533,43 @@ class UpdateBudgetRulesDetail extends React.Component{
                     validateStatus={validateStatusMap.parameterUpperLimit}
                     help={helpMap.parameterUpperLimit}>
             {getFieldDecorator('parameterUpperLimit', {
-              initialValue: defaultLimit.parameterUpperLimit,
+              //initialValue: defaultLimitValue.parameterUpperLimit,
+              //initialValue:[{"itemTypeCode": "测试1"}],
               rules: [
                 {
                   required: true,
                 },
                 {
                   validator:(item,value,callback)=>{
-                    console.log(value)
-                    console.log(ruleParam)
-                    if(typeof value !== 'undefined'){
-                      ruleParam.parameterUpperLimit = value;
-                      this.setState({
-                        changed: true,
-                        ruleParam
-                      })
-                    }
                     callback();
                   }
                 }
               ]
             })(
               <div>
-                {
-                  this.renderParam("parameterUpperLimit")
+                {typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
+                  this.detail.type === 'BGT_RULE_PARAMETER_DIM' ?
+                    <Chooser
+                      placeholder={formatMessage({id:"common.please.select"})}
+                      type='cost_center_item_by_id'
+                      listExtraParams= {{costCenterId:costCenterId}}
+                      labelKey= 'name'
+                      valueKey= 'id'
+                      single={true}
+                     // value={this.detail.parameterUpperLimit}
+                      onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
+                    />
+                    :
+                  <Chooser
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={paramValueMap[this.detail.name].listType}
+                    listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
+                    labelKey={ paramValueMap[this.detail.name].codeKey}
+                    valueKey={ paramValueMap[this.detail.name].valueKey}
+                    single={true}
+                    value={this.detail.parameterUpperLimit}
+                    onChange={(value)=>this.handleValueChange(value,"parameterUpperLimit")}
+                  />
                 }
               </div>
             )}
@@ -550,30 +578,43 @@ class UpdateBudgetRulesDetail extends React.Component{
             validateStatus={validateStatusMap.parameterLowerLimit}
             help={helpMap.parameterLowerLimit}>
             {getFieldDecorator('parameterLowerLimit', {
-              initialValue: defaultLimit.parameterLowerLimit,
+
+              initialValue: defaultLimitValue.parameterLowerLimit,
               rules: [
                 {
                   required: true,
                 },
                 {
                   validator:(item,value,callback)=>{
-                    if(typeof value !== 'undefined'){
-                      this.props.form.setFieldsValue({"parameterLowerLimit": detail.parameterLowerLimit});
-                      ruleParam.parameterLowerLimit = value;
-                      this.setState({
-                        changed: true,
-                        ruleParam
-                      })
-                    }
                     callback();
                   }
                 }
               ]
             })(
               <div>
-                {
-                  this.renderParam("parameterLowerLimit")
-                }
+                {typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterUpperLimit")}/> :
+                  this.detail.type === 'BGT_RULE_PARAMETER_DIM' ?
+                    <Chooser
+                      placeholder={formatMessage({id:"common.please.select"})}
+                      type='cost_center_item_by_id'
+                      listExtraParams= {{costCenterId:costCenterId}}
+                      labelKey= 'name'
+                      valueKey= 'id'
+                      single={true}
+                      value={this.detail.parameterUpperLimit}
+                      onChange={(value)=>this.handleValueChange(value,"parameterLowerLimit")}
+                    />
+                    :
+                  <Chooser
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={ paramValueMap[this.detail.name].listType}
+                    listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
+                    labelKey={ paramValueMap[this.detail.name].codeKey}
+                    valueKey={ paramValueMap[this.detail.name].valueKey}
+                    single={true}
+                    value={this.detail.parameterLowerLimit}
+                    onChange={(value)=>this.handleValueChange(value,"parameterLowerLimit")}
+                  />}
               </div>
             )}
           </FormItem>
