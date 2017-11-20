@@ -178,8 +178,14 @@ class StrategyControlDetail extends React.Component {
     let infoList = this.state.infoList;
     infoList.map((item) => {
       if (item.id === 'messageCode') {
-        item.disabled = e === 'NO_MESSAGE' ? true : false;
-        item.isRequired = e === 'NO_MESSAGE' ? false : true;
+        if (e === 'NO_MESSAGE') {
+          item.disabled = true;
+          item.isRequired = false;
+          this.infoRef._reactInternalInstance._renderedComponent._instance.setValues({'messageCode': ''})
+        } else {
+          item.disabled = false;
+          item.isRequired = true;
+        }
       }
     });
     this.setState({ infoList })
@@ -194,6 +200,7 @@ class StrategyControlDetail extends React.Component {
                    updateHandle={this.handleUpdate}
                    updateState={updateState}
                    eventHandle={this.eventHandle}
+                   wrappedComponentRef={(inst) => this.infoRef = inst}
                    loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
