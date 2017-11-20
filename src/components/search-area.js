@@ -239,6 +239,7 @@ class SearchArea extends React.Component{
    * @param index 当type为items时的序列
    */
   onSetSelectValue = (item, value, index) => {
+    if (!value.value) return;
     let valueWillSet = {};
     let searchForm = this.state.searchForm;
     if(index === undefined)

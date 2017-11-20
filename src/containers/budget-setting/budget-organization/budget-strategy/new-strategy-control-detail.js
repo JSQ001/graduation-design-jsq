@@ -62,20 +62,23 @@ class NewStrategyControlDetail extends React.Component{
         valueValue: '',
         periodStrategyValue: ''
       })
-    } else if(!params.isNew && params.newParams.id != this.state.updateParams.id) {  //更新
+    } else if(!params.isNew && params.newParams.id !== this.state.updateParams.id) {  //更新
       this.setState({
         updateParams: params.newParams,
-        objectValue: params.newParams.object,
-        rangeValue: params.newParams.range,
-        mannerValue: params.newParams.manner,
-        operatorValue: params.newParams.operator,
+        objectValue: params.newParams.object && params.newParams.object.value,
+        rangeValue: params.newParams.range && params.newParams.range.value,
+        mannerValue: params.newParams.manner && params.newParams.manner.value,
+        operatorValue: params.newParams.operator && params.newParams.operator.value,
         valueValue: params.newParams.value,
-        periodStrategyValue: this.handlePeriodStrategy(params.newParams.periodStrategy)
+        periodStrategyValue: this.handlePeriodStrategy(params.newParams.periodStrategy && params.newParams.periodStrategy.value)
       }, () => {
         let values = this.props.form.getFieldsValue();
         for(let name in values){
           let result = {};
-          result[name] = params.newParams[name];
+          result[name] = params.newParams[name] ?
+            params.newParams[name].value ? params.newParams[name].value : params.newParams[name] :
+            params.newParams[name];
+          result.organizationName = '10';
           this.props.form.setFieldsValue(result)
         }
       });
@@ -92,9 +95,10 @@ class NewStrategyControlDetail extends React.Component{
         this.setState({loading: true});
         values.controlStrategyDetailId = this.props.params.newParams.strategyControlId;
         values.value = Number(values.value).toFixed(4);
+        values.operator = values.operator ? values.operator: "DIVIDE";
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           this.setState({loading: false});
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({ updateParams: {} });
             this.props.close(true);
             message.success('保存成功');
@@ -112,13 +116,14 @@ class NewStrategyControlDetail extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading: true});
         values.id = this.state.updateParams.id;
         values.controlStrategyDetailId = this.props.params.strategyControlId;
         values.versionNumber = this.state.updateParams.versionNumber++;
         values.value = Number(values.value).toFixed(4);
+        console.log(values);
+        this.setState({loading: true});
         httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({loading: false});
             this.props.close(true);
             message.success('保存成功');
@@ -135,13 +140,13 @@ class NewStrategyControlDetail extends React.Component{
 
   handlePeriodStrategy = (value) => {
     const config = {
-      '年度': '全年预算额',
-      '年度至今': '年初至今预算额',
-      '累计季度': '年初至当季度预算额',
-      '季度滚动': '当月至后两个月共3个月合计预算额',
-      '季度': '当季预算额',
-      '季度至今': '季度初至今预算额',
-      '期间': '当月录入预算额'
+      YEAR: '全年预算额',
+      YTD: '年初至今预算额',
+      YTQ: '年初至当季度预算额',
+      RQB: '当月至后两个月共3个月合计预算额',
+      QUARTER: '当季预算额',
+      QTD: '季度初至今预算额',
+      MONTH: '当月录入预算额'
     };
     this.setState({ periodStrategyValue: config[value] });
     return config[value]
@@ -158,19 +163,19 @@ class NewStrategyControlDetail extends React.Component{
       <div style={{color:'#999'}}>
         <div style={{marginBottom:'10px'}}>控制策略控制期段即以何种方式对预算进行控制</div>
         <div>
-          <span style={{color:'#666'}}>【月度】</span>：按当月录入预算额控制<br/>
+          <span style={{color:'#666'}}>【期间】</span>：按当月录入预算额控制<br/>
           <span style={{color:'#666'}}>【季度】</span>：按当季预算额控制<br/>
           <span style={{color:'#666'}}>【年度】</span>：按全年预算额控制<br/>
-          <span style={{color:'#666'}}>【季初至今】</span>：按季度初至今预算额控制<br/>
-          <span style={{color:'#666'}}>【年初至今】</span>：按年初至今预算额控制<br/>
-          <span style={{color:'#666'}}>【滚动季度】</span>：按当月至后两个月共3个月合计预算额控制<br/>
+          <span style={{color:'#666'}}>【季度至今】</span>：按季度初至今预算额控制<br/>
+          <span style={{color:'#666'}}>【年度至今】</span>：按年初至今预算额控制<br/>
+          <span style={{color:'#666'}}>【季度滚动】</span>：按当月至后两个月共3个月合计预算额控制<br/>
           <span style={{color:'#666'}}>【累计季度】</span>：按年初至当季度预算额控制
         </div>
       </div>
     );
     let renderOperator;
     let renderValue;
-    if (mannerValue == '百分比') {
+    if (mannerValue === 'PERCENTAGE') {
       renderValue = (
         <Col span={6}>
           <FormItem>
@@ -214,7 +219,7 @@ class NewStrategyControlDetail extends React.Component{
                 required: true,
                 message: '请选择'
               }],
-              initialValue: updateParams.operator
+              initialValue: updateParams.operator && updateParams.operator.value
             })(
               <Select onChange={(value)=>{this.setState({ operatorValue:value })}} placeholder="请选择">
                 {operatorOptions.map((option)=>{
@@ -230,9 +235,11 @@ class NewStrategyControlDetail extends React.Component{
       <div className="new-strategy-control-detail">
         <Form onSubmit={updateParams.id ? this.handleUpdate : this.handleSave}>
           <FormItem {...formItemLayout} label="类型" style={{margin:'24px 0'}}>
-            {getFieldDecorator('organizationName', { initialValue: '公式' })(
+            {getFieldDecorator('organizationName', {
+              initialValue: '10'
+            })(
               <RadioGroup>
-                <RadioButton value="公式">公式</RadioButton>
+                <RadioButton value="10">公式</RadioButton>
               </RadioGroup>
             )}
           </FormItem>
@@ -242,7 +249,7 @@ class NewStrategyControlDetail extends React.Component{
                 required: true,
                 message: '请选择'
               }],
-              initialValue: updateParams.object
+              initialValue: updateParams.object && updateParams.object.value
             })(
               <Select onChange={(value)=>{this.setState({ objectValue: value })}} placeholder="请选择">
                 {controlObjectOptions.map((option)=>{
@@ -257,7 +264,7 @@ class NewStrategyControlDetail extends React.Component{
                 required: true,
                 message: '请选择'
               }],
-              initialValue: updateParams.range
+              initialValue: updateParams.range && updateParams.range.value
             })(
               <Select onChange={(value)=>{this.setState({ rangeValue: value })}} placeholder="请选择">
                 {rangeOptions.map((option)=>{
@@ -274,7 +281,7 @@ class NewStrategyControlDetail extends React.Component{
                     required: true,
                     message: '请选择'
                   }],
-                  initialValue: updateParams.manner
+                  initialValue: updateParams.manner && updateParams.manner.value
                 })(
                   <Select onChange={(value)=>{this.setState({ mannerValue: value })}} placeholder="请选择">
                     {mannerOptions.map((option)=>{
@@ -295,7 +302,7 @@ class NewStrategyControlDetail extends React.Component{
                     required: true,
                     message: '请选择'
                   }],
-                  initialValue: updateParams.periodStrategy
+                  initialValue: updateParams.periodStrategy && updateParams.periodStrategy.value
                 })(
                   <Select onChange={this.handlePeriodStrategy} placeholder="请选择">
                     {periodStrategyOptions.map((option)=>{
@@ -313,8 +320,15 @@ class NewStrategyControlDetail extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
-              <div>{objectValue} {rangeValue} {periodStrategyValue}
-                {valueValue ? (mannerValue == '百分比' ? Number(valueValue).toFixed(4) + '%' : operatorValue + Number(valueValue).toFixed(4)) : ''}</div>
+              <div>
+                {controlObjectOptions.map(option => {
+                  return option.value === objectValue ? option.messageKey : ''
+                })} {rangeOptions.map(option => {
+                  return option.value === rangeValue ? option.messageKey : ''
+                })} {periodStrategyValue} {mannerValue === 'PERCENTAGE' ? '' : operatorOptions.map(option => {
+                  return option.value === operatorValue ? option.messageKey : ''
+                })} {valueValue ? (mannerValue === 'PERCENTAGE' ? Number(valueValue).toFixed(4) + '%' : Number(valueValue).toFixed(4)) : ''}
+              </div>
             )}
           </FormItem>
           <div className="slide-footer">
