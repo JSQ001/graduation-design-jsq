@@ -202,6 +202,7 @@ class BudgetControlRulesDetail extends React.Component{
 
   handleCloseSlideCreate = (params) => {
     if(params) {
+      this.setState({loading: true});
       this.getList();
     }
     this.setState({
