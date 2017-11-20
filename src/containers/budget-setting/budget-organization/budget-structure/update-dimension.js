@@ -48,7 +48,6 @@ class NewDimension extends React.Component{
 
     this.setState({
       dimension,
-      selectorItem
     });
     //获取布局位置的值列表
     this.getSystemValueList(2003).then((response)=>{

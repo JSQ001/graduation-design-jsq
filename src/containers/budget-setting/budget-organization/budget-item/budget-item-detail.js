@@ -63,8 +63,9 @@ class BudgetItemDetail extends React.Component{
     //根据路径上的id,查出该条预算项目完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
       if(response.status === 200){
+        console.log(response)
         response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
-        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttributeName};
+        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttribute};
         this.setState({
           budgetItem: response.data
         })
@@ -80,6 +81,7 @@ class BudgetItemDetail extends React.Component{
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
     console.log(this.state.budgetItem)
+    console.log(value)
     httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
         console.log(response)

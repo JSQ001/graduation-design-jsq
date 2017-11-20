@@ -42,13 +42,10 @@ class BudgetItem extends React.Component {
       searchForm: [
         {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'budget.itemCode'}) }, /*预算项目代码*/
         {type: 'input', id: 'itemName', label: this.props.intl.formatMessage({id:"budget.itemName"}) },
-        {type: 'list', id: 'itemTypeName',
-          listType: 'budget_item_type',
-          labelKey: 'itemTypeName',
-          valueKey: 'id',
-          single: true,
+        {type: 'select', id: 'itemTypeName',options:[], labelKey: 'itemTypeName',valueKey: 'id',
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
-          listExtraParams:{organizationId: this.props.id}
+          listExtraParams:{organizationId: this.props.id},
+          getUrl: `${config.budgetUrl}/api/budget/itemType/query`, method: 'get', getParams: {organizationId: this.props.organization.id}
         },
         {type: 'select', id: 'itemCodeFrom',
           label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
