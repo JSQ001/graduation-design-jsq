@@ -60,6 +60,10 @@ class BasicInfo extends React.Component{
     })
   };
 
+  setValues = (values) => {
+    this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
+  };
+
   //渲染基本信息显示页
   renderGetInfo(item) {
     if (item.type === 'switch') {

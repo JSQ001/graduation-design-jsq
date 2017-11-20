@@ -34,7 +34,8 @@ class BudgetStrategyDetail extends React.Component {
         {title: "控制规则描述", dataIndex: "detailName", key: "detailName",
           render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode",
-          render: message => <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover>},
+          render: (message, record) => (record.controlMethod.value === 'NO_MESSAGE' ? <span>-</span> :
+            <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover> )},
         {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent",
           render: event => <span>{event ? event : '-'}</span>}
       ],
@@ -110,7 +111,6 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   handleSearch= (value) => {
-    console.log(value);
     this.setState({
       page: 0,
       keyWords: value,
