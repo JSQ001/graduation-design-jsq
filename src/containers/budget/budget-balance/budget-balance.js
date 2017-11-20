@@ -252,7 +252,7 @@ class BudgetBalance extends React.Component {
                         listExtraParams={param ? param.listExtraParams : null}
                         selectorItem={param ? param.selectorItem : null}
                         value={params[index].value}
-                        single={param && param.listType === 'currency'}
+                        single={param ? param.listType === 'currency' : false}
                         showNumber/>;
       }
     }
@@ -297,12 +297,10 @@ class BudgetBalance extends React.Component {
   handleFocusParamSelect = (index, typeParam) => {
     let { params, queryLineListParamOptions, paramTypeMap } = this.state;
     let type = typeParam ? typeParam : params[index].type;
-    console.log(type)
     if(type !== ''){
       if(!queryLineListParamOptions[type] || queryLineListParamOptions[type].length === 0 ){
         if(type === 'BGT_RULE_PARAMETER_DIM'){
           let structureId = this.state.structureId;
-          console.log(structureId)
           structureId && httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/queryAll?structureId=${structureId}`).then(res => {
             let options = [];
             res.data.map(data => {

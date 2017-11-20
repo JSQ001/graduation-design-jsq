@@ -162,7 +162,13 @@ class ListSelector extends React.Component {
     if(nextProps.type !== this.state.type && !nextProps.selectorItem && nextProps.visible)
       this.checkType(nextProps.type);
     else if(nextProps.selectorItem && nextProps.visible)
-      this.checkSelectorItem(nextProps.selectorItem)
+      this.checkSelectorItem(nextProps.selectorItem);
+
+    let { rowSelection } = this.state;
+    if(nextProps.single !== (rowSelection.type === 'radio')){
+      rowSelection.type = nextProps.single ? 'radio' : 'checkbox';
+      this.setState({ rowSelection })
+    }
   };
 
   handleOk = () => {

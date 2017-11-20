@@ -18,7 +18,7 @@ class CodingRule extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: "单据类型", dataIndex: "documentCategoryCode", width: '40%'},
+        {title: "单据类型", dataIndex: "documentTypeName", width: '40%'},
         {title: "应用公司", dataIndex: "companyName", width: '40%'},
         {title: "状态", dataIndex: 'isEnabled', width: '20%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)}
@@ -27,7 +27,7 @@ class CodingRule extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'value_list', id: 'documentCategoryCode', label: "单据类型", valueListCode: 2023, options: []}
+        {type: 'value_list', id: 'documentTypeCode', label: "单据类型", valueListCode: 2023, options: []}
       ],
       searchParams: {
         documentCategoryCode: '',
