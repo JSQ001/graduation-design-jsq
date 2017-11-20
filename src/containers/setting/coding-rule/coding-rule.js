@@ -21,7 +21,7 @@ class CodingRuleDetail extends React.Component {
       columns: [
         {title: "编码规则代码", dataIndex: "codingRuleCode", width: '15%'},
         {title: "编码规则名称", dataIndex: "codingRuleName", width: '25%'},
-        {title: "重置频率", dataIndex: "resetFrequence", width: '15%'},
+        {title: "重置频率", dataIndex: "resetFrequenceName", width: '15%'},
         {title: "备注", dataIndex: "description", width: '30%'},
         {title: "状态", dataIndex: 'isEnabled', width: '15%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)}
