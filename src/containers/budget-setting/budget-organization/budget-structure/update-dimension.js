@@ -2,9 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
+import { Form, Input, Switch, Button, Icon, Checkbox, message, Select, InputNumber } from 'antd'
 
-import ListSelector from 'components/list-selector.js'
+import Chooser from 'components/chooser.js'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import 'styles/budget-setting/budget-organization/budget-structure/new-dimension.scss'
@@ -18,13 +18,55 @@ class NewDimension extends React.Component{
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
+      dimension:{},
+      layoutPosition:[],
       extraParams: {},
-      loading: false
+      loading: false,
+      selectorItem:{
+        title: '选择默认维值',
+        url: `${config.baseUrl}api/my/cost/center/items/by/costcenterid`,
+        searchForm: [
+          {type: 'input', id: 'code', label: '维值代码'},
+          {type: 'input', id: 'name', label: '维值名称'},
+        ],
+        columns: [
+          {title: '维值代码', dataIndex: 'code', width: '25%'},
+          {title: '维值名称', dataIndex: 'name', width: '25%'},
+        ],
+        key: 'id'
+      },
     };
   }
 
   componentWillMount(){
+    console.log(this.props)
+    let dimension = this.props.params;
+    let extraParams = this.state.extraParams;
+    if(typeof dimension.id !== 'undefined'){
+      extraParams = {id: dimension.dimensionId}
+    }
 
+    this.setState({
+      dimension,
+    });
+    //获取布局位置的值列表
+    this.getSystemValueList(2003).then((response)=>{
+      let layoutPosition = [];
+      response.data.values.map((item)=>{
+        let option = {
+          id: item.code,
+          value: item.messageKey
+        };
+        layoutPosition.push(option);
+      });
+      this.setState({
+        layoutPosition: layoutPosition
+      })
+    });
+
+  }
+  componentWillReceiveProps(nextprops){
+    console.log(nextprops)
   }
 
   handleSave = (e) =>{
@@ -97,7 +139,8 @@ class NewDimension extends React.Component{
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { isEnabled, showSelectDimension, defaultDimension } = this.state;
+    const { isEnabled, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
+    const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -109,44 +152,54 @@ class NewDimension extends React.Component{
                     label="状态:">
             {getFieldDecorator('isEnabled', {
               valuePropName:"defaultChecked",
-              initialValue:isEnabled
+              initialValue: dimension.isEnabled
             })(
               <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? '启用' : '禁用' }</span>
+                <Switch defaultChecked={dimension.isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? '启用' : '禁用' }</span>
               </div>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="维度代码:">
             {getFieldDecorator('dimensionCode', {
+              initialValue: dimension.defaultDimensionCode,
               rules: [
+                {
+                  required: true, message: formatMessage({id:"common.please.select"})
+                }
               ],
             })(
-              <Select
-                mode="multiple"
-                labelInValue
-                onFocus={this.handleFocus}
-                placeholder={formatMessage({id:"common.please.enter"})}/>
+              <Chooser
+                placeholder={ formatMessage({id:"common.please.enter"}) }
+                type={"select_dimension"}
+                single={true}
+                labelKey="code"
+                valueKey="code"
+                onChange={this.handleDimensionCode}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="维度名称:" >
             {getFieldDecorator('dimensionName', {
-              initialValue: 111
+              initialValue: dimension.dimensionName
             })(
               <Input disabled/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="布局位置:">
             {getFieldDecorator('layoutPosition', {
+              initialValue: dimension.layoutPosition,
               rules: [{
                 required: true, message: formatMessage({id:"common.please.select"})
               }],
             })(
-              <Select placeholder={formatMessage({id:"common.please.enter"})}/>
+              <Select placeholder={formatMessage({id:"common.please.enter"})}>
+                {options}
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="布局顺序:">
             {getFieldDecorator('layoutPriority', {
+              initialValue: dimension.layoutPriority,
               rules: [
                 {
                   required: true, message: formatMessage({id:"common.please.enter"})
@@ -161,20 +214,23 @@ class NewDimension extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout} label="默认维值代码:">
             {getFieldDecorator('defaultDimensionCode', {
-              rules: [{
-                required: true
-              }],
+              initialValue:typeof this.props.form.getFieldValue("dimensionCode") === 'undefined' ? 1 : 2 //dimension.defaultDimensionValue
             })(
-              <Select
-                mode="multiple"
-                labelInValue
-                onFocus={this.handleFocus}
-                placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+              <Chooser
+                placeholder={formatMessage({id:"common.please.select"})}
+                type={"select_dimensionValue"}
+                single={true}
+                labelKey="code"
+                valueKey="code"
+                selectorItem={selectorItem}
+                listExtraParams={extraParams}
+                value={dimension.defaultDimensionValue}
+                onChange={this.handleDimensionValue}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="默认维值名称:" >
             {getFieldDecorator('dimensionName', {
-              initialValue: defaultDimension
+              initialValue: dimension.dimensionCode
             })(
               <Input disabled/>
             )}
