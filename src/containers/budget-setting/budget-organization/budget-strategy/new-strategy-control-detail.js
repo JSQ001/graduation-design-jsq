@@ -51,7 +51,8 @@ class NewStrategyControlDetail extends React.Component{
 
   componentWillReceiveProps(nextProps){
     const params = nextProps.params;
-    if (params.isNew && !this.state.updateParams.strategyControlId) {  //新建
+    if (params.isNew && !params.newParams.controlStrategyDetailId) {  //新建
+      params.newParams.controlStrategyDetailId = params.newParams.strategyControlId;
       this.props.form.resetFields();
       this.setState({
         updateParams: params.newParams,
@@ -104,10 +105,12 @@ class NewStrategyControlDetail extends React.Component{
             message.success('保存成功');
           }
         }).catch((e)=>{
-          if(e.response){
-            message.error(`保存失败, ${e.response.data.message}`);
-          }
           this.setState({loading: false});
+          if (e.response){
+            message.error(`保存失败, ${e.response.data.message}`);
+          } else {
+            message.error(`保存失败`);
+          }
         })
       }
     });
@@ -129,10 +132,12 @@ class NewStrategyControlDetail extends React.Component{
             message.success('保存成功');
           }
         }).catch((e)=>{
-          if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          this.setState({ loading: false });
+          if (e.response){
+            message.error(`保存失败, ${e.response.data.message}`);
+          } else {
+            message.error(`保存失败`);
           }
-          this.setState({ loading: false })
         })
       }
     });
