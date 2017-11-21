@@ -28,8 +28,8 @@ class BudgetJournalType extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'input', id: 'journalTypeCode', label: '类型代码'},
-        {type: 'input', id: 'journalTypeName', label: '类型名称'}
+        {type: 'input', id: 'journalTypeCode', label: '预算日记账类型代码'},
+        {type: 'input', id: 'journalTypeName', label: '预算日记账类型名称'}
       ],
       searchParams: {
         journalTypeCode: '',

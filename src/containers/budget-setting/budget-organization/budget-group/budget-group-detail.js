@@ -25,7 +25,7 @@ class BudgetGroupDetail extends React.Component {
       groupData: {},
       columns: [
         {title: "预算项目代码", dataIndex: "itemCode", width: '25%'},
-        {title: "预算项目描述", dataIndex: "itemName", width: '35%'},
+        {title: "预算项目名称", dataIndex: "itemName", width: '35%'},
         {title: "预算项目类型", dataIndex: "itemTypeName", width: '25%'},
         {title: '操作', key: 'operation', width: '15%', render: (text, record) => (
           <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={`你确定要删除 ${record.itemName} 吗`}>
@@ -35,7 +35,7 @@ class BudgetGroupDetail extends React.Component {
       infoList: [
         {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true, isRequired: true},
         {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', disabled: true, isRequired: true},
-        {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入', isRequired: true},
+        {type: 'input', label: '预算项目组名称', id: 'itemGroupName', message: '请输入', isRequired: true},
         {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       data: [],
