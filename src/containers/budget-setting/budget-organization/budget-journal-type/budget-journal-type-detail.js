@@ -24,7 +24,7 @@ class BudgetJournalTypeDetail extends React.Component {
       editing: false,
       infoList: [
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', disabled: true},
-        {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
+        {type: 'input', label: '预算日记账类型名称', id: 'journalTypeName', message: '请输入'},
         {type: 'value_list', label: '预算业务类型', id: 'businessType', message: '请选择', options:[], valueListCode: 2018},
         {type: 'switch', label: '状态', id: 'isEnabled'}
       ],
@@ -42,8 +42,8 @@ class BudgetJournalTypeDetail extends React.Component {
           selectorItem: selectorData['budget_journal_structure'],
           extraParams: {organizationId: this.props.organization.id, journalTypeId: this.props.params.typeId},
           columns: [
-            {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
+            {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "默认", dataIndex: "isDefault", width: '15%', render: (isDefault, record) => <Checkbox onChange={(e) => this.onChangeDefault(e, record)} checked={record.isDefault}/>},
             {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
   ]
@@ -56,7 +56,7 @@ class BudgetJournalTypeDetail extends React.Component {
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
-            {title: "预算项目描述", dataIndex: "itemName", width: '50%'},
+            {title: "预算项目名称", dataIndex: "itemName", width: '50%'},
             {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '20%',
               render: isEnabled => (
                 <Badge status={isEnabled ? 'success' : 'error'}
@@ -70,8 +70,9 @@ class BudgetJournalTypeDetail extends React.Component {
           selectorItem: selectorData['budget_journal_company'],
           extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
-            {title: "公司代码", dataIndex: "companyCode", width: '30%'},
-            {title: "公司名称", dataIndex: "companyName", width: '50%'},
+            {title: "公司代码", dataIndex: "companyCode", width: '25%'},
+            {title: "公司名称", dataIndex: "companyName", width: '30%'},
+            {title: "公司类型", dataIndex: "companyTypeName", width: '25%'},
             {title: "启用", dataIndex: "isEnabled", width: '20%',
               render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>
             },
@@ -124,7 +125,9 @@ class BudgetJournalTypeDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${this.props.params.typeId}`).then(response => {
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
-      this.setState({ typeData: data});
+      let infoList = this.state.infoList;
+      infoList[2].disabled = data.usedFlag;
+      this.setState({ typeData: data, infoList});
     });
     this.getList(this.state.nowStatus);
     if(this.props.organization.id){
@@ -243,10 +246,13 @@ class BudgetJournalTypeDetail extends React.Component {
       message.success('修改成功');
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
+      let infoList = this.state.infoList;
+      infoList[2].disabled = data.usedFlag;
       this.setState({
         typeData: data,
         updateState: true,
-        editing: false
+        editing: false,
+        infoList
       });
     }).catch(e => {
       this.setState({ editing: false })
