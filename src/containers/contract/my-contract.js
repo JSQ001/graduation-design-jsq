@@ -71,7 +71,7 @@ class MyContract extends React.Component{
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.contractUrl}/api/contract/header/update/query?page=${page}&size=${pageSize}`;
+    let url = `${config.contractUrl}/contract/api/contract/header/update/query?page=${page}&size=${pageSize}`;
     this.setState({ loading: true });
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {
