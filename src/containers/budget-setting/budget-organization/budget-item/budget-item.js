@@ -67,17 +67,6 @@ class BudgetItem extends React.Component {
         {          /*预算项目类型*/
           title: formatMessage({id:"budget.itemType"}), key: "itemTypeName", dataIndex: 'itemTypeName'
         },
-        {          /*变动属性*/
-          title: formatMessage({id:"budget.item.variationAttribute"}), key: "variationAttribute", dataIndex: 'variationAttribute',
-          render: (recode)=>{
-            if(recode === "FIXED")
-              return formatMessage({id:"variationAttribute.immobilization"}); /*固定*/
-            if(recode === "MIXED")
-              return formatMessage({id:"variationAttribute.mix"}); /*混合*/
-            if(recode === "VARIABLE")
-              return formatMessage({id:"variationAttribute.alteration"}) /*变动*/
-          }
-        },
         {          /*备注*/
           title: formatMessage({id:"budget.itemDescription"}), key: "description", dataIndex: 'description', width: "10%",
           render: description => (
@@ -297,7 +286,7 @@ class BudgetItem extends React.Component {
         <ListSelector type="company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
-                      extraParams={{isEnabled: true}}
+                      extraParams={{setOfBooksId: this.props.company.setOfBooksId,isEnabled: true}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
@@ -308,9 +297,10 @@ BudgetItem.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
-
+    organization: state.login.organization,
+    company: state.login.company,
   }
 }
 

@@ -25,13 +25,13 @@ class NewBudgetControlRules extends React.Component{
      strategyGroup: [],
      startValue: null,
      endValue: null,
-   }
+   };
    this.validateRuleCode = debounce(this.validateRuleCode,1000)
  }
 
  componentWillMount(){
    //加载页面时，获取启用的控制策略
-   httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
+   httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
      if(response.status === 200){
        console.log(response.data)
        let strategyGroup = [];

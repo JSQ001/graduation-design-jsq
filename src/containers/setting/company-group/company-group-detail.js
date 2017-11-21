@@ -47,7 +47,7 @@ class CompanyGroupDetail extends React.Component{
         {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
         {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
         {type: 'select', id: 'setOfBook', label: formatMessage({id:"budget.set.of.books"}) + " :", options: [],
-          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksName', valueKey: 'id', getParams: {roleType: 'TENANT'}},
         {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
@@ -67,12 +67,12 @@ class CompanyGroupDetail extends React.Component{
     //根据路径上的id,查出该条完整数据
     httpFetch.get(`${config.baseUrl}/api/company/group/${this.props.params.id}`).then((response)=>{
       if(response.status === 200){
-         console.log(response)
-         this.setState({
-            companyGroup: response.data
-         },this.getList())
-      }
-    });
+        response.data.setOfBook = {label: "假账套", value: response.data.setOfBooksId}};
+        this.setState({
+          companyGroup: response.data
+        },
+         this.getList())
+        });
   }
 
 
