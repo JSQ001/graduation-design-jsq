@@ -94,7 +94,7 @@ class NewBudgetScenarios extends React.Component{
               <Input placeholder="请输入" />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述">
+          <FormItem {...formItemLayout} label="预算场景名称">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,

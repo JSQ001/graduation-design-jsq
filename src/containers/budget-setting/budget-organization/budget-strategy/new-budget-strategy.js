@@ -73,7 +73,7 @@ class NewBudgetStrategy extends React.Component {
               <Input placeholder="请输入" />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算控制策略描述" hasFeedback>
+          <FormItem {...formItemLayout} label="预算控制策略名称" hasFeedback>
             {getFieldDecorator('controlStrategyName', {
               rules: [{
                 required: true,

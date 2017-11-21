@@ -20,7 +20,7 @@ class BudgetStrategyDetail extends React.Component {
       loading: false,
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
-        {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
+        {type: 'input', id: 'controlStrategyName', label: '预算控制策略名称', isRequired: true},
         {type: 'switch', id: 'isEnabled', label: '状态'}
       ],
       infoData: {},
@@ -31,7 +31,7 @@ class BudgetStrategyDetail extends React.Component {
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
         {title: "控制策略", dataIndex: "controlMethod", key: "controlMethod",
           render: method => <span>{method.label}</span>},
-        {title: "控制规则描述", dataIndex: "detailName", key: "detailName",
+        {title: "控制规则名称", dataIndex: "detailName", key: "detailName",
           render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode",
           render: (message, record) => (record.controlMethod.value === 'NO_MESSAGE' ? <span>-</span> :
@@ -165,7 +165,7 @@ class BudgetStrategyDetail extends React.Component {
             <Button type="primary" onClick={this.handleNew}>新 建</Button>
             {/*<span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>*/}
             <Search
-              placeholder="请输入策略明细描述/代码"
+              placeholder="请输入策略明细名称/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
               onChange={(e) => this.handleSearch(e.target.value)}
             />
