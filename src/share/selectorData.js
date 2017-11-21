@@ -33,13 +33,13 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructure`,
     searchForm: [
       {type: 'input', id: 'structureCode', label: '预算表代码'},
-      {type: 'input', id: 'structureName', label: '预算表描述'},
+      {type: 'input', id: 'structureName', label: '预算表名称'},
       {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'},
       {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'}
     ],
     columns: [
       {title: '预算表代码', dataIndex: 'structureCode', width: '45%'},
-      {title: '预算表描述', dataIndex: 'structureName', width: '55%'}
+      {title: '预算表名称', dataIndex: 'structureName', width: '55%'}
     ],
     key: 'structureCode'
   },
@@ -48,13 +48,13 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/journal/type/assign/items/queryItem`,
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
-      {type: 'input', id: 'itemName', label: '预算项目描述'},
+      {type: 'input', id: 'itemName', label: '预算项目名称'},
       {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
       {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
-      {title: '预算项目描述', dataIndex: 'itemName', width: '55%'}
+      {title: '预算项目名称', dataIndex: 'itemName', width: '55%'}
     ],
     key: 'itemCode'
   },
@@ -63,12 +63,14 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/journal/type/assign/companies/filter`,
     searchForm: [
       {type: 'input', id: 'companyCode', label: "公司代码"},
-      {type: 'input', id: 'companyName', label: "公司名称"}
+      {type: 'input', id: 'companyName', label: "公司名称"},
+      {type: 'input', id: 'companyCodeFrom', label: '公司代码从'},
+      {type: 'input', id: 'companyCodeTo', label: '公司代码至'},
     ],
     columns: [
       {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
-      {title: "公司描述", dataIndex: 'description'}
+      {title: "公司类型", dataIndex: 'attribute4'}
     ],
     key: 'id'
   },
@@ -82,7 +84,7 @@ const selectorData = {
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
-      {title: '预算项目描述', dataIndex: 'itemName', width: '55%'}
+      {title: '预算项目名称', dataIndex: 'itemName', width: '55%'}
     ],
     key: 'id'
   },
@@ -136,7 +138,7 @@ const selectorData = {
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '25%'},
-      {title: '预算项目描述', dataIndex: 'itemName', width: '40%'},
+      {title: '预算项目名称', dataIndex: 'itemName', width: '40%'},
       {title: '预算项目类型', dataIndex: 'itemTypeName', width: '35%'}
     ],
     key: 'id'
@@ -267,9 +269,9 @@ const selectorData = {
     title: "公司组",
     url: `${config.baseUrl}/api/company/group/query/dto`,
     searchForm: [
-      {type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
+      /*{type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
         getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
-      {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
+ */     {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
       {type: 'input', id: 'companyGroupName', label: '公司组描述'},
     ],
     columns: [
@@ -300,7 +302,7 @@ const selectorData = {
     ],
     columns: [
       {title: '部门组代码', dataIndex: 'deptGroupCode'},
-      {title: '部门组描述', dataIndex: 'description'}
+      {title: '部门组名称', dataIndex: 'description'}
     ],
     key: 'id'
   },

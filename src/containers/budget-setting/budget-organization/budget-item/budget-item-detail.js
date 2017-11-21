@@ -42,7 +42,6 @@ class BudgetItemDetail extends React.Component{
         {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
         {type: 'input', id: 'itemName', isRequired:true, label: formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
         {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"预算项目类型："},
-        {type: 'select',options: [] , id: 'variationAttribute',disabled: true, label: formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
         {type: 'input', id: 'description', label: formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
         {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
@@ -88,7 +87,6 @@ class BudgetItemDetail extends React.Component{
         response.data.organizationName = this.state.budgetItem.organizationName;
         console.log(value)
         response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
-        response.data.variationAttribute = {label:response.data.variationAttribute,value:response.data.variationAttribute};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           budgetItem: response.data,
@@ -103,9 +101,12 @@ class BudgetItemDetail extends React.Component{
     httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
       console.log(response)
       if(response.status === 200){
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
         this.setState({
           loading: false,
-          data: response.data
+          data: response.data,
+          pagination
         })
       }
     })
