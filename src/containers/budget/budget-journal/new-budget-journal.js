@@ -190,7 +190,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得期间段
   handleSelectChange = (values) => {
-
     console.log(values);
     const data = new Date();
     const year = data.getFullYear();
@@ -450,55 +449,6 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
 
-{/*              <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodYear"})}>
-                  {getFieldDecorator('periodYear', {
-                    rules: [{
-                      required:! this.state.periodYearFlag,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "年度"})
-                    }],
-
-                  })(
-                    <Select disabled={periodYearFlag}>
-                      {yearOptionsData}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-
-              <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodQuarter"})}>
-                  {getFieldDecorator('periodQuarter', {
-                    rules: [{
-                      required:!this.state.periodQuarterFlag,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "季度"})
-                    }],
-
-                  })(
-                    <Select disabled={periodQuarterFlag}>
-                      {periodPeriodQuarterOptions}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-
-
-              periodName
-              <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodName"})}>
-                  {getFieldDecorator('periodName', {
-                    rules: [{
-                      required:!this.state.periodFlag,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "期间"})
-                    }],
-
-                  })(
-                    <Select disabled={periodFlag} onSelect={this.handleSelectPeriodName}>
-                      {periodPeriodOptions}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>*/}
 
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.version"})}>
@@ -544,10 +494,7 @@ class NewBudgetJournalFrom extends React.Component {
 
             </Row>
           </Card>
-
-          <div className="divider"> </div>
-
-
+          <div className="divider" style={{height:16}}> </div>
           <Card title="附件信息" style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
@@ -569,7 +516,7 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
             </Row>
           </Card>
-          <div className="divider" style={{height:60}}> </div>
+          <div className="divider" style={{height:16}}> </div>
 
           <div className="footer-operate">
             <Button type="primary" htmlType="submit" loading={this.state.loading}
@@ -577,7 +524,6 @@ class NewBudgetJournalFrom extends React.Component {
             <Button style={{marginRight: '10px'}} onClick={this.HandleClear}>取消</Button>
 
           </div>
-          s
         </Form>
       </div>
     )

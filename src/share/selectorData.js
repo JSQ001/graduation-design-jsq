@@ -348,13 +348,13 @@ const selectorData = {
 
   'journal_line_company': {
     title: '选择公司',
-    url: `${config.baseUrl}/api/company/by/term`,
+    url: `${config.baseUrl}/api/company/by/condition`,
     searchForm: [
-      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'companyCode', label: "公司代码"},
       {type: 'input', id: 'name', label: "公司名称"},
     ],
     columns: [
-      {title: "公司代码", dataIndex: 'code'},
+      {title: "公司代码", dataIndex: 'companyCode'},
       {title: "公司名称", dataIndex: 'name'},
       {title:"描述",dataIndex:'description'}
     ],

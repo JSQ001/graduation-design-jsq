@@ -314,7 +314,7 @@ class BudgetJournalReCheckDetail extends React.Component {
            </Col>
             <Col span={8}>
             <div className="base-info-title">创建日期</div>
-            <div className="beep-info-text">{infoData.createdDate}</div>
+            <div className="beep-info-text">{String(infoData.createdDate).substring(0,10)}</div>
           </Col>
             <Col span={8}>
             <div className="base-info-title">预算项目类型</div>

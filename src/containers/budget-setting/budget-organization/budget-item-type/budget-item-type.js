@@ -71,8 +71,9 @@ class BudgetItemType extends React.Component {
 
 
   componentWillMount() {
-    this.getList()
+    this.getList();
   }
+
 
 //获得数据
   getList() {
@@ -90,6 +91,8 @@ class BudgetItemType extends React.Component {
           current: this.state.page + 1
         }
       })
+    }).catch((e)=>{
+
     });
   }
 
@@ -180,16 +183,15 @@ class BudgetItemType extends React.Component {
 
   render() {
     const {columns, data, pagination, searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
-    const total = pagination.total
     return (
       <div className="versionsDefine">
         <div className="searchFrom">
           <SearchArea
-            searchForm={searchForm}
-            submitHandle={this.search}
-            clearHandle={this.clear}
-            eventHandle={this.searchEventHandle}/>
-        </div>
+        searchForm={searchForm}
+        submitHandle={this.search}
+        clearHandle={this.clear}
+        eventHandle={this.searchEventHandle}/>
+      </div>
 
         <div className="table-header">
           <div
