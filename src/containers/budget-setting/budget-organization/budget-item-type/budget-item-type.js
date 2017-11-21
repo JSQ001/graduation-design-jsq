@@ -22,11 +22,6 @@ class BudgetItemType extends React.Component {
       data: [],
       columns: [
         {
-          title: this.props.intl.formatMessage({id: "budget.organization"}),
-          dataIndex: 'organizationName',
-          key: 'organizationName',
-        },
-        {
           title: this.props.intl.formatMessage({id: "budget.itemTypeCode"}),
           dataIndex: 'itemTypeCode',
           key: 'itemTypeCode',

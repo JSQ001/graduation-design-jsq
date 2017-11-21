@@ -42,6 +42,7 @@ class BudgetJournalDetail extends React.Component {
         selectedRowKeys: [],
         onChange: this.onSelectChange,
       },
+      commitFlag:false,
       infoDate:{},
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
@@ -255,13 +256,18 @@ class BudgetJournalDetail extends React.Component {
     let columns=this.state.columns;
     let handleData=this.state.handleData;
     const dimensionList = this.state.dimensionList;
-    for(let i=0;i<dimensionList.length;i++){
+    for(let i=1;i<dimensionList.length;i++){
      const item =dimensionList[i];
      columns.push(
-       {title:`${item.name}`, key:`dimension${i}`, dataIndex: `dimension${i}`,}
+       {title:`${item.name}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+         render: recode => (
+           <Popover content={recode}>
+             {recode}
+           </Popover>)
+       }
      )
      handleData.push(
-      {type: 'select', id:`dimension${i}`,options: [],labelKey:'id',valueKey:'name',label: 'dimension${i}Id',value: `dimension${i}Id`},
+      {type: 'select', id:`dimension${i}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${i}ValueName`,columnValue: `dimension${i}ValueId`},
      )
    }
     this.setState({
@@ -354,6 +360,7 @@ class BudgetJournalDetail extends React.Component {
         headerAndListData:response.data,
         infoDate:infoData,
         data:listData,
+        commitFlag:listData.length>0
       })
     })
   }
@@ -463,7 +470,7 @@ class BudgetJournalDetail extends React.Component {
       //删除完该预算日记账，跳转
       let path=this.state.budgetJournalPage.url;
       this.context.router.push(path);
-    }).catch(e => {
+    }).catch((e) => {
       message.error("失败")
     })
 
@@ -474,7 +481,7 @@ class BudgetJournalDetail extends React.Component {
     let headerAndListData = this.state.headerAndListData;
     console.log(headerAndListData);
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
-      message.success("成功");
+      message.success("预算日记账行保存成功");
       this.getDataByBudgetJournalCode();
 
     }).catch((e)=>{
@@ -485,10 +492,9 @@ class BudgetJournalDetail extends React.Component {
 
   //提交单据
   handlePut=()=>{
-    let headerAndListData = this.state.headerAndListData;
-    if(headerAndListData.list.length>0 ) {
-      let headerId = headerAndListData.dto.id;
-      httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${headerId}`).then((req) => {
+    if(this.state.commitFlag) {
+      let headerId =this.state. headerAndListData.dto.id;
+      httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`).then((req) => {
         message.success("提交成功");
         // this.getDataByBudgetJournalCode();
         this.setState({
@@ -517,13 +523,6 @@ class BudgetJournalDetail extends React.Component {
     const handData = this.state.handleData;
     handData.map((item)=>{
         if ( item.type === 'select' || item.type === 'value_list') {
-          /*let valueData ={};
-          valueData[item.valueKey]=values[item.value];
-          valueData[item.labelKey]=values[item.label];
-          let itemData ={
-            "label":values[item.label],
-            "value":values[item.value]
-          }*/
           valuesData[item.id]=values[item.columnLabel];
       } else if (item.type === 'list' ){
           let result = [];
@@ -546,56 +545,18 @@ class BudgetJournalDetail extends React.Component {
   //编辑行
   handlePutData=(value)=>{
     let valuePutData =this.headleUpData(value);
-    console.log(valuePutData);
-    let company =[];
-    let companyData={
-      "name":value.companyName,
-      "id":value.companyId,
-      "key":value.companyId,
-    }
-    company.push(companyData);
 
-    let unit =[];
-    let itemData={
-      "name":value.departmentName,
-      "id":value.unitId,
-      "key":value.unitId,
-    }
-    unit.push(itemData);
-
-    const valueData = {
-      ...value,
-      "company":[{
-        "name":value.companyName,
-        "id":value.companyId,
-        "key":value.companyId,
-      }],
-      "item":value.itemName,
-      "unit":[
-        {
-          "name":value.departmentName,
-          "id":value.unitId,
-          "key":value.unitId,
-        }
-      ],
-      "periodName":value.periodName,
-      "currency":value.currency,
-      "periodStrategy":this.state.headerAndListData.dto.periodStrategy,
-      "isNew":false,
-      "structureId":this.state.headerAndListData.dto.structureId
-    }
-    console.log(valueData);
     this.setState({
      params:{...valuePutData,
-              id:value.id,
-              versionNumber:value.id,
-              isNew:false,
-              oldData:value,
-     }
+              "id":value.id,
+               "structureId":this.state.headerAndListData.dto.structureId,
+               "versionNumber":value.id,
+              "isNew":false,
+              "oldData":value,}
      },()=>{
      this.setState({
-     isNew:false,
-     showSlideFrameNew:true,
+       isNew:false,
+       showSlideFrameNew:true,
      })
      })
 

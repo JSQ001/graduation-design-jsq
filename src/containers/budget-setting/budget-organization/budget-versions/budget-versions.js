@@ -20,14 +20,6 @@ class BudgetVersions extends React.Component {
       data: [],
       columns: [
         {
-          title: this.props.intl.formatMessage({id: "budget.organization"}),
-          dataIndex: 'organizationId',
-          key: 'organizationId',
-          render: (recode) => {
-            return <span> {this.props.organization.organizationName}</span>
-          }
-        },
-        {
           title: this.props.intl.formatMessage({id: "budget.versionCode"}),
           dataIndex: 'versionCode',
           key: 'versionCode',

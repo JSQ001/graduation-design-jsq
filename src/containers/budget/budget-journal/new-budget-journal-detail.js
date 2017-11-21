@@ -22,6 +22,7 @@ class NewBudgetJournalDetail extends React.Component {
       rate:0,
       loading:false,
       searchForm:[],
+      dimensionList:{},
       params:{},
       periodStrategyFlag:true,
       structureIdFlag:true
@@ -379,7 +380,9 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   handleSearch = (e) => {
-    let valuesData={};
+    let valuesData={
+      ...this.state.dimensionList
+    };
     let oldData ={};
     let dimensionDTO =[];
     if(!this.state.params.isNew){
@@ -502,21 +505,22 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
-      console.log(resp.data);
-      this.setState({
-        dimensionList:resp.data
-      },()=>{})
+
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
   }
 
   //根据预算表,set维度表单
-  getSearchForm(dimensionList){
+  getSearchForm(dimension){
     console.log("getSearchForm");
     let searchForm=this.state.searchForm;
-    for(let i=0;i<dimensionList.length;i++){
-      const item =dimensionList[i];
+    let dimensionList ={};
+    for(let i=1;i<dimension.length;i++){
+      const item =dimension[i];
+      let dimensionListKey = ["dimension"+i+"Id","dimension"+i+"Name"];
+      dimensionList[dimensionListKey[0]]=item.id;
+      dimensionList[dimensionListKey[1]]=item.name;
       console.log(item);
       let options=[];
       httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/${item.oid}`).then((res)=>{
@@ -529,18 +533,21 @@ class NewBudgetJournalDetail extends React.Component {
       })
       const searchFormItem=  {type: 'select_dimension', label:`${item.name}`, options:options,
         labelKey:'name',valueKey:'id',
-        columnLabel:`dimension${i}Name`,columnValue:`dimension${i}Id`
+        columnLabel:`dimensionValue${i}Name`,columnValue:`dimensionValue${i}Id`
       };
       searchFormItem["id"]="dimension"+i,
         searchFormItem["dimensionId"]=item.id;
-
       searchForm.push(
         searchFormItem
       )
     }
-    this.setState({columns});
+    this.setState({searchForm,dimensionList});
   }
 
+  onCancel = () =>{
+    this.props.from.resetFields();
+    this.props.close();
+  }
 
   render(){
     return (

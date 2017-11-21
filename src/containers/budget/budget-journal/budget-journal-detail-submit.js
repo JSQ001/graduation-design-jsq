@@ -139,6 +139,7 @@ class BudgetJournalDetailSubmit extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
       console.log(request.data)
       let listData = request.data.list;
+      this.getDimensionByStructureId(request.data.dto.structureId);
       console.log(listData);
       let headerData =request.data.dto;
       headerData.attachmentOID.map((item)=>{
@@ -151,6 +152,37 @@ class BudgetJournalDetailSubmit extends React.Component {
         data:listData,
         total:request.data.list.length ,
       })
+    })
+  }
+
+  //根据预算表id，获得维度
+  getDimensionByStructureId = (value) =>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
+      console.log(resp.data);
+
+        this.getColumnsAndDimensionhandleData(resp.data);
+
+    }).catch(e=>{
+      message.error(`获得维度失败,${e.response.data.message}`);
+    })
+  }
+
+  //根据预算表的维度.获取维度Columuns
+  getColumnsAndDimensionhandleData(dimensionList){
+    let columns=this.state.columns;
+    for(let i=1;i<dimensionList.length;i++){
+      const item =dimensionList[i];
+      columns.push(
+        {title:`${item.name}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        }
+      )
+    }
+    this.setState({
+      columns,
     })
   }
 
