@@ -21,8 +21,9 @@ class CompanyGroup extends React.Component {
       loading: true,
       data: [],
       searchParams: {
-        structureCode: "",
-        structureName: ""
+        setOfBooks: "",
+        companyGroupCode: "",
+        companyGroupName: ""
       },
       pagination: {
         current: 1,

@@ -267,9 +267,9 @@ const selectorData = {
     title: "公司组",
     url: `${config.baseUrl}/api/company/group/query/dto`,
     searchForm: [
-      {type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
+      /*{type: 'select', id: 'setOfBooksId', label: '帐套', options: [],
         getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
-      {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
+ */     {type: 'input', id: 'companyGroupCode', label: '公司组代码'},
       {type: 'input', id: 'companyGroupName', label: '公司组描述'},
     ],
     columns: [
