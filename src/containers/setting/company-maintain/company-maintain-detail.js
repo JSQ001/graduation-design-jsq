@@ -24,6 +24,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showImportFrame:false,
       updateState: false,
       saving: false,
       loading: true,
@@ -51,7 +52,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
       tabsData: {
         BANK:{
           url: ``,
-          rowSelection:{},
+          rowSelection:null,
           columns:
             [
               {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
@@ -63,16 +64,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
               {title: "开户地", key: "7", dataIndex: '7', width: '16%'},                 /*开户地*/
             ]
         },
-        rowSelectionData:[],
         USER:{
-          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           rowSelection:{
             type:'checkbox',
             selectedRowKeys: [],
             onChange: this.onSelectChange,
-            onSelect: this.onSelectItem,
-            onSelectAll: this.onSelectAll
           },
+          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           columns:
             [
               {title: "姓名", key: "fullName", dataIndex: 'fullName', width: '16%'},                   /*姓名*/
@@ -83,6 +81,11 @@ class WrappedCompanyMaintainDetail extends React.Component {
             ]
 
         },
+      },
+      rowSelection:{
+        type:'checkbox',
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
       },
       pagination: {
         total: 0
@@ -96,20 +99,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
   }
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys) => {
+  onSelectChange = (selectedRowKeys,selectedRows) => {
+    console.log(selectedRowKeys);
+    console.log("selectedRowKeys")
     let rowSelection = this.state.tabsData.USER.rowSelection;
     rowSelection.selectedRowKeys = selectedRowKeys;
     this.setState({});
   };
-
-
-  onSelectItem = () =>{
-
-  }
-
-  onSelectAll = () =>{
-
-  }
 
 
 
@@ -167,7 +163,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
     if(page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
-        loading: true
+        loading: true,
       }, ()=>{
         this.getList(this.state.nowStatus);
       })
@@ -191,7 +187,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
   };
 
   //渲染Tabs
-  renderTabs(){
+  renderTabs = () =>{
     return (
       this.state.tabs.map(tab => {
         return <TabPane tab={tab.name} key={tab.key}/>
@@ -204,56 +200,66 @@ class WrappedCompanyMaintainDetail extends React.Component {
     this.setState({
       nowStatus: key,
       loading: true,
+      data:[],
+      pagination: {
+        total: 0
+      },
       page: 0
     }, ()=>{
       this.getList(key);
     })
   };
 
-  renderTable(){
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
 
-    if(this.state.nowStatus === "USER"){
-      return    <Table columns={tabsData[nowStatus].columns}
-                       dataSource={data}
-                       pagination={pagination}
-                       loading={loading}
-                       bordered
-                       size="middle"
-                       rowSelection={tabsData[nowStatus].rowSelection}/>
-    }
-    else {
-      return     <Table columns={tabsData[nowStatus].columns}
-                        dataSource={data}
-                        pagination={pagination}
-                        loading={loading}
-                        bordered
-                        size="middle"
-                    />
-    }
-  }
 
   //渲染按钮
-  renderButton(){
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+  renderButton = () =>{
+    const { saving,pagination} = this.state;
     if(this.state.nowStatus === "USER"){
-        return (
-          <div>
-          <Button type="primary" onClick={this.handleNew}>员工导入</Button>
-          <Button>移动</Button>
-          </div>
-        )
-    }else {
-      return(
+      return (
         <div>
+          <div className="table-header-title">共 {pagination.total} 条数据 / 已经选择了 {} 条数据</div>
+          <div className="table-header-buttons">
+            <Button type="primary">员工导入</Button>
+            <Button onClick={this.removeUser} >移动</Button>
+          </div>
+          </div>
+          )
+    } else {
+          return(
+          <div>
+          <div className="table-header-title">共 {pagination.total} 条数据</div>
+          <div className="table-header-buttons">
           <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
-        </div>
-      )
-    }
+          </div>
+          </div>
+          )
+        }
   }
 
+  submitHandle = () =>{
+    this.showImport(false)
+  }
+
+  //员工移动
+  removeUser = () =>{
+    this.showImport(true)
+  }
+
+  showImport = (value) =>{
+   this.setState({
+     showImportFrame:value
+   })
+  }
+
+  CancelHandle = () => {
+    this.showImport(false)
+  }
+
+
+
   render() {
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const {infoList, rowSelection,infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
@@ -265,12 +271,23 @@ class WrappedCompanyMaintainDetail extends React.Component {
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据</div>
-          <div className="table-header-buttons">
-
-          </div>
+            {this.renderButton()}
         </div>
-        {this.renderTable()}
+        <Table columns={tabsData[nowStatus].columns}
+               dataSource={data}
+               pagination={pagination}
+               loading={loading}
+               bordered
+               size="middle"
+               rowSelection={tabsData[nowStatus].rowSelection}/>
+
+
+        <ListSelector visible={this.state.showImportFrame}
+                      onOk={this.submitHandle}
+                      onCancel={this.CancelHandle}
+                      type='version_company'
+                      extraParams={{"versionId": this.props.params.versionId}}
+        />
 
       </div>
     )

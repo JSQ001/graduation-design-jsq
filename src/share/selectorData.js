@@ -348,6 +348,22 @@ const selectorData = {
     ],
     key: 'id'
   },
+
+
+  'journal_line_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+  key: 'id'
+},
   'cost_center_item': {
     title: '成本中心',
     url: `${config.baseUrl}/api/my/cost/center/items/`,
@@ -355,9 +371,10 @@ const selectorData = {
     columns: [
       {title: "成本中心代码", dataIndex: 'code'},
       {title: "成本中心名称", dataIndex: 'name'}
+
     ],
-    key: 'id'
-  },
+  key: 'id'
+},
   'journal_line_department':{
     title: "选择部门",
     url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
