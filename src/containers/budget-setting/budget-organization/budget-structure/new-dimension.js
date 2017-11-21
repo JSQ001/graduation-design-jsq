@@ -109,7 +109,6 @@ class NewDimension extends React.Component{
     if(value.length>0){
       let selectorItem = this.state.selectorItem;
       selectorItem.url = `${config.baseUrl}/api/my/cost/center/items/${value[0].costCenterOID}`;
-
       this.setState({
         dimensionCode: value,
         selectorItem,

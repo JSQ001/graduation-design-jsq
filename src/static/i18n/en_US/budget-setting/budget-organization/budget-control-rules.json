@@ -1,11 +1,11 @@
 {
-  "budget.controlRulesFrom": "业务规则从",
-  "budget.controlRulesTo": "业务规则到",
+  "budget.controlRulesFrom": "控制规则从",
+  "budget.controlRulesTo": "控制规则到",
   "budget.controlRules.priority": "优先级",
-  "budget.controlRuleCode": "业务规则代码",
-  "budget.controlRuleName": "业务规则名称",
+  "budget.controlRuleCode": "控制规则代码",
+  "budget.controlRuleName": "控制规则名称",
   "budget.controlRule.effectiveDate": "有效日期",
-  "budget.controlRuleExist": "该业务规则已存在",
+  "budget.controlRuleExist": "该控制规则已存在",
   "budget.controlRule.startDate": "起始",
   "budget.controlRule.endDate": "结束",
   "budget.ruleParameterType": "规则参数类型",
@@ -26,6 +26,4 @@
   "budget.summaryOrDetailHelp.all": "在上下限值内的明细和汇总规则参数都包括在内",
   "budget.summaryOrDetailHelp.summary": "只包括在上下限内的汇总规则参数",
   "budget.summaryOrDetailHelp.detail": "只包括在上下限内的明细规则参数"
-
-
 }

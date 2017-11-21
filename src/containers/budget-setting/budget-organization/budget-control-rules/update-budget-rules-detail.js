@@ -95,7 +95,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'name',
         codeKey: 'companyCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
         selectorItem: undefined
       },
       'COMPANY_GROUP': {
@@ -405,7 +405,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
-   
+
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
@@ -635,7 +635,8 @@ class UpdateBudgetRulesDetail extends React.Component{
 }
 function mapStateToProps(state) {
   return {
-    organization: state.budget.organization
+    organization: state.budget.organization,
+    company: state.login.company,
   }
 }
 const WrappedUpdateBudgetRulesDetail = Form.create()(UpdateBudgetRulesDetail);

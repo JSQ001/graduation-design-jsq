@@ -286,7 +286,7 @@ class BudgetItem extends React.Component {
         <ListSelector type="company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
-                      extraParams={{isEnabled: true}}
+                      extraParams={{setOfBooksId: this.props.company.setOfBooksId,isEnabled: true}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
@@ -297,9 +297,10 @@ BudgetItem.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
-
+    organization: state.login.organization,
+    company: state.login.company,
   }
 }
 
