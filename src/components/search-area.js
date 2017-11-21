@@ -68,18 +68,44 @@ class SearchArea extends React.Component{
     this.setState({ checkboxListForm });
   };
 
-  //checkbox全选
-  onCheckAllChange = (e, key) => {
+  //checkbox改变
+  onCheckChange = (e, id, key, value) => {
     let checkboxListForm = this.state.checkboxListForm;
     checkboxListForm.map(list => {
+      if (list.id === id) {
+        list.items.map(item => {
+          if (item.key === key) {
+            item.checked = item.checked || [];
+            e.target.checked ? item.checked.push(value) : item.checked.delete(value);
+            item.indeterminate = !!item.checked.length && (item.checked.length < item.options.length);
+            item.checkAll = (item.checked.length === item.options.length)
+          }
+        })
+      }
+    });
+    this.setState({ checkboxListForm })
+  };
+
+  //checkbox全选
+  onCheckAllChange = (e, key, id) => {
+    let checkboxListForm = this.state.checkboxListForm;
+    checkboxListForm.map(list => {
+      let checkedArr = [];
       list.items.map(item => {
         if (item.key === key) {
           item.checked = [];
           e.target.checked && item.options.map(option => {
             item.checked.push(option.value)
           });
+          item.indeterminate = false;
+          item.checkAll = e.target.checked
         }
-      })
+        item.checked && item.checked.map(value => {
+          checkedArr.push(value)
+        });
+      });
+      let temp = {[list.id]: checkedArr};
+      list.id === id && this.props.form.setFieldsValue(temp);
     });
     this.setState({ checkboxListForm });
   };
@@ -528,19 +554,27 @@ class SearchArea extends React.Component{
             item.checked && item.checked.map(value => {
               checkedArr.push(value)
             });
-            if (item.checkAllOption) {
-              item.checkAllOption = false;
-              let newOptions = [{label: "全部", value: "ALL"}];
-              item.options.map((option, index) => {
-                newOptions[index + 1] = option;
-              });
-              item.options = newOptions;
-            }
           });
           return (
             <FormItem key={list.id}>
+              {list.items.map(item => {
+                return (
+                  item.checkAllOption ?
+                    <Row key={item.key}>
+                      <Col span={3}></Col>
+                      <Col>
+                        <Checkbox key={item.key}
+                                  value={item.key}
+                                  className="check-all-option"
+                                  indeterminate={item.indeterminate}
+                                  checked={item.checkAll}
+                                  onClick={(e) => this.onCheckAllChange(e, item.key, list.id)}>全部</Checkbox>
+                      </Col>
+                    </Row> : ''
+                )
+              })}
               {getFieldDecorator(list.id, {
-                initialValue: checkedArr,
+                initialValue: checkedArr
               })(
                 <Checkbox.Group onChange={values => this.props.checkboxChange(values)}>
                   {list.items.map(item => {
@@ -553,12 +587,12 @@ class SearchArea extends React.Component{
                           </a>
                         </Col>
                         <Col span={19} className="list-col-content" style={{overflow:'hidden', height: item.expand ? 'auto' : '42px'}}>
-                          {item.options.map(option => {
-                            return option.value === 'ALL' ? <Checkbox value={option.value}
-                                                                      key={option.value}
-                                                                      indeterminate={option.indeterminate}
-                                                                      onClick={(e) => this.onCheckAllChange(e, item.key)}>{option.label}</Checkbox> :
-                              <Checkbox value={option.value} key={option.value}>{option.label}</Checkbox>
+                          {item.options.map((option, index) => {
+                            return(
+                              <Checkbox value={option.value}
+                                        key={option.value}
+                                        onClick={(e) => this.onCheckChange(e, list.id, item.key, option.value)}
+                                        style={{paddingLeft: index === 0 && item.checkAllOption ? '62px' : '0'}}>{option.label}</Checkbox>)
                           })}
                         </Col>
                       </Row>)
