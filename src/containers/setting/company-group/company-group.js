@@ -13,19 +13,6 @@ import menuRoute from 'share/menuRoute'
 
 import 'styles/setting/company-group/company-group.scss';
 
-
-let setOfBook = [];
-httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-  console.log(response)
-  response.data.map((item)=>{
-    let option = {
-      label: item.setOfBooksCode +" - "+item.setOfBooksName,
-      value: item.id
-    };
-    setOfBook.addIfNotExist(option)
-  })
-});
-
 class CompanyGroup extends React.Component {
   constructor(props) {
     super(props);
@@ -46,7 +33,8 @@ class CompanyGroup extends React.Component {
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'select', options: setOfBook, id: 'setOfBook', label: "账套"},
+        {type: 'select', id: 'setOfBook', label: formatMessage({id:"budget.set.of.books"}), options: [],
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
         {type: 'input', id: 'companyGroupCode', label: "公司组代码" }, /*预算表代码*/
         {type: 'input', id: 'companyGroupName', label: "公司组名称" }, /*预算表名称*/
       ],
@@ -90,9 +78,12 @@ class CompanyGroup extends React.Component {
   };
 
   deleteItem = (e, record) => {
-    httpFetch.delete(`${config.budgetUrl}/api/company/group/${record.id}`).then(response => {
+    this.setState({loading: true});
+    httpFetch.delete(`${config.baseUrl}/api/company/group/${record.id}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.companyGroupName})); // name删除成功
-      this.getList();
+      this.setState({
+        loading: false
+      },this.getList());
     })
   };
 

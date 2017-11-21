@@ -216,26 +216,25 @@ class WrappedCompanyMaintainDetail extends React.Component {
   renderButton = () =>{
     const { saving,pagination} = this.state;
     if(this.state.nowStatus === "USER"){
-        return (
+      return (
         <div>
           <div className="table-header-title">共 {pagination.total} 条数据 / 已经选择了 {} 条数据</div>
           <div className="table-header-buttons">
-              <Button type="primary">员工导入</Button>
-              <Button onClick={this.removeUser} >移动</Button>
+            <Button type="primary">员工导入</Button>
+            <Button onClick={this.removeUser} >移动</Button>
           </div>
-        </div>
-
-        )
-    }else {
-        return(
-        <div>
+          </div>
+          )
+    } else {
+          return(
+          <div>
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+          <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
           </div>
-        </div>
-      )
-    }
+          </div>
+          )
+        }
   }
 
   submitHandle = () =>{

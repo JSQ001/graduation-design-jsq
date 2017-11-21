@@ -17,18 +17,6 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 
-let setOfBooks = [];
-httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-  console.log(response)
-  response.data.map((item)=>{
-    let option = {
-      label: item.setOfBooksCode +" - "+item.setOfBooksName,
-      value: item.id
-    };
-    setOfBooks.addIfNotExist(option)
-  })
-});
-
 class CompanyGroupDetail extends React.Component{
   constructor(props){
     super(props);
@@ -41,7 +29,7 @@ class CompanyGroupDetail extends React.Component{
       data: [],
       edit: false,
       lov: {
-        type: "company_group_lov",
+        type: "company",
         visible: false,
         listSelectedData:{}
       },
@@ -58,7 +46,8 @@ class CompanyGroupDetail extends React.Component{
       infoList: [
         {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
         {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
-        {type: 'select',options: setOfBooks  , id: 'setOfBook', required:true, label:"账套"},
+        {type: 'select', id: 'setOfBook', label: formatMessage({id:"budget.set.of.books"}) + " :", options: [],
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
         {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
@@ -207,6 +196,8 @@ class CompanyGroupDetail extends React.Component{
   //处理公司弹框点击ok,添加公司
   handleListOk = (result) => {
     let company = [];
+    console.log(result.result)
+    this.showListSelector(false)
   };
 
   render(){
@@ -229,7 +220,7 @@ class CompanyGroupDetail extends React.Component{
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
-            <Button disabled onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            <Button disabled onClick={()=>this.showListSelector(false)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
           </div>
         </div>
         <Table

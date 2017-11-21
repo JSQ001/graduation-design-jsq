@@ -204,7 +204,7 @@ table{
   background: rgba(0, 0, 0, 0.04);
 }
 
-.ant-calendar {
+.ant-calendar:not(.ant-calendar-range) {
   width: 245px;
 }
 
@@ -215,6 +215,11 @@ table{
     cursor: pointer;
   }
 }
+
+.hide{
+  display: none;
+}
+
 
 
 

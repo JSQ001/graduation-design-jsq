@@ -2,10 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import config from 'config'
-import debounce from 'lodash.debounce'
-import { Form, Button, Table, Input, message } from 'antd'
-const Search = Input.Search
+import { Form, Button, Table, Input, message, Icon } from 'antd'
+const Search = Input.Search;
 
 import BasicInfo from 'components/basic-info'
 import SlideFrame from 'components/slide-frame'
@@ -22,9 +22,9 @@ class StrategyControlDetail extends React.Component {
       infoList: [
         {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
         {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
-        {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005},
+        {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005, event: 'controlMethod'},
         {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
-        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true},
+        {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true, disabled: false},
         {type: 'input', label: '事件：', id: 'expWfEvent'},
       ],
       infoData: {},
@@ -32,12 +32,12 @@ class StrategyControlDetail extends React.Component {
       baseInfoLoading: false,
       columns: [
         {title: '类型', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode', render:()=>{return '公式'}},
-        {title: '控制对象', dataIndex: 'object', key: 'object'},
-        {title: '比较', dataIndex: 'range', key: 'range'},
-        {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy'},
-        {title: '方式', dataIndex: 'manner', key: 'manner'},
-        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner=='绝对额' ? value : '-'}},
-        {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner=='百分比' ? value+'%' : value}},
+        {title: '控制对象', dataIndex: 'object', key: 'object', render: value => <span>{value.label}</span>},
+        {title: '比较', dataIndex: 'range', key: 'range', render: value => <span>{value.label}</span>},
+        {title: '控制期段', dataIndex: 'periodStrategy', key: 'periodStrategy', render: value => <span>{value.label}</span>},
+        {title: '方式', dataIndex: 'manner', key: 'manner', render: value => <span>{value.label}</span>},
+        {title: '操作', dataIndex: 'operator', key: 'operator', render:(value, record)=>{return record.manner.value === 'FIXED_AMOUNT' ? value.label : '-'}},
+        {title: '值', dataIndex: 'value', key: 'value', render:(value, record)=>{return record.manner.value === 'PERCENTAGE' ? value+'%' : value}},
       ],
       data: [],
       showSlideFrame: false,
@@ -49,8 +49,8 @@ class StrategyControlDetail extends React.Component {
       newParams: {},
       keyWords: '',
       isNew: false, //判断侧滑是新建或编辑
+      budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //预算控制策略详情
     };
-    this.handleSearch = debounce(this.handleSearch, 250);
   }
 
   componentWillMount() {
@@ -66,14 +66,11 @@ class StrategyControlDetail extends React.Component {
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((response) => {
-      if(response.status==200) {
-        this.setState({
-          infoData: response.data
-        })
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((res) => {
+      if(res.status === 200) {
+        res.data.controlMethod.value === 'NO_MESSAGE' && (res.data.messageCode = {});
+        this.setState({ infoData: res.data })
       }
-    }).catch((e) => {
-
     })
   }
 
@@ -133,14 +130,20 @@ class StrategyControlDetail extends React.Component {
     })
   };
 
+  //更新基本信息
   handleUpdate = (params) => {
     params.id = this.state.strategyControlId;
     params.versionNumber = this.state.infoData.versionNumber;
-    console.log(params);
-    if(!params.controlMethod || !params.messageCode || !params.detailName) return;
+    if(!params.controlMethod || !params.detailName) return;
+    if (params.controlMethod === 'NO_MESSAGE') {
+      params.messageCode = undefined
+    } else if (params.controlMethod !== 'NO_MESSAGE' && !params.messageCode) {
+      message.error('请选择消息');
+      return;
+    }
     this.setState({ baseInfoLoading: true }, () => {
       httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/details`, params).then((response)=>{
-        if(response.status==200) {
+        if(response.status === 200) {
           message.success('保存成功');
           this.getBasicInfo();
           this.setState({ updateState: true, baseInfoLoading: false }, () => {
@@ -148,25 +151,11 @@ class StrategyControlDetail extends React.Component {
           })
         }
       }).catch((e)=>{
+        this.setState({ updateState: false, baseInfoLoading: false });
         if(e.response){
-          message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+          message.error(`保存失败, ${e.response.data.message}`);
         }
-        this.setState({ updateState: false, baseInfoLoading: false })
       })
-    })
-
-  };
-
-  handleSearch = (value) => {
-    console.log(value);
-    this.setState({
-      page: 0,
-      keyWords: value,
-      pagination: {
-        current: 1
-      }
-    }, () => {
-      this.getList();
     })
   };
 
@@ -179,6 +168,29 @@ class StrategyControlDetail extends React.Component {
     })
   };
 
+  handleBack = () => {
+    this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
+  };
+
+  //处理修改基本信息
+  eventHandle = (e) => {
+    e = e || this.state.infoData.controlMethod.value;
+    let infoList = this.state.infoList;
+    infoList.map((item) => {
+      if (item.id === 'messageCode') {
+        if (e === 'NO_MESSAGE') {
+          item.disabled = true;
+          item.isRequired = false;
+          this.infoRef._reactInternalInstance._renderedComponent._instance.setValues({'messageCode': ''})
+        } else {
+          item.disabled = false;
+          item.isRequired = true;
+        }
+      }
+    });
+    this.setState({ infoList })
+  };
+
   render() {
     const { infoList, infoData, columns, data, loading, pagination, showSlideFrame, updateState, baseInfoLoading, newParams, isNew } = this.state;
     return (
@@ -187,16 +199,13 @@ class StrategyControlDetail extends React.Component {
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
                    updateState={updateState}
+                   eventHandle={this.eventHandle}
+                   wrappedComponentRef={(inst) => this.infoRef = inst}
                    loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>触发条件</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary"  onClick={() => this.showSlide(true)}>新 建</Button>
-            <Search
-              placeholder="请输入控制对象/控制期段"
-              style={{ width:200,position:'absolute',right:0,bottom:0 }}
-              onChange={(e) => this.handleSearch(e.target.value)}
-            />
           </div>
         </div>
         <Table columns={columns}
@@ -213,10 +222,15 @@ class StrategyControlDetail extends React.Component {
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showUpdateSlide(false)}
                     params={{newParams, isNew}}/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
       </div>
     )
   }
 }
+
+StrategyControlDetail.contextTypes={
+  router:React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

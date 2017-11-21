@@ -48,7 +48,11 @@ class BudgetBalanceCondition extends React.Component {
   };
 
   deleteCondition = (e, record) => {
-
+    this.setState({ loading: true });
+    httpFetch.delete(`${config.budgetUrl}/api/budget/balance/query/header/${record.id}`).then(res => {
+      this.setState({ loading: false });
+      this.getList();
+    })
   };
 
   onCancel = () => {

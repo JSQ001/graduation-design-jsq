@@ -60,6 +60,10 @@ class BasicInfo extends React.Component{
     })
   };
 
+  setValues = (values) => {
+    this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
+  };
+
   //渲染基本信息显示页
   renderGetInfo(item) {
     if (item.type === 'switch') {
@@ -103,12 +107,13 @@ class BasicInfo extends React.Component{
     }
   }
 
-  getInfos() {
+  getInfo() {
     let children = [];
     let rows = [];
-    this.props.infoList.map((item, index)=>{
+    let infoList = [].concat(this.state.infoList);
+    infoList.map((item, index)=>{
 
-      //获取默认值，用于search-area组件
+      //获取默认值
       item.defaultValue = this.state.infoData[item.id];
 
       //规则定义的有效时间
@@ -137,7 +142,7 @@ class BasicInfo extends React.Component{
         );
         children = [];
       }
-      if ((index+1) === this.props.infoList.length && (index+1) % 3 !== 0) {
+      if ((index+1) === infoList.length && (index+1) % 3 !== 0) {
         rows.push(
           <Row key={index}>
             {children}
@@ -156,8 +161,8 @@ class BasicInfo extends React.Component{
     this.setState({ cardShow: true })
   };
 
-  handelEvent=(event,e)=>{
-    this.props.eventHandle(event,e);
+  handelEvent = (e, event) => {
+    this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
   };
 
   render() {
@@ -168,7 +173,7 @@ class BasicInfo extends React.Component{
         <Card title={this.props.intl.formatMessage({id: 'common.baseInfo'}) /* 基本信息 */}
               extra={<a onClick={this.editInfo}>{this.props.intl.formatMessage({id: 'common.edit'}) /* 编辑 */}</a>}
               noHovering >
-          <Row>{this.getInfos()}</Row>
+          <Row>{this.getInfo()}</Row>
         </Card>)
     } else {
       domRender = (

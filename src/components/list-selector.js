@@ -162,7 +162,13 @@ class ListSelector extends React.Component {
     if(nextProps.type !== this.state.type && !nextProps.selectorItem && nextProps.visible)
       this.checkType(nextProps.type);
     else if(nextProps.selectorItem && nextProps.visible)
-      this.checkSelectorItem(nextProps.selectorItem)
+      this.checkSelectorItem(nextProps.selectorItem);
+
+    let { rowSelection } = this.state;
+    if(nextProps.single !== (rowSelection.type === 'radio')){
+      rowSelection.type = nextProps.single ? 'radio' : 'checkbox';
+      this.setState({ rowSelection })
+    }
   };
 
   handleOk = () => {
@@ -254,7 +260,7 @@ class ListSelector extends React.Component {
   render() {
     const { visible, onCancel, afterClose } = this.props;
     const { data, pagination, loading, selectorItem, selectedData, rowSelection } = this.state;
-    const { searchForm, columns, title } = selectorItem;
+    const { searchForm, columns, title, key } = selectorItem;
     return (
       <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
         { searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
@@ -270,6 +276,7 @@ class ListSelector extends React.Component {
         <Table columns={columns}
                onRowClick={this.handleRowClick}
                dataSource={data}
+               rowKey={record => record[key]}
                pagination={pagination}
                loading={loading}
                bordered

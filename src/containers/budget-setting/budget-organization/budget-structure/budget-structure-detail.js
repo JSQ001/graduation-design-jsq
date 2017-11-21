@@ -9,11 +9,12 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
 
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Checkbox, Table, message  } from 'antd'
+import { Form, Button, Select, Input, Switch, Icon, Badge, Tabs, Checkbox, Table, message, Popover  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
 import SlideFrame from "components/slide-frame";
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
+import UpdateDimension from 'containers/budget-setting/budget-organization/budget-structure/update-dimension'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
@@ -40,6 +41,7 @@ class BudgetStructureDetail extends React.Component{
       },
       updateState: false,
       structure:{},
+      dimension: {},
       showSlideFrame: false,
       showSlideFrameUpdate: false,
       statusCode: formatMessage({id:"common.status.enable"}) /*启用*/,
@@ -84,8 +86,10 @@ class BudgetStructureDetail extends React.Component{
             {                        /*维度代码*/
               title:formatMessage({id:"structure.dimensionCode"}), key: "dimensionCode", dataIndex: 'dimensionCode'
             },
-            {                        /*描述*/
-              title:formatMessage({id:"structure.description"}), key: "description", dataIndex: 'description'
+            {                        /*维度名称*/
+              title:formatMessage({id:"structure.dimensionName"}), key: "dimensionName", dataIndex: 'dimensionName',
+              render: record => (
+                <span>{record ? <Popover content={record}>{record} </Popover> : '-'} </span>)
             },
             {                        /*布局位置*/
               title:formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
@@ -93,12 +97,20 @@ class BudgetStructureDetail extends React.Component{
             {                        /*布局顺序*/
               title:formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
             },
-            {                        /*默认维值*/
-              title:formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName'
+            {                        /*默认维值代码*/
+              title:formatMessage({id:"structure.defaultDimValueCode"}), key: "defaultDimValueCode", dataIndex: 'defaultDimValueCode',
+              render:recode=> <span>{recode ? recode : '-'}</span>
             },
-            {                        /*操作*/
-              title:formatMessage({id:"structure.opetation"}), key: "opration", dataIndex: 'opration',width:'10%'
+            {                        /*默认维值名称*/
+              title:formatMessage({id:"structure.defaultDimValueName"}), key: "defaultDimValueName", dataIndex: 'defaultDimValueName',
+              render: record => (
+                <span>{record ? <Popover content={record}>{record} </Popover> : '-'} </span>)
             },
+            {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
+              render: isEnabled => (
+                <Badge status={isEnabled ? 'success' : 'error'}
+                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+              )}, //状态
         ]
       },
       tabs: [
@@ -132,7 +144,6 @@ class BudgetStructureDetail extends React.Component{
 
     //获取某预算表某行的数据
     httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
-      console.log(response)
       let periodStrategy = {label:response.data.periodStrategyName,value:response.data.periodStrategy};
       response.data.periodStrategy = periodStrategy;
       if(response.status === 200){
@@ -148,7 +159,7 @@ class BudgetStructureDetail extends React.Component{
       if(response.status === 200){
         if(response.data.length>0 /*&& this.state.structure.periodStrategy !== value.periodStrategy*/){
           flag = true
-          //message.error(this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})) //该预算表已被预算日记账引用，不允许修改编制期段！
+          message.error(this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})) //该预算表已被预算日记账引用，不允许修改编制期段！
         }
       }
     });
@@ -221,7 +232,6 @@ class BudgetStructureDetail extends React.Component{
 
   getList = ()=>{
     let params = this.state.params;
-    console.log(params)
     this.state.label === "company" ?
       httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/companies/query?structureId=${this.props.params.structureId}`).then((response)=>{
         if(response.status === 200) {
@@ -240,7 +250,6 @@ class BudgetStructureDetail extends React.Component{
       :
       httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}`).then((response)=>{
         if(response.status === 200){
-          console.log(response.data)
           response.data.map((item)=>{
             item.key = item.id
           });
@@ -256,21 +265,54 @@ class BudgetStructureDetail extends React.Component{
   };
 
 
-  //控制维度侧滑
+  //控制新建维度侧滑
   showSlide = (flag) => {
     this.setState({
       showSlideFrame: flag
     })
   };
 
-  //处理关闭侧滑页面
+  //处理关闭新建侧滑维度页面
   handleCloseSlide = (params) => {
+    this.setState({
+      showSlideFrame: false,
+      loading: typeof params === 'undefined' ? false : true
+    });
     if(params) {
       this.getList();
     }
+  };
+
+  //点击行，进入维度编辑页面
+  handleRowClick = (record, index, event) =>{
+    console.log(record)
+    let defaultDimensionCode = [];
+    let defaultDimensionValue = [];
+    defaultDimensionCode.push({ id: record.dimensionId, code: record.defaultDimValueCode,key: record.dimensionId});
+    defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
+    record.defaultDimensionCode = defaultDimensionCode;
     this.setState({
-      showSlideFrame: false
+      showSlideFrameUpdate: true,
+      dimension:record
     })
+  };
+
+  showSlideUpdate = (flag)=>{
+    this.setState({
+      showSlideFrameUpdate: flag
+    })
+  };
+
+  //关闭新建侧滑维度页面
+  handleCloseSlideUpdate = (params) => {
+    console.log(params)
+    this.setState({
+      showSlideFrameUpdate: false,
+      loading: typeof params === 'undefined' ? false : true
+    });
+    if(params) {
+      this.getList();
+    }
   };
 
   //控制是否弹出公司列表
@@ -310,10 +352,9 @@ class BudgetStructureDetail extends React.Component{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=STRUCTURE');
   };
 
-
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { infoList, flag, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
+    const { infoList, dimension, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
 
     return(
 
@@ -333,16 +374,13 @@ class BudgetStructureDetail extends React.Component{
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{label === 'company'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
               this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
-            <Search className="table-header-search"
-                    onChange={this.handleSearch}                                      /* 请输入公司名称/代码*/
-                    placeholder={ label === "company" ? this.props.intl.formatMessage({id:'structure.searchCompany'}) :
-                      this.props.intl.formatMessage({id: 'structure.searchDimension' /*请输入维度名称/代码*/ })}/>
           </div>
         </div>
         <Table
             dataSource={data}
             columns={columns}
             loading={loading}
+            onRowClick={this.handleRowClick}
             pagination={pagination}
             size="middle"
             bordered/>
@@ -356,9 +394,10 @@ class BudgetStructureDetail extends React.Component{
                     params={structure}/>
         <SlideFrame title="编辑维度"
                     show={showSlideFrameUpdate}
-                    content={NewDimension}
-                    afterClose={this.handleCloseSlideUpdae}
-                    onClose={() => this.showSlideUpdate(false)}/>
+                    content={UpdateDimension}
+                    afterClose={this.handleCloseSlideUpdate}
+                    onClose={() => this.showSlideUpdate(false)}
+                    params={dimension}/>
 
         <ListSelector type={lov.type}
                       visible={lov.visible}

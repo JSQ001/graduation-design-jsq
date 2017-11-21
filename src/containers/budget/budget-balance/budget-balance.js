@@ -24,6 +24,7 @@ class BudgetBalance extends React.Component {
     super(props);
     const { formatMessage } = this.props.intl;
     this.state = {
+      structureId: null,
       budgetBalanceResult: menuRoute.getRouteItem('budget-balance-result', 'key'),
       showSlideFrame: false,
       params: [],
@@ -66,12 +67,12 @@ class BudgetBalance extends React.Component {
       searching: false,
       saveNewCondition: true,
       costCenterSelectorItem: {  //成本中心所需要的selectorItem，url需要在params的onChange里手动添加
-        listType: 'cost_center_item',
+        listType: 'cost_center_item_by_id',
         labelKey: 'name',
         valueKey: 'id',
         codeKey: 'code',
         listExtraParams: undefined,
-        selectorItem: Object.assign({}, selectorData['cost_center_item'])
+        selectorItem: undefined
       },
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
@@ -96,24 +97,24 @@ class BudgetBalance extends React.Component {
         getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: organizationIdParams,
         labelKey: 'versionName', valueKey: 'id'},
       {type: 'select', id:'structureId', label: '预算表', isRequired: true, options: [], method: 'get',
-        getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: organizationIdParams,
+        getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: organizationIdParams, event: 'STRUCTURE_CHANGE',
         labelKey: 'structureName', valueKey: 'id'},
       {type: 'select', id:'scenarioId', label: '预算场景', isRequired: true, options: [], method: 'get',
         getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: organizationIdParams,
         labelKey: 'scenarioName', valueKey: 'id'},
-      {type: 'select', id:'yearLimit', label: '年度', isRequired: true, options: yearOptions, event: 'YEAR_CHANGE'},
+      {type: 'select', id:'yearLimit', label: '年度', options: yearOptions, event: 'YEAR_CHANGE', isRequired: true},
       {type: 'items', id: 'dateRange', items: [
-        {type: 'select', id: 'periodLowerLimit', label: '期间从', isRequired: true, options: [], method: 'get', disabled: true,
-        getUrl: `${config.baseUrl}/api/periods/query/periods/year`, getParams: {year: new Date().getFullYear()},
-          labelKey: 'periodSetCode', valueKey: 'periodSetCode'},
+        {type: 'select', id: 'periodLowerLimit', label: '期间从', options: [], method: 'get', disabled: true,
+        getUrl: `${config.baseUrl}/api/company/group/assign/query/budget/periods`, getParams: {setOfBooksId: this.props.company.setOfBooksId},
+          labelKey: 'periodName', valueKey: 'periodName'},
         {type: 'select', id: 'periodUpperLimit', label: '期间到', options: [], method: 'get', disabled: true,
-          getUrl: `${config.baseUrl}/api/periods/query/periods/year`, getParams: {year: new Date().getFullYear()},
-          labelKey: 'periodSetCode', valueKey: 'periodSetCode'}
+          getUrl: `${config.baseUrl}/api/company/group/assign/query/budget/periods`, getParams: {setOfBooksId: this.props.company.setOfBooksId},
+          labelKey: 'periodName', valueKey: 'periodName'}
       ]},
-      {type: 'value_list', id:'periodSummaryFlag', label: '期间汇总', isRequired: true, options: [], valueListCode: 2020},
+      {type: 'value_list', id:'periodSummaryFlag', label: '期间汇总', options: [], valueListCode: 2020, disabled: true},
       {type: 'items', id: 'seasonRange', items: [
-        {type: 'value_list', id: 'quarterLowerLimit', label: '季度从', isRequired: true, options: [], valueListCode: 2021},
-        {type: 'value_list', id: 'quarterUpperLimit', label: '季度到', options: [], valueListCode: 2021}
+        {type: 'value_list', id: 'quarterLowerLimit', label: '季度从', options: [], valueListCode: 2021, disabled: true},
+        {type: 'value_list', id: 'quarterUpperLimit', label: '季度到', options: [], valueListCode: 2021, disabled: true}
       ]},
       {type: 'value_list', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: [], valueListCode: 2019}
     ];
@@ -121,6 +122,9 @@ class BudgetBalance extends React.Component {
     let itemSelectorItem = selectorData['budget_item'];
     itemSelectorItem.listExtraParams = organizationIdParams;
     itemSelectorItem.searchForm[1].getParams = itemSelectorItem.searchForm[2].getParams = organizationIdParams;
+
+    let userSelectorItem = selectorData['user'];
+    userSelectorItem.key = 'employeeID';
 
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -161,7 +165,7 @@ class BudgetBalance extends React.Component {
         labelKey: 'name',
         valueKey: 'id',
         codeKey: 'companyCode',
-        listExtraParams: {},
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
         selectorItem: undefined
       },
       'COMPANY_GROUP': {
@@ -176,7 +180,7 @@ class BudgetBalance extends React.Component {
         listType: 'journal_line_department',
         labelKey: 'name',
         valueKey: 'id',
-        codeKey: 'companyGroupCode',
+        codeKey: 'code',
         listExtraParams: {companyId: this.props.company.id},
         selectorItem: undefined
       },
@@ -194,16 +198,23 @@ class BudgetBalance extends React.Component {
         valueKey: 'employeeID',
         codeKey: 'employeeID',
         listExtraParams: {},
-        selectorItem: undefined
+        selectorItem: userSelectorItem
       },
-      'EMPLOYEE_GROUP': {}
+      'EMPLOYEE_GROUP': {
+        listType: 'user_group',
+        labelKey: 'name',
+        valueKey: 'id',
+        codeKey: 'id',
+        listExtraParams: {},
+        selectorItem: undefined
+      }
     };
     this.setState({ searchForm, paramValueMap });
   }
 
   //渲染下方表格内的选项框及Chooser
   renderColumns = (index, dataIndex) => {
-    const { queryLineListTypeOptions, queryLineListParamOptions, params, paramValueMap, costCenterSelectorItem } = this.state;
+    const { queryLineListTypeOptions, queryLineListParamOptions, params, paramValueMap } = this.state;
     switch(dataIndex){
       case 'type':{
         return (
@@ -223,8 +234,7 @@ class BudgetBalance extends React.Component {
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={(value) => this.handleChangeParams(value, index)}
                   value={params[index].params}
-                  onFocus={() => this.handleFocusParamSelect(index)}
-                  notFoundContent={<Spin size="small" />}>
+                  onFocus={() => this.handleFocusParamSelect(index)}>
             {paramOptions ? paramOptions.map((option)=>{
               return <Option key={option.value}>{option.label}</Option>
             }) : null}
@@ -233,7 +243,7 @@ class BudgetBalance extends React.Component {
       }
       case 'value':{
         //如果为维度相关项目，则为成本中心selectorItem
-        let param = params[index].params ? (params[index].type === 'BGT_RULE_PARAMETER_DIM' ? costCenterSelectorItem : paramValueMap[params[index].params]) : null;
+        let param = params[index].params ? (params[index].type === 'BGT_RULE_PARAMETER_DIM' ? params[index].paramMap : paramValueMap[params[index].params]) : null;
         return <Chooser disabled={param === null}
                         onChange={(value) => this.handleChangeValue(value, index)}
                         type={param ? param.listType : null}
@@ -242,6 +252,7 @@ class BudgetBalance extends React.Component {
                         listExtraParams={param ? param.listExtraParams : null}
                         selectorItem={param ? param.selectorItem : null}
                         value={params[index].value}
+                        single={param ? param.listType === 'currency' : false}
                         showNumber/>;
       }
     }
@@ -258,14 +269,21 @@ class BudgetBalance extends React.Component {
 
   //修改参数，同时清空参数值
   handleChangeParams = (value, index) => {
-    let { params, costCenterSelectorItem } = this.state;
+    let { params } = this.state;
     params[index].params = value;
     params[index].value = [];
     //手动添加成本中心selectorItem所需要的url
     if(params[index].type === 'BGT_RULE_PARAMETER_DIM'){
-      costCenterSelectorItem.selectorItem.url = selectorData['cost_center_item'].url + value;
+      params[index].paramMap = {  //成本中心所需要的selectorItem，url需要在params的onChange里手动添加
+        listType: 'cost_center_item_by_id',
+        labelKey: 'name',
+        valueKey: 'id',
+        codeKey: 'code',
+        listExtraParams: { costCenterId: value },
+        selectorItem: undefined
+      };
     }
-    this.setState({ params, costCenterSelectorItem });
+    this.setState({ params });
   };
 
   //修改参数值
@@ -280,12 +298,13 @@ class BudgetBalance extends React.Component {
     let { params, queryLineListParamOptions, paramTypeMap } = this.state;
     let type = typeParam ? typeParam : params[index].type;
     if(type !== ''){
-      if(!queryLineListParamOptions[type]){
+      if(!queryLineListParamOptions[type] || queryLineListParamOptions[type].length === 0 ){
         if(type === 'BGT_RULE_PARAMETER_DIM'){
-          httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then(res => {
+          let structureId = this.state.structureId;
+          structureId && httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/queryAll?structureId=${structureId}`).then(res => {
             let options = [];
             res.data.map(data => {
-              options.push({label: data.name, value: data.costCenterOID})
+              options.push({label: data.dimensionName, value: data.dimensionId})
             });
             queryLineListParamOptions[type] = options;
             this.setState({ queryLineListParamOptions });
@@ -380,20 +399,6 @@ class BudgetBalance extends React.Component {
     const { costCenterSelectorItem } = this.state;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if(!err){
-        let searchForm = [].concat(this.state.searchForm);
-        searchForm.map(item => {
-          if(values[item.id] && item.entity){
-            if(item.type === 'combobox' || item.type === 'select' || item.type === 'value_list'){
-              values[item.id] = JSON.parse(values[item.id].title)
-            } else if(item.type === 'multiple') {
-              let result = [];
-              values[item.id].map(value => {
-                result.push(JSON.parse(value.title));
-              });
-              values[item.id] = result;
-            }
-          }
-        });
         const { paramValueMap } = this.state;
         values.queryLineList = [];
         values.periodSummaryFlag = values.periodSummaryFlag === 'TRUE';
@@ -428,7 +433,7 @@ class BudgetBalance extends React.Component {
     Object.keys(options).map(key => {
       let searchForm = this.state.searchForm;
       searchForm.map((searchItem, index) => {
-        if(searchItem.id === key){
+        if(searchItem.id === key && options[key]){
           if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
             this.onChangeSelect(searchItem, options[key]);
           else{
@@ -438,7 +443,7 @@ class BudgetBalance extends React.Component {
           }
         } else if(searchItem.type === 'items'){
           searchItem.items.map(subItem => {
-            if(subItem.id === key){
+            if(subItem.id === key && options[key]){
               if((subItem.type === 'select' || subItem.type === 'value_list') && typeof options[key] === 'object')
                 this.onChangeSelect(subItem, options[key], index);
               else {
@@ -450,8 +455,7 @@ class BudgetBalance extends React.Component {
           })
         }
       });
-      searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {year: options.yearLimit};
-      searchForm[4].items[0].disabled =  searchForm[4].items[1].disabled = false;
+      searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {setOfBooksId: this.props.company.setOfBooksId, periodYear: options.yearLimit};
       searchForm[4].items[0].options = searchForm[4].items[1].options = [];
       this.setState({ searchForm })
     });
@@ -467,13 +471,14 @@ class BudgetBalance extends React.Component {
         structureId: {value: condition.structureId, label: condition.structureName},
         scenarioId: {value: condition.scenarioId, label: condition.scenarioName},
         yearLimit: condition.yearLimit,
-        periodLowerLimit: {value: condition.periodLowerLimit, label: condition.periodLowerLimit},
-        periodUpperLimit: {value: condition.periodUpperLimit, label: condition.periodUpperLimit},
-        periodSummaryFlag: {value: condition.periodSummaryFlag, label: condition.periodSummaryFlag},
-        quarterLowerLimit: {value: condition.quarterLowerLimit, label: condition.quarterLowerLimit},
-        quarterUpperLimit: {value: condition.quarterUpperLimit, label: condition.quarterUpperLimit},
+        periodLowerLimit: condition.periodLowerLimit ? {value: condition.periodLowerLimit, label: condition.periodLowerLimit} : null,
+        periodUpperLimit: condition.periodUpperLimit ? {value: condition.periodUpperLimit, label: condition.periodUpperLimit} : null,
+        periodSummaryFlag: condition.periodSummaryFlag ? {value: condition.periodSummaryFlag, label: condition.periodSummaryFlag} : null,
+        quarterLowerLimit: condition.quarterLowerLimit ? {value: condition.quarterLowerLimit, label: condition.quarterLowerLimit} : null,
+        quarterUpperLimit: condition.quarterUpperLimit ? {value: condition.quarterUpperLimit, label: condition.quarterUpperLimit} : null,
         amountQuarterFlag: {value: condition.amountQuarterFlag, label: condition.amountQuarterFlag}
       });
+      this.setState({ structureId: condition.structureId }, () => {this.setFieldsByStructureId()});
       //设置下方列表内的值
       let { paramsKey, paramValueMap } = this.state;
       let params = [];
@@ -481,12 +486,22 @@ class BudgetBalance extends React.Component {
         let newParams = {type: item.parameterType, params: item.parameterCode, value: [], key: paramsKey};
         item.queryParameterList.map(queryParameter => {
           let val = {};
-          let mapItem = paramValueMap[item.parameterCode];
+          let mapItem = item.parameterType === 'BGT_RULE_PARAMETER_DIM' ? this.state.costCenterSelectorItem : paramValueMap[item.parameterCode];
           if(item.parameterCode !== 'CURRENCY')
             val[mapItem.codeKey] = queryParameter.parameterValueCode;
           val[mapItem.valueKey] = item.parameterCode === 'CURRENCY' ? queryParameter.parameterValueCode : queryParameter.parameterValueId;
           val[mapItem.labelKey] = queryParameter.parameterValueName;
           newParams.value.push(val);
+          if(item.parameterType === 'BGT_RULE_PARAMETER_DIM'){
+            newParams.paramMap = {  //成本中心所需要的selectorItem，url需要在params的onChange里手动添加
+              listType: 'cost_center_item_by_id',
+              labelKey: 'name',
+              valueKey: 'id',
+              codeKey: 'code',
+              listExtraParams: {costCenterId: item.parameterCode},
+              selectorItem: undefined
+            };
+          }
         });
         params.push(newParams);
         paramsKey++;
@@ -583,14 +598,53 @@ class BudgetBalance extends React.Component {
     }
   };
 
+  setFieldsByStructureId = () => {
+    let structureId = this.state.structureId;
+    structureId && httpFetch.get(`${config.budgetUrl}/api/budget/structures/${structureId}`).then(res => {
+      let periodStrategy = res.data.periodStrategy;
+      let searchForm = this.state.searchForm;
+      searchForm[4].items[0].isRequired = periodStrategy === 'MONTH';
+      searchForm[4].items[0].disabled = searchForm[4].items[1].disabled = periodStrategy !== 'MONTH';
+      searchForm[4].items[0].options = searchForm[4].items[1].options = [];
+      searchForm[5].isRequired = periodStrategy === 'MONTH';
+      searchForm[5].disabled = periodStrategy !== 'MONTH';
+      searchForm[6].items[0].isRequired = searchForm[6].items[1].isRequired = periodStrategy === 'QUARTER';
+      searchForm[6].items[0].disabled = searchForm[6].items[1].disabled = periodStrategy !== 'QUARTER';
+      periodStrategy === 'YEAR' && this.props.form.setFieldsValue({
+        periodLowerLimit: null,
+        periodUpperLimit: null,
+        periodSummaryFlag: null,
+        quarterLowerLimit: null,
+        quarterUpperLimit: null
+      });
+      periodStrategy === 'MONTH' && this.props.form.setFieldsValue({
+        quarterLowerLimit: null,
+        quarterUpperLimit: null
+      });
+      periodStrategy === 'QUARTER' && this.props.form.setFieldsValue({
+        periodLowerLimit: null,
+        periodUpperLimit: null,
+        periodSummaryFlag: null
+      });
+      this.setState({ searchForm });
+    });
+  };
+
   handleEvent = (value, event) => {
     switch(event){
       case 'YEAR_CHANGE':
         let searchForm = this.state.searchForm;
-        searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {year: value};
-        searchForm[4].items[0].disabled =  searchForm[4].items[1].disabled = false;
+        searchForm[4].items[0].getParams = searchForm[4].items[1].getParams = {setOfBooksId: this.props.company.setOfBooksId, periodYear: value};
         searchForm[4].items[0].options = searchForm[4].items[1].options = [];
-        this.setState({ searchForm })
+        this.props.form.setFieldsValue({
+          periodLowerLimit: null,
+          periodUpperLimit: null
+        });
+        this.setState({ searchForm });
+        break;
+      case 'STRUCTURE_CHANGE':
+        this.setState({ structureId : value }, () => {this.setFieldsByStructureId()});
+        break;
     }
   };
 
@@ -750,6 +804,7 @@ class BudgetBalance extends React.Component {
           <Table columns={columns}
                  dataSource={params}
                  bordered
+                 pagination={false}
                  size="middle"/>
         </Form>
         <SlideFrame content={BudgetBalanceCondition}

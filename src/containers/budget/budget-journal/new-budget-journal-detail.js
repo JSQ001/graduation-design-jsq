@@ -132,7 +132,7 @@ class NewBudgetJournalDetail extends React.Component {
       {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
         labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: true,disabled:true, listExtraParams:{"companyId": ''},
         columnLabel: 'departmentName',columnValue: 'unitId'
-        },//部门
+      },//部门
       {type: 'select', id:'item',method:'get', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
         labelKey:'itemName',valueKey:'id', getUrl:`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`,
         columnLabel: 'itemName',columnValue: 'itemId'
@@ -283,7 +283,7 @@ class NewBudgetJournalDetail extends React.Component {
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}
-              >
+          >
             {item.options.map((option)=>{
               return <Option value={option.data?JSON.stringify(option.data) : ''} lable={option.label} title={option.data?JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
@@ -412,8 +412,8 @@ class NewBudgetJournalDetail extends React.Component {
               }
             } else {
               if(item.type!='select_dimension'){
-              valuesData[item.columnLabel] = oldData[item.columnLabel];
-              valuesData[item.columnValue] = oldData[item.columnValue];
+                valuesData[item.columnLabel] = oldData[item.columnLabel];
+                valuesData[item.columnValue] = oldData[item.columnValue];
               }else {
                 valuesData[item.columnLabel] = item.defindLable?item.defindLable:null;
                 valuesData[item.columnValue] = item.defindValue?item.defindValue:null;
@@ -531,8 +531,8 @@ class NewBudgetJournalDetail extends React.Component {
         labelKey:'name',valueKey:'id',
         columnLabel:`dimension${i}Name`,columnValue:`dimension${i}Id`
       };
-        searchFormItem["id"]="dimension"+i,
-          searchFormItem["dimensionId"]=item.id;
+      searchFormItem["id"]="dimension"+i,
+        searchFormItem["dimensionId"]=item.id;
 
       searchForm.push(
         searchFormItem
