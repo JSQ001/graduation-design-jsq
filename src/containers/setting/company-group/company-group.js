@@ -55,9 +55,9 @@ class CompanyGroup extends React.Component {
           key: 'status',
           width: '10%',
           dataIndex: 'isEnabled',
-          render: isEnabled => (
-            <Badge status={isEnabled ? 'success' : 'error'}
-                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          render: enabled => (
+            <Badge status={enabled ? 'success' : 'error'}
+                   text={enabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (

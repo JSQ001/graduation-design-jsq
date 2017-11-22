@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+import { Form, Button, Select, Checkbox, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
@@ -25,7 +25,7 @@ class DepartmentGroupDetail extends React.Component{
       loading: true,
       buttonLoading: false,
       companyListSelector: false,  //控制公司选则弹框
-      budgetItem:{},
+      deptGroup:{},
       data: [],
       edit: false,
       visible: false,
@@ -40,16 +40,15 @@ class DepartmentGroupDetail extends React.Component{
         showQuickJumper:true,
       },
       infoList: [
-        {type: 'input', id: 'companyGroupCode', isRequired: true, disabled: true, label: "公司组代码"+" :"},
-        {type: 'input', id: 'companyGroupName', isRequired: true, label: "公司组名称"+" :" },
-        {type: 'select',options: [] , id: 'setOfBook', required:true, label:"账套"},
-        {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
+        {type: 'input', id: 'deptGroupCode', isRequired: true, disabled: true, label: "部门组代码"+" :"},
+        {type: 'input', id: 'description', isRequired: true, label: "部门组名称"+" :" },
+        {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
 
       columns: [
-        {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
-        {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
+        {title: formatMessage({id:'setting.deptCode'}), key: 'deptGroupCode', dataIndex: 'companyCode'},/*部门代码代码*/
+        {title: formatMessage({id:'setting.deptName'}), key: 'description', dataIndex: 'companyName'}, /*公司明称*/
+        {title: formatMessage({id:'common.operation'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
         {                        /*启用*/
           title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
           render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
@@ -59,13 +58,11 @@ class DepartmentGroupDetail extends React.Component{
   }
 
   componentWillMount(){
-    //根据路径上的id,查出该条预算项目完整数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
+    console.log(this.props)
+    httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectById?id=${this.props.params.id}`).then((response)=>{
       if(response.status === 200){
-        response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
-        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttributeName};
-        this.setState({
-          budgetItem: response.data
+         this.setState({
+          deptGroup: response.data
         })
       }
     });
@@ -95,9 +92,9 @@ class DepartmentGroupDetail extends React.Component{
     })
   };
 
-  //查询已经分配过的公司
+  //查询部门组详情
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
+    httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectDepartmentByGroupId?departmentGroupId=${this.props.params.id}`).then((response)=>{
       console.log(response)
       if(response.status === 200){
         this.setState({
@@ -143,7 +140,7 @@ class DepartmentGroupDetail extends React.Component{
 
   //返回预算项目
   handleBack = () => {
-    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').url);
+    this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').url);
   };
 
   //列表选择更改
@@ -202,7 +199,7 @@ class DepartmentGroupDetail extends React.Component{
   }
 
   render(){
-    const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector, selectedRowKeys} = this.state;
+    const { edit, pagination, columns, data, visible, infoList, deptGroup, companyListSelector, selectedRowKeys} = this.state;
 
     const rowSelection = {
       selectedRowKeys,
@@ -215,7 +212,7 @@ class DepartmentGroupDetail extends React.Component{
       <div className="budget-item-detail">
         <BasicInfo
           infoList={infoList}
-          infoData={budgetItem}
+          infoData={deptGroup}
           updateHandle={this.handleUpdate}
           updateState={edit}/>
         <div className="table-header">
@@ -228,6 +225,7 @@ class DepartmentGroupDetail extends React.Component{
         <Table
           dataSource={data}
           columns={columns}
+
           rowSelection={rowSelection}
           pagination={pagination}
           size="middle"

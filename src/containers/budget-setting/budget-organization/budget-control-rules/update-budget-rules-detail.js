@@ -503,22 +503,9 @@ class UpdateBudgetRulesDetail extends React.Component{
                   required: true,
                   message: formatMessage({id:"common.please.select"})
                 },
-                {
-                  validator: (item,value,callback)=> {
-                    console.log(value)
-                      this.setState({
-                        summaryOrDetailHelp: value === "ALL" ? formatMessage({id: "budget.summaryOrDetailHelp.all"}) /*在上下限值内的明细和汇总规则参数都包括在内*/
-                          : value === "SUMMARY" ? formatMessage({id: "budget.summaryOrDetailHelp.summary"})
-                            /*只包括在上下限内的汇总规则参数*/ :
-                            value === "DETAIL" ? formatMessage({id: "budget.summaryOrDetailHelp.detail"}) : "请选择", /*只包括在上下限内的明细规则参数*/
-                        summaryOrDetailStatus: typeof value === 'undefined' ? "error" : null
-                      });
-                      callback();
-                  }
-                }
               ]
             })(
-              <Select placeholder={formatMessage({id:"common.please.select"})}>
+              <Select disabled placeholder={formatMessage({id:"common.please.select"})}>
                 {summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
               </Select>
             )}
