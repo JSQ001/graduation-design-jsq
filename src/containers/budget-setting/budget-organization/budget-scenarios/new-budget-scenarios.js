@@ -37,7 +37,7 @@ class NewBudgetScenarios extends React.Component{
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
           console.log(res);
           this.setState({loading: false});
-          if(res.status == 200){
+          if(res.status === 200){
             this.props.close(true);
             message.success('操作成功');
           }
@@ -59,7 +59,7 @@ class NewBudgetScenarios extends React.Component{
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
     }))
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -69,9 +69,11 @@ class NewBudgetScenarios extends React.Component{
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
-
       <div className="new-budget-scenarios">
-        <Alert message="帮助提示" description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。" type="info" showIcon />
+        <Alert message="帮助提示"
+               description="预算组织为当前用户所在账套下的生效的预算组织，同一账套下预算场景代码不允许重复，一个预算组织下允许多个预算场景同时生效。"
+               type="info"
+               showIcon />
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="预算组织">
             {getFieldDecorator('organizationName', {
@@ -94,7 +96,7 @@ class NewBudgetScenarios extends React.Component{
               <Input placeholder="请输入" />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述">
+          <FormItem {...formItemLayout} label="预算场景名称">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
