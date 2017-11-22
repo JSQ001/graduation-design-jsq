@@ -139,7 +139,7 @@ class BankAccountDetail extends React.Component {
             [
               {title: "付款方式类型", key: "1", dataIndex: '1'},
               {title: "付款方式代码", key: "2", dataIndex: '2'},
-              {title: "付款方式名称", key: "3", dataIndex: '3'},   
+              {title: "付款方式名称", key: "3", dataIndex: '3'},
 
             ]
 
