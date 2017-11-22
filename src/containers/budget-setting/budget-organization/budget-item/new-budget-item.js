@@ -25,20 +25,6 @@ class NewBudgetItem extends React.Component{
     };
   }
   componentWillMount(){
-    //获取值列表：变动属性
-    this.getSystemValueList(2004).then((response)=>{
-      let variationAttribute = [];
-      response.data.values.map((item)=>{
-        let option = {
-          id: item.code,
-          value: item.messageKey
-        };
-        variationAttribute.push(option);
-      });
-      this.setState({
-        variationAttribute: variationAttribute
-      })
-    });
     typeof this.props.organization.organizationName === "undefined" ?
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then((response) =>{
         this.setState({
@@ -183,21 +169,6 @@ class NewBudgetItem extends React.Component{
                       labelInValue
                       onFocus={this.handleFocus}
                       placeholder={formatMessage({id:"common.please.select"})} />) /*请输入*/
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label={formatMessage({id:"budget.item.variationAttribute"}) /*变动属性*/}
-                  colon={true}>
-                  {getFieldDecorator('variationAttribute', {
-                    rules:[
-                      {required:true,message:formatMessage({id:"common.please.select"})},
-                    ]
-                  })(
-                    <Select placeholder={formatMessage({id:"common.please.select"})}  /* {/!*请选择*!/}*/>
-                      {options}
-                    </Select>)
                   }
                 </FormItem>
               </Col>

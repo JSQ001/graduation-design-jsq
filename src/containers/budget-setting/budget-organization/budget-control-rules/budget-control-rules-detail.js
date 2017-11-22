@@ -112,7 +112,7 @@ class BudgetControlRulesDetail extends React.Component{
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
         console.log(response.data.startDate.substring(0,10))
-        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        let endDate = response.data.endDate === null ? "" : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
         response.data.strategyGroupName = {label:response.data.strategyGroupName,value:response.data.strategyGroupName,key:response.data.strategyGroupId}
         console.log(response.data)

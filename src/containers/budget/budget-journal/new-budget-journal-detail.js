@@ -22,38 +22,40 @@ class NewBudgetJournalDetail extends React.Component {
       rate:0,
       loading:false,
       searchForm:[],
+      dimensionList:{},
       params:{},
+      periodStrategyFlag:true,
+      structureIdFlag:true
+
     };
 
   }
 
   //表单的联动事件处理
   handleEvent(event,e){
+    console.log(event);
+    console.log(e);
     switch (e){
-      case 'company':{
-      }
       case 'periodName':{
-        event =JSON.parse(event);
-        let searchForm =this.state.searchForm;
+        const eventData = JSON.parse(event);
+        console.log(eventData);
         this.props.form.setFieldsValue({
-          periodYear:event.periodYear
+          periodYear:eventData.periodYear
         });
-
         this.props.form.setFieldsValue({
-          periodQuarter:event.quarterNum,
+          periodQuarter:eventData.quarterNum,
         });
 
         return;
       }
       case 'currency':{
-        event =JSON.parse(event);
-        rateData =event.attribute11;
-        let rate =event.attribute11;
+        const eventData = JSON.parse(event);
+        rateData =eventData.attribute11;
+        let rate =eventData.attribute11;
         this.setState({ rate })
         this.props.form.setFieldsValue({
-          rate:event.attribute11
+          rate:eventData.attribute11
         });
-
         return;
       }
       case 'amount':{
@@ -64,6 +66,27 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
 
+    }
+  }
+
+  chooserChangeHandle(value,e){
+    if(value.length>0){
+      if(e=="company"){
+        let searchFrom =this.state.searchForm;
+        searchFrom.map((item)=>{
+          if(item.id=="unit"){
+            item["listExtraParams"]={companyId:value[0].id}
+            item["disabled"]=false
+            return
+          }
+        })
+        this.setState({
+          searchFrom:searchFrom
+        })
+        this.props.form.setFieldsValue({
+          unit: ''
+        });
+      }
     }
   }
 
@@ -79,7 +102,7 @@ class NewBudgetJournalDetail extends React.Component {
         item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false
       }
       if(item.id =="periodName"){
-       item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
+        item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
         item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
       }
     })
@@ -89,59 +112,55 @@ class NewBudgetJournalDetail extends React.Component {
     })
   }
 
-  chooserChangeHandle(value,e){
-    if(value.length>0){
-      if(e=="company"){
-        let searchFrom =this.state.searchForm;
-        searchFrom.map((item)=>{
-          if(item.id=="unitId"){
-            item["listExtraParams"]={companyId:value[0].id}
-            item["disabled"]=false
-            return
-          }
-
-        })
-
-        this.setState({
-          searchFrom:searchFrom
-        })
-
-        this.props.form.setFieldsValue({
-          unitId: ''
-        });
-      }
-
-    }
-  }
-
   componentWillMount(){
-
+    let queryLineListTypeOptions = [];
+    this.getSystemValueList(2021).then(res => {
+      console.log(res.data.values);
+      res.data.values.map(data => {
+        queryLineListTypeOptions.push({label: data.messageKey, value: data.code})
+      });
+      console.log(queryLineListTypeOptions);
+    });
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
-      yearOptions.push({label: i, key: String(i)})
+      yearOptions.push({label: i, value: String(i)})
     let searchForm =[
-      {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
-        valueKey: 'id',single:'true',event:'company',isRequired: true, listExtraParams:{setOfBooksId:this.props.company.setOfBooksId}},//公司
-      {type: 'list', id: 'unitId', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
-        labelKey: 'name',valueKey: 'id',single:'true',event:'unitId',isRequired: true,disabled:true, listExtraParams:{companyId: ''}},//部门
-      {type: 'select', id:'item', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id', url:`${config.budgetUrl}/api/budget/items/find/all`},
-      {type: 'select', id:'periodName', label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
+      {type: 'list', id: 'company', listType: 'journal_line_company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
+        valueKey: 'id',single:true,event:'company',isRequired: true, listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
+        columnLabel: 'companyName', columnValue: 'companyId'
+      },//公司
+      {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
+        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: true,disabled:true, listExtraParams:{"companyId": ''},
+        columnLabel: 'departmentName',columnValue: 'unitId'
+      },//部门
+      {type: 'select', id:'item',method:'get', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
+        labelKey:'itemName',valueKey:'id', getUrl:`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`,
+        columnLabel: 'itemName',columnValue: 'itemId'
+      },//预算项目
+      {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
         labelKey:'periodName',valueKey:'periodName',event:'periodName', disabled:true,
-        url:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`}, //期间
-      {type: 'value_list', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
-        options: [], valueListCode: 2021, disabled:true}, //季度
+        getUrl:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
+        columnLabel:'periodName',columnValue:'periodName'
+      }, //期间
+      {type: 'select_year', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
+        options: queryLineListTypeOptions, disabled:true,
+        columnLabel:'periodQuarterName',columnValue:'periodQuarter'
+      }, //季度
       {type: 'select_year', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
-        disabled:true, options: yearOptions,event: 'YEAR_CHANGE'}, //年度
-      {type: 'select', id:'currency', label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
-        labelKey:'attribute5',valueKey:'attribute4', url:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`}, //币种
+        disabled:true, options: yearOptions,event: 'YEAR_CHANGE',
+        columnLabel:'periodYear',columnValue:'periodYear'
+      }, //年度
+      {type: 'select', id:'currency',method:'get',label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options: [],event:'currency',
+        labelKey:'attribute5',valueKey:'attribute4', getUrl:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`,
+        columnLabel: 'currency', columnValue: 'currency'
+      }, //币种
       {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
-      {type: 'inputNumber', id:'amount', label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
+      {type: 'inputNumber', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
         step:10.00, defaultValue:0, event:'amount'},  //金额
-      {type: 'inputNumber', id:'functionalAmount', label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
+      {type: 'inputNumber', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
         step:10.00, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber', id:'quantity', label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0}, //数量
+      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0}, //数量
       {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
     ];
     this.setState({ searchForm })
@@ -150,13 +169,29 @@ class NewBudgetJournalDetail extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && nextProps.params!=={} ){
       if(nextProps.params.isNew===false){
-          this.state.rate=nextProps.params.rate;
-          rateData=nextProps.params.rate;
+        this.state.rate=nextProps.params.rate;
+        rateData=nextProps.params.rate;
       }
-      this.getStrategyControl();
+      //获取编制期段的控制
+      if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
+        this.setState({
+          periodStrategyFlag:false,
+        },()=>{
+          this.getStrategyControl();
+        })
+      }
+      //获取维度表单
+      if(nextProps.params.structureId  && this.state.structureIdFlag ){
+        this.setState({
+          structureIdFlag:false,
+        },()=>{
+          this.getDimensionByStructureId();
+        })
+      }
       if(nextProps.params.id !== this.state.params.id){
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
+          //this.setValues(nextProps.params);
           for(let name in params){
             let result = {};
             result[name] = nextProps.params[name];
@@ -169,78 +204,68 @@ class NewBudgetJournalDetail extends React.Component {
       this.setState({ params : {} });
   };
 
-  clear = () => {
-    this.props.form.resetFields();
-  };
-  //根据接口返回数据重新设置options
-  setOptionsToFormItem = (item, url, key) => {
-    let params = {};
-    if(key){
-      params[item.searchKey] = key;
-      if(item.method === 'get')
-        url += `?${item.searchKey}=${key}`;
-    }
-    if( (key !== undefined && key !== '') || key === undefined){
-      httpFetch[item.method](url, params).then((res) => {
+
+  //给select增加options
+  getOptions = (item) => {
+    console.log(item);
+    console.log(12);
+    if(item.options.length === 0 ){
+      let url = item.getUrl;
+      if(item.method === 'get' && item.getParams){
+        url += '?';
+        let keys = Object.keys(item.getParams);
+        keys.map(paramName => {
+          url += `&${paramName}=${item.getParams[paramName]}`
+        })
+      }
+      httpFetch[item.method](url, item.getParams).then((res) => {
+        console.log(res.data);
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
+          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
           if(searchItem.id === item.id)
             searchItem.options = options;
+          if(searchItem.type === 'items')
+            searchItem.items.map(subItem => {
+              if(subItem.id === item.id)
+                subItem.options = options;
+            });
           return searchItem;
         });
         this.setState({ searchForm });
       })
     }
   };
-  //获select得值列表里面的数据
-  setOptionsToFormItemSelect=(item,url)=>{
-    let params = {};
-    let path = item.url;
-    let organizationId ;
-    if(item.id=="item"){
-      path = path+`?organizationId=${this.props.organization.id}`;
-     // path = path+`?organizationId=1`
-    }
-    url=path;
-    httpFetch.get(url, params).then((res) => {
-      let options = [];
-      res.data.map(data => {
-        options.push({label: data[item.labelKey], key: data[item.valueKey], value: data})
-      });
-      let searchForm = this.state.searchForm;
-      searchForm = searchForm.map(searchItem => {
-        if(searchItem.id === item.id)
-          searchItem.options = options;
-        return searchItem;
-      });
-      this.setState({ searchForm });
-    })
-  }
+
+
   //得到值列表的值增加options
   getValueListOptions = (item) => {
-    this.getSystemValueList(item.valueListCode).then(res => {
-      let options = [];
-      res.data.values.map(data => {
-        options.push({label: data.messageKey, value: data.code, data: data})
-      });
-      let searchForm = this.state.searchForm;
-      searchForm = searchForm.map(searchItem => {
-        if(searchItem.id === item.id)
-          searchItem.options = options;
-        if(searchItem.type === 'items')
-          searchItem.items.map(subItem => {
-            if(subItem.id === item.id)
-              subItem.options = options;
-          });
-        return searchItem;
-      });
-      this.setState({ searchForm });
-    })
+    console.log(item);
+    if(item.options.length === 0){
+      this.getSystemValueList(item.valueListCode).then(res => {
+        let options = [];
+        res.data.values.map(data => {
+          options.push({label: data.messageKey, value: data.code, data: data})
+        });
+        let searchForm = this.state.searchForm;
+        searchForm = searchForm.map(searchItem => {
+          if(searchItem.id === item.id)
+            searchItem.options = options;
+          if(searchItem.type === 'items')
+            searchItem.items.map(subItem => {
+              if(subItem.id === item.id)
+                subItem.options = options;
+            });
+          return searchItem;
+        });
+        this.setState({ searchForm });
+      })
+    }
   };
+
   //渲染搜索表单组件
   renderFormItem(item){
     let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
@@ -248,40 +273,59 @@ class NewBudgetJournalDetail extends React.Component {
     switch(item.type){
       //输入组件
       case 'input':{
-        return <Input  placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
+        return <Input  placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} formatter={value => `${value}`}  onChange={handle} disabled={item.disabled}/>
       }
       //选择组件
       case 'select':{
-      return (
-        <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}
-                onFocus={item.url ? () => this.setOptionsToFormItemSelect(item, item.getUrl) : () => {}} >
-          {item.options.map((option)=>{
-            return <Option key={option.key} value={JSON.stringify(option.value)} >{option.label}</Option>
-          })}
-        </Select>
-      )
-    }
-
-      case 'select_year':{
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  allowClear
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+                  onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}
+          >
             {item.options.map((option)=>{
-              return <Option key={option.key} value={option.key}>{option.label}</Option>
+              return <Option value={option.data?JSON.stringify(option.data) : ''} lable={option.label} title={option.data?JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
       }
-
+      case 'select_dimension':{
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  allowClear
+                  disabled={item.disabled}
+                  labelInValue={!!item.entity}
+          >
+            {item.options.map((option)=>{
+              return <Option  key={option.value} lable={option.lable} value={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            })}
+          </Select>
+        )
+      }
       //值列表选择组件
       case 'value_list':{
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
+                  allowClear
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
               return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            })}
+          </Select>
+        )
+      }
+
+      case 'select_year':{
+        return (
+          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
+            {item.options.map((option)=>{
+              return <Option value={option.value} >{option.label}</Option>
             })}
           </Select>
         )
@@ -294,13 +338,14 @@ class NewBudgetJournalDetail extends React.Component {
                         valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
                         selectorItem={item.selectorItem}
-                        single={Boolean(item.single)}
+                        single={item.single}
                         onChange={chooserHandle}
         />
       }
+      //switch状态切换组件
       //数字选择InputNumber
       case 'inputNumber':{
-        return <InputNumber disabled={item.disabled}  min={0} step={item.step} onChange={handle} style={{width:200}}/>
+        return <InputNumber disabled={item.disabled}  min={0} step={item.step} precision={item.precision} onChange={handle} style={{width:200}}/>
       }
     }
   }
@@ -333,140 +378,186 @@ class NewBudgetJournalDetail extends React.Component {
     });
     return children;
   }
-  //提交保存
-  HandleSubmit=(e)=>{
-    const params =this.props.params;
+
+  handleSearch = (e) => {
+    let valuesData={
+      ...this.state.dimensionList
+    };
+    let oldData ={};
+    let dimensionDTO =[];
+    if(!this.state.params.isNew){
+      oldData = this.props.params.oldData;
+    }
     e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err,value) => {
-      let companyId;
-      let companyName;
-      let itemId;
-      let itemName;
-      let unitId;
-      let departmentName;
-      let periodNameData;
-      let currencyData;
-
-      if(value.company.length>0){
-        let company = value.company[0];
-        companyId=company.id;
-        companyName=company.name;
-      }
-      else {
-        companyId=params.companyId;
-        companyName=params.companyName;
-      }
-
-      if(value.unitId.length>0){
-        let unit =value.unitId[0];
-        unitId = unit.id;
-        departmentName=unit.name;
-      }else {
-        unitId = params.unitId;
-        departmentName = params.departmentName;
-      }
-
-      if(value.item.indexOf(":")>1 ){
-        let item = JSON.parse(value.item);
-        itemId=item.id;
-        itemName=item.itemName;
-      }
-      else {
-        itemId=params.itemId;
-        itemName=params.itemName;
-      }
-
-      if(value.currency.indexOf(":")>1){
-        let currency = JSON.parse(value.currency);
-        currencyData=currency.attribute4;
-      }
-      else {
-        currencyData=params.currency;
-      }
-
-      if(value.periodName.indexOf(":")>1 ){
-        let periodNameFromData = JSON.parse(value.periodName);
-        periodNameData=periodNameFromData.periodName;
-      }
-      else {
-        periodNameData=params.periodName;
-      }
-      let  valueData = {
-          "companyId": companyId,
-          "companyName":companyName,
-          "unitId":unitId,
-           "departmentName":departmentName,
-          "departmentCode": "",
-          "costCenter": "",
-          "itemId": itemId,
-          "itemName": itemName,
-          "currency":currencyData,
-          "rateType": "1",
-          "rateQuotation":'',
-          "rate": value.rate,
-          "amount": value.amount,
-          "functionalAmount": value.functionalAmount,
-          "quantity": value.quantity,
-          "unit": "1",
-          "remark": value.remark,
-          "periodYear": value.periodYear,
-          "periodQuarter": value.periodQuarter,
-          "periodName":periodNameData,
-          "dimension1Id": null,
-          "dimension2Id": null,
-          "dimension3Id": null,
-          "dimension4Id": null,
-          "dimension5Id": null,
-          "dimension6Id": null,
-          "dimension7Id": null,
-          "dimension8Id": null,
-          "dimension9Id": null,
-          "dimension10Id": null,
-          "dimension11Id": null,
-          "dimension12Id": null,
-          "dimension13Id": null,
-          "dimension14Id": null,
-          "dimension15Id": null,
-          "dimension16Id": null,
-          "dimension17Id": null,
-          "dimension18Id": null,
-          "dimension19Id": null,
-          "dimension20Id": null,
-          "versionNumber": params.versionNumber||"1",
-          "createdBy": "1",
-          "lastUpdatedBy": "1",
-          "isNew":params.isNew
-
-      }
-      let data;
-      if(params.isNew){
-        data={
-          ...valueData,
-        }
-      }else {
-        data={
-          ...valueData,
-          "id":params.id,
+    let values = this.props.form.getFieldsValue();
+    console.log(values);
+    let searchForm = [].concat(this.state.searchForm);
+    searchForm.map((item) => {
+      if(( item.type === 'select'  || item.type === 'select_dimension')) {
+        if( values[item.id]) {
+          const value =values[item.id];
+          if( typeof value === 'string'){
+            if (value.indexOf(`":"`) > 1) {
+              console.log("indexOf");
+              console.log(value.indexOf(`":"`));
+              const valueObject = JSON.parse(value);
+              valuesData[item.columnLabel] = valueObject[item.labelKey];
+              valuesData[item.columnValue] = valueObject[item.valueKey];
+              if(item.type === 'select_dimension'){
+                dimensionDTO.push({
+                  "dimensionId":item.dimensionId,
+                  "dimensionValueId":Number(valueObject[item.valueKey]),
+                })
+              }
+              if(item.id === 'periodName'){
+                valuesData["periodYear"] = valueObject["periodYear"];
+                valuesData["periodQuarter"] = valueObject["quarterNum"];
+              }
+            } else {
+              if(item.type!='select_dimension'){
+                valuesData[item.columnLabel] = oldData[item.columnLabel];
+                valuesData[item.columnValue] = oldData[item.columnValue];
+              }else {
+                valuesData[item.columnLabel] = item.defindLable?item.defindLable:null;
+                valuesData[item.columnValue] = item.defindValue?item.defindValue:null;
+                dimensionDTO.push({
+                  "dimensionId":item.dimensionId,
+                  "dimensionValueId":null
+                })
+              }
+            }
+          }else if (typeof value === 'number'){
+            valuesData[item.columnLabel]=value;
+          }
+        }else {
+          valuesData[item.columnLabel] =null;
+          valuesData[item.columnValue] =null;
+          if(item.type === "select_dimension"){
+            dimensionDTO.push({
+              "dimensionId":item.dimensionId,
+              "dimensionValueId":null
+            })
+          }
         }
       }
-      console.log(data);
-      this.props.close(data);
-    })
+      if( item.type === 'select_year'){
+        if(values[item.id]){
+          valuesData[item.columnValue] =values[item.id];
+          valuesData[item.columnLabel] =values[item.id];
+        }else {
+          valuesData[item.columnValue] =null;
+          valuesData[item.columnLabel] =null;
+        }
+      }
+      if(item.type === 'list'){
+        console.log(values[item.id]);
+        if(values[item.id]) {
+          if (values[item.id].length > 0) {
+            const value = values[item.id][0];
+            valuesData[item.columnLabel] = value[item.labelKey];
+            valuesData[item.columnValue] = value[item.valueKey];
+          } else {
+            valuesData[item.columnLabel] = oldData[item.columnLabel];
+            valuesData[item.columnValue] = oldData[item.columnValue];
+          }
+        }else {
+          valuesData[item.columnLabel] =null;
+          valuesData[item.columnValue] =null;
+        }
+      }
+      if((item.type === 'input'|| item.type === 'inputNumber' )){
+        if(values[item.id]){
+          valuesData[item.id]=values[item.id];
+        }
+
+      }
+
+    });
+    console.log(valuesData);
+    console.log("valuesData");
+    console.log(this.props.params.isNew);
+    console.log(this.props.oldData);
+    let valuesDataClose ={};
+    if(this.props.params.isNew){
+      valuesDataClose={
+        ...valuesData,
+        versionNumber:1,
+        dimensionDTO:dimensionDTO,
+        isNew:true,
+      }
+    }else {
+      valuesDataClose={
+        ...this.props.params.oldData,
+        ...valuesData,
+        dimensionDTO:dimensionDTO,
+        isNew:false
+      }
+    }
+
+    console.log(valuesDataClose);
+    this.props.close(valuesDataClose);
     this.props.form.resetFields();
+  };
+
+
+
+  //根据预算表id，获得维度
+  getDimensionByStructureId = () =>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
+      this.getSearchForm(resp.data);
+
+    }).catch(e=>{
+      message.error(`获得维度失败,${e.response.data.message}`);
+    })
   }
-  onCancel=()=>{
+
+  //根据预算表,set维度表单
+  getSearchForm(dimension){
+    console.log("getSearchForm");
+    let searchForm=this.state.searchForm;
+    let dimensionList ={};
+    for(let i=0;i<dimension.length;i++){
+      const item =dimension[i];
+      const priority =i+1;
+      //const priority = item.priority;
+      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name"];
+      dimensionList[dimensionListKey[0]]=item.id;
+      dimensionList[dimensionListKey[1]]=item.name;
+      console.log(item);
+      let options=[];
+      httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/${item.oid}`).then((res)=>{
+        console.log(res.data);
+        const data =res.data;
+        data.map((item)=>{
+          options.push({label: item.name, value: item.id, data:item})
+        })
+
+      })
+      const searchFormItem=  {type: 'select_dimension', label:`${item.name}`, options:options,
+        labelKey:'name',valueKey:'id',
+        columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
+      };
+      searchFormItem["id"]="dimension"+priority,
+        searchFormItem["dimensionId"]=item.id;
+      searchForm.push(
+        searchFormItem
+      )
+    }
+    this.setState({searchForm,dimensionList});
+  }
+
+  onCancel = () =>{
     this.props.form.resetFields();
     this.props.close();
   }
-
   render(){
     return (
       <div className="new-budget-journal-detail">
-        <Form onSubmit={this.HandleSubmit}>
+        <Form onSubmit={this.handleSearch}>
           <div className="base-condition">
             <Row gutter={40} className="base-condition-content">
               {this.getFields()}
-              </Row>
+            </Row>
           </div>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>

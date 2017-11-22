@@ -31,7 +31,6 @@ class BudgetJournal extends React.Component {
         },
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status', options: [], valueListCode: 2028},
-
       ],
 
       columns: [
@@ -52,17 +51,16 @@ class BudgetJournal extends React.Component {
           render(recode,text){
             switch (recode){
               case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
-              case 'SUBMIT':{ return   <Badge status="warning" text={text.statusName} />}
-              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text={text.statusName}/> }
+              case 'SUBMIT':{ return   <Badge status="warning"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" style={{backgroundColor:"#fef0ef"}} text={text.statusName}/> }
               case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
-              case 'CHECKED':{return < Badge status="default" color="#234234" text={text.statusName}/>}
-              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={text.statusName}/>}
-              case 'POSTED':{return <Badge status="default"  color="#87d068" text={text.statusName}/>}
-              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={text.statusName}/>}
-              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
+              case 'CHECKED':{return < Badge status="default" style={{backgroundColor:"#f56a00"}}text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="warning"text={text.statusName}/>}
+              case 'POSTED':{return <Badge status="success" text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" style={{backgroundColor:"#c11c7b"}} text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" style={{backgroundColor:"#42299a"}} text={text.statusName}/>}
             }
           }
-
     },
   ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项

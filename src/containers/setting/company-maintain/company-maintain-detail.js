@@ -24,11 +24,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showImportFrame:false,
       updateState: false,
       saving: false,
       loading: true,
       editing: false,
       infoData:{},
+      selectedRowKeys:[],
       infoList: [
         {type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode",labelKey:'companyCode'},   /*公司代码*/
         {type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", labelKey: 'name' }, /*公司名称*/
@@ -39,7 +41,8 @@ class WrappedCompanyMaintainDetail extends React.Component {
         {type: 'input', label: this.props.intl.formatMessage({id: "company.parentCompanyName"}), id: "parentCompanyName", labelKey: 'parentCompanyName' },    /*上级机构*/
         {type: 'date', label: this.props.intl.formatMessage({id: "company.startDateActive"}), id: "startDateActive",  labelKey: 'startDateActive'},  /*有效日期从*/
         {type: 'date', label: this.props.intl.formatMessage({id: "company.endDateActive"}), id: "endDateActive",labelKey:'endDateActive'},  /*有效日期至*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.address"}), id: "address", labelKey: 'address' }   /*地址*/
+        {type:'switch', label:'状态', id:"enabled", isRequired: true,labelKey:"enabled"},/*状态*/
+        {type: 'input', label: this.props.intl.formatMessage({id: "company.address"}), id: "address", labelKey: 'address' },   /*地址*/
 
       ],
       tabs: [
@@ -51,7 +54,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
       tabsData: {
         BANK:{
           url: ``,
-          rowSelection:{},
+          rowSelection:null,
           columns:
             [
               {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
@@ -63,16 +66,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
               {title: "开户地", key: "7", dataIndex: '7', width: '16%'},                 /*开户地*/
             ]
         },
-        rowSelectionData:[],
         USER:{
-          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           rowSelection:{
             type:'checkbox',
             selectedRowKeys: [],
             onChange: this.onSelectChange,
-            onSelect: this.onSelectItem,
-            onSelectAll: this.onSelectAll
           },
+          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           columns:
             [
               {title: "姓名", key: "fullName", dataIndex: 'fullName', width: '16%'},                   /*姓名*/
@@ -83,6 +83,11 @@ class WrappedCompanyMaintainDetail extends React.Component {
             ]
 
         },
+      },
+      rowSelection:{
+        type:'checkbox',
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
       },
       pagination: {
         total: 0
@@ -96,20 +101,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
   }
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys) => {
-    let rowSelection = this.state.tabsData.USER.rowSelection;
-    rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({});
+  onSelectChange = (selectedRowKeys,selectedRows) => {
+    console.log(selectedRowKeys);
+    console.log("selectedRowKeys")
+    let tabsData = this.state.tabsData;
+    tabsData.USER.rowSelection.selectedRowKeys = selectedRowKeys;
+    this.setState({tabsData,selectedRowKeys});
   };
-
-
-  onSelectItem = () =>{
-
-  }
-
-  onSelectAll = () =>{
-
-  }
 
 
 
@@ -167,7 +165,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
     if(page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
-        loading: true
+        loading: true,
       }, ()=>{
         this.getList(this.state.nowStatus);
       })
@@ -191,7 +189,7 @@ class WrappedCompanyMaintainDetail extends React.Component {
   };
 
   //渲染Tabs
-  renderTabs(){
+  renderTabs = () =>{
     return (
       this.state.tabs.map(tab => {
         return <TabPane tab={tab.name} key={tab.key}/>
@@ -204,56 +202,87 @@ class WrappedCompanyMaintainDetail extends React.Component {
     this.setState({
       nowStatus: key,
       loading: true,
+      data:[],
+      pagination: {
+        total: 0
+      },
       page: 0
     }, ()=>{
       this.getList(key);
     })
   };
 
-  renderTable(){
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
 
-    if(this.state.nowStatus === "USER"){
-      return    <Table columns={tabsData[nowStatus].columns}
-                       dataSource={data}
-                       pagination={pagination}
-                       loading={loading}
-                       bordered
-                       size="middle"
-                       rowSelection={tabsData[nowStatus].rowSelection}/>
-    }
-    else {
-      return     <Table columns={tabsData[nowStatus].columns}
-                        dataSource={data}
-                        pagination={pagination}
-                        loading={loading}
-                        bordered
-                        size="middle"
-                    />
-    }
-  }
 
   //渲染按钮
-  renderButton(){
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+  renderButton = () =>{
+    const { saving,pagination,selectedRowKeys} = this.state;
     if(this.state.nowStatus === "USER"){
-        return (
-          <div>
-          <Button type="primary" onClick={this.handleNew}>员工导入</Button>
-          <Button>移动</Button>
-          </div>
-        )
-    }else {
-      return(
+      return (
         <div>
+          <div className="table-header-title">共 {pagination.total} 条数据 / 已经选择了 {this.state.selectedRowKeys.length} 条数据</div>
+          <div className="table-header-buttons">
+            <Button type="primary">员工导入</Button>
+            <Button onClick={this.removeUser} disabled={selectedRowKeys.length<=0}>移动</Button>
+          </div>
+          </div>
+          )
+    } else {
+          return(
+          <div>
+          <div className="table-header-title">共 {pagination.total} 条数据</div>
+          <div className="table-header-buttons">
           <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
-        </div>
-      )
-    }
+          </div>
+          </div>
+          )
+        }
   }
 
+  submitHandle = (value) =>{
+    /*http://139.224.220.217:11013/api/users/move?companyOIDFrom=887fa69e-994b-4942-b55b-389bff16a471
+    &companyOIDTo=70aabf2e-891d-4cca-a859-184e4e248365&selectMode=default&userOIDs=bd16b544-7c38-4308-bb20-45a7cb9c4b70*/
+    /*http://139.224.220.217:11013/api/users/move?companyOIDFrom=887fa69e-994b-4942-b55b-389bff16a471&companyOIDTo=9c1252c8-ebf3-4f0f-8056-3277ffa46029&selectMode=default&userOIDs=bd16b544-7c38-4308-bb20-45a7cb9c4b70
+    &userOIDs=87fad2ea-2f38-4eb9-9c61-3e4344aa3247&userOIDs=0ebea645-8d0b-4701-98f1-25baa2b729f0*/
+    console.log(value);
+    const companyOIDTo = (value.result)[0].companyOID;
+    const companyOIDFrom =this.props.params.companyOId;
+    const selectedRowKeys = this.state.selectedRowKeys;
+    let path = `${config.baseUrl}/api/users/move?companyOIDFrom=${companyOIDFrom}&companyOIDTo=${companyOIDTo}&selectMode=default?`
+    selectedRowKeys.map((item)=>{
+      path =`${path}&userOIDs=${item}`
+    })
+    httpFetch.put(path).then((req)=>{
+      message.success("操作成功");
+      this.getCompanyByCompanyOID(companyOIDFrom);
+      this.setState({
+        selectedRowKeys:[],
+      })
+    }).catch((e)=>{
+      message.error(e.response.data)
+    })
+    this.showImport(false)
+  }
+
+  //员工移动
+  removeUser = () =>{
+    this.showImport(true)
+  }
+
+  showImport = (value) =>{
+   this.setState({
+     showImportFrame:value
+   })
+  }
+
+  CancelHandle = () => {
+    this.showImport(false)
+  }
+
+
+
   render() {
-    const {infoList, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const {infoList,selectedRowKeys, rowSelection,infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
@@ -265,12 +294,25 @@ class WrappedCompanyMaintainDetail extends React.Component {
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据</div>
-          <div className="table-header-buttons">
-
-          </div>
+            {this.renderButton()}
         </div>
-        {this.renderTable()}
+        <Table columns={tabsData[nowStatus].columns}
+               dataSource={data}
+               pagination={pagination}
+               loading={loading}
+               bordered
+               size="middle"
+               rowKey={(reCode)=>{return reCode.userOID}}
+               rowSelection={tabsData[nowStatus].rowSelection}/>
+
+
+        <ListSelector visible={this.state.showImportFrame}
+                      onOk={this.submitHandle}
+                      onCancel={this.CancelHandle}
+                      type='user_move_select_company'
+                      single={true}
+                      extraParams={{"versionId": this.props.params.versionId}}
+        />
 
       </div>
     )
