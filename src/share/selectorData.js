@@ -23,8 +23,9 @@ const selectorData = {
       {type: 'input', id: 'name', label: '人员组名称'}
     ],
     columns: [
-      {title: '名称', dataIndex: 'name', width: '40%'},
-      {title: '描述', dataIndex: 'comment', width: '60%'}
+      {title: '代码', dataIndex: 'code', width: '30%'},
+      {title: '名称', dataIndex: 'name', width: '30%'},
+      {title: '描述', dataIndex: 'comment', width: '40%'}
     ],
     key: 'id'
   },

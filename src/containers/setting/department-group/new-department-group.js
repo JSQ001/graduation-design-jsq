@@ -50,22 +50,18 @@ class NewDepartmentGroup extends React.Component{
     this.setState({
       loading: true,
     });
-
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.organizationId = this.state.organization.id;
-        console.log(values)
-        httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
+        console.log(values);
+        httpFetch.post(`${config.baseUrl}/api/DepartmentGroup/insertOrUpdate`,values).then((response)=>{
           if(response) {
             console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
-            response.data.organizationName = values.organizationName;
-            this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id).replace(':structureId',response.data.id));
-            this.setState({loading:true})
+            this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').children.departmentGroupDetail.url.replace(':id',response.data.id))
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`保存失败, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -73,11 +69,12 @@ class NewDepartmentGroup extends React.Component{
     });
   };
 
-  //点击取消，返回预算组织详情
+  //点击取消，返回部门组
   handleCancel = (e) =>{
     e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').url);
+    this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').url);
   };
+
 
   handleChange = ()=>{
     if(this.state.loading){
@@ -91,91 +88,70 @@ class NewDepartmentGroup extends React.Component{
     const { getFieldDecorator } = this.props.form;
     const { statusCode, organization, loading, setOfBooks  } = this.state;
     const { formatMessage } = this.props.intl;
-    console.log(setOfBooks)
     return(
-      <div className="new-budget-structure">
-        <div className="budget-structure-header">
-          <Form onSubmit={this.handleSave} onChange={this.handleChange}>
-            <Row gutter={24}>
-              <Col span={8}>
-                <FormItem
-                  label="公司组代码"  /*公司组代码*/
-                  colon={true}
-                  help="注：部门组代码保存后将不可修改">
-                  {getFieldDecorator('companyGroupCode', {
-                    initialValue: organization.organizationName,
-                    rules:[
-                      { required:true }
-                    ]
-                  })(
-                    <Input placeholder={formatMessage({id:"common.please.enter"})} />)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label="公司组名称" /* 公司组名称*/
-                  colon={true}
-                  help="注：部门组描述保存后将不可修改">
-                  {getFieldDecorator('companyGroupName', {
-                    rules:[
-                      {required:true,message:formatMessage({id:"common.please.enter"})},
-                      {
-                        validator:(item,value,callback)=>this.validateStructureCode(item,value,callback)
+      <div className="new-department-group">
+        <Form onSubmit={this.handleSave} onChange={this.handleChange}>
+          <Row gutter={24}>
+            <Col span={8}>
+              <FormItem
+                label="部门组代码"  /*部门组代码*/
+                colon={true}>
+                {getFieldDecorator('deptGroupCode', {
+                  initialValue: organization.organizationName,
+                  rules:[
+                    { required:true,message: formatMessage({id:"common.please.enter"}) }
+                  ]
+                })(
+                  <Input placeholder={formatMessage({id:"common.please.enter"})} />)
+                }
+              </FormItem>
+              <div className="department-group-tips">
+                注：部门组代码保存后将不可修改
+              </div>
+            </Col>
+            <Col span={8} offset={1}>
+              <FormItem
+                label="部门组名称" /* 部门组名称*/
+                colon={true}>
+                {getFieldDecorator('description', {
+                  rules:[
+                    {required:true,message:formatMessage({id:"common.please.enter"})},
+                  ]
+                })(
+                  <Input placeholder={formatMessage({id:"common.please.enter"})}/>)
+                }
+              </FormItem>
+              <div className="department-group-tips">
+                注：部门组名称保存后将不可修改
+              </div>
+            </Col>
+            <Col span={6} offset={1}>
+              <FormItem
+                label={formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
+                colon={false}>
+                {getFieldDecorator("enabled", {
+                  initialValue: true,
+                  valuePropName: 'checked',
+                  rules:[
+                    {
+                      validator: (item,value,callback)=>{
+                        this.setState({
+                          statusCode: value ? formatMessage({id:"common.enabled"}) /*启用*/
+                            : formatMessage({id:"common.disabled"}) /*禁用*/
+                        })
+                        callback();
                       }
-                    ]
-                  })(
-                    <Input placeholder={formatMessage({id:"common.please.enter"})}/>)
-                  }
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem
-                  label="账套" /* 账套*/
-                  colon={true}>
-                  {getFieldDecorator('structureName', {
-                    rules:[
-                      {required:true,message:formatMessage({id:"common.please.enter"})},
-                    ]
-                  })(
-                    <Select placeholder={formatMessage({id:"common.please.select"})}>
-                      {
-                        setOfBooks.map((item)=><Option key={item.id}>{item.value}</Option>)
-                      }
-                    </Select>)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Row gutter={24}>
-              <Col span={8}>
-                <FormItem
-                  label={formatMessage({id:"common.status"},{status:statusCode})} /* {/!*状态*!/}*/
-                  colon={false}>
-                  {getFieldDecorator("isEnabled", {
-                    initialValue: true,
-                    valuePropName: 'checked',
-                    rules:[
-                      {
-                        validator: (item,value,callback)=>{
-                          this.setState({
-                            statusCode: value ? formatMessage({id:"common.enabled"}) /*启用*/
-                              : formatMessage({id:"common.disabled"}) /*禁用*/
-                          })
-                          callback();
-                        }
-                      }
-                    ],
-                  })
-                  (<Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
-                  }
-                </FormItem>
-              </Col>
-            </Row>
-            <Button type="primary" loading={loading} htmlType="submit">{formatMessage({id:"common.save"}) /*保存*/}</Button>
-            <Button onClick={this.handleCancel} style={{ marginLeft: 8 }}> {formatMessage({id:"common.cancel"}) /*取消*/}</Button>
-          </Form>
-        </div>
+                    }
+                  ],
+                })
+                (<Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross"/>}/>)
+                }
+              </FormItem>
+            </Col>
+          </Row>
+          <Button type="primary" loading={loading} htmlType="submit">{formatMessage({id:"common.save"}) /*保存*/}</Button>
+          <Button onClick={this.handleCancel} style={{ marginLeft: 8 }}> {formatMessage({id:"common.cancel"}) /*取消*/}</Button>
+        </Form>
       </div>
     )
   }

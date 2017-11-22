@@ -74,7 +74,7 @@ class ContractTypeDefine extends React.Component{
 
   getList = () => {
     const { searchParams, page, pageSize } = this.state;
-    let url = `${config.contractUrl}/api/contract/type/${searchParams.setOfBooksId}/query?page=${page}&size=${pageSize}`;
+    let url = `${config.contractUrl}/contract/api/contract/type/${searchParams.setOfBooksId}/query?page=${page}&size=${pageSize}`;
     for(let searchKey in searchParams) {
       searchKey !== 'setOfBooksId' && (url += searchParams[searchKey] ? `&${searchKey}=${searchParams[searchKey]}` : '')
     }

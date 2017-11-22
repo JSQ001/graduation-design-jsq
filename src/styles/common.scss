@@ -168,7 +168,7 @@ body{
   background: #ECECEC;
   margin: -27px -20px 0 -20px;
   padding: 20px;
-  height: calc(100% + 27px);
+  min-height: calc(100% + 27px);
 }
 
 table{
