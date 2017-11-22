@@ -23,7 +23,7 @@ class StrategyControlDetail extends React.Component {
         {type: 'input', label: '序号：', id: 'detailSequence', isRequired: true, disabled: true},
         {type: 'input', label: '规则代码：', id: 'detailCode', isRequired: true, disabled: true},
         {type: 'value_list', label: '控制策略：', id: 'controlMethod', isRequired: true, options: [], valueListCode: 2005, event: 'controlMethod'},
-        {type: 'input', label: '控制规则描述：', id: 'detailName', isRequired: true},
+        {type: 'input', label: '控制规则名称：', id: 'detailName', isRequired: true},
         {type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022, isRequired: true, disabled: false},
         {type: 'input', label: '事件：', id: 'expWfEvent'},
       ],

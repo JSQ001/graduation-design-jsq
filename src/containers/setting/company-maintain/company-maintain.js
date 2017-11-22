@@ -90,12 +90,18 @@ class CompanyMaintain extends React.Component {
           title: this.props.intl.formatMessage({id: "company.startDateActive"}),
           key: "startDateActive",
           dataIndex: 'startDateActive',
+          render(recode){
+            return String(recode).substr(0,10);
+          }
         },
         {
           /*有效日期至*/
           title: this.props.intl.formatMessage({id: "company.endDateActive"}),
           key: "endDateActive",
           dataIndex: 'endDateActive',
+          render(recode){
+            return String(recode).substr(0,10);
+          }
         }
       ],
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
@@ -108,6 +114,8 @@ class CompanyMaintain extends React.Component {
   componentWillMount() {
     this.getList();
   }
+
+
 
 
   //获取公司列表

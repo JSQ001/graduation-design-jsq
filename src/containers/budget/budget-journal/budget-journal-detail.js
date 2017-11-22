@@ -21,8 +21,10 @@ class BudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isNew:true,
       params:{},
       loading: true,
+      columnsSetFlag:true,
       data: [],
       listData:[],
       headerAndListData:{},
@@ -34,16 +36,28 @@ class BudgetJournalDetail extends React.Component {
       total:0,
       fileList:[],
       selectorItem:{},
-      selectedData:[],
       selectedRowKeys:[],
       rowSelection: {
         type:'checkbox',
         selectedRowKeys: [],
         onChange: this.onSelectChange,
-        onSelect: this.onSelectItem,
-        onSelectAll: this.onSelectAll
       },
+      commitFlag:false,
       infoDate:{},
+      handleData:[
+        {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
+        {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'unitId',columnValue: 'departmentName'},//部门
+        {type: 'select', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},
+        {type: 'select', id:'periodName',options: [], labelKey:'periodName',valueKey:'periodName',columnLabel:'periodName',columnValue:'periodName'}, //期间
+        {type: 'value_list', id: 'periodQuarter', options: [],labelKey:'periodQuarter',columnLabel:'periodQuarter',columnValue:'periodQuarterName',value:'periodQuarter'}, //季度
+        {type: 'select', id:'periodYear', options:[],labelKey:'periodYear',valueKey:'periodYear',columnLabel:'periodYear',columnValue:'periodYear'}, //年度
+        {type: 'select', id:'currency',method:'get', options: [],labelKey:'attribute5',columnLabel:'attribute4',columnLabel: 'currency', columnValue: 'currency'}, //币种
+        {type: 'input', id:'rate',valueKey:'rate'},  //汇率
+        {type: 'inputNumber', id:'amount',valueKey:'amount'},  //金额
+        {type: 'inputNumber', id:'functionalAmount',valueKey:'functionalAmount'}, //本位金额
+        {type: 'inputNumber', id:'quantity',valueKey:'quantity'}, //数量
+        {type: 'input', id:'remark',valueKey:'remark'}  //备注
+      ],
       infoList:[
         /*状态*/
         {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
@@ -93,6 +107,7 @@ class BudgetJournalDetail extends React.Component {
         {type:'file',label:'附件',id:'file',disabled: true},
 
       ],
+      dimensionList:[],
 
       columns: [
         {          /*公司*/
@@ -117,36 +132,36 @@ class BudgetJournalDetail extends React.Component {
             </Popover>)
         },
         {          /*期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName',
         },
         {          /*季度*/
-          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarter", dataIndex: 'periodQuarter',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarter", dataIndex: 'periodQuarter',
         },
         {          /*年度*/
-          title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',
         },
         {          /*币种*/
-          title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency',width:'4%'
+          title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency',
         },
         {          /*汇率*/
-          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',width:'6%',
+          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',
           render: rate => (
             <Popover content={rate}>
               {rate}
             </Popover>)
         },
         {          /*金额*/
-          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',width:'6%',render: this.filterMoney
+          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
         },
         {          /*本币今额*/
-          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',width:'10%',render: this.filterMoney
+          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',render: this.filterMoney
         },
         {          /*数字*/
-          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',width:'6%'
+          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',
         },
-       /* {          /!*单位*!/
-          title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
-        },*/
+        /* {          /!*单位*!/
+         title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
+         },*/
         {          /*备注*/
           title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark',
           render: remark => (
@@ -166,73 +181,38 @@ class BudgetJournalDetail extends React.Component {
     this.getDataByBudgetJournalCode();
   }
 
-//获得总金额
-  getAmount= () =>{
-    let sum =0;
-    this.state.data.map((item)=>{
-      sum+= item.functionalAmount;
-    })
-    let data ="CNY"+" "+sum.toFixed(2);
-    const selectedDataNew =this.state.selectedData;
-    let selectedData={
-      ...selectedDataNew,
-      "totalAmount":data
-    }
-    this.state.setState({
-      selectedData})
-  }
-
 
 
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys) => {
+  onSelectChange = (selectedRowKeys,selectedRows) =>{
+    console.log(selectedRowKeys);
     let { rowSelection } = this.state;
     rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({ rowSelection,selectedRowKeys});
+    this.setState({
+      rowSelection,
+      selectedRowKeys,
+      selectedData:selectedRowKeys
+    });
   };
 
-  onSelectItem=(record,selected)=>{
-    let temp = this.state.selectedData;
-    if(selected)
-      temp.push(record.id);
-    else
-      temp.delete(record.id);
-    this.setState({
-      selectedData: temp,
-    })
-
-  }
-
-  onSelectAll=(selected)=> {
-    let temp = this.state.selectedData;
-    if (selected) {
-      this.state.data.map(item => {
-        temp.addIfNotExist(item.id)
-      })
-    } else {
-      this.state.data.map(item => {
-        temp.delete(item.id)
-      })
-    }
-  }
 
   //删除预算日记账行
   handleDeleteLine=()=>{
-    let data = this.state.selectedData;
+    let data = this.state.selectedRowKeys;
     console.log(data);
-     let  selectedData=[];
-     data.map((item)=>{
-       if(item){
-         let id ={"id":item}
-         selectedData.addIfNotExist(id)
-       }
-     })
-    httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,selectedData).then((res)=>{
+    let  selectedRowKeys=[];
+    data.map((item)=>{
+      if(item){
+        let id ={"id":item}
+        selectedRowKeys.addIfNotExist(id)
+      }
+    })
+    httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,selectedRowKeys).then((req)=>{
       this.getDataByBudgetJournalCode();
-        message.success("删除成功");
+      message.success("删除成功");
       this.setState({
-        selectedData:[]
+        selectedRowKeys:[]
       })
     }).catch(e=>{
       message.error(`删除失败,${e.response.data.message}`);
@@ -254,99 +234,136 @@ class BudgetJournalDetail extends React.Component {
     })
   }
 
-
-
- //根据预算日记账编码查询预算日记账头行
-  getDataByBudgetJournalCode=()=>{
+  //根据预算表id，获得维度
+  getDimensionByStructureId = (value) =>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
+      console.log(resp.data);
       this.setState({
-        loading:true,
-        fileList:[]
+        dimensionList:resp.data
+      },()=>{
+        //根据预算表，的维度.获取获取Columuns和获取维度的handleData数据
+        this.getColumnsAndDimensionhandleData();
       })
-      const journalCode =this.props.params.journalCode;
-      httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
-            let listData = response.data.list;
-            let headerData =response.data.dto;
-        headerData.attachmentOID.map((item)=>{
-          this.getFile(item);
-        })
-            const journalType=[];
-            const journalType1={
-              "journalTypeName":headerData.journalTypeName,
-              "journalTypeId":headerData.journalTypeId,
-        }
-        journalType.push(journalType1);
+    }).catch(e=>{
+      message.error(`获得维度失败,${e.response.data.message}`);
+    })
+  }
 
-        //预算版本
-        const versionName=[];
-        const versionName1={
-          "versionName":headerData.versionName,
-          "id":headerData.versionId
-        }
-        versionName.push(versionName1);
+  //根据预算表的维度.获取维度Columuns和获取维度的handleData数据
+  getColumnsAndDimensionhandleData(){
+    console.log("getColumns")
+    let columns=this.state.columns;
+    let handleData=this.state.handleData;
+    const dimensionList = this.state.dimensionList;
+    for(let i=0;i<dimensionList.length;i++){
+     const item =dimensionList[i];
+     let priority =item.priority;
+     columns.push(
+       {title:`${item.name}`, key:`dimensionValue${i+1}Name`, dataIndex: `dimensionValue${i+1}Name`,
+         render: recode => (
+           <Popover content={recode}>
+             {recode}
+           </Popover>)
+       }
+     )
+     handleData.push(
+      {type: 'select', id:`dimension${i+1}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${i+1}ValueName`,columnValue: `dimension${i+1}ValueId`},
+     )
+   }
+    this.setState({
+      columns,
+      columnsSetFlag:false
+    })
+  }
 
-        //预算场景
-        const scenarioName=[]
-        const scenarioName1={
-          "scenarioName":headerData.scenario,
-          "id":headerData.scenarioId
-        }
-        scenarioName.push(scenarioName1);
 
-        //预算表
-        const budgetStructure={
-          "label":headerData.structureName,
-          "value":headerData.structureId
-        }
+  //根据预算日记账编码查询预算日记账头行
+  getDataByBudgetJournalCode=()=>{
+    this.setState({
+      loading:true,
+      fileList:[]
+    })
+    const journalCode =this.props.params.journalCode;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
+      let listData = response.data.list;
+      let headerData =response.data.dto;
+      if(this.state.columnsSetFlag){
+        this.getDimensionByStructureId(headerData.structureId);
+      }
+      headerData.attachmentOID.map((item)=>{
+        this.getFile(item);
+      })
+      const journalType=[];
+      const journalType1={
+        "journalTypeName":headerData.journalTypeName,
+        "journalTypeId":headerData.journalTypeId,
+      }
+      journalType.push(journalType1);
 
-     //编制期段
-       const period = headerData.periodStrategy;
-        const periodStrategy={
-          "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
-          "value":period
-        }
+      //预算版本
+      const versionName=[];
+      const versionName1={
+        "versionName":headerData.versionName,
+        "id":headerData.versionId
+      }
+      versionName.push(versionName1);
 
-        //状态
-        let statusData={};
+      //预算场景
+      const scenarioName=[]
+      const scenarioName1={
+        "scenarioName":headerData.scenario,
+        "id":headerData.scenarioId
+      }
+      scenarioName.push(scenarioName1);
+
+      //预算表
+      const budgetStructure={
+        "label":headerData.structureName,
+        "value":headerData.structureId
+      }
+
+      //编制期段
+      const period = headerData.periodStrategy;
+      const periodStrategy={
+        "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
+        "value":period
+      }
+
+      //状态
+      let statusData={};
       if(headerData.status=="NEW"){
-         statusData={'status':'processing', 'value':'新建'};
+        statusData={'status':'processing', 'value':'新建'};
       }else if(headerData.status=="REJECT"){
         statusData={'status':'error', 'label':'拒绝'};
       }
 
-        //获取总金额
-        let sum =0;
-        listData.map((item)=>{
-          sum+= item.functionalAmount;
-        })
-        const amountData = "CNY"+" "+sum;
-
-        const infoData={
-          ...headerData,
-          "status":statusData,
-          "journalType":journalType,
-          "versionName":versionName,
-          "scenarioName":scenarioName,
-          "budgetStructure":budgetStructure,
-          "file":this.state.fileList,
-          "periodStrategy":periodStrategy,
-          "totalAmount":amountData
-        }
-
-     /*  let params={
-         "isNew":true,
-         "budgetStructure":headerData.budgetStructure
-        }*/
+      //获取总金额
+      let sum =0;
+      listData.map((item)=>{
+        sum+= item.functionalAmount;
+      })
+      const amountData = "CNY"+" "+sum.toFixed(2);
+      const infoData={
+        ...headerData,
+        "status":statusData,
+        "journalType":journalType,
+        "versionName":versionName,
+        "scenarioName":scenarioName,
+        "budgetStructure":budgetStructure,
+        "file":this.state.fileList,
+        "periodStrategy":periodStrategy,
+        "totalAmount":amountData
+      }
 
       this.setState({
         loading:false,
         headerAndListData:response.data,
         infoDate:infoData,
         data:listData,
+        commitFlag:listData.length>0
       })
     })
   }
-
-
 
   //保存编辑
   updateHandleInfo=(value)=>{
@@ -360,7 +377,6 @@ class BudgetJournalDetail extends React.Component {
     })
 
   }
-
 
   //处理导入
   handleModal=(value)=>{
@@ -384,21 +400,22 @@ class BudgetJournalDetail extends React.Component {
   showSlideFrameNewData=()=> {
     let params = {
       "isNew": true,
-      "periodStrategy": this.state.headerAndListData.dto.periodStrategy
+      "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
+      "structureId":this.state.headerAndListData.dto.structureId
     }
     this.setState({
       params: params,
-
     },()=>{
-      console.log(12345)
-      this.setState({
-        showSlideFrameNew: true,
-      })
+      this.showSlide(true);
     });
 
   }
 
-
+  showSlide = (value) =>{
+    this.setState({
+      showSlideFrameNew: value,
+    })
+  }
 
   //获得表单数据
   handleAfterCloseNewSlide=(value)=>{
@@ -406,41 +423,40 @@ class BudgetJournalDetail extends React.Component {
     this.setState({
       showSlideFrameNew:false,
     });
-      let data = this.state.data;
-      let listData=this.state.listData;
-      let headerAndListData = this.state.headerAndListData;
-      if(value && value.isNew){
-        headerAndListData.list.addIfNotExist(value);
-        data.addIfNotExist(value);
-        listData.addIfNotExist(value);
-      } else{
-        let list = headerAndListData.list;
-        for(let a=0;a<list.length;a++){
-          if(value && list[a].id === value.id){
-            list[a]=value;
+    let data = this.state.data;
+    let listData=this.state.listData;
+    let headerAndListData = this.state.headerAndListData;
+    if(value && value.isNew){
+      headerAndListData.list.addIfNotExist(value);
+      data.addIfNotExist(value);
+      listData.addIfNotExist(value);
+    } else{
+      let list = headerAndListData.list;
+      for(let a=0;a<list.length;a++){
+        if(value && list[a].id === value.id){
+          list[a]=value;
         }
       }
       headerAndListData.list=list;
     }
-
-    //获取总金额
     let sum =0;
-    listData.map((item)=>{
+    data.map((item)=>{
       sum+= item.functionalAmount;
+      console.log(sum)
     })
     let newData ="CNY"+" "+sum.toFixed(2);
-    const selectedDataNew =this.state.selectedData;
-    let selectedData={
-      ...selectedDataNew,
+    const infoDateNew =this.state.infoDate;
+    let infoDate={
+      ...infoDateNew,
       "totalAmount":newData
     }
-
+    console.log(headerAndListData);
     this.setState({
       data:data,
       headerAndListData: headerAndListData,
       listData:listData,
-      selectedData
-    });
+      infoDate
+    },()=>{});
   }
 
 
@@ -454,7 +470,7 @@ class BudgetJournalDetail extends React.Component {
       //删除完该预算日记账，跳转
       let path=this.state.budgetJournalPage.url;
       this.context.router.push(path);
-    }).catch(e => {
+    }).catch((e) => {
       message.error("失败")
     })
 
@@ -463,8 +479,9 @@ class BudgetJournalDetail extends React.Component {
 //保存新增，或修改
   handleSaveJournal=()=>{
     let headerAndListData = this.state.headerAndListData;
+    console.log(headerAndListData);
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
-      message.success("成功");
+      message.success("预算日记账行保存成功");
       this.getDataByBudgetJournalCode();
 
     }).catch((e)=>{
@@ -475,12 +492,11 @@ class BudgetJournalDetail extends React.Component {
 
   //提交单据
   handlePut=()=>{
-    let headerAndListData = this.state.headerAndListData;
-    if(headerAndListData.list.length>0 ) {
-      let headerId = headerAndListData.dto.id;
-      httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${headerId}`).then((req) => {
+    if(this.state.commitFlag) {
+      let headerId =this.state. headerAndListData.dto.id;
+      httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`).then((req) => {
         message.success("提交成功");
-       // this.getDataByBudgetJournalCode();
+        // this.getDataByBudgetJournalCode();
         this.setState({
           listData:[],
         })
@@ -501,58 +517,55 @@ class BudgetJournalDetail extends React.Component {
   }
 
 
+  //编辑行前,数据处理，传入数据
+  headleUpData(values) {
+    let valuesData = {};
+    const handData = this.state.handleData;
+    handData.map((item)=>{
+        if ( item.type === 'select' || item.type === 'value_list') {
+          valuesData[item.id]=values[item.columnLabel];
+      } else if (item.type === 'list' ){
+          let result = [];
+          let itemData ={
+            "name":values[item.columnLabel],
+            "id":values[item.columnValue],
+            "key":values[item.columnValue]
+          }
+          result.push(itemData);
+          valuesData[item.id] = result;
+          console.log(result);
+        } else if (item.type === 'input' || item.type === 'inputNumber'){
+          valuesData[item.id] = values[item.valueKey];
+      }
+    })
+    return valuesData;
+  }
+
+
   //编辑行
   handlePutData=(value)=>{
-    let company =[];
-    let companyData={
-      "name":value.companyName,
-      "id":value.companyId,
-      "key":value.companyId,
-    }
-    company.push(companyData);
-
-    let unitId =[];
-    let itemData={
-      "name":value.departmentName,
-      "id":value.unitId,
-      "key":value.unitId,
-    }
-    unitId.push(itemData);
-
-    const valueData = {
-      ...value,
-     "company":[{
-       "name":value.companyName,
-       "id":value.companyId,
-       "key":value.companyId,
-     }],
-      "item":value.itemName,
-      "unitId":[
-        {
-          "name":value.departmentName,
-          "id":value.unitId,
-          "key":value.unitId,
-        }
-      ],
-      "periodName":value.periodName,
-      "currency":value.currency,
-      "periodStrategy":this.state.headerAndListData.dto.periodStrategy,
-      "isNew":false
-    }
+    let valuePutData =this.headleUpData(value);
     this.setState({
-      params:valueData,
-      showSlideFrameNew:true,
-    })
+     params:{...valuePutData,
+              "id":value.id,
+               "structureId":this.state.headerAndListData.dto.structureId,
+               "versionNumber":value.id,
+              "isNew":false,
+              "oldData":value,}
+     },()=>{
+     this.setState({
+       isNew:false,
+       showSlideFrameNew:true,
+     })
+     })
 
   }
 
- //返回预算日记账查询
+  //返回预算日记账查询
   handleReturn = () =>{
     let path=this.state.budgetJournalPage.url;
     this.context.router.push(path);
   }
-
-
 
   render(){
 
@@ -567,34 +580,26 @@ class BudgetJournalDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.total}`})}</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
               <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="Yes" cancelText="No">
-               <Button className="delete"    disabled={this.state.selectedData.length === 0} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
+                <Button className="delete"    disabled={this.state.selectedRowKeys.length === 0} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
             </div>
           </div>
           <Table columns={columns}
-                  dataSource={data}
-                  rowKey={record=>record.id}
-                  bordered
-                  size="middle"
-                  scroll={{ x: '150%' }}
-                  onRowClick={this.handlePutData}
-                  rowSelection={rowSelection}
-                  loading={loading}
-
+                 dataSource={data}
+                 rowKey={record=>record.id}
+                 bordered
+                 size="middle"
+                 scroll={{ x: '200%' }}
+                 onRowClick={this.handlePutData}
+                 rowSelection={rowSelection}
+                 loading={loading}
           />
-          <div className="footer-operate">
-            <Button type="primary" onClick={this.handlePut}>提交</Button>
-            <Button  type="primary"  onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-            <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
-              <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
-            </Popconfirm>
-            <Button onClick={this.handleReturn}>返回</Button>
-          </div>
+
         </div>
 
         <BudgetJournalDetailLead
@@ -611,6 +616,15 @@ class BudgetJournalDetail extends React.Component {
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={this.state.params}/>
 
+        <div className="divider"> </div>
+        <div className="footer-operate">
+          <Button type="primary" onClick={this.handlePut}>提交</Button>
+          <Button  type="primary"  onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+          <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
+            <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+          </Popconfirm>
+          <Button onClick={this.handleReturn}>返回</Button>
+        </div>
       </div>
     )
   }

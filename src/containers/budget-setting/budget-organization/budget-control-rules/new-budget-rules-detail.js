@@ -126,6 +126,7 @@ class NewBudgetRulesDetail extends React.Component{
       }
     };
     console.log(this.props.params)
+    this.getValueList(2014, this.state.summaryOrDetailArray);
     this.setState({
       ruleDetail: this.props.params,
       paramValueMap: paramValueMap
@@ -434,6 +435,7 @@ class NewBudgetRulesDetail extends React.Component{
             validateStatus={validateStatusMap.summaryOrDetail}
             help={helpMap.summaryOrDetail}>
             {getFieldDecorator('summaryOrDetail', {
+              initialValue: "DETAIL",
               rules: [
                 {
                   required: true,
@@ -454,8 +456,8 @@ class NewBudgetRulesDetail extends React.Component{
               ]
             })(
               <Select
+                disabled
                 placeholder={formatMessage({id:"common.please.select"})}
-                onFocus={()=>this.getValueList(2014, summaryOrDetailArray)}
                 >
                 {summaryOrDetailArray.map((item)=><Option key={item.id}>{item.value}</Option>)}
               </Select>

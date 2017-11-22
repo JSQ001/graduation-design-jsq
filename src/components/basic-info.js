@@ -120,6 +120,9 @@ class BasicInfo extends React.Component{
       if(item.items){
         item.items.map((index)=>{
           index.defaultValue = moment( this.state.infoData[index.id], 'YYYY-MM-DD');
+          if(this.state.infoData[index.id]===null){
+            index.defaultValue = undefined
+          }
         });
       }
 
