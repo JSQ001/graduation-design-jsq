@@ -4,7 +4,8 @@
 import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
-import {setUser,setCompany,setProfile,setOrganization} from 'actions/login'
+import {setUser,setCompany,setProfile,setUserOrganization,setCompanyConfiguration} from 'actions/login'
+import { message } from 'antd'
 
 /**
  * 检查是否token过期
@@ -52,7 +53,11 @@ const httpFetch = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer ' + localStorage.token
       }
-    }).then(checkStatus).then(response => {
+    }).then(checkStatus).catch(e => {
+      message.error(e.response.data.error_description);
+      if(location.href.substr(8, location.href.length - 1).split('/').length !== 2)
+        location.href = '/';
+    }).then(response => {
       localStorage.token = response.data.access_token;
       localStorage.refresh_token = response.data.refresh_token;
     })
@@ -64,7 +69,7 @@ const httpFetch = {
    */
   getInfo: function(){
     return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(),this.getOrganization()])
+      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration(),this.getOrganization()])
     })
   },
 
@@ -80,6 +85,12 @@ const httpFetch = {
     })
   },
 
+  getCompanyConfiguration: function(){
+    return this.get(`${config.baseUrl}/api/company/configurations/user`).then(response => {
+      configureStore.store.dispatch(setCompanyConfiguration(response.data));
+    })
+  },
+
   getProfile: function(){
     return this.get(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
       configureStore.store.dispatch(setProfile(response.data));
@@ -88,7 +99,9 @@ const httpFetch = {
 
   getOrganization: function(){
     return this.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((response)=>{
-      configureStore.store.dispatch(setOrganization(response.data));
+      configureStore.store.dispatch(setUserOrganization(response.data));
+    }).catch(e => {
+      configureStore.store.dispatch(setUserOrganization({message: e.response ? e.response.data.message : 'error'}));
     })
   },
 
@@ -111,21 +124,22 @@ const httpFetch = {
       localStorage.refresh_token = response.data.refresh_token;
     });
   }
-}
+};
 
 let methodList = ['get','post','put','delete'];
 methodList.map(method => {
-  httpFetch[method] = function(url, params ,header){
+  httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
       header = {};
     header.Authorization = "Bearer " + localStorage.token;
-    return axios(url, {
+    let option = {
       url: url,
       method: method.toUpperCase(),
       mode: 'cors',
       headers: header,
       data: params
-    }).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
+    };
+    return axios(url, Object.assign({}, options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };
 });
 

@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button, Modal } from 'antd';
 const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -13,8 +13,7 @@ import 'styles/main.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import { setLanguage } from 'actions/main'
-import { setCompany } from 'actions/login'
+import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import { setCodingRuleObjectId } from "actions/setting";
 import Loading from 'components/loading'
@@ -37,7 +36,6 @@ class Main extends React.Component{
       collapsed: false,
       check: false,
       adminMode: false,
-      companyMode: true,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
       dashboardAdminPage: menuRoute.getRouteItem('dashboard-admin', 'key')
@@ -47,6 +45,7 @@ class Main extends React.Component{
   componentWillMount(){
     this.checkParams();
     this.setMenuSelectedState();
+    this.props.dispatch(setTenantMode(this.checkAuthorities('ROLE_TENANT_ADMIN')))
   }
 
   setMenuSelectedState(){
@@ -57,9 +56,15 @@ class Main extends React.Component{
     });
   }
 
-  shouldComponentUpdate(){
-    this.checkParams();
-    return true;
+  componentWillReceiveProps(nextProps){
+    if(nextProps.location.pathname !== this.props.location.pathname){
+      this.checkParams();
+    } else {
+      if(nextProps.currentPage.length === 1)
+        this.setState({selectedKeys: [nextProps.currentPage[0].key]});
+      else
+        this.setState({openKeys: [nextProps.currentPage[0].key], selectedKeys: [nextProps.currentPage[1].key]})
+    }
   }
 
   //切换模式
@@ -74,10 +79,12 @@ class Main extends React.Component{
   handleModeMenuClick = (e) => {
     switch (e.key){
       case 'bloc':
-        this.setState({ companyMode: false });
-        break;
-      case 'company':
-        this.setState({ companyMode: true });
+        httpFetch.post(`${config.baseUrl}/api/company/change/${this.props.user.employeeID}`).then(() => {
+          httpFetch.getInfo().then(() => {
+            this.props.dispatch(setTenantMode(true));
+            this.context.router.replace(this.state.dashboardPage.url);
+          });
+        });
         break;
       case 'change':
         this.setState({ showListSelector: true })
@@ -87,22 +94,28 @@ class Main extends React.Component{
 
   //渲染公司模式切换下拉选项
   renderModeMenu = () => {
-    const { companyMode, collapsed } = this.state;
+    const { collapsed } = this.state;
     let menu = (
       <Menu onClick={this.handleModeMenuClick}>
-        {this.checkAuthorities('ROLE_TENANT_ADMIN') && companyMode ? <Menu.Item key="bloc">集团模式</Menu.Item> : null}
-        {!companyMode ? <Menu.Item key="company">公司模式</Menu.Item> : null}
-        <Menu.Item key="change">切换公司</Menu.Item>
+        {!this.props.tenantMode && <Menu.Item key="bloc">集团模式</Menu.Item>}
+        {<Menu.Item key="change">切换公司</Menu.Item>}
       </Menu>
     );
-    return <Dropdown overlay={menu}><span>{collapsed ? '' :  (this.props.company.name + ' ')}<Icon type="down" /></span></Dropdown>
+    return this.checkAuthorities('ROLE_TENANT_ADMIN') ?
+      <Dropdown overlay={menu}><span>{collapsed ? '' :  ((!this.props.tenantMode ? this.props.company.name : '集团模式') + ' ')}<Icon type="down" /></span></Dropdown>
+      : this.props.company.name
   };
 
   //切换公司
   handleChangeCompany = (result) => {
     this.setState({ showListSelector: false });
     if(result && result.result.length > 0){
-      this.props.dispatch(setCompany(result.result[0]));
+      httpFetch.post(`${config.baseUrl}/api/company/change/${result.result[0].id}`).then(() => {
+        httpFetch.getInfo().then(() => {
+          this.props.dispatch(setTenantMode(false));
+          this.context.router.replace(this.state.dashboardPage.url);
+        });
+      });
     }
   };
 
@@ -155,19 +168,39 @@ class Main extends React.Component{
         this.setState({check: true});
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
+    } else if(path.indexOf('/budget/') > -1 && !this.props.userOrganization.id && this.props.userOrganization.message) {  //预算组织的默认检查
+      let modalData = {
+        content: this.props.userOrganization.message,
+        onOk: () => {
+          this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
+          this.setState({check: true});
+        },
+        okText: '现在去设置'
+      };
+      Modal.error(modalData);
     } else {
       this.setState({check: true});
     }
   }
 
+  handleMenuClick = (e) => {
+    if(e.key === this.state.openKeys[0])
+      this.setState({openKeys: []});
+    else
+      this.setState({openKeys: [e.key]})
+  };
+
   renderMenu(){
     const { adminMode } = this.state;
     return (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={this.state.selectedKeys} defaultOpenKeys={this.state.openKeys}>
+      <Menu theme="dark" mode="inline"
+            selectedKeys={this.state.selectedKeys}
+            openKeys={this.state.openKeys}
+            onClick={(e) => {this.setState({selectedKeys: [e.key]})}}>
         {this.state.menu.map(item =>
           item.subMenu ? (
             ((adminMode && item.admin) || (!adminMode && !item.admin)) ? <SubMenu
-              key={item.key}
+              key={item.key} onTitleClick={this.handleMenuClick}
               title={<span><Icon type={item.icon} /><span className="nav-text">{this.props.intl.formatMessage({id: `menu.${item.key}`})}</span></span>}
             >
               {item.subMenu.map((subItem, j) =>
@@ -260,6 +293,7 @@ class Main extends React.Component{
         </Layout>
 
         <ListSelector type="available_company"
+                      selectedData={[this.props.company]}
                       visible={showListSelector}
                       onOk={this.handleChangeCompany}
                       onCancel={() => { this.setState({showListSelector: false}) }}
@@ -276,12 +310,14 @@ Main.contextTypes = {
 
 function mapStateToProps(state) {
   return {
+    tenantMode: state.main.tenantMode,
     language: state.main.language,
     currentPage: state.main.currentPage,
     user: state.login.user,
     profile: state.login.profile,
     company: state.login.company,
     organization: state.budget.organization,
+    userOrganization: state.login.organization,
     strategyId: state.budget.strategyId,
     codingRuleObjectId: state.setting.codingRuleObjectId
   }

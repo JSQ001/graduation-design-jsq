@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Form, Select, Tag, Input, Table, Button, message, Modal, Col } from 'antd'
+const Search = Input.Search;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -40,9 +41,14 @@ class NewAccountPeriod extends React.Component {
                 rules: [{
                   required: true,
                   message: ' '
-                }]
+                }],
+                initialValue: this.state.additionalName[count]
               })(
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入" onChange={(e) => {
+                  let additionalName = this.state.additionalName;
+                  additionalName[count] = e.target.value;
+                  this.setState({ additionalName })
+                }}/>
               )}
             </FormItem>)
         }}, //期间名附加
@@ -252,9 +258,14 @@ class NewAccountPeriod extends React.Component {
                 rules: [{
                   required: true,
                   message: ' '
-                }]
+                }],
+                initialValue: this.state.quarterNum[count] ? String(this.state.quarterNum[count]) : undefined
               })(
-                <Select placeholder="请选择">
+                <Select placeholder="请选择" onChange={(value) => {
+                  let quarterNum = this.state.quarterNum;
+                  quarterNum[count] = value;
+                  this.setState({ quarterNum })
+                }}>
                   <Option value="1">1</Option>
                   <Option value="2">2</Option>
                   <Option value="3">3</Option>
@@ -372,12 +383,10 @@ class NewAccountPeriod extends React.Component {
             this.getList();
           }
         }).catch((e)=>{
-            if(e.response){
-              message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
-            this.setState({loading: false});
-          } else {
-            console.log(e)
+          if(e.response){
+            message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
           }
+          this.setState({loading: false});
         })
       }
     });
@@ -404,10 +413,8 @@ class NewAccountPeriod extends React.Component {
         }).catch((e)=>{
           if(e.response){
             message.error(`${formatMessage({id: 'common.save.filed'})}, ${e.response.data.message}`); //保存失败
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });
@@ -435,19 +442,24 @@ class NewAccountPeriod extends React.Component {
       })
     }
     Object.keys(monthFrom).map(key => {
-      if (key == 1) {
+      if (count == 1) {
+        additionalName = {};
         monthFrom = {};
         dateFrom = {};
         monthTo = {};
         dateTo = {};
-      }
-      if (key > count) {
-        monthFrom[key] = undefined;
-        dateFrom[key] = undefined;
-      }
-      if (key >= count) {
-        monthTo[key] = undefined;
-        dateTo[key] = undefined
+        quarterNum = {};
+      } else {
+        if (key > count) {
+          additionalName[key] = undefined;
+          monthFrom[key] = undefined;
+          dateFrom[key] = undefined;
+          quarterNum[key] = undefined
+        }
+        if (key >= count) {
+          monthTo[key] = undefined;
+          dateTo[key] = undefined
+        }
       }
     });
     this.props.form.resetFields();
@@ -460,6 +472,11 @@ class NewAccountPeriod extends React.Component {
       dateTo,
       quarterNum,
     });
+  };
+
+  handleClose = () => {
+    this.clearWrite(1);
+    this.props.close()
   };
 
   render(){
@@ -553,7 +570,7 @@ class NewAccountPeriod extends React.Component {
                  size="middle"/>
           <div className="slide-footer">
             {ruleIsDefine ? '' : <Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>}
-            <Button onClick={() => {this.props.close()}}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
+            <Button onClick={this.handleClose}>{formatMessage({id: 'common.cancel'})/* 取消 */}</Button>
           </div>
         </Form>
         {modal}

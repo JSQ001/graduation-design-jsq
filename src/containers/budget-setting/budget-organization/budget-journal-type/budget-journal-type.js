@@ -19,17 +19,17 @@ class BudgetJournalType extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '类型代码', dataIndex: 'journalTypeCode', width: '30%'},
-        {title: '类型名称', dataIndex: 'journalTypeName', width: '30%'},
-        {title: '预算业务类型', dataIndex: 'businessType', width: '25%'},
+        {title: '预算日记账类型代码', dataIndex: 'journalTypeCode', width: '30%'},
+        {title: '预算日记账类型名称', dataIndex: 'journalTypeName', width: '30%'},
+        {title: '预算业务类型', dataIndex: 'businessTypeName', width: '25%'},
         {title: '状态', dataIndex: 'isEnabled', width: '15%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
       },
       searchForm: [
-        {type: 'input', id: 'journalTypeCode', label: '类型代码'},
-        {type: 'input', id: 'journalTypeName', label: '类型名称'}
+        {type: 'input', id: 'journalTypeCode', label: '预算日记账类型代码'},
+        {type: 'input', id: 'journalTypeName', label: '预算日记账类型名称'}
       ],
       searchParams: {
         journalTypeCode: '',

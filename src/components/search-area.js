@@ -22,9 +22,14 @@ import 'styles/components/search-area.scss'
 /**
  * 搜索区域组件
  * @params searchForm   渲染表单所需要的配置项，见底端注释
+ * @params checkboxListForm   渲染checkbox表单列表所需要的配置项，见底端注释
  * @params submitHandle  点击搜索时的回调
  * @params clearHandle  点击重置时的回调
  * @params eventHandle  表单项onChange事件，于searchForm内的event有联动，见底端注释
+ * @params okText  搜索按钮的文字
+ * @params clearText  重置按钮的文字
+ * @params maxLength  最大项数，如果超过则隐藏支展开菜单中
+ * @params loading  搜索按钮的loading状态
  * TODO: 选项render函数、searchUrl和getUrl的method区分
  */
 class SearchArea extends React.Component{
@@ -32,13 +37,14 @@ class SearchArea extends React.Component{
     super(props);
     this.state = {
       expand: false,
-      searchForm: []
+      searchForm: [],
+      checkboxListForm: []
     };
     this.setOptionsToFormItem = debounce(this.setOptionsToFormItem, 250);
   }
 
   componentWillMount(){
-    this.setState({ searchForm: this.props.searchForm })
+    this.setState({ searchForm: this.props.searchForm, checkboxListForm: this.props.checkboxListForm })
   };
 
   componentWillReceiveProps = (nextProps) => {
@@ -49,6 +55,59 @@ class SearchArea extends React.Component{
   toggle = () => {
     const { expand } = this.state;
     this.setState({ expand: !expand });
+  };
+
+  //checkbox收起下拉
+  checkboxToggle = (item) => {
+    let checkboxListForm = this.state.checkboxListForm;
+    checkboxListForm.map(list => {
+      list.items.map(listItem => {
+        listItem.key === item.key && (listItem.expand = !listItem.expand);
+      });
+    });
+    this.setState({ checkboxListForm });
+  };
+
+  //checkbox改变
+  onCheckChange = (e, id, key, value) => {
+    let checkboxListForm = this.state.checkboxListForm;
+    checkboxListForm.map(list => {
+      if (list.id === id) {
+        list.items.map(item => {
+          if (item.key === key) {
+            item.checked = item.checked || [];
+            e.target.checked ? item.checked.push(value) : item.checked.delete(value);
+            item.indeterminate = !!item.checked.length && (item.checked.length < item.options.length);
+            item.checkAll = (item.checked.length === item.options.length)
+          }
+        })
+      }
+    });
+    this.setState({ checkboxListForm })
+  };
+
+  //checkbox全选
+  onCheckAllChange = (e, key, id) => {
+    let checkboxListForm = this.state.checkboxListForm;
+    checkboxListForm.map(list => {
+      let checkedArr = [];
+      list.items.map(item => {
+        if (item.key === key) {
+          item.checked = [];
+          e.target.checked && item.options.map(option => {
+            item.checked.push(option.value)
+          });
+          item.indeterminate = false;
+          item.checkAll = e.target.checked
+        }
+        item.checked && item.checked.map(value => {
+          checkedArr.push(value)
+        });
+      });
+      let temp = {[list.id]: checkedArr};
+      list.id === id && this.props.form.setFieldsValue(temp);
+    });
+    this.setState({ checkboxListForm });
   };
 
   /**
@@ -67,7 +126,6 @@ class SearchArea extends React.Component{
     let values = this.props.form.getFieldsValue();
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
-
       if(values[item.id] && item.entity) {
         if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
           values[item.id] = JSON.parse(values[item.id].title);
@@ -167,12 +225,22 @@ class SearchArea extends React.Component{
 
   //根据接口返回数据重新设置options
   setOptionsToFormItem = (item, url, key) => {
-    let params = {};
+    let params = item.getParams ? item.getParams : {};
     if(key){
       params[item.searchKey] = key;
-      if(item.method === 'get')
-        url += `?${item.searchKey}=${key}`;
+      if(item.method === 'get'){
+        url += '?';
+        if(item.getParams){
+          let keys = Object.keys(item.getParams);
+          keys.map(paramName => {
+            url += `&${paramName}=${item.getParams[paramName]}`
+          })
+        } else {
+          url += `${item.searchKey}=${key}`;
+        }
+      }
     }
+
     if( (key !== undefined && key !== '') || key === undefined){
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
@@ -197,6 +265,7 @@ class SearchArea extends React.Component{
    * @param index 当type为items时的序列
    */
   onSetSelectValue = (item, value, index) => {
+    if (!value.value) return;
     let valueWillSet = {};
     let searchForm = this.state.searchForm;
     if(index === undefined)
@@ -205,9 +274,10 @@ class SearchArea extends React.Component{
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.value;
-            dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            searchItem.options = [];
+            dataOption[item.type === 'value_list' ? 'code' : item.valueKey] = value.value;
+            dataOption[item.type === 'value_list' ? 'messageKey' : item.labelKey] = value.label;
+            searchItem.options.push({label: value.label, value: value.value, data: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -218,9 +288,10 @@ class SearchArea extends React.Component{
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
+            searchItem.options = [];
             dataOption[item.valueKey] = value.value;
             dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            searchItem.options.push({label: value.label, value: value.value, data: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -254,7 +325,7 @@ class SearchArea extends React.Component{
    */
   setValues = (options) => {
     Object.keys(options).map(key => {
-      let searchForm = this.state.searchForm;
+      let searchForm = [].concat(this.state.searchForm);
       searchForm.map((searchItem, index) => {
         if(searchItem.id === key){
           if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
@@ -266,6 +337,10 @@ class SearchArea extends React.Component{
           } else if(searchItem.type === 'date'){
             let value = {};
             value[key] = moment(options[key]);
+            this.props.form.setFieldsValue(value)
+          } else if(searchItem.type === 'switch'){
+            let value = {};
+            value[key] = options[key];
             this.props.form.setFieldsValue(value)
           } else {
             let value = {};
@@ -409,8 +484,7 @@ class SearchArea extends React.Component{
       }
       //switch状态切换组件
       case 'switch':{
-        return <Switch defaultChecked={item.defaultValue}
-                       checkedChildren={<Icon type="check"/>}
+        return <Switch checkedChildren={<Icon type="check"/>}
                        unCheckedChildren={<Icon type="cross" />}
                        onChange={handle}
                        disabled={item.disabled}/>
@@ -449,10 +523,11 @@ class SearchArea extends React.Component{
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
-        <Col span={8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
+        <Col span={item.colSpan || 8} key={item.id} style={{ display: i < count ? 'block' : 'none' }}>
           {item.type === 'items' ? this.renderFormItem(item) :
-            <FormItem {...formItemLayout} label={item.label} colon={false}>
+            <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
+                valuePropName: item.type === 'switch' ? 'checked' : 'value',
                 initialValue: item.defaultValue,
                 rules: [{
                   required: item.isRequired,
@@ -469,24 +544,88 @@ class SearchArea extends React.Component{
     return children;
   }
 
+  getCheckboxList() {
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <div className="checkbox-list-form">
+        {this.state.checkboxListForm.map(list => {
+          let checkedArr = [];
+          list.items.map(item => {
+            item.checked && item.checked.map(value => {
+              checkedArr.push(value)
+            });
+          });
+          return (
+            <FormItem key={list.id}>
+              {list.items.map(item => {
+                return (
+                  item.checkAllOption ?
+                    <Row key={item.key}>
+                      <Col span={3}></Col>
+                      <Col>
+                        <Checkbox key={item.key}
+                                  value={item.key}
+                                  className="check-all-option"
+                                  indeterminate={item.indeterminate}
+                                  checked={item.checkAll}
+                                  onClick={(e) => this.onCheckAllChange(e, item.key, list.id)}>全部</Checkbox>
+                      </Col>
+                    </Row> : ''
+                )
+              })}
+              {getFieldDecorator(list.id, {
+                initialValue: checkedArr
+              })(
+                <Checkbox.Group onChange={values => this.props.checkboxChange(values)}>
+                  {list.items.map(item => {
+                    return (
+                      <Row className="list-row" key={item.key}>
+                        <Col span={3} className="list-col-header"><span>{item.label} :</span></Col>
+                        <Col span={2} className="list-col-content" onClick={() => this.checkboxToggle(item)}>
+                          <a>{item.expand ? '折叠' : '展开'}
+                            <Icon type={item.expand ? 'up' : 'down'} style={{marginLeft:'10px'}} />
+                          </a>
+                        </Col>
+                        <Col span={19} className="list-col-content" style={{overflow:'hidden', height: item.expand ? 'auto' : '42px'}}>
+                          {item.options.map((option, index) => {
+                            return(
+                              <Checkbox value={option.value}
+                                        key={option.value}
+                                        onClick={(e) => this.onCheckChange(e, list.id, item.key, option.value)}
+                                        style={{paddingLeft: index === 0 && item.checkAllOption ? '62px' : '0'}}>{option.label}</Checkbox>)
+                          })}
+                        </Col>
+                      </Row>)
+                  })}
+                </Checkbox.Group>
+              )}
+            </FormItem>)
+        })}
+      </div>
+    )
+  }
+
   render(){
     return (
       <Form
-        className="ant-advanced-search-form common-top-area"
+        className="ant-advanced-search-form"
         onSubmit={this.handleSearch}
       >
-        <Row gutter={40}>{this.getFields()}</Row>
-        <Row>
-          <Col span={24} style={{ textAlign: 'right' }}>
-            {this.state.searchForm.length > this.props.maxLength ? (
-              <a className="toggle-button" onClick={this.toggle}>
-                {this.state.expand ? this.props.intl.formatMessage({id: "common.fold"}) : this.props.intl.formatMessage({id: "common.more"})} <Icon type={this.state.expand ? 'up' : 'down'} />
-              </a>
-            ) : null}
-            <Button type="primary" htmlType="submit">{this.props.okText}</Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
-          </Col>
-        </Row>
+        {this.props.checkboxListForm && this.getCheckboxList()}
+        <div className="common-top-area">
+          <Row gutter={40} type="flex" align="top">{this.getFields()}</Row>
+          <Row>
+            <Col span={24} style={{ textAlign: 'right' }}>
+              {this.state.searchForm.length > this.props.maxLength ? (
+                <a className="toggle-button" onClick={this.toggle}>
+                  {this.state.expand ? this.props.intl.formatMessage({id: "common.fold"}) : this.props.intl.formatMessage({id: "common.more"})} <Icon type={this.state.expand ? 'up' : 'down'} />
+                </a>
+              ) : null}
+              <Button type="primary" htmlType="submit" loading={this.props.loading}>{this.props.okText}</Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>{this.props.clearText}</Button>
+            </Col>
+          </Row>
+        </div>
       </Form>
     )
   }
@@ -518,23 +657,47 @@ class SearchArea extends React.Component{
           getParams: {}               ╲╲可选,getUrl所需要的参数
           single: false                ╲╲可选,当type为list时是否为单选
           valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
+          colSpan: ''                    ╲╲可选，自定义搜索项的宽度
         }
+ */
+
+/**
+ *
+ * @type checkboxListForm checkbox表单列表，每一项的格式如下：
+ * {
+      id: '',     //必填，表单id，搜索后返回的数据key
+      items: [{label: '', key: '', options: [{label: '',  value: '', disabled: false}]}], //必填，详见下
+   }
+ *
+ * @param items
+ * {
+      label: '',   //必填，每行列表的label显示
+      key: '',    //必填，唯一，每行的标识
+      checked: [],    //可选，默认选中的value值
+      checkAllOption: false, //可选，是否需要全选的Option
+      options: [{label: '',  value: '', disabled: false}]  //必填，checkbox可选项
+   }
  */
 SearchArea.propTypes = {
   searchForm: React.PropTypes.array.isRequired,  //传入的表单列表
+  checkboxListForm: React.PropTypes.array,  //传入的checkbox表单列表
   submitHandle: React.PropTypes.func.isRequired,  //搜索事件
   eventHandle: React.PropTypes.func,  //表单项点击事件
   clearHandle: React.PropTypes.func,  //重置事件
   okText:  React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //左侧ok按钮的文本
   clearText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),  //右侧重置按钮的文本
   maxLength: React.PropTypes.number,  //搜索区域最大表单数量
+  loading: React.PropTypes.bool, //用于base-info组件的保存按钮
+  checkboxChange: React.PropTypes.func, //checkbox表单列表修改时返回选中value事件
 };
 
 SearchArea.defaultProps = {
   maxLength: 6,
   eventHandle: () => {},
   okText: <FormattedMessage id='common.search'/>,  //搜索
-  clearText: <FormattedMessage id='common.clear'/>  //重置
+  clearText: <FormattedMessage id='common.clear'/>,  //重置
+  loading: false,
+  checkboxChange: () => {}
 };
 
 const WrappedSearchArea = Form.create()(injectIntl(SearchArea));

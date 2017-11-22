@@ -3,11 +3,6 @@
 echo "setting environment config"
 echo "$ARTEMIS_WS_URL"
 echo "$ARTEMIS_URL"
-echo "$BRMS_URL"
-
-#cat >> /app/www/scripts/app.constants.js <<EOF
-#angular.module('HLYAdminWebApp').constant('ServiceBaseURL', '').constant('SocketBaseURL', '$ARTEMIS_WS_URL');
-#EOF
 
 cat >> /etc/nginx/conf.d/hly-admin.conf <<EOF
 server {

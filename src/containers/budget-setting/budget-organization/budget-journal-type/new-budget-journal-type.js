@@ -33,10 +33,8 @@ class NewBudgetJournalType extends React.Component {
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });
@@ -58,6 +56,15 @@ class NewBudgetJournalType extends React.Component {
           <Form>
             <Row gutter={40}>
               <Col span={8}>
+                <FormItem label="预算组织">
+                  {getFieldDecorator("organizationName", {
+                    initialValue: this.props.organization.organizationName
+                  })(
+                    <Input disabled />
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={8}>
                 <FormItem label="预算日记账类型代码">
                   {getFieldDecorator("journalTypeCode", {
                     rules: [{
@@ -71,7 +78,7 @@ class NewBudgetJournalType extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="业务日记账类型描述">
+                <FormItem label="预算日记账类型名称">
                   {getFieldDecorator("journalTypeName", {
                     rules: [{
                       required: true,

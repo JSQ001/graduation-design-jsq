@@ -25,13 +25,13 @@ class NewBudgetControlRules extends React.Component{
      strategyGroup: [],
      startValue: null,
      endValue: null,
-   }
+   };
    this.validateRuleCode = debounce(this.validateRuleCode,1000)
  }
 
  componentWillMount(){
    //加载页面时，获取启用的控制策略
-   httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
+   httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
      if(response.status === 200){
        console.log(response.data)
        let strategyGroup = [];
@@ -87,27 +87,18 @@ class NewBudgetControlRules extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.props.organization.id
-        this.state.strategyGroup.map((item)=>{
-          if(item.key === values.controlStrategy){
-            values.strategyGroupId = item.id;
-            return
-          }
-        });
+        values.strategyGroupId = values.controlStrategy.key;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
           if(response.status === 200) {
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
                  budgetControlRulesDetail.url.replace(':id', this.props.params.id).replace(':ruleId', response.data.id));
-
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
+            message.error(`${this.props.intl.formatMessage("common.save.filed")},${e.response.data.validationErrors[0].message}`);
           }
-          else {
-            console.log(e)
-          }
+          this.setState({loading: false});
         })
       }
     })
@@ -115,7 +106,7 @@ class NewBudgetControlRules extends React.Component{
 
   handleCancel = (e) =>{
     e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=RULE');
   };
 
   validateRuleCode = (item,value,callback)=>{
@@ -134,11 +125,21 @@ class NewBudgetControlRules extends React.Component{
     });
   };
 
+  handleSelect=(value)=>{
+    let value1 = this.props.form.getFieldValue("controlStrategy");
+    let controlStrategy = {
+      key: value.key,
+      label: value1.title,
+      title: value1.title
+    };
+    this.props.form.setFieldsValue({"controlStrategy": controlStrategy})
+  };
+
+
  render(){
    const { getFieldDecorator } = this.props.form;
    const { strategyGroup, startValue, endValue} = this.state;
    const { formatMessage } = this.props.intl;
-   let strategyOptions = strategyGroup.map((item)=><Option key={item.key} title={item.title}>{item.value}</Option>);
    return(
      <div className="new-budget-control-rules">
        <div className="budget-control-rules-form">
@@ -182,8 +183,11 @@ class NewBudgetControlRules extends React.Component{
                       {required:true,message: formatMessage({id:"common.please.enter"})},
                     ]
                   })(
-                    <Select placeholder={ formatMessage({id:"common.please.select"})}>
-                      {strategyOptions}
+                    <Select
+                      labelInValue
+                      onBlur={this.handleSelect}
+                      placeholder={ formatMessage({id:"common.please.select"})}>
+                      {strategyGroup.map((item)=><Option key={item.id} value={item.id}  title={item.title}>{item.value}</Option>)}
                     </Select>)
                   }
                 </FormItem>

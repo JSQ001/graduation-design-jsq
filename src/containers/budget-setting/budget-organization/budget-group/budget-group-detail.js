@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Table, Form, Select, Button, Row, Col, message, Popconfirm } from 'antd'
+import { Table, Form, Select, Button, Icon, message, Popconfirm } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -25,7 +25,7 @@ class BudgetGroupDetail extends React.Component {
       groupData: {},
       columns: [
         {title: "预算项目代码", dataIndex: "itemCode", width: '25%'},
-        {title: "预算项目描述", dataIndex: "itemName", width: '35%'},
+        {title: "预算项目名称", dataIndex: "itemName", width: '35%'},
         {title: "预算项目类型", dataIndex: "itemTypeName", width: '25%'},
         {title: '操作', key: 'operation', width: '15%', render: (text, record) => (
           <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={`你确定要删除 ${record.itemName} 吗`}>
@@ -34,8 +34,8 @@ class BudgetGroupDetail extends React.Component {
       ],
       infoList: [
         {type: 'input', label: '预算组织', id: 'organizationName', message: '请输入', disabled: true, isRequired: true},
-        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', isRequired: true},
-        {type: 'input', label: '预算项目组描述', id: 'itemGroupName', message: '请输入', isRequired: true},
+        {type: 'input', label: '预算项目组代码', id: 'itemGroupCode', message: '请输入', disabled: true, isRequired: true},
+        {type: 'input', label: '预算项目组名称', id: 'itemGroupName', message: '请输入', isRequired: true},
         {type: 'switch', label: '状态：', id: 'isEnabled'}
       ],
       data: [],
@@ -54,9 +54,10 @@ class BudgetGroupDetail extends React.Component {
         onChange: this.onSelectChange,
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
-      }
-    }
-    ;
+      },
+      editing: false,
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key')  //预算组织详情的页面项
+    };
   }
 
   componentWillMount(){
@@ -82,13 +83,23 @@ class BudgetGroupDetail extends React.Component {
   }
 
   updateHandleInfo = (params) => {
-    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign(this.state.groupData, params)).then(response => {
+    this.setState({ editing: true });
+    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign({}, this.state.groupData, params)).then(response => {
       message.success('修改成功');
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({
+        editing: false,
         groupData: response.data,
         updateState: true
       });
+    }).catch(e => {
+      if(e.response){
+        message.error(`新建失败, ${e.response.data.message}`);
+      }
+      this.setState({
+        editing: false,
+        updateState: false
+      })
     });
   };
 
@@ -222,13 +233,14 @@ class BudgetGroupDetail extends React.Component {
   };
 
   render(){
-    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData, infoList, groupData, updateState, selectorItem } = this.state;
+    const { pagination, saving, showListSelector, extraParams, loading, newData, data, rowSelection, columns, selectedData, infoList, groupData, updateState, selectorItem, editing } = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
                    infoData={groupData}
                    updateHandle={this.updateHandleInfo}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={editing}/>
         <div className="table-header">
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
@@ -243,6 +255,11 @@ class BudgetGroupDetail extends React.Component {
                bordered
                size="middle"
                rowSelection={rowSelection}/>
+
+        <a className="back" onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=GROUP');}}>
+          <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
+
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}

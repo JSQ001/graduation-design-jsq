@@ -5,40 +5,38 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, InputNumber, Switch, Button, Icon, Checkbox, Alert, message, DatePicker, Select } from 'antd'
+import { Form, Input, InputNumber, Row, Col, Button, Alert, message, DatePicker, Select } from 'antd'
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector.js'
 
-import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
+import "styles/setting/callback-setting/update-callback-setting.scss"
+
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class NewBudgetRulesDetail extends React.Component{
+class UpdateCallbackSetting extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      ruleDetail: {},
-      isEnabled: true,
       loading: false,
-      filtrateMethodHelp: '',
-      summaryOrDetailHelp: '',
+      globalSetting: {},
       showParamsType: false,
       listSelectedData: []
     }
   }
 
   componentWillMount(){
-    //获取规则参数类型
+
   }
 
   componentWillReceiveProps(nextprops){
     console.log(nextprops.params)
     this.setState({
-      ruleDetail: nextprops.params,
+      globalSetting: nextprops.params,
     })
   }
   handleFocus = () => {
@@ -84,9 +82,22 @@ class NewBudgetRulesDetail extends React.Component{
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        values.callbackDatatype = this.state.globalSetting.callbackDatatype;
+        values.companyOid = this.state.globalSetting.companyOid;
+        values.id = this.state.globalSetting.id;
         console.log(values)
-        console.log(this.state.ruleDetail)
-        typeof this.state.ruleDetail.id === 'undefined' ? this.handleSave(values) : this.handleUpdate(values)
+        httpFetch.put(`${config.baseUrl}/push/api/customizedApiCallback/company`,values).then((response)=>{
+          if(response.status === 200){
+            message.success(`修改成功!`);
+            this.props.form.resetFields();
+            this.props.close(true);
+          }
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+          }
+          this.setState({loading: false});
+        });
       }
     });
   };
@@ -105,10 +116,8 @@ class NewBudgetRulesDetail extends React.Component{
     }).catch((e)=>{
       if(e.response){
         message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({loading: false});
-      } else {
-        console.log(e)
       }
+      this.setState({loading: false});
     })
   };
 
@@ -126,11 +135,8 @@ class NewBudgetRulesDetail extends React.Component{
     }).catch((e)=>{
       if(e.response){
         message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({loading: false});
       }
-      else {
-        console.log(e)
-      }
+      this.setState({loading: false});
     })
   };
 
@@ -139,88 +145,93 @@ class NewBudgetRulesDetail extends React.Component{
     this.props.close();
   };
 
+  //获取22位随机字符串
+  handleRandomString = ()=>{
+    let charsArray = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+    let maxPos = charsArray.length;
+    let string = '';
+    for (let i = 0; i < 22; i++) {
+      string += charsArray.charAt(Math.floor(Math.random() * maxPos));
+    }
+    this.props.form.setFieldsValue({"encodingAeskey":string})
+    return string;
+  };
+
+  //手动输入字符串
+  handleInputString = (e)=>{
+    console.log(e.target.value)
+    let value = e.target.value;
+    if(value.length!==22) {
+      message.warning("encodingAeskey需要22位")
+    }
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { isEnabled, loading, ruleDetail, showParamsType, listSelectedData, filtrateMethodHelp, summaryOrDetailHelp } = this.state;
+    const { loading, globalSetting } = this.state;
     const { formatMessage } = this.props.intl;
     const formItemLayout = {
       labelCol: { span: 6 },
-      wrapperCol: { span: 14, offset: 1 },
+      wrapperCol: { span: 13, offset: 1 },
     };
-
     return(
-      <div className="new-budget-control-rules-detail">
+      <div className="update-callback-setting">
         <Form onSubmit={this.handleSubmit}>
           <FormItem {...formItemLayout} label="数据格式">
-            {getFieldDecorator('ruleParameterType', {
+            {getFieldDecorator('callbackDatatype', {
             })(
-             <div>
-               JSON
-             </div>
+              <div className="form-item-1">{globalSetting.callbackDatatype}</div>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="encodingAeskey" >
-            {getFieldDecorator('encodingAeskey', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: ruleDetail.ruleParameter
-            })(
-              <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="encodingToken" >
-            {getFieldDecorator('encodingToken', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: ruleDetail.ruleParameter
-            })(
-              <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="系统名称" >
-            {getFieldDecorator('systemName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: ruleDetail.ruleParameter
+          <Row gutter={30}>
+            <Col span={24}>
+              <FormItem {...formItemLayout} label="encodingAeskey" >
+                {getFieldDecorator('encodingAeskey', {
+                  initialValue: globalSetting.encodingAeskey
+                })(
+                  <Input onBlur={this.handleInputString} className="call-back-setting-input" placeholder={formatMessage({id:"common.please.enter"})} />
+                )}
+              </FormItem>
+            </Col>
+            <Col>
+              <Button onClick={this.handleRandomString} className="call-back-setting-btn">自动生成</Button>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={24}>
+              <FormItem {...formItemLayout} label="encodingToken" >
+                {getFieldDecorator('encodingToken', {
+                  initialValue: globalSetting.encodingToken
+                })(
+                  <Input className="call-back-setting-input1" placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+            <FormItem {...formItemLayout} label="系统名称" >
+            {getFieldDecorator('sysName', {
+              initialValue: globalSetting.sysName
             })(
               <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="管理员名称" >
-            {getFieldDecorator('administratorName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: ruleDetail.ruleParameter
+            {getFieldDecorator('sysAdmin', {
+              initialValue: globalSetting.sysAdmin
             })(
               <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="管理员电话" >
-            {getFieldDecorator('administratorPhone', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: ruleDetail.ruleParameter
+            {getFieldDecorator('sysAdminTel', {
+              initialValue: globalSetting.sysAdminTel
             })(
               <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="链接超时时间" >
-            {getFieldDecorator('encodingToken', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: 0
+          <FormItem {...formItemLayout} label="获取超链接时间" >
+            {getFieldDecorator('connectionRequestTimeout', {
+              initialValue: globalSetting.connectionRequestTimeout
             })(
               <InputNumber
                 min={0}
@@ -229,13 +240,9 @@ class NewBudgetRulesDetail extends React.Component{
                 placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="链接获取超时时间" >
-            {getFieldDecorator('encodingToken', {
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.enter"})
-              }],
-              initialValue: 0
+          <FormItem {...formItemLayout} label="获取超时时间" >
+            {getFieldDecorator('connectTimeout', {
+              initialValue: globalSetting.connectTimeout
             })(
               <InputNumber
                 min={0}
@@ -250,14 +257,6 @@ class NewBudgetRulesDetail extends React.Component{
             <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>
-        <ListSelector
-          visible={showParamsType}
-          type="rule_params"
-          onCancel={()=>this.showList(false)}
-          onOk={this.handleListOk}
-          selectedData={listSelectedData}
-          extraParams={{organizationId: this.props.params.id}}/>
-
       </div>
     )
   }
@@ -268,5 +267,5 @@ function mapStateToProps(state) {
   }
 }
 
-const WrappedNewBudgetRulesDetail = Form.create()(NewBudgetRulesDetail);
-export default connect(mapStateToProps)(injectIntl(WrappedNewBudgetRulesDetail));
+const WrappedUpdateCallbackSetting = Form.create()(UpdateCallbackSetting);
+export default connect(mapStateToProps)(injectIntl(WrappedUpdateCallbackSetting));

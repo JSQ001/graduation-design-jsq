@@ -37,9 +37,6 @@ class BudgetStructure extends React.Component {
         {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
       ],
       columns: [
-        {          /*预算组织*/
-          title: formatMessage({id:"budget.organization"}), key: "organizationName", dataIndex: 'organizationName'
-        },
         {          /*预算表代码*/
           title: formatMessage({id:"budget.structureCode"}), key: "structureCode", dataIndex: 'structureCode'
         },
@@ -138,7 +135,7 @@ class BudgetStructure extends React.Component {
       this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
     }else{
       notification["error"]({
-        description: formatMessage({id:""})  /*请维护当前账套下的预算组织*/
+        description: this.props.intl.formatMessage({id:"structure.validateCreate"})  /*请维护当前账套下的预算组织*/
       })
     }
   };

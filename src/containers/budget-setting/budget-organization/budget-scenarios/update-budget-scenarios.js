@@ -54,10 +54,8 @@ class UpdateBudgetScenarios extends React.Component{
         }).catch((e)=>{
           if(e.response){
             message.error(`保存失败, ${e.response.data.message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e);
           }
+          this.setState({loading: false});
         })
       }
     });
@@ -106,7 +104,7 @@ class UpdateBudgetScenarios extends React.Component{
               <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述">
+          <FormItem {...formItemLayout} label="预算场景名称">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
@@ -121,7 +119,7 @@ class UpdateBudgetScenarios extends React.Component{
             {getFieldDecorator('description', {
               initialValue: params.description
             })(
-              <TextArea rows={4} placeholder="请输入"/>
+              <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="状态">

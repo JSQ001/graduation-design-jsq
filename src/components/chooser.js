@@ -23,20 +23,29 @@ class Chooser extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps = (nextProps) => {
-    if(nextProps.value && nextProps.value.length > 0 && this.state.value.length === 0){
-      let values = [];
-      nextProps.value.map(item => {
-        values.push({
-          key: item[this.props.valueKey],
-          label: item[this.props.labelKey],
-          value: item
+    if(nextProps.value){
+      let lengthChange = nextProps.value.length !== this.state.value.length;
+      let innerChange = false;
+      if(nextProps.value.length === this.state.value.length){
+        nextProps.value.map((nextItem, index) => {
+          innerChange = innerChange || this.state.value[index].key !== (nextItem[this.props.valueKey] + '');
         })
-      });
-      this.onChange(nextProps.value);
-      this.setState({ value: values });
+      }
+      if(lengthChange || innerChange){
+        let values = [];
+        nextProps.value.map(item => {
+          values.push({
+            key: item[this.props.valueKey] + '',
+            label: item[this.props.labelKey],
+            value: item
+          })
+        });
+        // this.onChange(nextProps.value);
+        this.setState({ value: values });
+      }
     }
-    if(!nextProps.value || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
-      this.onChange([]);
+    if((!nextProps.value && this.state.value.length > 0) || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
+      // this.onChange([]);
       this.setState({ value: [] })
     }
   };
@@ -60,9 +69,8 @@ class Chooser extends React.Component {
         listSelectedData.push(value.value)
       });
     }
-    this.setState({
-      showListSelector: true,
-      listSelectedData
+    this.setState({ listSelectedData }, () => {
+      this.setState({  showListSelector: true })
     })
   };
 
@@ -138,7 +146,7 @@ Chooser.propTypes = {
   onChange: React.PropTypes.func,  //进行选择后的回调
   single: React.PropTypes.bool,  //是否单选
   value: React.PropTypes.array,  //已选择的值，需要传入完整目标数组
-  showNumber: React.PropTypes.bool  //是否只显示已选XX条
+  showNumber: React.PropTypes.bool  //是否只显示'已选XX条'
 };
 
 Chooser.defaultProps = {

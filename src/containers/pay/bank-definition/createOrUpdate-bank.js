@@ -117,11 +117,8 @@ class CreateOrUpdateBank extends React.Component{
         }).catch((e)=>{
           if(e.response){
             message.error(`${this.props.intl.formatMessage({id:"common.create.filed"})}, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
           }
-          else {
-            console.log(e)
-          }
+          this.setState({loading: false});
         })
       }
     })
@@ -143,11 +140,8 @@ class CreateOrUpdateBank extends React.Component{
     }).catch((e)=>{
       if(e.response){
         message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.validationErrors[0].message}`);
-        this.setState({loading: false});
       }
-      else {
-        console.log(e)
-      }
+      this.setState({loading: false});
     })
 
 

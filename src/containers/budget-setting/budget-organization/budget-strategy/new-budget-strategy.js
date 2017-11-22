@@ -27,17 +27,15 @@ class NewBudgetStrategy extends React.Component {
         this.setState({loading: true});
         values.organizationId = this.props.params.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategies`, values).then((res)=>{
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({loading: false});
-            message.success('操作成功');
+            message.success('新建成功');
             this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', res.data.id));
           }
         }).catch((e)=>{
+          this.setState({loading: false});
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
+            message.error(`新建失败, ${e.response.data.message}`);
           }
         })
       }
@@ -52,7 +50,7 @@ class NewBudgetStrategy extends React.Component {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled
     }))
-  }
+  };
 
   render(){
     const { getFieldDecorator } = this.props.form;
@@ -75,7 +73,7 @@ class NewBudgetStrategy extends React.Component {
               <Input placeholder="请输入" />
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算控制策略描述" hasFeedback>
+          <FormItem {...formItemLayout} label="预算控制策略名称" hasFeedback>
             {getFieldDecorator('controlStrategyName', {
               rules: [{
                 required: true,

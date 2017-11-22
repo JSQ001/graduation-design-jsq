@@ -151,12 +151,46 @@ body{
   white-space: nowrap;
 }
 
+.back{
+  font-size: 14px;
+  margin: 20px 0;
+  display: inline-block;
+}
+
+.divider{
+  width: calc(100% + 40px);
+  background: #ECECEC;
+  height: 10px;
+  margin: 20px -20px;
+}
+
+.background-transparent{
+  background: #ECECEC;
+  margin: -27px -20px 0 -20px;
+  padding: 20px;
+  min-height: calc(100% + 27px);
+}
+
 table{
   table-layout: fixed;
   .money-cell{
     width: 100%;
     display: inline-block;
     text-align: right;
+  }
+  .center-icon{
+    text-align: center;
+    i{
+      cursor: pointer;
+      transition: transform .5s ease;
+    }
+    i:hover{
+      -webkit-transform: scale(1.5);
+      -moz-transform: scale(1.5);
+      -ms-transform: scale(1.5);
+      -o-transform: scale(1.5);
+      transform: scale(1.5);
+    }
   }
 }
 
@@ -170,14 +204,22 @@ table{
   background: rgba(0, 0, 0, 0.04);
 }
 
-.ant-calendar {
+.ant-calendar:not(.ant-calendar-range) {
   width: 245px;
 }
 
 .list-selector .ant-modal-body{
   height: 70vh;
   overflow-y: scroll;
+  .ant-table-tbody{
+    cursor: pointer;
+  }
 }
+
+.hide{
+  display: none;
+}
+
 
 
 

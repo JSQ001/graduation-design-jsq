@@ -5,8 +5,9 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
+import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Checkbox   } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
@@ -40,8 +41,7 @@ class BudgetItemDetail extends React.Component{
         {type: 'input', id: 'organizationName', isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
         {type: 'input', id: 'itemCode', isRequired: true, disabled: true, label: formatMessage({id: 'budget.itemCode'})+" :" /*预算项目代码*/},
         {type: 'input', id: 'itemName', isRequired:true, label: formatMessage({id: 'budget.itemName'}) +" :"/*预算项目名称*/},
-        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"项目类型"},
-        {type: 'select',options: [] , id: 'variationAttribute',disabled: true, label: formatMessage({id: 'budget.item.variationAttribute'}) +" :"/*变动属性*/},
+        {type: 'select',options: [] , id: 'itemTypeName', required:true, disabled: true, label:"预算项目类型："},
         {type: 'input', id: 'description', label: formatMessage({id: 'budget.itemDescription'}) +" :"/*预算项目描述*/},
         {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
@@ -49,7 +49,11 @@ class BudgetItemDetail extends React.Component{
       columns: [
         {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
         {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'} /*公司类型*/
+        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
+        {                        /*启用*/
+          title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
+          render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
+        },
       ],
     }
   }
@@ -58,6 +62,9 @@ class BudgetItemDetail extends React.Component{
     //根据路径上的id,查出该条预算项目完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
       if(response.status === 200){
+        console.log(response)
+        response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
+        response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttribute};
         this.setState({
           budgetItem: response.data
         })
@@ -72,10 +79,14 @@ class BudgetItemDetail extends React.Component{
     value.organizationId = this.state.budgetItem.organizationId;
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
+    console.log(this.state.budgetItem)
+    console.log(value)
     httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
         console.log(response)
-
+        response.data.organizationName = this.state.budgetItem.organizationName;
+        console.log(value)
+        response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           budgetItem: response.data,
@@ -85,35 +96,20 @@ class BudgetItemDetail extends React.Component{
     })
   };
 
-  //分配公司
-  handleSave = (e) =>{
-
-    /*this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values)
-      if (!err) {
-        httpFetch.put(`${config.budgetUrl}/api/budget/items`,values).then((response) => {
-          if(response.status === 200){
-            this.setState({
-              buttonLoading: false,
-              edit: false
-            })
-          }
-        }).catch((e)=>{
-          if(e.response){
-            message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
-            this.setState({loading: false});
-          }
-          else {
-            console.log(e)
-          }
+  //查询已经分配过的公司
+  getList(){
+    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
+      console.log(response)
+      if(response.status === 200){
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
+        this.setState({
+          loading: false,
+          data: response.data,
+          pagination
         })
       }
-    })*/
-  };
-
-  //查询公司
-  getList(){
-
+    })
   }
 
 
@@ -129,16 +125,30 @@ class BudgetItemDetail extends React.Component{
     })
   };
 
-  //处理公司弹框点击ok
+  //处理公司弹框点击ok,分配公司
   handleListOk = (result) => {
-    console.log(result)
-    this.setState({
-        data: result.result
-      },
-      this.showListSelector(false)
-    );
+    let companyIds = [];
+    let resourceIds = [];
+    resourceIds.push(parseInt(this.props.params.itemId));
+    result.result.map((item)=>{
+      companyIds.push(item.id)
+    });
+    let param = [];
+    param.push({"companyIds": companyIds, "resourceIds": resourceIds});
+    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      if(response.status === 200){
+        this.showListSelector(false);
+        this.setState({
+          loading: true
+        },this.getList())
+      }
+    });
   };
 
+  //返回预算项目
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=ITEM');
+  };
 
   render(){
     const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector} = this.state;
@@ -153,7 +163,6 @@ class BudgetItemDetail extends React.Component{
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'structure.addCompany'})}</Button>  {/*添加公司*/}
-            <Button onClick={this.handleSave()}>{this.props.intl.formatMessage({id: 'common.save'})}</Button>
           </div>
         </div>
         <Table
@@ -162,14 +171,19 @@ class BudgetItemDetail extends React.Component{
           pagination={pagination}
           size="middle"
           bordered/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
-        <ListSelector type="company"
+        <ListSelector type="company_item"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
+                      extraParams={{itemId: this.props.params.itemId}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }
 }
+BudgetItemDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {

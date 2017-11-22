@@ -17,20 +17,27 @@ class BudgetStrategyDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       infoList: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码', isRequired: true, disabled: true},
-        {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述', isRequired: true},
+        {type: 'input', id: 'controlStrategyName', label: '预算控制策略名称', isRequired: true},
         {type: 'switch', id: 'isEnabled', label: '状态'}
       ],
       infoData: {},
       updateState: false,
+      baseInfoLoading: false,
       columns: [
-        {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '10%'},
+        {title: "序号", dataIndex: "detailSequence", key: "detailSequence", width: '7%'},
         {title: "规则代码", dataIndex: "detailCode", key: "detailCode"},
-        {title: "描述", dataIndex: "detailName", key: "detailName", render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
-        {title: "消息", dataIndex: "messageCode", key: "messageCode", render: message => <span>{message ? message : '-'}</span>},
-        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent", render: event => <span>{event ? event : '-'}</span>}
+        {title: "控制策略", dataIndex: "controlMethod", key: "controlMethod",
+          render: method => <span>{method.label}</span>},
+        {title: "控制规则名称", dataIndex: "detailName", key: "detailName",
+          render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: "消息", dataIndex: "messageCode", key: "messageCode",
+          render: (message, record) => (record.controlMethod.value === 'NO_MESSAGE' ? <span>-</span> :
+            <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover> )},
+        {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent",
+          render: event => <span>{event ? event : '-'}</span>}
       ],
       data: [],
       pagination: {
@@ -48,19 +55,17 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   componentWillMount() {
-    if(this.props.organization.id && this.props.strategyId){
-      this.context.router.replace(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', this.props.strategyId));
+    if(this.props.organization.id && this.props.params.strategyId){
+      this.context.router.replace(this.state.budgetStrategyDetail.url.replace(':id', this.props.organization.id).replace(':strategyId', this.props.params.strategyId));
       this.getBasicInfo();
       this.getList();
     }
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId}`).then((response) => {
-      if(response.status==200) {
-        this.setState({
-          infoData: response.data
-        })
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId || this.props.params.strategyId}`).then((response) => {
+      if(response.status === 200) {
+        this.setState({ infoData: response.data })
       }
     }).catch((e) => {
 
@@ -68,8 +73,9 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   getList() {
-    let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId}`;
+    let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId || this.props.params.strategyId}&organizationId=${this.props.params.id}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
+    this.setState({ loading: true });
     httpFetch.get(url).then((response) => {
       this.setState({
         data: response.data,
@@ -81,7 +87,7 @@ class BudgetStrategyDetail extends React.Component {
         }
       })
     }).catch((e) => {
-      this.setState({ loading: false })
+
     })
   }
 
@@ -97,15 +103,14 @@ class BudgetStrategyDetail extends React.Component {
   };
 
   handleNew = () => {
-    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId));
+    this.context.router.push(this.state.newBudgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleRowClick = (record) => {
-    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.strategyId).replace(':strategyControlId', record.id));
+    this.context.router.push(this.state.strategyControlDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId).replace(':strategyControlId', record.id));
   };
 
   handleSearch= (value) => {
-    console.log(value);
     this.setState({
       page: 0,
       keyWords: value,
@@ -116,45 +121,51 @@ class BudgetStrategyDetail extends React.Component {
       this.getList();
     })
   };
+
+  //更新基本信息
   handleUpdate = (params) => {
     params.id = this.props.strategyId;
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlStrategyCode || !params.controlStrategyName) return;
-    httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
-      if(response.status == 200) {
-        message.success('保存成功');
-        this.getBasicInfo();
-        this.setState({ updateState: true })
-      }
-    }).catch((e) => {
-      if(e.response){
-        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({ updateState: false })
-      } else {
-        console.log(e)
-      }
-    })
+    this.setState({ baseInfoLoading: true }, () => {
+      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
+        if(response.status === 200) {
+          message.success('保存成功');
+          this.getBasicInfo();
+          this.setState({ updateState: true, baseInfoLoading: false },() => {
+            this.setState({ updateState: false })
+          })
+        }
+      }).catch((e) => {
+        this.setState({ updateState: false, baseInfoLoading: false });
+        if(e.response){
+          message.error(`保存失败, ${e.response.data.validationErrors[0] ? e.response.data.validationErrors[0].message : e.response.data.message}`);
+        }
+      })
+    });
   };
 
+  //返回到预算组织详情页
   handleBack = () => {
     this.context.router.push(this.state.budgetOrganizationDetail.url.replace(':id', this.props.params.id) + '?tab=STRATEGY');
   };
 
   render(){
-    const { infoList, infoData, columns, data, loading, pagination, updateState } = this.state;
+    const { infoList, infoData, columns, data, loading, pagination, updateState, baseInfoLoading } = this.state;
     return (
       <div className="budget-strategy-detail">
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateHandle={this.handleUpdate}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={baseInfoLoading}/>
         <div className="table-header">
           <div className="table-header-title"><h5>策略明细</h5> {`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>新 建</Button>
             {/*<span className="tip-notice">新建预算控制策略规则之前要先定义【<a>事件</a>】和【<a>消息代码</a>】</span>*/}
             <Search
-              placeholder="请输入策略明细描述/代码"
+              placeholder="请输入策略明细名称/代码"
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
               onChange={(e) => this.handleSearch(e.target.value)}
             />

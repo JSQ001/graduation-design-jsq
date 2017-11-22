@@ -19,7 +19,7 @@ class BudgetScenarios extends React.Component {
       updateParams: {},
       searchForm: [
         {type: 'input', id: 'scenarioCode', label: '预算场景代码'},
-        {type: 'input', id: 'scenarioName', label: '预算场景描述'}
+        {type: 'input', id: 'scenarioName', label: '预算场景名称'}
       ],
       searchParams: {
         scenarioCode: "",
@@ -27,9 +27,9 @@ class BudgetScenarios extends React.Component {
       },
       loading: true,
       columns: [
-        {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
+        // {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
-        {title: '预算场景描述', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: '预算场景名称', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>},
         {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', width: '10%' , render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}

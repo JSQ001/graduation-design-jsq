@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
-import { Table, Badge, Button, Popover, message, Popconfirm } from 'antd';
+import { Table, Badge, Button, Popover, message } from 'antd';
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
@@ -36,10 +36,6 @@ class BudgetOrganization extends React.Component {
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
             <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
-            <span className="ant-divider" />
-            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.organization"}, {organizationName: record.organizationName})}>{/* 你确定要删除organizationName吗 */}
-              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
-            </Popconfirm>
           </span>)},  //操作
       ],
       pagination: {
@@ -76,13 +72,6 @@ class BudgetOrganization extends React.Component {
     })
   };
 
-  deleteItem = (e, record) => {
-    httpFetch.delete(`${config.budgetUrl}/api/budget/organizations/${record.id}`).then(response => {
-      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.organizationName})); // name删除成功
-      this.getList();
-    })
-  };
-
   //得到列表数据
   getList(){
     this.setState({ loading: true });
@@ -109,11 +98,11 @@ class BudgetOrganization extends React.Component {
 
   //分页点击
   onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
+    if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
         loading: true
-      }, ()=>{
+      }, () => {
         this.getList();
       })
   };
@@ -171,7 +160,7 @@ class BudgetOrganization extends React.Component {
           eventHandle={this.searchEventHandle}/>
 
         <div className="table-header">
-          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>{formatMessage({id:"common.create"})}</Button> {/* 新建 */}
           </div>

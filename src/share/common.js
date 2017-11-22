@@ -24,8 +24,24 @@ Array.prototype.addIfNotExist = function(item){
   this.push(item)
 };
 
+//给String类型添加 '_self' 的getter， 使得 typeof a === 'string' && a['_self'] === a 成立
+if(String.prototype.__defineGetter__)
+  String.prototype.__defineGetter__('_self', function(){
+    return this.toString();
+  });
+else
+  Object.defineProperty(String.prototype, '_self', {
+    get: function(){
+      return this.toString();
+    }
+  });
+
 //金额过滤
-React.Component.prototype.filterMoney = (money, fixed = 2) => <span className="money-cell">{Number(money || 0).toFixed(fixed).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>;
+React.Component.prototype.filterMoney = (money, fixed = 2) => {
+  let numberString = Number(money || 0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  numberString += (numberString.indexOf('.') > -1 ? '' : '.00');
+ return <span className="money-cell">{numberString}</span>;
+}
 
 //检查用户操作权限
 React.Component.prototype.checkAuthorities = auth => {
@@ -87,6 +103,10 @@ Date.prototype.format = function (fmt) {
  * 2020 期间汇总标志
  * 2021 预算季度
  * 2022 预算控制消息
+ * 2023 单据类别
+ * 2024 重置频率
+ * 2025 段值
+ * 2026 日期格式
  * 2101 汇率方法
  * 2102 汇率标价方法
  * 2103 银行类型
@@ -98,6 +118,8 @@ Date.prototype.format = function (fmt) {
  * 2109 付款状态
  * 2110 退款状态
  * 2111 支付日志操作类型
+ * 2201 合同状态
+ * 2202 合同大类
  * @param code 值列表代码
  */
 React.Component.prototype.getSystemValueList = (code) => httpFetch.get(`${config.baseUrl}/api/custom/enumeration/system/by/type?systemCustomEnumerationType=${code}`);
@@ -116,7 +138,6 @@ window.spriteAnimation = function(dom, img, height, width, total, duration = 500
   dom.style.backgroundImage = `url('${img}')`;
   dom.style.backgroundSize = `${width}px`;
   dom.frames = total;
-
   hoverDom.onmouseenter = function(){
     let enterInterval = setInterval(() => {
       clearInterval(dom.leaveInterval);
@@ -150,6 +171,7 @@ React.Component.prototype.service = {
     return httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectByInput`)
   }
 };
+
 
 
 

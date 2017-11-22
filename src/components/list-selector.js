@@ -3,9 +3,8 @@
  */
 import React from 'react';
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-
-import { Modal, Table, Button } from 'antd'
+import { injectIntl } from 'react-intl'
+import { Modal, Table, message } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import SearchArea from 'components/search-area'
@@ -19,6 +18,7 @@ import SearchArea from 'components/search-area'
  * @params searchForm  联动searchForm组件的参数，配置顶部搜索区域搜索项
  * @params columns  表格列配置
  * @params key  数据主键
+ * @params listKey  列表在接口返回值内的变量名，如果接口直接返回数组则置空
  */
 import selectorData from 'share/selectorData'
 
@@ -77,7 +77,7 @@ class ListSelector extends React.Component {
   clear = () => {
     let searchParams = {};
     this.state.selectorItem.searchForm.map(form => {
-      searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;
+      searchParams[form.id] = form.defaultValue;
     });
     this.setState({
       page: 0,
@@ -90,17 +90,18 @@ class ListSelector extends React.Component {
   //得到数据
   getList(){
     let selectorItem = this.state.selectorItem;
-    let searchParams = Object.assign(this.state.searchParams,this.props.extraParams);
+    let searchParams = Object.assign({}, this.state.searchParams, this.props.extraParams);
     let url = `${selectorItem.url}?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
+      url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
     return httpFetch.get(url).then((response)=>{
-      response.data.map((item)=>{
+      let data = selectorItem.listKey ? response.data[selectorItem.listKey] : response.data;
+      data.map((item)=>{
         item.key = item[selectorItem.key];
       });
       this.setState({
-        data: response.data,
+        data: data,
         loading: false,
         pagination: {
           total: Number(response.headers['x-total-count']),
@@ -110,6 +111,9 @@ class ListSelector extends React.Component {
       }, () => {
         this.refreshSelected();  //刷新当页选择器
       })
+    }).catch(e => {
+      message.error('获取数据失败，请稍后重试或联系管理员');
+      this.setState({loading: false})
     });
   }
 
@@ -137,7 +141,7 @@ class ListSelector extends React.Component {
   checkSelectorItem(selectorItem){
     let searchParams = {};
     selectorItem.searchForm.map(form => {
-      searchParams[form.id] = form.defaultValue ? form.defaultValue : undefined;  //遍历searchForm，取id组装成searhParams
+      searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searchParams
     });
     this.setState({ selectorItem, searchParams }, () => {
       this.getList();
@@ -158,7 +162,13 @@ class ListSelector extends React.Component {
     if(nextProps.type !== this.state.type && !nextProps.selectorItem && nextProps.visible)
       this.checkType(nextProps.type);
     else if(nextProps.selectorItem && nextProps.visible)
-      this.checkSelectorItem(nextProps.selectorItem)
+      this.checkSelectorItem(nextProps.selectorItem);
+
+    let { rowSelection } = this.state;
+    if(nextProps.single !== (rowSelection.type === 'radio')){
+      rowSelection.type = nextProps.single ? 'radio' : 'checkbox';
+      this.setState({ rowSelection })
+    }
   };
 
   handleOk = () => {
@@ -176,7 +186,7 @@ class ListSelector extends React.Component {
     let nowSelectedRowKeys = [];
     selectedData.map(selected => {
       data.map(item => {
-        if(item[selectorItem.key] === selected[selectorItem.key])
+        if(item[selectorItem.key] == selected[selectorItem.key])
           nowSelectedRowKeys.push(item[selectorItem.key])
       })
     });
@@ -203,7 +213,7 @@ class ListSelector extends React.Component {
     } else {
       if(!selected){
         selectedData.map((selected, index) => {
-          if(selected[selectorItem.key] === record[selectorItem.key]){
+          if(selected[selectorItem.key] == record[selectorItem.key]){
             selectedData.splice(index, 1);
           }
         })
@@ -214,6 +224,34 @@ class ListSelector extends React.Component {
     this.setState({ selectedData });
   };
 
+  //点击行时的方法，遍历遍历selectedData，根据是否选中进行遍历遍历selectedData和rowSelection的插入或删除操作
+  handleRowClick = (record) => {
+    let { selectedData, selectorItem, rowSelection } = this.state;
+    if(this.props.single){
+      selectedData = [record];
+      rowSelection.selectedRowKeys = [record[selectorItem.key]]
+    } else {
+      let haveIt = false;
+      selectedData.map((selected, index) => {
+        if(selected[selectorItem.key] == record[selectorItem.key]){
+          selectedData.splice(index, 1);
+          haveIt = true;
+        }
+      });
+      if(!haveIt){
+        selectedData.push(record);
+        rowSelection.selectedRowKeys.push(record[selectorItem.key])
+      } else {
+        rowSelection.selectedRowKeys.map((item, index) => {
+          if(item == record[selectorItem.key]){
+            rowSelection.selectedRowKeys.splice(index, 1);
+          }
+        })
+      }
+    }
+    this.setState({ selectedData, rowSelection });
+  };
+
   //选择当页全部时的判断
   onSelectAll = (selected, selectedRows, changeRows) => {
     changeRows.map(changeRow => this.onSelectItem(changeRow, selected));
@@ -222,7 +260,7 @@ class ListSelector extends React.Component {
   render() {
     const { visible, onCancel, afterClose } = this.props;
     const { data, pagination, loading, selectorItem, selectedData, rowSelection } = this.state;
-    const { searchForm, columns, title } = selectorItem;
+    const { searchForm, columns, title, key } = selectorItem;
     return (
       <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
         { searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
@@ -236,7 +274,9 @@ class ListSelector extends React.Component {
           </div>
         </div>
         <Table columns={columns}
+               onRowClick={this.handleRowClick}
                dataSource={data}
+               rowKey={record => record[key]}
                pagination={pagination}
                loading={loading}
                bordered

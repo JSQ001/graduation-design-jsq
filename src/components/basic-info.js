@@ -13,12 +13,14 @@ import 'styles/components/basic-info.scss'
  * @params updateHandle  点击保存时的回调
  * @params updateState  保存状态，保存成功设为true，保存失败设为false，用于判断修改界面是否关闭
  * @params eventHandle 表单的onChange事件
+ * @params loading 表单保存时保存按钮loading
  */
 
 class BasicInfo extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       infoList: [],
       searchForm: [],
       infoData: {},
@@ -31,10 +33,14 @@ class BasicInfo extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.setState({ infoData: nextProps.infoData });
-    if(nextProps.updateState) {
-      this.handelCancel();
-    }
+    this.setState({
+      infoData: nextProps.infoData,
+      loading: nextProps.loading
+    },() => {
+      if(nextProps.updateState) {
+        this.handelCancel();
+      }
+    })
   }
 
   //点击 "编辑"
@@ -52,6 +58,10 @@ class BasicInfo extends React.Component{
     this.setState({ searchForm, cardShow: false }, () => {
       this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
     })
+  };
+
+  setValues = (values) => {
+    this.formRef._reactInternalInstance._renderedComponent._instance.setValues(values);
   };
 
   //渲染基本信息显示页
@@ -97,18 +107,22 @@ class BasicInfo extends React.Component{
     }
   }
 
-  getInfos() {
+  getInfo() {
     let children = [];
     let rows = [];
-    this.props.infoList.map((item, index)=>{
+    let infoList = [].concat(this.state.infoList);
+    infoList.map((item, index)=>{
 
-      //获取默认值，用于search-area组件
+      //获取默认值
       item.defaultValue = this.state.infoData[item.id];
 
       //规则定义的有效时间
       if(item.items){
         item.items.map((index)=>{
           index.defaultValue = moment( this.state.infoData[index.id], 'YYYY-MM-DD');
+          if(this.state.infoData[index.id]===null){
+            index.defaultValue = undefined
+          }
         });
       }
 
@@ -131,7 +145,7 @@ class BasicInfo extends React.Component{
         );
         children = [];
       }
-      if ((index+1) === this.props.infoList.length && (index+1) % 3 !== 0) {
+      if ((index+1) === infoList.length && (index+1) % 3 !== 0) {
         rows.push(
           <Row key={index}>
             {children}
@@ -150,19 +164,19 @@ class BasicInfo extends React.Component{
     this.setState({ cardShow: true })
   };
 
-  handelEvent=(event,e)=>{
-    this.props.eventHandle(event,e);
+  handelEvent = (e, event) => {
+    this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
   };
 
   render() {
-    const { cardShow, infoList, searchForm } = this.state;
+    const { cardShow, searchForm, loading } = this.state;
     let domRender;
     if(cardShow) {
       domRender = (
         <Card title={this.props.intl.formatMessage({id: 'common.baseInfo'}) /* 基本信息 */}
               extra={<a onClick={this.editInfo}>{this.props.intl.formatMessage({id: 'common.edit'}) /* 编辑 */}</a>}
               noHovering >
-          <Row>{this.getInfos()}</Row>
+          <Row>{this.getInfo()}</Row>
         </Card>)
     } else {
       domRender = (
@@ -172,7 +186,8 @@ class BasicInfo extends React.Component{
                     eventHandle={this.handelEvent}
                     wrappedComponentRef={(inst) => this.formRef = inst}
                     okText={this.props.intl.formatMessage({id: 'common.save'}) /* 保存 */}
-                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */} />)
+                    clearText={this.props.intl.formatMessage({id: 'common.cancel'}) /* 取消 */}
+                    loading={loading}/>)
     }
     return (
       <div className="basic-info">
@@ -187,6 +202,7 @@ BasicInfo.propTypes = {
   infoData: React.PropTypes.object.isRequired,  //传入的基础信息值
   updateHandle: React.PropTypes.func.isRequired,  //更新表单事件
   updateState: React.PropTypes.bool.isRequired,  //更新状态（true／false）
+  loading: React.PropTypes.bool,  //保存按钮状态（true／false）
   eventHandle: React.PropTypes.func,  //表单的onChang事件
 };
 

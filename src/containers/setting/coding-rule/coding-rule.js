@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
-import { Table, Button, Badge } from 'antd';
+import { Table, Button, Badge, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 
 import menuRoute from 'share/menuRoute'
@@ -14,13 +14,14 @@ class CodingRuleDetail extends React.Component {
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
+      editing: false,
       data: [],
       page: 0,
       pageSize: 10,
       columns: [
         {title: "编码规则代码", dataIndex: "codingRuleCode", width: '15%'},
         {title: "编码规则名称", dataIndex: "codingRuleName", width: '25%'},
-        {title: "重置频率", dataIndex: "resetFrequence", width: '15%'},
+        {title: "重置频率", dataIndex: "resetFrequenceName", width: '15%'},
         {title: "备注", dataIndex: "description", width: '30%'},
         {title: "状态", dataIndex: 'isEnabled', width: '15%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)}
@@ -30,7 +31,7 @@ class CodingRuleDetail extends React.Component {
       },
       updateState: false,
       infoList: [
-        {type: 'input', label: '单据类型', id: 'documentCategoryCode', disabled: true},
+        {type: 'input', label: '单据类型', id: 'documentTypeName', disabled: true},
         {type: 'input', label: '应用公司', id: 'companyName', disabled: true},
         {type: 'switch', label: '状态', id: 'isEnabled'},
       ],
@@ -78,8 +79,18 @@ class CodingRuleDetail extends React.Component {
       })
   };
 
-  updateInfo = () => {
-    this.setState({updateState: true})
+  updateInfo = (params) => {
+    this.setState({editing: true});
+    httpFetch.put(`${config.budgetUrl}/api/budget/coding/rule/objects`, Object.assign({}, this.state.infoData, params)).then(res => {
+      this.setState({updateState: true, editing: false});
+      this.props.form.resetFields();
+      message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: ''}));  //保存成功
+    }).catch((e)=> {
+      if (e.response) {
+        message.error(`保存失败, ${e.response.data.message}`);
+      }
+      this.setState({editing: false});
+    })
   };
 
   handleRowClick = (record) => {
@@ -91,7 +102,7 @@ class CodingRuleDetail extends React.Component {
   };
 
   render(){
-    const { columns, data, loading,  pagination, infoList, infoData, updateState } = this.state;
+    const { columns, data, loading,  pagination, infoList, infoData, updateState, editing } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div>
@@ -99,7 +110,8 @@ class CodingRuleDetail extends React.Component {
         <BasicInfo infoList={infoList}
                    infoData={infoData}
                    updateState={updateState}
-                   updateHandle={this.updateInfo}/>
+                   updateHandle={this.updateInfo}
+                   loading={editing}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">

@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import moment from 'moment'
 import menuRoute from 'share/menuRoute'
 
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker, Popconfirm, Popover  } from 'antd'
@@ -53,24 +54,23 @@ class BudgetControlRulesDetail extends React.Component{
           {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", isRequired: true},
           {type: 'date', id: 'endDate', label: ' '}
         ]},
-        //{type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :" /*有效日期*/},
         {type: 'input', id: 'priority', required: true, disabled: true, label: formatMessage({id:"budget.controlRules.priority"}) /*优先级*/}
       ],
       columns: [
         {          /*规则参数类型*/
-          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterType", dataIndex: 'ruleParameterType',
+          title: formatMessage({id:"budget.ruleParameterType"}), key: "ruleParameterTypeDescription", dataIndex: 'ruleParameterTypeDescription',
           render: recode =>{
             return recode
           }
         },
         {          /*规则参数*/
-          title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameter", dataIndex: 'ruleParameter'
+          title: formatMessage({id:"budget.ruleParameter"}), key: "ruleParameterDescription", dataIndex: 'ruleParameterDescription'
         },
         {          /*取值方式*/
-          title: formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethod", dataIndex: 'filtrateMethod'
+          title: formatMessage({id:"budget.filtrateMethod"}), key: "filtrateMethodDescription", dataIndex: 'filtrateMethodDescription'
         },
         {          /*取值范围*/
-          title: formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetail", dataIndex: 'summaryOrDetail'
+          title: formatMessage({id:"budget.summaryOrDetail"}), key: "summaryOrDetailDescription", dataIndex: 'summaryOrDetailDescription'
         },
         {          /*下限值*/
           title: formatMessage({id:"budget.parameterLowerLimit"}), key: "parameterLowerLimit", dataIndex: 'parameterLowerLimit'
@@ -104,14 +104,17 @@ class BudgetControlRulesDetail extends React.Component{
       this.getList();
     })
   };
+
+
   componentWillMount(){
     this.getList();
     //根据路径上的预算规则id查出完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
         console.log(response.data.startDate.substring(0,10))
-        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        let endDate = response.data.endDate === null ? "" : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
+        response.data.strategyGroupName = {label:response.data.strategyGroupName,value:response.data.strategyGroupName,key:response.data.strategyGroupId}
         console.log(response.data)
         this.setState({
           controlRule: response.data,
@@ -123,13 +126,14 @@ class BudgetControlRulesDetail extends React.Component{
       //console.log(e)
     });
     //加载页面时，获取启用的控制策略
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?isEnabled=true`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
       if(response.status === 200){
         response.data.map((item)=>{
           let strategy = {
             id: item.id,
+            key: item.id,
             label: item.controlStrategyCode+" - "+item.controlStrategyName,
-            value: item.controlStrategyCode,
+            value: item.controlStrategyName,
             title: item.controlStrategyName
           };
           strategyGroup.addIfNotExist(strategy)
@@ -168,6 +172,7 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   handleChange = (e)=>{
+    console.log(123)
     this.setState({
       buttonLoading: false,
     })
@@ -197,6 +202,7 @@ class BudgetControlRulesDetail extends React.Component{
 
   handleCloseSlideCreate = (params) => {
     if(params) {
+      this.setState({loading: true});
       this.getList();
     }
     this.setState({
@@ -204,17 +210,38 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
+  handleCloseSlideUpdate = ()=>{
+    this.setState({
+      showSlideFrameUpdate: false
+    },this.getList())
+  };
+
   handleUpdate = (values)=>{
+    console.log(values)
+    console.log(values.startDate.utc())
     values.organizationId = this.props.params.id;
-    values.controlRuleId = this.props.params.ruleId;
+    values.id = this.props.params.ruleId;
+    values.versionNumber = this.state.controlRule.versionNumber;
     values.strategyGroupId = this.state.controlRule.strategyGroupId;
+    values.isEnabled = this.state.controlRule.isEnabled;
+    values.isDeleted = this.state.controlRule.isDeleted;
+    values.createdBy = this.state.controlRule.createdBy;
     strategyGroup.map((item)=>{
-      if(item.title === values.strategyGroupName){
+      if(item.value === values.strategyGroupName){
         values.strategyGroupId = item.id;
       }
     });
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
       if(response) {
+        console.log(response)
+        let startDate = moment(response.data.startDate.utc);
+        console.log(startDate)
+
+        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
+        response.data.strategyGroupName = {label:values.strategyGroupName,value:values.strategyGroupName,key:values.strategyGroupId}
+        console.log(response.data.startDate+8)
+        console.log(moment(response.data.endDate))
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           controlRule: response.data,
@@ -223,12 +250,9 @@ class BudgetControlRulesDetail extends React.Component{
       }
     }).catch((e)=>{
       if(e.response){
-        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
-        this.setState({loading: false});
+        message.error(`修改失败, ${e.response.data.errorCode}`);
       }
-      else {
-        console.log(e)
-      }
+      this.setState({loading: false});
     })
   };
 
@@ -240,15 +264,24 @@ class BudgetControlRulesDetail extends React.Component{
         response.data.map((item)=>{
           item.key = item.id
         });
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
         this.setState({
           loading: false,
-          data: response.data
+          data: response.data,
+          pagination
         })
       }
     }).catch((e)=>{
       //console.log(e)
     })
   }
+
+
+  //返回预算规则页面
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=RULE');
+  };
 
   render(){
     const { loading, slideFrameTitle, data, infoList, pagination, columns, showSlideFrameCreate,showSlideFrameUpdate, ruleDetail, controlRule, updateState } = this.state;
@@ -257,6 +290,7 @@ class BudgetControlRulesDetail extends React.Component{
         <BasicInfo
           infoList={infoList}
           infoData={controlRule}
+          handelEvent={this.handleChange}
           updateHandle={this.handleUpdate}
           updateState={updateState}/>
         <div className="table-header">
@@ -273,6 +307,7 @@ class BudgetControlRulesDetail extends React.Component{
           pagination={pagination}
           size="middle"
           bordered/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
 
         <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
                     show={showSlideFrameCreate}
@@ -284,7 +319,7 @@ class BudgetControlRulesDetail extends React.Component{
         <SlideFrame title= { this.props.intl.formatMessage({id: 'budget.editRulesDetail'})}
                     show={showSlideFrameUpdate}
                     content={UpdateBudgetRulesDetail}
-                    afterClose={this.handleCloseSlide}
+                    afterClose={this.handleCloseSlideUpdate}
                     onClose={()=>this.showSlideUpdate(false)}
                     params={ruleDetail}/>
       </div>

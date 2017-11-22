@@ -1,5 +1,5 @@
 /**
- * Created by zaranengap on 2017/7/4.
+ * Created by zaranengap on 2017/10/17.
  */
 import React from 'react'
 import { connect } from 'react-redux'
@@ -51,7 +51,7 @@ class DashboardAdmin extends React.Component{
   render() {
     const { company } = this.props;
     return (
-      <div className="dashboard-admin">
+      <div className="dashboard-admin background-transparent">
         <Card>
           <div className="dashboard-head">
             <img src={company.logoURL}/>

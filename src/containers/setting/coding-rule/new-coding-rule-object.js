@@ -17,7 +17,8 @@ class NewCodingRuleObject extends React.Component {
     this.state = {
       loading: false,
       documentCategoryOptions: [],
-      codingRuleObject: menuRoute.getRouteItem('coding-rule-object', 'key')
+      codingRuleObject: menuRoute.getRouteItem('coding-rule-object', 'key'),
+      codingRule: menuRoute.getRouteItem('coding-rule', 'key')
     };
   }
 
@@ -30,21 +31,19 @@ class NewCodingRuleObject extends React.Component {
         httpFetch.post(`${config.budgetUrl}/api/budget/coding/rule/objects`, values).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //新建成功
-          this.context.router.push(this.state.codingRuleObject.url);
+          this.context.router.push(this.state.codingRule.url.replace(':id', res.data.id));
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });
   };
 
   componentWillMount(){
-    this.getSystemValueList(2106).then(res => {
+    this.getSystemValueList(2023).then(res => {
       this.setState({ documentCategoryOptions: res.data.values })
     });
   }
@@ -61,7 +60,7 @@ class NewCodingRuleObject extends React.Component {
       <div>
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="单据类型">
-            {getFieldDecorator('documentCategoryCode', {
+            {getFieldDecorator('documentTypeCode', {
               rules: [{
                 required: true,
                 message: formatMessage({id: 'common.please.select'})  //请选择
@@ -81,7 +80,7 @@ class NewCodingRuleObject extends React.Component {
                 message: formatMessage({id: 'common.please.select'}),  //请选择
               }]
             })(
-              <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode"/>
+              <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode" listExtraParams={{setOfBooksId: this.props.company.setOfBooksId}}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
@@ -104,8 +103,10 @@ class NewCodingRuleObject extends React.Component {
 
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    company: state.login.company
+  }
 }
 
 NewCodingRuleObject.contextTypes = {

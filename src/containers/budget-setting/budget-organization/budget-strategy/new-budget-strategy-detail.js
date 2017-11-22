@@ -19,6 +19,7 @@ class NewBudgetStrategyDetail extends React.Component {
       controlMethodNotice: '',
       controlMethodOptions: [],
       messageCodeOptions: [],
+      controlMethodValue: '',
       budgetStrategyDetail:  menuRoute.getRouteItem('budget-strategy-detail','key'),    //控制策略详情
     }
   }
@@ -38,51 +39,53 @@ class NewBudgetStrategyDetail extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.setState({loading: true});
         values.controlStrategyId = this.props.params.strategyId;
+        if (values.controlMethod !== 'NO_MESSAGE' && !values.messageCode) {
+          message.error('请选择消息');
+          return;
+        }
+        this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/details`, values).then((res)=>{
-          console.log(res);
-          if(res.status == 200){
+          if(res.status === 200){
             this.setState({loading: false});
             message.success(this.props.intl.formatMessage({id: 'common.create.success'},{name: ''}) /* 新建成功 */);
-            this.handleCancle();
+            this.handleCancel();
           }
         }).catch((e)=>{
           if(e.response){
-            this.setState({loading: false});
             message.error(`${this.props.intl.formatMessage({id: 'common.create.filed'}) /* 新建失败 */}, ${e.response.data.message}`);
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });
   };
 
-  handleCancle = () => {
+  handleCancel = () => {
     this.context.router.push(this.state.budgetStrategyDetail.url.replace(':id', this.props.params.id).replace(':strategyId', this.props.params.strategyId));
   };
 
   handleMethodChange = (value) => {
     let controlMethodNotice = '';
-    if(value == '1502553') {
+    if(value === 'BLOCK') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，禁止提交';
-    } else if(value == '1502552') {
+    } else if(value === 'ALLOWED') {
       controlMethodNotice = '如果满足触发条件，当单据提交时，进行提示';
     } else {
       controlMethodNotice = '不做任何控制';
+      this.props.form.setFieldsValue({messageCode: null})
     }
-    this.setState({ controlMethodNotice })
+    this.setState({ controlMethodNotice, controlMethodValue: value })
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { controlMethodNotice, controlMethodOptions, messageCodeOptions } = this.state;
+    const { controlMethodNotice, controlMethodOptions, messageCodeOptions, controlMethodValue } = this.state;
     return (
       <div className="new-budget-strategy-detail">
         <Form onSubmit={this.handleSave}>
-          <Row gutter={40}>
-            <Col span={8} style={{ display: 'inline-block'}}>
+          <Row>
+            <Col span={7}>
               <FormItem label="序号">
                 {getFieldDecorator('detailSequence', {
                   rules: [{
@@ -95,8 +98,8 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
-              <FormItem label="明细代码">
+            <Col span={7} offset={1}>
+              <FormItem label="规则代码">
                 {getFieldDecorator('detailCode', {
                   rules: [{
                     required: true,
@@ -108,7 +111,7 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="控制策略" help={controlMethodNotice}>
                 {getFieldDecorator('controlMethod', {
                   rules: [{
@@ -117,14 +120,16 @@ class NewBudgetStrategyDetail extends React.Component {
                   }]})(
                   <Select onChange={this.handleMethodChange} placeholder="请选择">
                     {controlMethodOptions.map((option)=>{
-                      return <Option key={option.id}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
-              <FormItem label="控制规则描述">
+          </Row>
+          <Row>
+            <Col span={7}>
+              <FormItem label="控制规则名称">
                 {getFieldDecorator('detailName', {
                   rules: [{
                     required: true,
@@ -136,30 +141,24 @@ class NewBudgetStrategyDetail extends React.Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="消息">
                 {getFieldDecorator('messageCode', {
                   rules: [{
-                    required: true,
+                    required: controlMethodValue === 'NO_MESSAGE' ? false : true,
                     message: '请选择'
-                  }],
-                  initialValue: ''
-                })(
-                  <Select onChange={this.handleMethodChange} placeholder="请选择">
+                  }]})(
+                  <Select placeholder="请选择" disabled={controlMethodValue === 'NO_MESSAGE' ? true : false}>
                     {messageCodeOptions && messageCodeOptions.map((option)=>{
-                      return <Option key={option.messageKey}>{option.messageKey}</Option>
+                      return <Option key={option.value}>{option.messageKey}</Option>
                     })}
                   </Select>
                 )}
               </FormItem>
             </Col>
-            <Col span={8} style={{ display: 'inline-block'}}>
+            <Col span={7} offset={1}>
               <FormItem label="事件">
                 {getFieldDecorator('expWfEvent', {
-                  /*rules: [{
-                    required: true,
-                    message: '请输入'
-                  }],*/
                   initialValue: ''
                 })(
                   <Input placeholder="请输入" />
@@ -169,7 +168,7 @@ class NewBudgetStrategyDetail extends React.Component {
           </Row>
           <div>
             <Button type="primary" htmlType="submit" style={{marginRight:'20px'}} loading={this.state.loading}>保存</Button>
-            <Button onClick={this.handleCancle}>取消</Button>
+            <Button onClick={this.handleCancel}>取消</Button>
           </div>
         </Form>
       </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Tabs, Button, Row, Col, message, Badge, Table, Checkbox } from 'antd';
+import { Tabs, Button, message, Icon, Table, Checkbox, Badge } from 'antd';
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
@@ -16,13 +16,15 @@ import BasicInfo from 'components/basic-info'
 class BudgetJournalTypeDetail extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       updateState: false,
       saving: false,
       loading: true,
+      editing: false,
       infoList: [
         {type: 'input', label: '预算日记账类型代码', id: 'journalTypeCode', message: '请输入', disabled: true},
-        {type: 'input', label: '预算日记账类型描述', id: 'journalTypeName', message: '请输入'},
+        {type: 'input', label: '预算日记账类型名称', id: 'journalTypeName', message: '请输入'},
         {type: 'value_list', label: '预算业务类型', id: 'businessType', message: '请选择', options:[], valueListCode: 2018},
         {type: 'switch', label: '状态', id: 'isEnabled'}
       ],
@@ -40,11 +42,11 @@ class BudgetJournalTypeDetail extends React.Component {
           selectorItem: selectorData['budget_journal_structure'],
           extraParams: {organizationId: this.props.organization.id, journalTypeId: this.props.params.typeId},
           columns: [
-            {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
+            {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "默认", dataIndex: "isDefault", width: '15%', render: (isDefault, record) => <Checkbox onChange={(e) => this.onChangeDefault(e, record)} checked={record.isDefault}/>},
             {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
-          ]
+  ]
         },
         ITEM:{
           saveUrl: `${config.budgetUrl}/api/budget/journal/type/assign/items/batch`,
@@ -54,7 +56,12 @@ class BudgetJournalTypeDetail extends React.Component {
           columns:
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
-            {title: "预选项目描述", dataIndex: "itemName", width: '70%'}
+            {title: "预算项目名称", dataIndex: "itemName", width: '50%'},
+            {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '20%',
+              render: isEnabled => (
+                <Badge status={isEnabled ? 'success' : 'error'}
+                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+              )}, //状态
           ]
         },
         COMPANY: {
@@ -63,9 +70,12 @@ class BudgetJournalTypeDetail extends React.Component {
           selectorItem: selectorData['budget_journal_company'],
           extraParams: {journalTypeId: this.props.params.typeId},
           columns: [
-            {title: "公司代码", dataIndex: "companyCode", width: '30%'},
-            {title: "公司简称", dataIndex: "companyName", width: '50%'},
-            {title: "公司状态", dataIndex: "isEnabled", width: '20%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>},
+            {title: "公司代码", dataIndex: "companyCode", width: '25%'},
+            {title: "公司名称", dataIndex: "companyName", width: '30%'},
+            {title: "公司类型", dataIndex: "companyTypeName", width: '25%'},
+            {title: "启用", dataIndex: "isEnabled", width: '20%',
+              render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeCompanyEnabled(e, record)} checked={record.isEnabled}/>
+            },
           ]
         }
       },
@@ -76,7 +86,8 @@ class BudgetJournalTypeDetail extends React.Component {
       pageSize: 10,
       nowStatus: 'STRUCTURE',
       showListSelector: false,
-      newData: []
+      newData: [],
+      budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
     };
   }
 
@@ -114,7 +125,9 @@ class BudgetJournalTypeDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${this.props.params.typeId}`).then(response => {
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
-      this.setState({ typeData: data});
+      let infoList = this.state.infoList;
+      infoList[2].disabled = data.usedFlag;
+      this.setState({ typeData: data, infoList});
     });
     this.getList(this.state.nowStatus);
     if(this.props.organization.id){
@@ -228,40 +241,53 @@ class BudgetJournalTypeDetail extends React.Component {
   };
 
   updateHandleInfo = (params) => {
-    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign(this.state.typeData, params)).then(response => {
+    this.setState({ editing: true });
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/types`, Object.assign({}, this.state.typeData, params)).then(response => {
       message.success('修改成功');
       let data = response.data;
       data.businessType = {label: data.businessTypeName, value: data.businessType};
+      let infoList = this.state.infoList;
+      infoList[2].disabled = data.usedFlag;
       this.setState({
         typeData: data,
-        updateState: true
+        updateState: true,
+        editing: false,
+        infoList
       });
+    }).catch(e => {
+      this.setState({ editing: false })
     });
   };
 
   render(){
-    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState} = this.state;
+    const {infoList, typeData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, updateState, editing} = this.state;
     return (
       <div>
         <BasicInfo infoList={infoList}
                    infoData={typeData}
                    updateHandle={this.updateHandleInfo}
-                   updateState={updateState}/>
+                   updateState={updateState}
+                   loading={editing}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
-          <div className="table-header-title">共 {pagination.total} 条数据</div>
+          <div className="table-header-title">共搜索到 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew} loading={saving}>添 加</Button>
           </div>
         </div>
         <Table columns={tabsData[nowStatus].columns}
-               dataSource={newData.concat(data)}
+               dataSource={data}
                pagination={pagination}
                loading={loading}
                bordered
                size="middle"/>
+
+        <a className="back" onClick={() => {this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');}}><
+          Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
+
         <ListSelector visible={showListSelector}
                       onOk={this.handleAdd}
                       onCancel={this.handleCancel}
@@ -272,6 +298,10 @@ class BudgetJournalTypeDetail extends React.Component {
   }
 
 }
+
+BudgetJournalTypeDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {

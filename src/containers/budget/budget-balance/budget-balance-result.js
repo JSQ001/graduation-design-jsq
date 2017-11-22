@@ -25,10 +25,11 @@ class BudgetBalanceResult extends React.Component {
         {title: '季度', dataIndex: 'periodQuarter'},
         {title: '期间', dataIndex: 'periodName'},
         {title: '币种', dataIndex: 'currency'},
-        {title: '预算额', dataIndex: 'bgtAmount', render: (bgtAmount, record) => <a onClick={() => this.showSlideFrame(record, 'J')}>{this.filterMoney(bgtAmount)}</a>},
-        {title: '保留额', dataIndex: 'expReserveAmount', render: (expReserveAmount, record) => <a onClick={() => this.showSlideFrame(record, 'R')}>{this.filterMoney(expReserveAmount)}</a>},
-        {title: '发生额', dataIndex: 'expUsedAmount', render: (expUsedAmount, record) => <a onClick={() => this.showSlideFrame(record, 'U')}>{this.filterMoney(expUsedAmount)}</a>},
+        {title: '预算额', dataIndex: 'bgtAmount', render: (bgtAmount, record) => bgtAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'J')}>{this.filterMoney(bgtAmount)}</a> : this.filterMoney(bgtAmount)},
+        {title: '保留额', dataIndex: 'expReserveAmount', render: (expReserveAmount, record) => expReserveAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'R')}>{this.filterMoney(expReserveAmount)}</a> : this.filterMoney(expReserveAmount)},
+        {title: '发生额', dataIndex: 'expUsedAmount', render: (expUsedAmount, record) => expUsedAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'U')}>{this.filterMoney(expUsedAmount)}</a> : this.filterMoney(expUsedAmount)},
         {title: '可用额', dataIndex: 'expAvailableAmount', render: expAvailableAmount => this.filterMoney(expAvailableAmount)},
+        {title: '预算进度', dataIndex: 'schedule'},
         {title: '部门', dataIndex: 'unitName'},
         {title: '部门组', dataIndex: 'unitGroupName'},
         {title: '员工', dataIndex: 'employeeName'},
@@ -65,7 +66,8 @@ class BudgetBalanceResult extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/header/${this.props.params.id}`).then(res => {
       let companyNumber = 0;
       res.data.queryLineList.map(item => {
-        companyNumber += item.parameterCode === 'COMPANY' ? 1 : 0
+        if(item.parameterCode === 'COMPANY')
+          companyNumber = item.queryParameterList.length;
       });
       this.setState({
         condition: {
@@ -82,19 +84,25 @@ class BudgetBalanceResult extends React.Component {
 
   getList = () => {
     return httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/results/${this.props.params.id}?page=${this.state.page}&size=${this.state.pageSize}`).then(res => {
-      let data = res.data.queryResultList.map((item, index) => {
-        item.key = this.state.page * this.state.pageSize + index;
-        return item;
-      });
+      let data = [], total = [];
+      if(res.data){
+        data = res.data.queryResultList.map((item, index) => {
+          item.key = this.state.page * this.state.pageSize + index;
+          item.schedule = item.bgtAmount === 0 ? 0 : (item.expReserveAmount + item.expUsedAmount) / item.bgtAmount;
+          return item;
+        });
+        total = res.data.queryResultCurrencyList
+      }
       this.setState({
         loading: false,
         data,
-        total: res.data.queryResultCurrencyList
+        total
       })
     })
   };
 
   showSlideFrame = (record, type) => {
+
     this.setState({
       showSlideFrameFlag: true,
       slideFrameParam: {

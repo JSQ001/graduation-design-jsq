@@ -12,9 +12,10 @@ class BudgetStrategy extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       searchForm: [
         {type: 'input', id: 'controlStrategyCode', label: '预算控制策略代码'},
-        {type: 'input', id: 'controlStrategyName', label: '预算控制策略描述'}
+        {type: 'input', id: 'controlStrategyName', label: '预算控制策略名称'}
       ],
       searchParams: {
         controlStrategyCode: "",
@@ -22,14 +23,13 @@ class BudgetStrategy extends React.Component {
       },
       columns: [
         {title: '预算控制策略代码', dataIndex: 'controlStrategyCode', key: 'controlStrategyCode'},
-        {title: '预算控制策略描述', dataIndex: 'controlStrategyName', key: 'controlStrategyName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: '预算控制策略名称', dataIndex: 'controlStrategyName', key: 'controlStrategyName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       data: [],    //列表值
       pagination: {
         total: 0
       },
-      loading: true,
       page: 0,
       pageSize: 10,
       newBudgetStrategy:  menuRoute.getRouteItem('new-budget-strategy','key'),    //新建控制策略
@@ -44,20 +44,18 @@ class BudgetStrategy extends React.Component {
   //分页点击
   onChangePager = (page) => {
     if(page - 1 !== this.state.page)
-      this.setState({
-        page: page - 1,
-        loading: true
-      }, ()=>{
+      this.setState({ page: page - 1 }, ()=>{
         this.getList();
       })
   };
 
   getList() {
     let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.budgetUrl}/api/budget/control/strategies/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.props.id}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
+    this.setState({ loading: true });
     return httpFetch.get(url).then((response)=>{
       if(response.status==200){
         response.data.map((item, index)=>{
@@ -122,7 +120,7 @@ class BudgetStrategy extends React.Component {
           submitHandle={this.search}
           clearHandle={this.clear}/>
         <div className="table-header">
-          <div className="table-header-title">{`共搜索到 ${this.state.pagination.total} 条数据`}</div>
+          <div className="table-header-title">{`共搜索到 ${pagination.total || 0} 条数据`}</div>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleNew}>新 建</Button>
           </div>

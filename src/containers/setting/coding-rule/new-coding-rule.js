@@ -16,7 +16,7 @@ class NewCodingRule extends React.Component {
     this.state = {
       loading: false,
       resetFrequenceOptions: [],
-      codingRule: menuRoute.getRouteItem('coding-rule', 'key')
+      codingRuleValue: menuRoute.getRouteItem('coding-rule-value', 'key')
     };
   }
 
@@ -25,23 +25,25 @@ class NewCodingRule extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
+        values.codingRuleObjectId = this.props.params.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/coding/rules`, values).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: ''}));  //新建成功
-          this.context.router.push(this.state.codingRule.url.replace(':id', this.props.params.id));
+          this.context.router.push(this.state.codingRuleValue.url.replace(':id', this.props.params.id).replace(':ruleId', res.data.id));
         }).catch((e)=>{
           if(e.response){
             message.error(`新建失败, ${e.response.data.message}`);
-            this.setState({loading: false});
-          } else {
-            console.log(e)
           }
+          this.setState({loading: false});
         })
       }
     });
   };
 
   componentWillMount(){
+    this.getSystemValueList(2024).then(res => {
+      this.setState({ resetFrequenceOptions: res.data.values })
+    });
   }
 
   render(){
