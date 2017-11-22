@@ -28,7 +28,6 @@ class BudgetJournalReCheck extends React.Component {
       },
 
       searchForm: [
-
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
@@ -64,30 +63,19 @@ class BudgetJournalReCheck extends React.Component {
         {          /*预算表*/
           title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
         },
-        {          /*预算期间*/
-          title: "期间", key: "periodName", dataIndex: 'periodName',
-          render(recode,text){
-            switch (text.periodStrategy){
-              case 'MONTH':{ return `${text.periodName?text.periodName:''}`}
-              case 'QUARTER':{ return `${text.periodYear}年-${text.periodQuarterName?text.periodQuarterName:''}`}
-              case 'YEAR':{ return `${text.periodYear}年`}
-
-            }
-          }
-        },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
           render(recode,text){
             switch (recode){
               case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
-              case 'SUBMIT':{ return   <Badge status="warning" text={text.statusName} />}
-              case 'SUBMIT_RETURN':{return <Badge status="default" color="#dd12333" text={text.statusName}/> }
+              case 'SUBMIT':{ return   <Badge status="default"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" style={{backgroundColor:"#fef0ef"}} text={text.statusName}/> }
               case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
-              case 'CHECKED':{return < Badge status="default" color="#234234" text={text.statusName}/>}
-              case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={text.statusName}/>}
-              case 'POSTED':{return <Badge status="default"  color="#87d068" text={text.statusName}/>}
-              case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={text.statusName}/>}
-              case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={text.statusName}/>}
+              case 'CHECKED':{return < Badge status="warning" text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="warning" text={text.statusName}/>}
+              case 'POSTED':{return <Badge status="success" text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default" style={{backgroundColor:"#c11c7b"}} text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default" style={{backgroundColor:"#42299a"}} text={text.statusName}/>}
             }
           }
         },
