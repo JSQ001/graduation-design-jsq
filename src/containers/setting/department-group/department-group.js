@@ -22,8 +22,8 @@ class DepartmentGroup extends React.Component {
       loading: true,
       data: [],
       searchParams: {
-        structureCode: "",
-        structureName: ""
+        deptGroupCode: "",
+        description: ""
       },
       pagination: {
         current: 1,
@@ -34,51 +34,30 @@ class DepartmentGroup extends React.Component {
         showQuickJumper:true,
       },
       searchForm: [
-        {type: 'input', id: 'structureCode', label: "部门组代码" }, /*预算表代码*/
-        {type: 'input', id: 'structureName', label: formatMessage({id: 'budget.structureName'}) }, /*预算表名称*/
+        {type: 'input', id: 'deptGroupCode', label: "部门组代码" }, /*预算表代码*/
+        {type: 'input', id: 'description', label: "部门组名称" }, /*预算表名称*/
       ],
       columns: [
-        {          /*公司组代码*/
-          title: "部门组代码", key: "companyGroupCode", dataIndex: 'companyGroupCode'
+        {          /*部门组代码*/
+          title: "部门组代码", key: "deptGroupCode", dataIndex: 'deptGroupCode'
         },
-        {          /*公司组描述*/
-          title: "部门组名称", key: "companyGroupName", dataIndex: 'companyGroupName'
+        {          /*部门组名称*/
+          title: "部门组名称", key: "description", dataIndex: 'description'
         },
 
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}),
           key: 'status',
           width: '10%',
-          dataIndex: 'isEnabled',
-          render: isEnabled => (
-            <Badge status={isEnabled ? 'success' : 'error'}
-                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          dataIndex: 'enabled',
+          render: enabled => (
+            <Badge status={enabled ? 'success' : 'error'}
+                   text={enabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )
-        },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
-          <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
-            <span className="ant-divider" />
-            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
-              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
-            </Popconfirm>
-          </span>)},  //操作
+        }
       ],
     }
   }
-
-
-  editItem = (e, record) =>{
-    console.log(record)
-
-  };
-
-  deleteItem = (e, record) => {
-    httpFetch.delete(`${config.budgetUrl}/api/company/group/${record.id}`).then(response => {
-      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.companyGroupName})); // name删除成功
-      this.getList();
-    })
-  };
 
   componentWillMount(){
 
@@ -88,11 +67,7 @@ class DepartmentGroup extends React.Component {
   //获取部门组数据
   getList(){
     const {searchParams, pagination} = this.state;
-    let url = `${config.baseUrl}/api/DepartmentGroup/selectByInput?page=${pagination.page}&size=${pagination.pageSize}`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    console.log(url)
+    let url = `${config.baseUrl}/api/DepartmentGroup/selectByInput?deptGroupCode=${searchParams.deptGroupCode}&description=${searchParams.description}&page=${pagination.page}&size=${pagination.pageSize}`;
     httpFetch.get(url).then((response)=>{
       console.log(response)
       response.data.map((item,index)=>{
@@ -110,11 +85,11 @@ class DepartmentGroup extends React.Component {
 
   handleSearch = (values) =>{
     let searchParams = {
-      structureName: values.structureName,
-      structureCode: values.structureCode
+      deptGroupCode: values.deptGroupCode,
+      description: values.description
     };
     this.setState({
-      searchParams:searchParams,
+      searchParams,
       loading: true,
       page: 1
     }, ()=>{
@@ -139,12 +114,12 @@ class DepartmentGroup extends React.Component {
 
   //新建公司组
   handleCreate = () =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.newCompanyGroup.url);
+    this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').children.newDepartmentGroup.url);
   };
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url);
+    this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').children.departmentGroupDetail.url.replace(':id',record.id));
   };
 
   render(){

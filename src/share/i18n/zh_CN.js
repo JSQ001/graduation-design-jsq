@@ -16,6 +16,7 @@ import accountPeriodDefine from 'static/i18n/zh_CN/finance-setting/account-perio
 import accountPeriodControl from 'static/i18n/zh_CN/finance-setting/account-period-control.json'
 import companyMaintain from 'static/i18n/zh_CN/setting/company-maintain.json'
 import financeView from 'static/i18n/zh_CN/financial-management/finance-view.json'
+import departmentGroup from 'static/i18n/zh_CN/setting/department-group.json'
 
 
 const i18nList = [
@@ -36,8 +37,8 @@ const i18nList = [
   accountPeriodDefine, //会计期间定义
   accountPeriodControl, //会计期间控制
   companyMaintain,     //公司维护
-  financeView //单据查看
-
+  financeView, //单据查看
+  departmentGroup //部门组
 
 ];
 
