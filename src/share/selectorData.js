@@ -387,8 +387,36 @@ const selectorData = {
       {title: '部门名称', dataIndex: 'name'}
     ],
     key: 'id'
-  }
+  },
+  'user_move_select_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司代码/公司名称",defaultValue:''},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+    key: 'companyOID'
+  }, 'user_move_select_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司代码/公司名称",defaultValue:''},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+    key: 'companyOID'
+  },
 
 };
+
+//http://139.224.220.217:11013/api/company/available?keyword=&page=0&size=5
+
 
 export default selectorData;

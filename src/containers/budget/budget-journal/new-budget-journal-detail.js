@@ -516,9 +516,11 @@ class NewBudgetJournalDetail extends React.Component {
     console.log("getSearchForm");
     let searchForm=this.state.searchForm;
     let dimensionList ={};
-    for(let i=1;i<dimension.length;i++){
+    for(let i=0;i<dimension.length;i++){
       const item =dimension[i];
-      let dimensionListKey = ["dimension"+i+"Id","dimension"+i+"Name"];
+      const priority =i+1;
+      //const priority = item.priority;
+      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name"];
       dimensionList[dimensionListKey[0]]=item.id;
       dimensionList[dimensionListKey[1]]=item.name;
       console.log(item);
@@ -533,9 +535,9 @@ class NewBudgetJournalDetail extends React.Component {
       })
       const searchFormItem=  {type: 'select_dimension', label:`${item.name}`, options:options,
         labelKey:'name',valueKey:'id',
-        columnLabel:`dimensionValue${i}Name`,columnValue:`dimensionValue${i}Id`
+        columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
       };
-      searchFormItem["id"]="dimension"+i,
+      searchFormItem["id"]="dimension"+priority,
         searchFormItem["dimensionId"]=item.id;
       searchForm.push(
         searchFormItem
@@ -545,10 +547,9 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   onCancel = () =>{
-    this.props.from.resetFields();
+    this.props.form.resetFields();
     this.props.close();
   }
-
   render(){
     return (
       <div className="new-budget-journal-detail">

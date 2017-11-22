@@ -179,7 +179,6 @@ class BudgetJournalDetail extends React.Component {
   componentWillMount(){
     //根据编制期代码拿数据
     this.getDataByBudgetJournalCode();
-
   }
 
 
@@ -256,10 +255,11 @@ class BudgetJournalDetail extends React.Component {
     let columns=this.state.columns;
     let handleData=this.state.handleData;
     const dimensionList = this.state.dimensionList;
-    for(let i=1;i<dimensionList.length;i++){
+    for(let i=0;i<dimensionList.length;i++){
      const item =dimensionList[i];
+     let priority =item.priority;
      columns.push(
-       {title:`${item.name}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+       {title:`${item.name}`, key:`dimensionValue${i+1}Name`, dataIndex: `dimensionValue${i+1}Name`,
          render: recode => (
            <Popover content={recode}>
              {recode}
@@ -267,7 +267,7 @@ class BudgetJournalDetail extends React.Component {
        }
      )
      handleData.push(
-      {type: 'select', id:`dimension${i}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${i}ValueName`,columnValue: `dimension${i}ValueId`},
+      {type: 'select', id:`dimension${i+1}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${i+1}ValueName`,columnValue: `dimension${i+1}ValueId`},
      )
    }
     this.setState({
@@ -545,7 +545,6 @@ class BudgetJournalDetail extends React.Component {
   //编辑行
   handlePutData=(value)=>{
     let valuePutData =this.headleUpData(value);
-
     this.setState({
      params:{...valuePutData,
               "id":value.id,

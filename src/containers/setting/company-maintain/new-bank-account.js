@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/11/22.
+ */
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
@@ -9,12 +12,11 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
-class WrappedNewCompanyMaintain extends React.Component {
+class WrappedNewBankAccount extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       searchForm: [
-
         {
           /*公司代码*/
           type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
@@ -414,10 +416,10 @@ function mapStateToProps(state) {
   }
 }
 
-WrappedNewCompanyMaintain.contextTypes = {
+WrappedNewBankAccout.contextTypes = {
   router: React.PropTypes.object
 };
 
-const NewCompanyMaintain = Form.create()(WrappedNewCompanyMaintain);
+const NewBankAccount = Form.create()(WrappedNewBankAccount);
 
-export default connect(mapStateToProps)(injectIntl(NewCompanyMaintain));
+export default connect(mapStateToProps)(injectIntl(NewBankAccount));
