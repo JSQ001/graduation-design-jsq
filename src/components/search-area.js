@@ -12,6 +12,7 @@ const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
 
 import Chooser from 'components/chooser'
+import Selput from 'components/selput'
 import moment from 'moment'
 
 import debounce from 'lodash.debounce';
@@ -386,7 +387,7 @@ class SearchArea extends React.Component{
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -401,7 +402,7 @@ class SearchArea extends React.Component{
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -449,7 +450,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -467,7 +468,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -487,6 +488,15 @@ class SearchArea extends React.Component{
         return <Switch checkedChildren={<Icon type="check"/>}
                        unCheckedChildren={<Icon type="cross" />}
                        onChange={handle}
+                       disabled={item.disabled}/>
+      }
+      case 'selput':{
+        return <Selput onChange={handle}
+                       placeholder={item.placeholder}
+                       type={item.listType}
+                       listExtraParams={item.listExtraParams}
+                       selectorItem={item.selectorItem}
+                       valueKey={item.valueKey}
                        disabled={item.disabled}/>
       }
       //同一单元格下多个表单项组件
@@ -635,15 +645,15 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > maxLength 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items, value_list中的一种
+          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items, value_list, selput中的一种
           id: '',                      //必填，表单id，搜索后返回的数据key
           label: '',                  //必填，界面显示名称label
-          listType: '',              //可选，当type为list时必填，listSelector的type类型
-          listExtraParams: '',      //可选，当type为list时有效，listSelector的extraParams
+          listType: '',              //可选，当type为list、selput，listSelector的type类型
+          listExtraParams: '',      //可选，当type为list、selput时有效，listSelector的extraParams
           disabled: false          //可选，是否可用
           isRequired: false,      //可选，是否必填
           options: [{label: '',  value: ''}],    //可选，如果不为input、date时必填，为该表单选项数组，因为不能下拉刷新，所以如果可以搜索type请选择combobox或multiple，否则一次性传入所有值
-          selectorItem: {}      //可选，当type为list时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
+          selectorItem: {}      //可选，当type为list、selput时有效，当listType满足不了一些需求时，可以使用次参数传入listSelector的配置项
           event: '',           //可选，自定的点击事件ID，将会在eventHandle回调内返回
           defaultValue: ''    //可选，默认值
           searchUrl: '',      ╲╲可选，当类型为combobox和multiple有效，搜索需要的接口，
@@ -651,12 +661,12 @@ class SearchArea extends React.Component{
           method: '',           ╲╲可选，getUrl接口所需要的接口类型get/post
           searchKey: '',         ╲╲可选，搜索参数名
           labelKey: '',           ╲╲可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
-          valueKey: ''             ╲╲可选，接口返回或list返回的数据内所需要options值key的参数名
+          valueKey: ''             ╲╲可选，接口返回或list返回的数据内所需要options值key的参数名, 或selput内回填的参数名
           items:[]                  ╲╲可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
           entity: false              ╲╲可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
           getParams: {}               ╲╲可选,getUrl所需要的参数
           single: false                ╲╲可选,当type为list时是否为单选
-          valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
+          valueListCode: ''             ╲╲可选，当type为value_list时的值列表code
           colSpan: ''                    ╲╲可选，自定义搜索项的宽度
         }
  */

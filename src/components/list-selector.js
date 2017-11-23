@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Modal, Table, message } from 'antd'
+import { Modal, Table, message, Button, Input, Row, Col } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import SearchArea from 'components/search-area'
@@ -259,10 +259,11 @@ class ListSelector extends React.Component {
 
   render() {
     const { visible, onCancel, afterClose } = this.props;
-    const { data, pagination, loading, selectorItem, selectedData, rowSelection } = this.state;
+    const { data, pagination, loading, selectorItem, selectedData, rowSelection, inputValue } = this.state;
     const { searchForm, columns, title, key } = selectorItem;
     return (
       <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
+
         { searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
                                               submitHandle={this.search}
                                               clearHandle={this.clear}/> : null}

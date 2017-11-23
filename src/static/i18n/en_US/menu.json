@@ -88,5 +88,7 @@
   "menu.contract": "Contract",
   "menu.my-contract": "My Contract",
   "menu.new-contract": "New Contract",
-  "menu.contract-detail": "Contract Detail"
+  "menu.new-bank-account":"New Bank Account",
+  "menu.bank-account-detail":"Bank Account Detail",
+  "menu.add-authorization":"Add Authorization"
 }
