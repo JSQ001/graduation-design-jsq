@@ -23,8 +23,9 @@ const selectorData = {
       {type: 'input', id: 'name', label: '人员组名称'}
     ],
     columns: [
-      {title: '名称', dataIndex: 'name', width: '40%'},
-      {title: '描述', dataIndex: 'comment', width: '60%'}
+      {title: '代码', dataIndex: 'code', width: '30%'},
+      {title: '名称', dataIndex: 'name', width: '30%'},
+      {title: '描述', dataIndex: 'comment', width: '40%'}
     ],
     key: 'id'
   },
@@ -348,6 +349,22 @@ const selectorData = {
     ],
     key: 'id'
   },
+
+
+  'journal_line_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'companyCode', label: "公司代码"},
+      {type: 'input', id: 'name', label: "公司名称"},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+  key: 'id'
+},
   'cost_center_item': {
     title: '成本中心',
     url: `${config.baseUrl}/api/my/cost/center/items/`,
@@ -355,9 +372,10 @@ const selectorData = {
     columns: [
       {title: "成本中心代码", dataIndex: 'code'},
       {title: "成本中心名称", dataIndex: 'name'}
+
     ],
-    key: 'id'
-  },
+  key: 'id'
+},
   'journal_line_department':{
     title: "选择部门",
     url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
@@ -370,8 +388,36 @@ const selectorData = {
       {title: '部门名称', dataIndex: 'name'}
     ],
     key: 'id'
-  }
+  },
+  'user_move_select_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司代码/公司名称",defaultValue:''},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+    key: 'companyOID'
+  }, 'user_move_select_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      {type: 'input', id: 'keyword', label: "公司代码/公司名称",defaultValue:''},
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title:"描述",dataIndex:'description'}
+    ],
+    key: 'companyOID'
+  },
 
 };
+
+//http://139.224.220.217:11013/api/company/available?keyword=&page=0&size=5
+
 
 export default selectorData;

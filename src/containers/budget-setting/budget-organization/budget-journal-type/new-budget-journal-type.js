@@ -78,7 +78,7 @@ class NewBudgetJournalType extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="业务日记账类型名称">
+                <FormItem label="预算日记账类型名称">
                   {getFieldDecorator("journalTypeName", {
                     rules: [{
                       required: true,

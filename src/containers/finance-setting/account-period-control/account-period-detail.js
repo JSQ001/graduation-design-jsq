@@ -31,11 +31,11 @@ class AccountPeriodDetail extends React.Component {
         {title: formatMessage({id: 'account-period-detail.column.quarter'}), key: 'quarterNum', dataIndex: 'quarterNum'},  //季度
         {title: formatMessage({id: 'account-period-detail.column.period'}), key: 'periodName', dataIndex: 'periodName'},  //期间
         {title: formatMessage({id: 'account-period-detail.column.period-status'}), key: 'periodStatusCode', dataIndex: 'periodStatusCode',
-          render: code => <Badge status={code=='O' ? 'success' : 'error'} text={code=='N' ? '未打开' : (code=='O' ? '已打开' : '已关闭')}/>},  //期间状态
+          render: code => <Badge status={code==='O' ? 'success' : 'error'} text={code==='N' ? '未打开' : (code==='O' ? '已打开' : '已关闭')}/>},  //期间状态
         {title: formatMessage({id: 'common.operation'}), key: 'id', dataIndex: 'id',
           render: (periodId, record) =>
             <a onClick={() => {this.operaPeriodStatus(periodId, record.periodSetId, record.periodStatusCode)}}>
-              {record.periodStatusCode == 'O' ? '关闭期间' : '打开期间'}
+              {record.periodStatusCode === 'O' ? '关闭期间' : '打开期间'}
             </a>},  //操作
       ],
       dataClose: [],
@@ -62,7 +62,7 @@ class AccountPeriodDetail extends React.Component {
   }
 
   getPeriodInfo = () => {
-    let url =  `${config.baseUrl}/api/setOfBooks/query/head/dto?periodSetId=${this.props.params.periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}`;
+    let url = `${config.baseUrl}/api/setOfBooks/query/head/dto?periodSetId=${this.props.params.periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}`;
     httpFetch.get(url).then((res) => {
       this.setState({ periodInfo: res.data })
     }).catch((e) => {
@@ -72,7 +72,7 @@ class AccountPeriodDetail extends React.Component {
 
   getClosedList = () => {
     this.setState({ loadingClose: true });
-    let url =  `${config.baseUrl}/api/periods/query/close?periodSetId=${this.props.params.periodSetId}&page=${this.state.pageClose}&size=${this.state.pageSizeClose}`;
+    let url = `${config.baseUrl}/api/periods/query/close?periodSetId=${this.props.params.periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}&page=${this.state.pageClose}&size=${this.state.pageSizeClose}`;
     httpFetch.get(url).then((res) => {
       this.setState({
         dataClose: res.data,
@@ -90,7 +90,7 @@ class AccountPeriodDetail extends React.Component {
 
   getOpenList = () => {
     this.setState({ loadingOpen: true });
-    let url =  `${config.baseUrl}/api/periods/query/open?periodSetId=${this.props.params.periodSetId}&page=${this.state.pageOpen}&size=${this.state.pageSizeOpen}`;
+    let url = `${config.baseUrl}/api/periods/query/open?periodSetId=${this.props.params.periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}&page=${this.state.pageOpen}&size=${this.state.pageSizeOpen}`;
     httpFetch.get(url).then((res) => {
       this.setState({
         dataOpen: res.data,
@@ -152,9 +152,9 @@ class AccountPeriodDetail extends React.Component {
 
   //修改期间状态：打开 <=> 关闭
   operaPeriodStatus = (periodId, periodSetId, status) => {
-    let url = `${config.baseUrl}/api/periods/${status=='O' ? 'close' : 'open'}/periods?periodId=${periodId}&periodSetId=${periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}`;
+    let url = `${config.baseUrl}/api/periods/${status === 'O' ? 'close' : 'open'}/periods?periodId=${periodId}&periodSetId=${periodSetId}&setOfBooksId=${this.props.params.setOfBooksId}`;
     httpFetch.post(url).then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         this.getClosedList();
         this.getOpenList();
         message.success(this.props.intl.formatMessage({id: 'common.operate.success'})/* 操作成功 */)
@@ -180,7 +180,7 @@ class AccountPeriodDetail extends React.Component {
           <div style={{wordWrap:'break-word'}}>{periodInfo[item.id]}</div>
         </Col>
       );
-      if (index == 2) {
+      if (index === 2) {
         periodRow.push(
           <Row style={{background:'#f7f7f7',padding:'20px 25px 0',borderRadius:'6px'}} key="1">
             {periodCol}
@@ -188,7 +188,7 @@ class AccountPeriodDetail extends React.Component {
         );
         periodCol = [];
       }
-      if (index == 4) {
+      if (index === 4) {
         periodRow.push(
           <Row style={{background:'#f7f7f7',padding:'0 25px 5px',borderRadius:'6px'}} key="2">
             {periodCol}

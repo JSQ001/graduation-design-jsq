@@ -19,7 +19,8 @@ class WebpackDistConfig extends WebpackBaseConfig {
       ],
       plugins: [
         new webpack.DefinePlugin({
-          'process.env.NODE_ENV': '"production"'
+          'process.env.NODE_ENV': '"production"',
+          __DEV__: false
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.NoEmitOnErrorsPlugin()

@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/11/22.
+ */
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
@@ -9,12 +12,11 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
-class WrappedNewCompanyMaintain extends React.Component {
+class WrappedNewBankAccount extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       searchForm: [
-
         {
           /*公司代码*/
           type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
@@ -25,7 +27,7 @@ class WrappedNewCompanyMaintain extends React.Component {
         },
         {
           /*公司类型*/
-          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,
+          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,isRequired: true
         },
         {
           /*账套*/
@@ -35,9 +37,9 @@ class WrappedNewCompanyMaintain extends React.Component {
           options: [],
           method: 'get',
           getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          //getUrl: `${config.baseUrl}/api/refactor/tenant/company/register`,
           labelKey: 'setOfBooksCode',
-          valueKey: 'id'
+          valueKey: 'id',
+          isRequired: true
         },
         {
           /*法人*/
@@ -48,7 +50,8 @@ class WrappedNewCompanyMaintain extends React.Component {
           method: 'get',
           getUrl: `${config.baseUrl}/api/all/legalentitys`,
           labelKey: 'entityName',
-          valueKey: 'companyReceiptedOID'
+          valueKey: 'id',
+          isRequired: true
         },
         {
           /*公司级别*/
@@ -59,7 +62,8 @@ class WrappedNewCompanyMaintain extends React.Component {
           method: 'get',
           getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
           labelKey: 'description',
-          valueKey: 'id'
+          valueKey: 'id',
+          isRequired: true
         },
         {
           /*上级机构*/
@@ -88,6 +92,12 @@ class WrappedNewCompanyMaintain extends React.Component {
           id: "endDateActive",
           event: 'endDateActive'
         },
+        {/*状态*/
+          type:'switch',
+          label:'状态',
+          id:"enabled",
+          isRequired: true
+        }
 
 
       ],
@@ -285,6 +295,13 @@ class WrappedNewCompanyMaintain extends React.Component {
           </Select>
         )
       }
+      //switch状态切换组件
+      case 'switch':{
+        return <Switch checkedChildren={<Icon type="check"/>}
+                       unCheckedChildren={<Icon type="cross" />}
+                       onChange={handle}
+                       disabled={item.disabled}/>
+      }
       //日期组件
       case 'date': {
         return <DatePicker format="YYYY-MM-DD" onChange={handle} disabled={item.disabled} disabledDate={disabledDate}
@@ -323,12 +340,13 @@ class WrappedNewCompanyMaintain extends React.Component {
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
+
       const valuesData = {
         ...values,
         "startDateActive": values['startDateActive'] ? values['startDateActive'].format('YYYY-MM-DD') : '',
         "endDateActive": values['endDateActive'] ? values['endDateActive'].format('YYYY-MM-DD') : '',
       }
+      console.log(valuesData);
 
       if (!err) {
         this.setState({loading: true});
@@ -355,13 +373,13 @@ class WrappedNewCompanyMaintain extends React.Component {
     const {formatMessage} = this.props.intl;
     const formItemLayout = {};
     return (
-      <div onSubmit={this.handleSave}>
+      <div>
         <div className="common-top-area">
-          <Form>
-            <Row gutter={40}>
+          <Form  onSubmit={this.handleSave}>
+            <Row gutter={40} type="flex" align="top">
               {this.getFields()}
             </Row>
-            <Row>
+            <Row type="flex" align="top">
               <Col span={24}>
                 <FormItem {...formItemLayout} label="地址">
                   {getFieldDecorator('address', {
@@ -376,7 +394,7 @@ class WrappedNewCompanyMaintain extends React.Component {
                 </FormItem>
               </Col>
             </Row>
-            <Row>
+            <Row type="flex" align="top">
               <Col span={8}>
                 <Button htmlType="submit" type="primary">保存</Button>
                 <Button style={{marginLeft: 8}} onClick={() => {
@@ -398,10 +416,10 @@ function mapStateToProps(state) {
   }
 }
 
-WrappedNewCompanyMaintain.contextTypes = {
+WrappedNewBankAccout.contextTypes = {
   router: React.PropTypes.object
 };
 
-const NewCompanyMaintain = Form.create()(WrappedNewCompanyMaintain);
+const NewBankAccount = Form.create()(WrappedNewBankAccount);
 
-export default connect(mapStateToProps)(injectIntl(NewCompanyMaintain));
+export default connect(mapStateToProps)(injectIntl(NewBankAccount));

@@ -70,7 +70,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.post(`${config.contractUrl}/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        httpFetch.post(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -78,9 +78,11 @@ class NewContractType extends React.Component{
             this.props.close(true)
           }
         }).catch((e) => {
+          this.setState({ loading: false });
           if (e.response) {
-            message.error(`保存失败，${e.response.data.validationErrors[0].message}`);
-            this.setState({ loading: false })
+            message.error(`保存失败，${e.response.data.message}`);
+          } else {
+            message.error(`保存失败`);
           }
         })
       }
@@ -98,7 +100,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.put(`${config.contractUrl}/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        httpFetch.put(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -106,9 +108,11 @@ class NewContractType extends React.Component{
             this.props.close(true)
           }
         }).catch((e) => {
+          this.setState({ loading: false });
           if (e.response) {
-            message.error(`保存失败，${e.response.data.validationErrors[0].message}`);
-            this.setState({ loading: false })
+            message.error(`保存失败，${e.response.data.message}`);
+          } else {
+            message.error(`保存失败`);
           }
         })
       }

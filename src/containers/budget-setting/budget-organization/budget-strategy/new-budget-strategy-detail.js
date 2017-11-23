@@ -129,7 +129,7 @@ class NewBudgetStrategyDetail extends React.Component {
           </Row>
           <Row>
             <Col span={7}>
-              <FormItem label="控制规则描述">
+              <FormItem label="控制规则名称">
                 {getFieldDecorator('detailName', {
                   rules: [{
                     required: true,

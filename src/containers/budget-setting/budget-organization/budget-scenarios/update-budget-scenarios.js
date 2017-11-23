@@ -104,7 +104,7 @@ class UpdateBudgetScenarios extends React.Component{
               <Input disabled className="input-disabled-color"/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预算场景描述">
+          <FormItem {...formItemLayout} label="预算场景名称">
             {getFieldDecorator('scenarioName', {
               rules: [{
                 required: true,
