@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Modal, Table, message } from 'antd'
+import { Modal, Table, message, Button, Input, Row, Col } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import SearchArea from 'components/search-area'
@@ -45,6 +45,7 @@ class ListSelector extends React.Component {
     super(props);
     this.state = {
       loading: true,
+      inputValue: '',
       data: [],
       page: 0,
       pageSize: 10,
@@ -221,7 +222,7 @@ class ListSelector extends React.Component {
         selectedData.push(record);
       }
     }
-    this.setState({ selectedData });
+    this.setState({ selectedData, inputValue: '' });
   };
 
   //点击行时的方法，遍历遍历selectedData，根据是否选中进行遍历遍历selectedData和rowSelection的插入或删除操作
@@ -249,7 +250,7 @@ class ListSelector extends React.Component {
         })
       }
     }
-    this.setState({ selectedData, rowSelection });
+    this.setState({ selectedData, rowSelection, inputValue: '' });
   };
 
   //选择当页全部时的判断
@@ -257,12 +258,45 @@ class ListSelector extends React.Component {
     changeRows.map(changeRow => this.onSelectItem(changeRow, selected));
   };
 
+  handleSubmit = () => {
+    let { inputValue } = this.state;
+    this.props.onOk({
+      result: inputValue,
+      type: this.props.type
+    });
+  };
+
   render() {
-    const { visible, onCancel, afterClose } = this.props;
-    const { data, pagination, loading, selectorItem, selectedData, rowSelection } = this.state;
+    const { visible, onCancel, afterClose, inputEnabled } = this.props;
+    const { data, pagination, loading, selectorItem, selectedData, rowSelection, inputValue } = this.state;
     const { searchForm, columns, title, key } = selectorItem;
     return (
       <Modal title={title} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
+
+        {inputEnabled ?  (
+          <div className="common-top-area">
+            <Row gutter={20}>
+              <Col span={8}>
+                <div className="ant-row ant-form-item">
+                  <div className="ant-form-item-label">
+                    <label title="以此输入值为结果">以此输入值为结果</label>
+                  </div>
+                  <div className="ant-form-item-control-wrapper">
+                    <div className="ant-form-item-control ">
+                      <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}
+                             value={inputValue}
+                             onChange={(e) => {this.setState({inputValue: e.target.value})}}/>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col>
+                <Button onClick={this.handleSubmit} disabled={!inputValue} style={{ marginTop: 32 }} type="primary">确 定</Button>
+              </Col>
+            </Row>
+          </div>
+        ) : null}
+
         { searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
                                               submitHandle={this.search}
                                               clearHandle={this.clear}/> : null}
@@ -296,13 +330,15 @@ ListSelector.propTypes = {
   selectedData: React.PropTypes.array,  //默认选择的值id数组
   extraParams: React.PropTypes.object,  //搜索时额外需要的参数,如果对象内含有组件内存在的变量将替换组件内部的数值
   selectorItem: React.PropTypes.object,  //组件查询的对象，如果存在普通配置没法实现的可单独传入，例如参数在url中间动态变换时，表单项需要参数搜索时
-  single: React.PropTypes.bool  //是否单选
+  single: React.PropTypes.bool,  //是否单选
+  inputEnabled: React.PropTypes.bool  //是否可输入
 };
 
 ListSelector.defaultProps = {
   afterClose: () => {},
   extraParams: {},
-  single: false
+  single: false,
+  inputEnabled: false
 };
 
 function mapStateToProps() {
