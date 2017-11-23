@@ -11,7 +11,7 @@ class Selput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: [],
+      value: '',
       showListSelector: false
     };
   }
@@ -20,7 +20,13 @@ class Selput extends React.Component {
     this.setState({ showListSelector: false })
   };
 
-  componentWillReceiveProps(nextProps){}
+  //默认值，可控组件
+  componentWillReceiveProps(nextProps) {
+    if ('value' in nextProps) {
+      const value = nextProps.value;
+      this.setState({value});
+    }
+  }
 
   /**
    * ListSelector确认点击事件，返回的结果根据valueKey赋值
