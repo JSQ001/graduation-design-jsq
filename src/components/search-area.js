@@ -386,7 +386,7 @@ class SearchArea extends React.Component{
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -401,7 +401,7 @@ class SearchArea extends React.Component{
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -449,7 +449,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -467,7 +467,7 @@ class SearchArea extends React.Component{
           disabled={item.disabled}
         >
           {item.options.map((option)=>{
-            return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+            return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
           })}
         </Select>
       }
@@ -480,7 +480,8 @@ class SearchArea extends React.Component{
                         valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
                         selectorItem={item.selectorItem}
-                        single={item.single}/>
+                        single={item.single}
+                        inputEnabled={item.inputEnabled}/>
       }
       //switch状态切换组件
       case 'switch':{
@@ -658,6 +659,7 @@ class SearchArea extends React.Component{
           single: false                ╲╲可选,当type为list时是否为单选
           valueListCode: ''             ╲╲可选，当type为value_list时的值列表coode
           colSpan: ''                    ╲╲可选，自定义搜索项的宽度
+          inputEnabled: false             ╲╲可选，当type为list时有效，list模式下增加可输入模式
         }
  */
 

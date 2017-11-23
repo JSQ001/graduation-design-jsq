@@ -24,24 +24,26 @@ class Chooser extends React.Component {
    */
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.value){
-      let lengthChange = nextProps.value.length !== this.state.value.length;
-      let innerChange = false;
-      if(nextProps.value.length === this.state.value.length){
-        nextProps.value.map((nextItem, index) => {
-          innerChange = innerChange || this.state.value[index].key !== (nextItem[this.props.valueKey] + '');
-        })
-      }
-      if(lengthChange || innerChange){
-        let values = [];
-        nextProps.value.map(item => {
-          values.push({
-            key: item[this.props.valueKey] + '',
-            label: item[this.props.labelKey],
-            value: item
+      if(typeof nextProps.value !== 'string'){
+        let lengthChange = nextProps.value.length !== this.state.value.length;
+        let innerChange = false;
+        if(nextProps.value.length === this.state.value.length){
+          nextProps.value.map((nextItem, index) => {
+            innerChange = innerChange || this.state.value[index].key !== (nextItem[this.props.valueKey] + '');
           })
-        });
-        // this.onChange(nextProps.value);
-        this.setState({ value: values });
+        }
+        if(lengthChange || innerChange){
+          let values = [];
+          nextProps.value.map(item => {
+            values.push({
+              key: item[this.props.valueKey] + '',
+              label: item[this.props.labelKey],
+              value: item
+            })
+          });
+          // this.onChange(nextProps.value);
+          this.setState({ value: values });
+        }
       }
     }
     if((!nextProps.value && this.state.value.length > 0) || (nextProps.value && nextProps.value.length === 0 && this.state.value.length > 0)){
@@ -84,13 +86,21 @@ class Chooser extends React.Component {
    */
   handleListOk = (result) => {
     let value = [];
-    result.result.map(item => {
+    if(typeof result.result === 'string'){
       value.push({
-        key: item[this.props.valueKey],
-        label: item[this.props.labelKey],
-        value: item
+        key: result.result,
+        label: result.result,
+        value: result.result
       })
-    });
+    } else {
+      result.result.map(item => {
+        value.push({
+          key: item[this.props.valueKey],
+          label: item[this.props.labelKey],
+          value: item
+        })
+      });
+    }
     //手动调用onChange事件以与父级Form绑定
     this.onChange(result.result);
     this.setState({ showListSelector: false, value });
@@ -105,7 +115,7 @@ class Chooser extends React.Component {
 
   render() {
     const { showListSelector, listSelectedData, value } = this.state;
-    const { placeholder, disabled, selectorItem, type, listExtraParams, single, showNumber } = this.props;
+    const { placeholder, disabled, selectorItem, type, listExtraParams, single, showNumber, inputEnabled } = this.props;
     return (
       <div className={showNumber ? 'chooser number-only' : 'chooser'}>
         <Select
@@ -128,7 +138,8 @@ class Chooser extends React.Component {
                       selectedData={listSelectedData}
                       extraParams={listExtraParams}
                       selectorItem={selectorItem}
-                      single={single}/>
+                      single={inputEnabled || single}
+                      inputEnabled={inputEnabled}/>
         <input ref="chooserBlur" style={{ position: 'absolute', top: '-100vh', zIndex: -1 }}/>
       </div>
     );
@@ -145,8 +156,9 @@ Chooser.propTypes = {
   listExtraParams: React.PropTypes.object,  //listSelector的额外参数
   onChange: React.PropTypes.func,  //进行选择后的回调
   single: React.PropTypes.bool,  //是否单选
-  value: React.PropTypes.array,  //已选择的值，需要传入完整目标数组
-  showNumber: React.PropTypes.bool  //是否只显示'已选XX条'
+  value: React.PropTypes.oneOfType([React.PropTypes.array, React.PropTypes.string]),  //已选择的值，需要传入完整目标数组
+  showNumber: React.PropTypes.bool,  //是否只显示'已选XX条'
+  inputEnabled: React.PropTypes.bool  //是否允许输入
 };
 
 Chooser.defaultProps = {
@@ -154,7 +166,8 @@ Chooser.defaultProps = {
   disabled: false,
   listExtraParams: {},
   single: false,
-  showNumber: false
+  showNumber: false,
+  inputEnabled: false
 };
 
 export default Chooser;
