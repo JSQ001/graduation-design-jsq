@@ -124,7 +124,6 @@ class SearchArea extends React.Component{
   handleSearch = (e) => {
     e.preventDefault();
     let values = this.props.form.getFieldsValue();
-    console.log(this.props.form.getFieldsValue());
     let searchForm = [].concat(this.state.searchForm);
     searchForm.map(item => {
       if(values[item.id] && item.entity) {
