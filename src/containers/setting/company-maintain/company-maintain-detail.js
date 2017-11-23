@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
 import httpFetch from 'share/httpFetch';
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 
@@ -96,7 +97,10 @@ class WrappedCompanyMaintainDetail extends React.Component {
       pageSize: 10,
       nowStatus: 'BANK',
       showListSelector: false,
-      newData: []
+      newData: [],
+      companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
+      newBankAccountPage:menuRoute.getRouteItem('new-bank-account','key'),                    //新建银行账户
+      bankAccountPageDetail:menuRoute.getRouteItem('bank-account-detail','key'),              //银行账户详情
     }
   }
 
@@ -212,6 +216,12 @@ class WrappedCompanyMaintainDetail extends React.Component {
     })
   };
 
+  //新建
+  handleNew = () => {
+    console.log("handleNew");
+    let path = this.state.newBankAccountPage.url;
+    this.context.router.push(path);
+  };
 
 
   //渲染按钮
@@ -240,11 +250,6 @@ class WrappedCompanyMaintainDetail extends React.Component {
   }
 
   submitHandle = (value) =>{
-    /*http://139.224.220.217:11013/api/users/move?companyOIDFrom=887fa69e-994b-4942-b55b-389bff16a471
-    &companyOIDTo=70aabf2e-891d-4cca-a859-184e4e248365&selectMode=default&userOIDs=bd16b544-7c38-4308-bb20-45a7cb9c4b70*/
-    /*http://139.224.220.217:11013/api/users/move?companyOIDFrom=887fa69e-994b-4942-b55b-389bff16a471&companyOIDTo=9c1252c8-ebf3-4f0f-8056-3277ffa46029&selectMode=default&userOIDs=bd16b544-7c38-4308-bb20-45a7cb9c4b70
-    &userOIDs=87fad2ea-2f38-4eb9-9c61-3e4344aa3247&userOIDs=0ebea645-8d0b-4701-98f1-25baa2b729f0*/
-    console.log(value);
     const companyOIDTo = (value.result)[0].companyOID;
     const companyOIDFrom =this.props.params.companyOId;
     const selectedRowKeys = this.state.selectedRowKeys;
@@ -318,6 +323,10 @@ class WrappedCompanyMaintainDetail extends React.Component {
     )
   }
 
+}
+
+WrappedCompanyMaintainDetail.contextTypes = {
+  router: React.PropTypes.object
 }
 
 function mapStateToProps(state) {

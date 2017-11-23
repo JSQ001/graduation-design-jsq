@@ -580,7 +580,7 @@ class BudgetJournalDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys}条数据</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>

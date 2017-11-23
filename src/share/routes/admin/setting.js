@@ -10,6 +10,9 @@ import CodingRuleValue from 'containers/setting/coding-rule/coding-rule-value'
 import CompanyMaintain from 'containers/setting/company-maintain/company-maintain'
 import NewCompanyMaintain from 'containers/setting/company-maintain/new-company-maintain'
 import CompanyMaintainDetail from 'containers/setting/company-maintain/company-maintain-detail'
+import NewBankAccount from 'containers/setting/company-maintain/new-bank-account'
+import BankAccountDetail from 'containers/setting/company-maintain/bank-account-detail'
+import AddAuthorization from 'containers/setting/company-maintain/add-authorization'
 import CompanyGroup from 'containers/setting/company-group/company-group'
 import NewCompanyGroup from 'containers/setting/company-group/new-company-group'
 import CompanyGroupDetail from 'containers/setting/company-group/company-group-detail'
@@ -175,6 +178,30 @@ const companyMaintainDetail ={
   parent: 'company-maintain'
 };
 
+//新建银行账户
+const newBankAccount ={
+  key:'new-bank-account',
+  url:'/main/setting/company-maintain/new-bank-account',
+  components:NewBankAccount,
+  parent: 'company-maintain'
+};
+
+//银行账户详情
+const bankAccountDetail ={
+  key:'bank-account-detail',
+  url:'/main/setting/company-maintain/bank-account-detail',
+  components:BankAccountDetail,
+  parent: 'company-maintain'
+};
+
+//添加授权
+const addAuthorization ={
+  key:'add-authorization',
+  url:'/main/setting/company-maintain/add-authorization',
+  components:AddAuthorization,
+  parent: 'company-maintain'
+};
+
 //公司维护
 const companyMaintain ={
   key:'company-maintain',
@@ -183,7 +210,10 @@ const companyMaintain ={
   parent: 'setting',
   children:{
     newCompanyMaintain,
-    companyMaintainDetail
+    companyMaintainDetail,
+    newBankAccount,
+    bankAccountDetail,
+    addAuthorization
   }
 };
 
