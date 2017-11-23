@@ -2,11 +2,12 @@ import React from 'react'
 import { connect } from 'react-redux'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import { Form, Button, Radio, Select, Col, InputNumber, Popover, Icon, message } from 'antd'
+import { Form, Button, Radio, Select, Row, Col, InputNumber, Popover, Icon, message } from 'antd'
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
+
 class NewStrategyControlDetail extends React.Component{
   constructor(props) {
     super(props);
@@ -178,64 +179,6 @@ class NewStrategyControlDetail extends React.Component{
         </div>
       </div>
     );
-    let renderOperator;
-    let renderValue;
-    if (mannerValue === 'PERCENTAGE') {
-      renderValue = (
-        <Col span={6}>
-          <FormItem>
-            {getFieldDecorator('value', {
-              rules: [{
-                required: true,
-                message: '请输入'
-              }],
-              initialValue: updateParams.value
-            })(
-              <InputNumber min={0}
-                           formatter={value => `${value}%`}
-                           parser={value => value.replace('%', '')}
-                           onChange={value => {this.setState({ valueValue:value })}}/>
-            )}
-          </FormItem>
-        </Col>
-      );
-    } else {
-      renderValue = (
-        <Col span={6}>
-          <FormItem>
-            {getFieldDecorator('value', {
-              rules: [{
-                required: true,
-                message: '请输入'
-              }],
-              initialValue: updateParams.value
-            })(
-              <InputNumber min={0}
-                           onChange={(value)=>{this.setState({ valueValue:value })}}/>
-            )}
-          </FormItem>
-        </Col>
-      );
-      renderOperator = (
-        <Col span={8} style={{marginRight:'15px'}}>
-          <FormItem>
-            {getFieldDecorator('operator', {
-              rules: [{
-                required: true,
-                message: '请选择'
-              }],
-              initialValue: updateParams.operator && updateParams.operator.value
-            })(
-              <Select onChange={(value)=>{this.setState({ operatorValue:value })}} placeholder="请选择">
-                {operatorOptions.map((option)=>{
-                  return <Option key={option.value}>{option.messageKey}</Option>
-                })}
-              </Select>
-            )}
-          </FormItem>
-        </Col>
-      );
-    }
     return (
       <div className="new-strategy-control-detail">
         <Form onSubmit={updateParams.id ? this.handleUpdate : this.handleSave}>
@@ -278,8 +221,9 @@ class NewStrategyControlDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="方式">
-            <Col span={8} style={{marginRight:'15px'}}>
+          <Row>
+            <Col span={6} className="ant-form-item-label label-style">方式： </Col>
+            <Col span={5} className="ant-col-offset-1">
               <FormItem>
                 {getFieldDecorator('manner', {
                   rules: [{
@@ -296,11 +240,47 @@ class NewStrategyControlDetail extends React.Component{
                 )}
               </FormItem>
             </Col>
-            {renderOperator}
-            {renderValue}
-          </FormItem>
-          <FormItem {...formItemLayout} label="控制期段">
-            <Col span={20} style={{margin:'0 20px 0 0'}}>
+            {mannerValue !== 'PERCENTAGE' && (
+              <Col span={5}>
+                <FormItem className="ant-col-offset-1">
+                  {getFieldDecorator('operator', {
+                    rules: [{
+                      required: true,
+                      message: '请选择'
+                    }],
+                    initialValue: updateParams.operator && updateParams.operator.value
+                  })(
+                    <Select onChange={(value)=>{this.setState({ operatorValue:value })}} placeholder="请选择">
+                      {operatorOptions.map((option)=>{
+                        return <Option key={option.value}>{option.messageKey}</Option>
+                      })}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            )}
+            <Col span={4}>
+              <FormItem className="ant-col-offset-1">
+                {getFieldDecorator('value', {
+                  rules: [{
+                    required: true,
+                    message: '请输入'
+                  }],
+                  initialValue: updateParams.value
+                })(
+                  <InputNumber min={0}
+                               placeholder="请输入"
+                               style={{width:'100%'}}
+                               formatter={value => mannerValue !== 'PERCENTAGE' ? value : `${value}%`}
+                               parser={value => mannerValue !== 'PERCENTAGE' ? value : value.replace('%', '')}
+                               onChange={(value) => {this.setState({ valueValue:value })}}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={6} className="ant-form-item-label label-style">控制期段： </Col>
+            <Col span={12} className="ant-col-offset-1">
               <FormItem>
                 {getFieldDecorator('periodStrategy', {
                   rules: [{
@@ -317,12 +297,13 @@ class NewStrategyControlDetail extends React.Component{
                 )}
               </FormItem>
             </Col>
-            <Col span={2}>
+            <Col span={2} className="ant-col-offset-1">
               <Popover placement="topLeft" content={content} title="预算控制期段">
-                <div><Icon type="question-circle-o" style={{fontSize:'18px',color:'#bababa',cursor:'pointer',verticalAlign:'middle',color:'#49a9ee'}}/></div>
+                <Icon type="question-circle-o"
+                      style={{fontSize:'18px',cursor:'pointer',color:'#49a9ee',position:'relative',top:'7px'}}/>
               </Popover>
             </Col>
-          </FormItem>
+          </Row>
           <FormItem {...formItemLayout} label="条件">
             {getFieldDecorator('scenarioName')(
               <div>

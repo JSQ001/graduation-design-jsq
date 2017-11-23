@@ -29,14 +29,14 @@ class ContractTypeDefine extends React.Component{
         {title: '合同类型代码', dataIndex: 'contractTypeCode'},
         {title: '合同类型名称', dataIndex: 'contractTypeName'},
         {title: '合同大类', dataIndex: 'contractCategoryName'},
-        {title: '账套', dataIndex: 'setOfBooksId'},
+        {title: '账套', dataIndex: 'setOfBooksCode'},
         {title: '状态', dataIndex: 'isEnabled',
           render: status => <Badge status={status ? 'success' : 'error'} text={status ? '启用' : '禁用'} />},
         {title: '操作', dataIndex: 'id', render: (id, record) => (
           <span>
             <a onClick={() => this.handleEdit(record)}>编辑</a>
             <span className="ant-divider"/>
-            <a onClick={this.handleDistribute}>公司分配</a>
+            <a onClick={() => this.handleDistribute(record)}>公司分配</a>
           </span>
         )}
       ],
@@ -150,8 +150,8 @@ class ContractTypeDefine extends React.Component{
   };
 
   //分配公司
-  handleDistribute = () => {
-    this.context.router.push(this.state.companyDistribution.url);
+  handleDistribute = (record) => {
+    this.context.router.push(this.state.companyDistribution.url.replace(':setOfBooksId', record.setOfBooksId).replace(':id', record.id));
   };
 
   render() {
