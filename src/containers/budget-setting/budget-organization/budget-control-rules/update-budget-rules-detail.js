@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import moment from 'moment'
-import { Form, Input, Switch, Button, Icon, Checkbox, Alert, message, DatePicker, Select } from 'antd'
+import { Form, Input, Switch, Button, Icon, Row, Col, Checkbox, Alert, message, DatePicker, Select } from 'antd'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import selectorData from 'share/selectorData'
@@ -332,7 +332,7 @@ class UpdateBudgetRulesDetail extends React.Component{
     }
   };
 
-  //验证上下限值
+  //选择上下限值
   handleSelectValue = (key) =>{
     let { validateStatusMap, helpMap} = this.state;
     validateStatusMap[key] = "warning";
@@ -345,8 +345,6 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   handleSelectType = (value) =>{
     const { valueListMap} = this.state;
-    console.log(value)
-
     this.props.form.setFieldsValue({"ruleParameter": ""});
     this.detail.type = value;
     this.detail.parameterUpperLimit = [];
@@ -363,15 +361,6 @@ class UpdateBudgetRulesDetail extends React.Component{
         break
     }
     this.setState({changed: true})
-  };
-
-  changeLimitParam = (key)=>{
-    console.log(key)
-    let limitParam = this.state.limitParam;
-    limitParam[key] = false;
-    this.setState({
-      limitParam
-    })
   };
 
   //选择规则参数
@@ -409,7 +398,9 @@ class UpdateBudgetRulesDetail extends React.Component{
     return(
       <div className="new-budget-control-rules-detail">
         <Form onSubmit={this.handleSubmit}>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}>
+          <Row span={30}>
+            <Col span={20}>
+             <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id:'budget.ruleParameterType'})  /*规则参数类型*/}>
             {getFieldDecorator('ruleParameterType', {
               initialValue: ruleParamDetail.ruleParameterType,
               rules: [{
@@ -432,7 +423,11 @@ class UpdateBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.ruleParameter'})  /*规则参数*/}
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
+               <FormItem {...formItemLayout} label={formatMessage({id:'budget.ruleParameter'})  /*规则参数*/}
             validateStatus={validateStatusMap.ruleParameter}
             help={helpMap.ruleParameter}>
             {getFieldDecorator('ruleParameter', {
@@ -464,6 +459,10 @@ class UpdateBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
           <FormItem {...formItemLayout}
             label={ formatMessage({id:'budget.filtrateMethod'})  /*取值方式*/}
             help={filtrateMethodHelp}>
@@ -493,7 +492,11 @@ class UpdateBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout}
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout}
           label={formatMessage({id:'budget.summaryOrDetail'})  /*取值范围*/}
           help={summaryOrDetailHelp}>
             {getFieldDecorator('summaryOrDetail', {
@@ -510,7 +513,11 @@ class UpdateBudgetRulesDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
             validateStatus={validateStatusMap.parameterUpperLimit}
             help={helpMap.parameterUpperLimit}>
             {getFieldDecorator('parameterUpperLimit', {
@@ -554,7 +561,11 @@ class UpdateBudgetRulesDetail extends React.Component{
 
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
+               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
             validateStatus={validateStatusMap.parameterLowerLimit}
             help={helpMap.parameterLowerLimit}>
             {getFieldDecorator('parameterLowerLimit', {
@@ -602,14 +613,19 @@ class UpdateBudgetRulesDetail extends React.Component{
               </div>
             )}
           </FormItem>
-
-          <FormItem {...formItemLayout} label={formatMessage({id:'budget.invalidDate'})  /*失效日期*/}>
+            </Col>
+          </Row>
+          <Row span={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.invalidDate'})  /*失效日期*/}>
             {getFieldDecorator('invalidDate', {
               initialValue: ruleParamDetail.invalidDate ? moment( ruleParamDetail.invalidDate, 'YYYY-MM-DD') : null
             })(
               <DatePicker placeholder={formatMessage({id:"common.please.enter"})} />
             )}
           </FormItem>
+            </Col>
+          </Row>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>
