@@ -22,6 +22,8 @@ class NewContract extends React.Component{
       companyIdOptions: [], //公司
       contractCategoryOptions: [], //合同大类选项
       uploadOIDs: [], //上传附件的OIDs
+      employeeOptions: [], //员工选项
+      venderOptions: [], //供应商选项
     }
   }
 
@@ -44,7 +46,7 @@ class NewContract extends React.Component{
         let companyIdOptions = res.data;
         this.setState({ companyIdOptions })
       })
-    })
+    });
   }
 
   handleUpload = (OIDs) => {
@@ -77,6 +79,10 @@ class NewContract extends React.Component{
         <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
           <Row>
             <Col span={7}>
+              <div style={{lineHeight: '32px'}}>合同编号:</div>
+              <Input value="-" disabled />
+            </Col>
+            <Col span={7} offset={1}>
               <div style={{lineHeight: '32px'}}>创建人:</div>
               <Input value={user.fullName} disabled />
             </Col>
