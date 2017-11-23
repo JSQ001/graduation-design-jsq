@@ -9,7 +9,7 @@ class MyAccount extends React.Component{
         searchForm: [{
           type: 'value_list', label: '消息：', id: 'messageCode', options: [], valueListCode: 2022
         }, {
-          type: 'selput', label: '人员', id: 'user', valueKey: 'fullName', listType: 'user'
+          type: 'selput', label: '人员', id: 'user', valueKey: 'fullName', listType: 'user', defaultValue: '123'
         }]
       }
     }
