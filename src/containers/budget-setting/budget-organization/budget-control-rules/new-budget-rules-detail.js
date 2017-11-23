@@ -10,6 +10,7 @@ import { Form, Input, Switch, Button, Icon, Row, Col, Alert, message, DatePicker
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import Chooser from 'components/chooser.js'
+import Selput from 'components/selput'
 import selectorData from 'share/selectorData'
 
 
@@ -39,7 +40,7 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillMount() {
-    let organizationIdParams = {organizationId : this.state.organizationId};
+    let organizationIdParams = {organizationId : this.props.organization.id};
     let userSelectorItem = selectorData['user'];
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
@@ -523,106 +524,29 @@ class NewBudgetRulesDetail extends React.Component{
           <Row gutter={30}>
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                    validateStatus={validateStatusMap.parameterLowerLimit}
-                    help={helpMap.parameterLowerLimit}>
-            {getFieldDecorator('parameterLowerLimit',
-              {
-                initialValue: this.detail.parameterLowerLimit,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({id: "common.please.select"})
-                  },
-                  {
-                    validator: (item,value,callback)=>{
-                      if(typeof value === 'undefined'){
-                        validateStatusMap.parameterLowerLimit = "error";
-                        helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
-                      }
-                      callback();
-                    }
-                  }
-                ]
-              })(
-              <div>
-                {typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterLowerLimit")}/> :
-                  this.detail.type === 'BGT_RULE_PARAMETER_DIM' ?
-                    <Chooser
-                      placeholder={formatMessage({id:"common.please.select"})}
-                      type='cost_center_item_by_id'
-                      listExtraParams= {{costCenterId:costCenterId}}
-                      labelKey= 'name'
-                      valueKey= 'id'
-                      single={true}
-                      value={this.detail.parameterLowerLimit}
-                      onChange={(value)=>this.handleValueChange(value,"parameterLowerLimit")}
-                    />
-                    :
-                  <Chooser
-                    placeholder={formatMessage({id:"common.please.select"})}
-                    type={ paramValueMap[this.detail.name].listType}
-                    listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
-                    labelKey={  paramValueMap[this.detail.name].codeKey}
-                    valueKey={  paramValueMap[this.detail.name].valueKey}
-                    single={true}
-                    value={this.detail.parameterLowerLimit}
-                    onChange={(value)=> this.handleValueChange(value,"parameterLowerLimit")}
-                  />}
-              </div>
-            )}
-          </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                        validateStatus={validateStatusMap.parameterLowerLimit}
-                        help={helpMap.parameterLowerLimit}>
-                {getFieldDecorator('parameterLowerLimit',
-                  {
-                    initialValue: this.detail.parameterLowerLimit,
-                    rules: [
-                      {
-                        required: true,
-                        message: formatMessage({id: "common.please.select"})
-                      },
-                      {
-                        validator: (item,value,callback)=>{
-                          if(typeof value === 'undefined'){
-                            validateStatusMap.parameterLowerLimit = "error";
-                            helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
-                          }
-                          callback();
+              validateStatus={validateStatusMap.parameterLowerLimit}
+              help={helpMap.parameterLowerLimit}>
+              {getFieldDecorator('parameterLowerLimit',
+                {
+                  initialValue: this.detail.parameterLowerLimit,
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({id: "common.please.select"})
+                    },
+                    {
+                      validator: (item,value,callback)=>{
+                        if(typeof value === 'undefined'){
+                          validateStatusMap.parameterLowerLimit = "error";
+                          helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
                         }
+                        callback();
                       }
-                    ]
-                  })(
-                  <div>
-                    {typeof this.detail.name === 'undefined' ? <Select  placeholder={formatMessage({id:"common.please.select"})} onFocus={()=>this.handleSelectValue("parameterLowerLimit")}/> :
-                      this.detail.type === 'BGT_RULE_PARAMETER_DIM' ?
-                        <Chooser
-                          placeholder={formatMessage({id:"common.please.select"})}
-                          type='cost_center_item_by_id'
-                          listExtraParams= {{costCenterId:costCenterId}}
-                          labelKey= 'name'
-                          valueKey= 'id'
-                          single={true}
-                          value={this.detail.parameterLowerLimit}
-                          onChange={(value)=>this.handleValueChange(value,"parameterLowerLimit")}
-                        />
-                        :
-                        <Chooser
-                          placeholder={formatMessage({id:"common.please.select"})}
-                          type={ paramValueMap[this.detail.name].listType}
-                          listExtraParams= {paramValueMap[this.detail.name].listExtraParams}
-                          labelKey={  paramValueMap[this.detail.name].codeKey}
-                          valueKey={  paramValueMap[this.detail.name].valueKey}
-                          single={true}
-                          value={this.detail.parameterLowerLimit}
-                          onChange={(value)=> this.handleValueChange(value,"parameterLowerLimit")}
-                        />}
-                  </div>
-                )}
+                    }
+                  ]
+                })(
+                <Selput type="user" valueKey="fullName" onChange={(e) => {console.log(e)}}/>
+              )}
               </FormItem>
             </Col>
           </Row>
