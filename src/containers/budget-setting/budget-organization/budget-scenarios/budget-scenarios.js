@@ -74,9 +74,9 @@ class BudgetScenarios extends React.Component {
           data: response.data,
           loading: false,
           pagination: {
-            total: Number(response.headers['x-total-count']),
+            total: Number(response.headers['x-total-count']) ? Number(response.headers['x-total-count']) : 0,
             onChange: this.onChangePager,
-            pageSize: this.state.pageSize
+            current: this.state.page + 1
           }
         })
       }

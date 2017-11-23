@@ -20,6 +20,8 @@ class NewContract extends React.Component{
       partnerCategoryOptions: [], //合同方类型选项
       currencyOptions: [], //币种
       companyIdOptions: [], //公司
+      contractCategoryOptions: [], //合同大类选项
+      uploadOIDs: [], //上传附件的OIDs
     }
   }
 
@@ -28,6 +30,10 @@ class NewContract extends React.Component{
     this.getSystemValueList(2107).then(res => { //合同方类型
       let partnerCategoryOptions = res.data.values;
       this.setState({ partnerCategoryOptions })
+    });
+    this.getSystemValueList(2202).then(res => { //合同大类
+      let contractCategoryOptions = res.data.values;
+      this.setState({ contractCategoryOptions })
     });
     this.service.getCurrencyList().then((res) => {  //币种
       let currencyOptions = res.data;
@@ -41,9 +47,18 @@ class NewContract extends React.Component{
     })
   }
 
+  handleUpload = (OIDs) => {
+    this.setState({ uploadOIDs: OIDs })
+  };
+
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
+      values.attachmentOID = this.state.uploadOIDs;
+      values.startDate = values.rangePicker[0].format('YYYY-MM-DD');
+      values.endDate = values.rangePicker[1].format('YYYY-MM-DD');
+      values.signDate = values.signDate.format('YYYY-MM-DD');
+      console.log(values)
       if (!err) {
         console.log(values)
       }
@@ -56,14 +71,18 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user, partnerCategoryOptions, currencyOptions, companyIdOptions } = this.state;
+    const { loading, user, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions } = this.state;
     return (
-      <div className="new-contract" style={{marginBottom:'80px'}}>
+      <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
           <Row>
             <Col span={7}>
               <div style={{lineHeight: '32px'}}>创建人:</div>
               <Input value={user.fullName} disabled />
+            </Col>
+            <Col span={7} offset={1}>
+              <div style={{lineHeight: '32px'}}>创建日期:</div>
+              <Input value={new Date().format('yyyy-MM-dd')} disabled />
             </Col>
           </Row>
         </Card>
@@ -131,10 +150,14 @@ class NewContract extends React.Component{
                   {getFieldDecorator('contractCategory', {
                     rules: [{
                       required: true,
-                      message: '请输入'
+                      message: '请选择'
                     }],
                   })(
-                    <Input disabled/>
+                    <Select placeholder="请选择">
+                      {contractCategoryOptions.map(option => {
+                        return <Option key={option.value}>{option.messageKey}</Option>
+                      })}
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -143,13 +166,8 @@ class NewContract extends React.Component{
               <Col span={7}>
                 <Row>
                   <Col span={7}>
-                    <FormItem label="币种">
-                      {getFieldDecorator('currency', {
-                        rules: [{
-                          required: true,
-                          message: '请选择'
-                        }]
-                      })(
+                    <FormItem label="合同金额">
+                      {getFieldDecorator('currency')(
                         <Select placeholder="请选择">
                           {currencyOptions.map((option) => {
                             return <Option value={option.otherCurrency} key={option.otherCurrency}>{option.otherCurrency}</Option>
@@ -159,13 +177,8 @@ class NewContract extends React.Component{
                     </FormItem>
                   </Col>
                   <Col span={16} offset={1}>
-                    <FormItem label="金额">
-                      {getFieldDecorator('amount', {
-                        rules: [{
-                          required: true,
-                          message: '请输入'
-                        }],
-                      })(
+                    <FormItem label=" " colon={false}>
+                      {getFieldDecorator('amount')(
                         <InputNumber placeholder="请输入" style={{width: '100%'}}/>
                       )}
                     </FormItem>
@@ -174,7 +187,7 @@ class NewContract extends React.Component{
               </Col>
               <Col span={7} offset={1}>
                 <FormItem label="有效期限">
-                  {getFieldDecorator('startDate')(
+                  {getFieldDecorator('rangePicker')(
                     <RangePicker placeholder={['请选择', '请选择']} style={{width:'100%'}}/>
                   )}
                 </FormItem>
@@ -188,10 +201,10 @@ class NewContract extends React.Component{
                   {getFieldDecorator('partnerCategory', {
                     rules: [{
                       required: true,
-                      message: '请输入'
+                      message: '请选择'
                     }],
                   })(
-                    <Select placeholder="请输入">
+                    <Select placeholder="请选择">
                       {partnerCategoryOptions.map((option) => {
                         return <Option key={option.value}>{option.messageKey}</Option>
                       })}
@@ -204,10 +217,12 @@ class NewContract extends React.Component{
                   {getFieldDecorator('partnerId', {
                     rules: [{
                       required: true,
-                      message: '请输入'
+                      message: '请选择'
                     }],
                   })(
-                    <Input placeholder="请输入"/>
+                    <Select placeholder="请选择">
+
+                    </Select>
                   )}
                 </FormItem>
               </Col>
@@ -217,10 +232,10 @@ class NewContract extends React.Component{
             <Row>
               <Col span={7}>
                 <FormItem>
-                  {getFieldDecorator('attachmentOID', {
-                    initialValue: user.fullName
-                  })(
-                    <Upload attachmentType="CONTRACT" fileNum={9}/>
+                  {getFieldDecorator('attachmentOID')(
+                    <Upload attachmentType="CONTRACT"
+                            fileNum={9}
+                            uploadHandle={this.handleUpload}/>
                   )}
                 </FormItem>
               </Col>
@@ -230,14 +245,14 @@ class NewContract extends React.Component{
             <Row>
               <Col span={7}>
                 <FormItem label="责任部门">
-                  {getFieldDecorator('partnerCategory1')(
+                  {getFieldDecorator('unitId')(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
               </Col>
               <Col span={7} offset={1}>
                 <FormItem label="责任人">
-                  {getFieldDecorator('partnerId')(
+                  {getFieldDecorator('employeeId')(
                     <Input placeholder="请输入"/>
                   )}
                 </FormItem>
@@ -254,8 +269,9 @@ class NewContract extends React.Component{
             </Row>
           </Card>
           <Affix offsetBottom={0}
-                 style={{position:'absolute',bottom:0,left: 0, width:'100%', height:'50px', boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-            <Button type="primary" htmlType="submit" loading={loading} style={{margin:'0 20px 0 230px'}}>下一步</Button>
+                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
+            <Button type="primary" htmlType="submit" loading={loading} style={{margin:'0 20px'}}>下一步</Button>
             <Button onClick={this.onCancel}>取消</Button>
           </Affix>
         </Form>

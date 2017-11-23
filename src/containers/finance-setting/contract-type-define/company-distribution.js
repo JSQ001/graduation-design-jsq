@@ -21,9 +21,9 @@ class CompanyDistribution extends React.Component{
       columns: [
         {title: '公司代码', dataIndex: 'companyCode'},
         {title: '公司名称', dataIndex: 'companyName'},
-        {title: '公司类型', dataIndex: '3'},
-        {title: '账套', dataIndex: 'setOfBooksId'},
-        {title: '启用', dataIndex: 'isEnabled', width: '8%', render: isEnabled => <Checkbox defaultChecked={isEnabled}/>}
+        {title: '公司类型', dataIndex: 'companyTypeName', render: type => <span>{type ? type : '-'}</span>},
+        {title: '账套', dataIndex: 'setOfBooksCode'},
+        {title: '启用', dataIndex: 'isEnabled', width: '8%', render: isEnabled => <Checkbox defaultChecked={isEnabled} onChange={this.handleStatusChange}/>}
       ],
       data: [],
       pagination: {
@@ -76,6 +76,10 @@ class CompanyDistribution extends React.Component{
         this.setState({ data: res.data, loading: false })
       }
     })
+  };
+
+  handleStatusChange = (e) => {
+    console.log(e.target.checked)
   };
 
   handleListShow = (flag) => {
@@ -138,7 +142,7 @@ class CompanyDistribution extends React.Component{
             <Button type="primary" onClick={() => this.handleListShow(true)}>批量分配公司</Button>
           </div>
         </div>
-        <Table rowKey={render => render.id}
+        <Table rowKey={record => record.companyId}
                columns={columns}
                dataSource={data}
                loading={loading}
