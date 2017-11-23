@@ -18,86 +18,74 @@ class WrappedNewBankAccount extends React.Component {
     this.state = {
       searchForm: [
         {
-          /*公司代码*/
-          type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
-        },
-        {
-          /*公司名称*/
-          type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", isRequired: true
-        },
-        {
-          /*公司类型*/
-          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,isRequired: true
-        },
-        {
-          /*账套*/
-          type: 'select',
-          label: this.props.intl.formatMessage({id: "company.setOfBooksName"}),
-          id: "setOfBooksId",
-          options: [],
-          method: 'get',
+          /*开户银行*/
+          type: 'select', label:"开户银行", id: "11", options: [], method: 'get',
           getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          labelKey: 'setOfBooksCode',
-          valueKey: 'id',
-          isRequired: true
+          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true
         },
         {
-          /*法人*/
-          type: 'select',
-          label: this.props.intl.formatMessage({id: "company.legalEntityName"}),
-          id: "legalEntityId",
-          options: [],
-          method: 'get',
+          /*银行代码*/
+          type: 'select', label: "银行代码",id: "12", options: [], method: 'get',
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true   },
+        {
+          /*开户行联行号*/
+          type: 'value_list', label:"开户行联行号", id: "companyType", options: [], valueListCode:1011,isRequired: true
+        },
+        {
+          /*开户支行名称*/
+          type: 'select', label: "开户支行名称", id: "13", options: [], method: 'get',
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true
+        },
+        {
+          /*开户行所在地——国家*/
+          type: 'select', label: "开户行所在地——国家", id: "14", options: [], method: 'get',
           getUrl: `${config.baseUrl}/api/all/legalentitys`,
-          labelKey: 'entityName',
-          valueKey: 'id',
-          isRequired: true
+          labelKey: 'entityName', valueKey: 'id',isRequired: true
         },
         {
-          /*公司级别*/
-          type: 'select',
-          label: this.props.intl.formatMessage({id: "company.companyLevelName"}),
-          id: "companyLevelId",
-          options: [],
-          method: 'get',
+          /*省/市/县*/
+          type: 'select', label:"省/市/县", id: "15", options: [], method: 'get',
           getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
-          labelKey: 'description',
-          valueKey: 'id',
-          isRequired: true
+          labelKey: 'description', valueKey: 'id', isRequired: true
         },
         {
-          /*上级机构*/
-          type: 'select',
-          label: this.props.intl.formatMessage({id: "company.parentCompanyName"}),
-          id: "parentCompanyId",
-          options: [],
-          method: 'get',
+          /*开户支行Swift Code*/
+          type: 'input', label:"开户支行Swift Code", id: "1", isRequired: true
+        },
+        {
+          /*银行账户名称*/
+          type: 'input', label:"银行账户名称", id: "2", isRequired: true
+        },
+        {
+          /*银行账户账号*/
+          type: 'input', label:"银行账户账号", id: "3", isRequired: true
+        },
+        {
+          /*账户代码*/
+          type: 'input', label:"账户代码", id: "4", isRequired: true
+        },
+        {
+          /* 币种*/
+          type: 'select', label:"币种", id: "parentCompanyId", options: [], method: 'get',
           getUrl: `${config.baseUrl}/api/company/by/tenant`,
-          labelKey: 'name',
-          valueKey: 'id'
+          labelKey: 'name', valueKey: 'id', isRequired: true
+        },
+        {
+          /* 银行科目*/type: 'select', label:"银行科目", id: "54", options: [], method: 'get',
+          getUrl: `${config.baseUrl}/api/company/by/tenant`,
+          labelKey: 'name', valueKey: 'id'
         },
 
-        {
-          /*有效日期从*/
-          type: 'date',
-          label: this.props.intl.formatMessage({id: "company.startDateActive"}),
-          id: "startDateActive",
-          event: 'startDateActive',
-          isRequired: true,
-        },
-        {
-          /*有效日期至*/
-          type: 'date',
-          label: this.props.intl.formatMessage({id: "company.endDateActive"}),
-          id: "endDateActive",
-          event: 'endDateActive'
-        },
         {/*状态*/
-          type:'switch',
-          label:'状态',
-          id:"enabled",
-          isRequired: true
+          type:'switch', label:'状态', id:"enabled", defaultValue:true, isRequired: true
         }
+        ,
+        {
+          /*备注*/
+          type: 'input', label:"备注", id: "5555",
+        },
 
 
       ],
@@ -107,6 +95,7 @@ class WrappedNewBankAccount extends React.Component {
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
       newCompanyMaintainPage: menuRoute.getRouteItem('new-company-maintain', 'key'),          //公司新建
       companyMaintainDetailPage: menuRoute.getRouteItem('company-maintain-detail', 'key'),    //公司详情
+      bankAccountDetailPage: menuRoute.getRouteItem('bank-account-detail','key'),                   //银行账户详情
 
       loading: false,
       businessTypeOptions: []
@@ -339,12 +328,12 @@ class WrappedNewBankAccount extends React.Component {
 //保存新建公司
   handleSave = (e) => {
     e.preventDefault();
+    let path = this.state.bankAccountDetailPage.url;
+    this.context.router.push(path);
     this.props.form.validateFieldsAndScroll((err, values) => {
 
-      const valuesData = {
+   /*   const valuesData = {
         ...values,
-        "startDateActive": values['startDateActive'] ? values['startDateActive'].format('YYYY-MM-DD') : '',
-        "endDateActive": values['endDateActive'] ? values['endDateActive'].format('YYYY-MM-DD') : '',
       }
       console.log(valuesData);
 
@@ -363,7 +352,7 @@ class WrappedNewBankAccount extends React.Component {
             console.log(e)
           }
         })
-      }
+      }*/
     });
   };
 
@@ -378,21 +367,6 @@ class WrappedNewBankAccount extends React.Component {
           <Form  onSubmit={this.handleSave}>
             <Row gutter={40} type="flex" align="top">
               {this.getFields()}
-            </Row>
-            <Row type="flex" align="top">
-              <Col span={24}>
-                <FormItem {...formItemLayout} label="地址">
-                  {getFieldDecorator('address', {
-                    rules: [{
-                      required: true,
-                      message: '请输入',
-                    }],
-
-                  })(
-                    <Input  />
-                  )}
-                </FormItem>
-              </Col>
             </Row>
             <Row type="flex" align="top">
               <Col span={8}>
@@ -416,7 +390,7 @@ function mapStateToProps(state) {
   }
 }
 
-WrappedNewBankAccout.contextTypes = {
+WrappedNewBankAccount.contextTypes = {
   router: React.PropTypes.object
 };
 

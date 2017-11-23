@@ -142,7 +142,7 @@ class NewContractType extends React.Component{
               }],
               initialValue: defaultValue.setOfBooksId || defaultSetOfBooks
             })(
-              <Select>
+              <Select disabled={defaultValue.id ? true : false}>
                 {setOfBooks.map((option)=>{
                   return <Option key={option.setOfBooksId}>{option.setOfBooksCode}</Option>
                 })}
@@ -172,7 +172,7 @@ class NewContractType extends React.Component{
               }],
               initialValue: defaultValue.contractTypeCode
             })(
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" disabled={defaultValue.id ? true : false}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="合同类型名称">
