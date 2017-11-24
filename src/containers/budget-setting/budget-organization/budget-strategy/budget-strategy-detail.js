@@ -35,7 +35,7 @@ class BudgetStrategyDetail extends React.Component {
           render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
         {title: "消息", dataIndex: "messageCode", key: "messageCode",
           render: (message, record) => (record.controlMethod.value === 'NO_MESSAGE' ? <span>-</span> :
-            <Popover placement="topLeft" content={message.label}>{message ? message.label : '-'}</Popover> )},
+            <Popover placement="topLeft" content={message ? message.label : '-'}>{message ? message.label : '-'}</Popover> )},
         {title: "事件", dataIndex: "expWfEvent", key: "expWfEvent",
           render: event => <span>{event ? event : '-'}</span>}
       ],
@@ -63,9 +63,9 @@ class BudgetStrategyDetail extends React.Component {
   }
 
   getBasicInfo() {
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId || this.props.params.strategyId}`).then((response) => {
-      if(response.status === 200) {
-        this.setState({ infoData: response.data })
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/${this.props.strategyId || this.props.params.strategyId}`).then((res) => {
+      if(res.status === 200) {
+        this.setState({ infoData: res.data })
       }
     }).catch((e) => {
 
@@ -76,16 +76,18 @@ class BudgetStrategyDetail extends React.Component {
     let url = `${config.budgetUrl}/api/budget/control/strategy/details/query?size=${this.state.pageSize}&page=${this.state.page}&controlStrategyId=${this.props.strategyId || this.props.params.strategyId}&organizationId=${this.props.params.id}`;
     url += this.state.keyWords ? `&keyWords=${this.state.keyWords}` : '';
     this.setState({ loading: true });
-    httpFetch.get(url).then((response) => {
-      this.setState({
-        data: response.data,
-        loading: false,
-        pagination: {
-          total: Number(response.headers['x-total-count']),
-          onChange: this.onChangePager,
-          pageSize: this.state.pageSize
-        }
-      })
+    httpFetch.get(url).then((res) => {
+      if (res.status === 200) {
+        this.setState({
+          data: res.data,
+          loading: false,
+          pagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            onChange: this.onChangePager,
+            current: this.state.page + 1
+          }
+        })
+      }
     }).catch((e) => {
 
     })
@@ -128,8 +130,8 @@ class BudgetStrategyDetail extends React.Component {
     params.versionNumber = this.state.infoData.versionNumber;
     if(!params.controlStrategyCode || !params.controlStrategyName) return;
     this.setState({ baseInfoLoading: true }, () => {
-      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((response) => {
-        if(response.status === 200) {
+      httpFetch.put(`${config.budgetUrl}/api/budget/control/strategies`, params).then((res) => {
+        if(res.status === 200) {
           message.success('保存成功');
           this.getBasicInfo();
           this.setState({ updateState: true, baseInfoLoading: false },() => {
@@ -138,8 +140,8 @@ class BudgetStrategyDetail extends React.Component {
         }
       }).catch((e) => {
         this.setState({ updateState: false, baseInfoLoading: false });
-        if(e.response){
-          message.error(`保存失败, ${e.response.data.validationErrors[0] ? e.response.data.validationErrors[0].message : e.response.data.message}`);
+        if(e.res){
+          message.error(`保存失败, ${e.res.data.validationErrors[0] ? e.res.data.validationErrors[0].message : e.res.data.message}`);
         }
       })
     });

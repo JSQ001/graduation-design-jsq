@@ -23,11 +23,10 @@ class UploadFile extends React.Component{
   }
 
   handleData = (file) => {
-    let data = {
+    return {
       file,
       attachmentType: this.props.attachmentType
     };
-    return data;
   };
 
   beforeUpload = (file) => {
@@ -104,7 +103,7 @@ UploadFile.propTypes = {
 UploadFile.defaultProps={
   extensionName: '.rar .zip .doc .docx .pdf .jpg...',
   fileNum: 0,
-  uploadHandle:()=>{}
+  uploadHandle: () => {}
 };
 
 const WrappedUploadFile= Form.create()(injectIntl(UploadFile));
