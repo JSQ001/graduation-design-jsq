@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Tabs, Button, Row, Col, Affix, Spin, Breadcrumb, Table } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import SlideFrame from 'components/slide-frame'
@@ -86,7 +86,22 @@ class ContractDetailCommon extends React.Component {
       </Spin>
     );
     let contractHistory = (
-      <div>合同历史</div>
+      <div>
+        <Timeline>
+          <Timeline.Item color="grey">Create a services site 2015-09-01</Timeline.Item>
+          <Timeline.Item color="green">Create a services site 2015-09-01</Timeline.Item>
+          <Timeline.Item color="red">
+            <p>Solve initial network problems 1</p>
+            <p>Solve initial network problems 2</p>
+            <p>Solve initial network problems 3 2015-09-01</p>
+          </Timeline.Item>
+          <Timeline.Item>
+            <p>Technical testing 1</p>
+            <p>Technical testing 2</p>
+            <p>Technical testing 3 2015-09-01</p>
+          </Timeline.Item>
+        </Timeline>
+      </div>
     );
     let subContent = {};
     subContent.DETAIL = (
@@ -125,7 +140,7 @@ class ContractDetailCommon extends React.Component {
         <h3 className="sub-header-title">付款计划</h3>
         <div className="table-header">
           <div className="table-header-buttons">
-            <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>
+            {this.props.contractEdit && <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>}
           </div>
           <Breadcrumb style={{marginBottom:'10px'}}>
             <Breadcrumb.Item>{`共 ${pagination.total || 0} 条数据`}</Breadcrumb.Item>
