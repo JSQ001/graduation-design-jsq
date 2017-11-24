@@ -71,7 +71,6 @@ class BudgetControlRules extends React.Component {
           key: "effectiveDate",
           dataIndex: 'effectiveDate',
           render: (recode, record) => {
-            console.log(record)
             let endDate = record.endDate === null ? "" : record.endDate.substring(0,10);
             return record.startDate.substring(0,10)+" ~ "+endDate
           }
@@ -103,14 +102,12 @@ class BudgetControlRules extends React.Component {
   //获取控制规则数据
   getList(){
     let params = this.state.searchParams;
-    console.log(params)
     let url = `${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
     httpFetch.get(url).then((response)=>{
       if(response.status === 200){
-        console.log(response);
         response.data.map((item)=>{
           item.key = item.id;
           let control = {

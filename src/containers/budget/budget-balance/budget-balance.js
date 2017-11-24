@@ -298,18 +298,18 @@ class BudgetBalance extends React.Component {
     let { params, queryLineListParamOptions, paramTypeMap } = this.state;
     let type = typeParam ? typeParam : params[index].type;
     if(type !== ''){
-      if(!queryLineListParamOptions[type] || queryLineListParamOptions[type].length === 0 ){
-        if(type === 'BGT_RULE_PARAMETER_DIM'){
-          let structureId = this.state.structureId;
-          structureId && httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/queryAll?structureId=${structureId}`).then(res => {
-            let options = [];
-            res.data.map(data => {
-              options.push({label: data.dimensionName, value: data.dimensionId})
-            });
-            queryLineListParamOptions[type] = options;
-            this.setState({ queryLineListParamOptions });
-          })
-        } else {
+      if(type === 'BGT_RULE_PARAMETER_DIM'){
+        let structureId = this.state.structureId;
+        structureId && httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/queryAll?structureId=${structureId}`).then(res => {
+          let options = [];
+          res.data.map(data => {
+            options.push({label: data.dimensionName, value: data.dimensionId})
+          });
+          queryLineListParamOptions[type] = options;
+          this.setState({ queryLineListParamOptions });
+        })
+      } else {
+        if(!queryLineListParamOptions[type] || queryLineListParamOptions[type].length === 0 ){
           this.getSystemValueList(paramTypeMap[type]).then(res => {
             let options = [];
             res.data.values.map(data => {
