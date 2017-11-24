@@ -142,35 +142,6 @@ class BudgetControlRulesDetail extends React.Component{
     })
   }
 
-  //保存编辑后的预算规则
-  handleSave = (e) =>{
-    e.preventDefault();
-    this.setState({
-      buttonLoading: true
-    });
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        values.organizationId = this.props.params.id[0];
-        this.state.strategyGroup.map((item)=>{
-          if(item.key === values.controlStrategy){
-            values.strategyGroupId = item.id;
-            return
-          }
-        });
-        httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
-          if(response.status === 200) {
-            this.setState({
-              buttonLoading: false,
-              edit: false,
-            })
-          }
-        }).catch((e)=>{
-          console.log(e)
-        })
-      }
-    })
-  };
-
   handleChange = (e)=>{
     console.log(123)
     this.setState({
@@ -216,9 +187,16 @@ class BudgetControlRulesDetail extends React.Component{
     },this.getList())
   };
 
+  //保存编辑后的预算规则
   handleUpdate = (values)=>{
-    console.log(values)
+
     console.log(values.startDate.utc())
+    let startTime = new Date(values.startDate);
+    let endTime = new Date(values.endDate);
+    startTime.setHours(startTime.getHours()+8);
+    endTime.setHours(endTime.getHours()+8);
+    values.startDate = startTime;
+    values.endDate = endTime;
     values.organizationId = this.props.params.id;
     values.id = this.props.params.ruleId;
     values.versionNumber = this.state.controlRule.versionNumber;
@@ -231,13 +209,13 @@ class BudgetControlRulesDetail extends React.Component{
         values.strategyGroupId = item.id;
       }
     });
+
+
+    console.log(values)
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
       if(response) {
         console.log(response)
-        let startDate = moment(response.data.startDate.utc);
-        console.log(startDate)
-
-        let endDate = response.data.endDate === null ? null : response.data.endDate.substring(0,10);
+        let endDate = response.data.endDate === null ? "" : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
         response.data.strategyGroupName = {label:values.strategyGroupName,value:values.strategyGroupName,key:values.strategyGroupId}
         console.log(response.data.startDate+8)
@@ -250,7 +228,7 @@ class BudgetControlRulesDetail extends React.Component{
       }
     }).catch((e)=>{
       if(e.response){
-        message.error(`修改失败, ${e.response.data.errorCode}`);
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})}, ${e.response.data.message}`);
       }
       this.setState({loading: false});
     })

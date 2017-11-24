@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, Switch, Button, Icon, Checkbox, message, Select, InputNumber } from 'antd'
+import { Form, Input, Switch, Button, Icon, Checkbox, message, Select, InputNumber, Row, Col } from 'antd'
 
 import Chooser from 'components/chooser.js'
 import httpFetch from 'share/httpFetch'
@@ -24,7 +24,7 @@ class NewDimension extends React.Component{
       loading: false,
       selectorItem:{
         title: '选择默认维值',
-        url: `${config.baseUrl}api/my/cost/center/items/by/costcenterid`,
+        url: `${config.baseUrl}/api/my/cost/center/items/by/costcenterid`,
         searchForm: [
           {type: 'input', id: 'code', label: '维值代码'},
           {type: 'input', id: 'name', label: '维值名称'},
@@ -39,15 +39,15 @@ class NewDimension extends React.Component{
   }
 
   componentWillMount(){
-    console.log(this.props)
     let dimension = this.props.params;
     let extraParams = this.state.extraParams;
     if(typeof dimension.id !== 'undefined'){
-      extraParams = {id: dimension.dimensionId}
+      extraParams = {costCenterId: dimension.dimensionId}
     }
-
     this.setState({
       dimension,
+      extraParams,
+      defaultDimension: dimension.defaultDimensionValue
     });
     //获取布局位置的值列表
     this.getSystemValueList(2003).then((response)=>{
@@ -60,13 +60,25 @@ class NewDimension extends React.Component{
         layoutPosition.push(option);
       });
       this.setState({
-        layoutPosition: layoutPosition
+        layoutPosition: layoutPosition,
+
       })
     });
 
   }
   componentWillReceiveProps(nextprops){
-    console.log(nextprops)
+    if(nextprops.params.versionNumber !== this.state.dimension){
+      let dimension = this.props.params;
+      let extraParams = this.state.extraParams;
+      if(typeof dimension.id !== 'undefined'){
+        extraParams = {costCenterId: dimension.dimensionId}
+      }
+      this.setState({
+        dimension,
+        extraParams,
+        defaultDimension: dimension.defaultDimensionValue
+      });
+    }
   }
 
   handleSave = (e) =>{
@@ -74,16 +86,19 @@ class NewDimension extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
-          console.log(res);
+        values.id = this.state.dimension.id;
+        values.dimensionId = values.dimensionCode[0].id;
+        values.defaultDimValueId = values.defaultDimensionCode[0].id;
+        values.versionNumber = this.state.dimension.versionNumber;
+        httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
-            message.success('操作成功');
+            message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -102,7 +117,7 @@ class NewDimension extends React.Component{
   };
 
   handleFocus = () => {
-    console.log(1)
+
     //this.refs.blur.focus();
     this.showList(true)
   };
@@ -119,7 +134,6 @@ class NewDimension extends React.Component{
    */
   handleListOk = (result) => {
     let formItem = {};
-    console.log(result)
     let values = [];
     result.result.map(item => {
       values.push({
@@ -130,10 +144,17 @@ class NewDimension extends React.Component{
     });
     let value = {};
     value[formItem.id] = values;
-    console.log(this.props.form)
     this.props.form.setFieldsValue(value);
     this.setState({ showListSelector: false });
     formItem.handle && formItem.handle();
+  };
+
+
+  handleDimensionValue = (value)=>{
+    this.props.form.setFieldsValue({"defaultDimValueName":value[0].name});
+    this.setState({
+      defaultDimension:value
+    })
   };
 
   render(){
@@ -148,96 +169,122 @@ class NewDimension extends React.Component{
     return (
       <div className="new-budget-scenarios">
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout}
-                    label="状态:">
-            {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
-              initialValue: dimension.isEnabled
-            })(
-              <div>
-                <Switch defaultChecked={dimension.isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? '启用' : '禁用' }</span>
-              </div>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="维度代码:">
-            {getFieldDecorator('dimensionCode', {
-              initialValue: dimension.defaultDimensionCode,
-              rules: [
-                {
-                  required: true, message: formatMessage({id:"common.please.select"})
-                }
-              ],
-            })(
-              <Chooser
-                placeholder={ formatMessage({id:"common.please.enter"}) }
-                type={"select_dimension"}
-                single={true}
-                labelKey="code"
-                valueKey="code"
-                onChange={this.handleDimensionCode}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="维度名称:" >
-            {getFieldDecorator('dimensionName', {
-              initialValue: dimension.dimensionName
-            })(
-              <Input disabled/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="布局位置:">
-            {getFieldDecorator('layoutPosition', {
-              initialValue: dimension.layoutPosition,
-              rules: [{
-                required: true, message: formatMessage({id:"common.please.select"})
-              }],
-            })(
-              <Select placeholder={formatMessage({id:"common.please.enter"})}>
-                {options}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="布局顺序:">
-            {getFieldDecorator('layoutPriority', {
-              initialValue: dimension.layoutPriority,
-              rules: [
-                {
-                  required: true, message: formatMessage({id:"common.please.enter"})
-                },{
-                validator:(item,value,callback)=>{
-                  callback()
-                }
-              }],
-            })(
-              <InputNumber placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="默认维值代码:">
-            {getFieldDecorator('defaultDimensionCode', {
-              initialValue:typeof this.props.form.getFieldValue("dimensionCode") === 'undefined' ? 1 : 2 //dimension.defaultDimensionValue
-            })(
-              <Chooser
-                placeholder={formatMessage({id:"common.please.select"})}
-                type={"select_dimensionValue"}
-                single={true}
-                labelKey="code"
-                valueKey="code"
-                selectorItem={selectorItem}
-                listExtraParams={extraParams}
-                value={dimension.defaultDimensionValue}
-                onChange={this.handleDimensionValue}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="默认维值名称:" >
-            {getFieldDecorator('dimensionName', {
-              initialValue: dimension.dimensionCode
-            })(
-              <Input disabled/>
-            )}
-          </FormItem>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"common.column.status"})} colon={true}>
+                {getFieldDecorator('isEnabled', {
+                  valuePropName:"defaultChecked",
+                  initialValue: dimension.isEnabled
+                })(
+                  <div>
+                    <Switch defaultChecked={dimension.isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.status.disable"}) }</span>
+                  </div>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+             <FormItem {...formItemLayout} label={formatMessage({id:"structure.dimensionCode"})} colon={true}>
+                {getFieldDecorator('dimensionCode', {
+                  initialValue: dimension.defaultDimensionCode,
+                  rules: [
+                    {
+                      required: true, message: formatMessage({id:"common.please.select"})
+                    }
+                  ],
+                })(
+                  <Chooser
+                    placeholder={ formatMessage({id:"common.please.enter"}) }
+                    type={"select_dimension"}
+                    single={true}
+                    labelKey="code"
+                    valueKey="code"
+                    onChange={this.handleDimensionCode}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"structure.dimensionName"})} colon={true}>
+                {getFieldDecorator('dimensionName', {
+                  initialValue: dimension.dimensionName
+                })(
+                  <Input disabled/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"structure.layoutPosition"})} colon={true}>
+                {getFieldDecorator('layoutPosition', {
+                  initialValue: dimension.layoutPosition,
+                  rules: [{
+                    required: true, message: formatMessage({id:"common.please.select"})
+                  }],
+                })(
+                  <Select disabled placeholder={formatMessage({id:"common.please.enter"})}>
+                    {options}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"structure.layoutPriority"})} colon={true}>
+                {getFieldDecorator('layoutPriority', {
+                  initialValue: dimension.layoutPriority,
+                  rules: [
+                    {
+                      required: true, message: formatMessage({id:"common.please.enter"})
+                    },{
+                    validator:(item,value,callback)=>{
+                      callback()
+                    }
+                  }],
+                })(
+                  <InputNumber placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"structure.defaultDimValueCode"})} colon={true}>
+                {getFieldDecorator('defaultDimensionCode', {
+                  initialValue: dimension.defaultDimensionValue
+                })(
+                  <Chooser
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type={"select_dimensionValue"}
+                    single={true}
+                    labelKey="code"
+                    valueKey="code"
+                    selectorItem={selectorItem}
+                    listExtraParams={extraParams}
+                    onChange={this.handleDimensionValue}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:"structure.defaultDimValueName"})} colon={true}>
+                {getFieldDecorator('defaultDimValueName', {
+                  initialValue: dimension.defaultDimValueName
+                })(
+                  <Input disabled/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={this.state.loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
+            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{formatMessage({id:"common.save"})}</Button>
+            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
           </div>
         </Form>
       </div>

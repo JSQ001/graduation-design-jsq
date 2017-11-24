@@ -109,7 +109,7 @@ class NewCompanyGroup extends React.Component{
                 }
               </FormItem>
               <div className="company-group-tips">
-                注：部门组代码保存后将不可修改
+                注：公司组代码保存后将不可修改
               </div>
             </Col>
             <Col span={8}>
@@ -124,9 +124,6 @@ class NewCompanyGroup extends React.Component{
                   <Input placeholder={formatMessage({id:"common.please.enter"})}/>)
                 }
               </FormItem>
-              <div className="company-group-tips">
-                注：部门组描述保存后将不可修改
-              </div>
             </Col>
             <Col span={8}>
               <FormItem

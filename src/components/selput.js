@@ -59,7 +59,7 @@ class Selput extends React.Component {
           value={value}
           placeholder={placeholder}
           disabled={disabled}
-          addonAfter={<Icon type="ellipsis" style={{cursor: 'pointer'}} onClick={() => {this.setState({ showListSelector: true })}}/>}
+          addonAfter={<Icon type="ellipsis" style={{cursor: 'pointer'}} onClick={() => {this.setState({ showListSelector: !disabled})}}/>}
         />
         <ListSelector visible={showListSelector}
                       type={type}
@@ -81,7 +81,7 @@ Selput.propTypes = {
   valueKey: React.PropTypes.string,  //所需要的变量名
   listExtraParams: React.PropTypes.object,  //listSelector的额外参数
   onChange: React.PropTypes.func,  //进行选择后的回调
-  value: React.PropTypes.string  //显示的值
+  value: React.PropTypes.string,  //显示的值
 };
 
 Selput.defaultProps = {
