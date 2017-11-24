@@ -51,7 +51,7 @@ class Selput extends React.Component {
 
   render() {
     const { showListSelector, value } = this.state;
-    const { placeholder, disabled, selectorItem, type, listExtraParams, selectedData } = this.props;
+    const { placeholder, disabled, selectorItem, type, listExtraParams } = this.props;
     return (
       <div className="selput">
         <Input
@@ -67,7 +67,6 @@ class Selput extends React.Component {
                       onOk={this.handleListOk}
                       extraParams={listExtraParams}
                       selectorItem={selectorItem}
-                      selectedData={selectedData}
                       single={true}/>
       </div>
     );

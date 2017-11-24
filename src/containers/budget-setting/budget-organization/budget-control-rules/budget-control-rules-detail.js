@@ -195,7 +195,6 @@ class BudgetControlRulesDetail extends React.Component{
     let endTime = new Date(values.endDate);
     startTime.setHours(startTime.getHours()+8);
     endTime.setHours(endTime.getHours()+8);
-
     values.startDate = startTime;
     values.endDate = endTime;
     values.organizationId = this.props.params.id;
