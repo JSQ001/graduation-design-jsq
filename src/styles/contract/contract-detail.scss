@@ -1,53 +1,75 @@
 .contract-detail {
-  .top-info {
-    background: white;
-    padding: 20px 20px 0 20px;
-    margin: -40px -20px 0 -20px;
-    .header-title .ant-btn {
-      float: right;
+  .contract-detail-common {
+    .top-info {
+      background: white;
+      padding: 20px 20px 0 20px;
+      margin: -40px -20px 0 -20px;
+      .header-title .ant-btn {
+        float: right;
+      }
+      .amount-title, .status-title {
+        font-size: 14px;
+        text-align: right;
+      }
+      .amount-content, .status-content {
+        font-size: 24px;
+        color: #333;
+      }
     }
-    .amount-title, .status-title {
+    .detail-tabs {
+      margin: 0 -20px -20px;
+      .ant-tabs-bar {
+        background: #fff;
+        border-bottom: 1px solid #fff;
+        padding-top: 20px;
+      }
+      .ant-tabs-tabpane .tab-container {
+        width: calc(100% - 40px) !important;
+        margin: 5px 20px 100px;
+        background: #fff;
+        box-shadow: 0 0 5px 1px #cecece;
+        padding: 20px;
+        .sub-header-title {
+          font-size: 18px;
+          border-bottom: 1px solid #ececec;
+          margin: -20px -20px 20px;
+          padding: 10px 20px;
+          .edit {
+            font-size: 15px;
+            margin-left: 15px;
+          }
+        }
+      }
+    }
+    .list-info {
       font-size: 14px;
-      text-align: right;
-    }
-    .amount-content, .status-content {
-      font-size: 24px;
       color: #333;
+      margin-bottom: 8px;
+      .title {
+        display: inline-block;
+        min-width: 70px;
+      }
+      .content {
+        color: #666;
+      }
     }
-  }
-  .detail-tabs {
-    margin: 0 -20px -20px;
-    .ant-tabs-bar {
-      background: #fff;
-      border-bottom: 1px solid #fff;
-      padding-top: 20px;
-    }
-    .ant-tabs-tabpane .tab-container {
-      width: calc(100% - 40px) !important;
-      margin: 5px 20px 70px;
-      background: #fff;
-      box-shadow: 0 0 5px 1px #cecece;
-      padding: 20px;
-      .sub-header-title {
-        font-size: 18px;
-        border-bottom: 1px solid #ececec;
-        margin: -20px -20px 20px;
-        padding: 10px 20px;
+    .new-pay-plan {
+      margin-top: 30px;
+      .label-style {
+        color: rgba(0, 0, 0, 0.85);
+        &:before {
+          display: inline-block;
+          margin-right: 4px;
+          content: "*";
+          font-family: SimSun;
+          line-height: 1;
+          font-size: 12px;
+          color: #f04134;
+        }
       }
     }
   }
-  .list-info {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 8px;
-    .title {
-      display: inline-block;
-      min-width: 70px;
-    }
-    .content {
-      color: #666;
-    }
-  }
+
   .bottom-bar {
     width: 100%;
     height: 50px;
@@ -60,21 +82,5 @@
   }
   .margin-20-0 {
     margin: 20px 0;
-  }
-
-  .new-pay-plan {
-    margin-top: 30px;
-    .label-style {
-      color: rgba(0, 0, 0, 0.85);
-      &:before {
-        display: inline-block;
-        margin-right: 4px;
-        content: "*";
-        font-family: SimSun;
-        line-height: 1;
-        font-size: 12px;
-        color: #f04134;
-      }
-    }
   }
 }
