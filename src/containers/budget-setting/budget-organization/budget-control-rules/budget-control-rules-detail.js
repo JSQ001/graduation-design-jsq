@@ -84,8 +84,6 @@ class BudgetControlRulesDetail extends React.Component{
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
-            <span className="ant-divider" />
             <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
               <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
             </Popconfirm>
@@ -93,10 +91,6 @@ class BudgetControlRulesDetail extends React.Component{
       ]
     }
   }
-  editItem = (e, record) =>{
-    console.log(record)
-
-  };
 
   deleteItem = (e, record) => {
     httpFetch.delete(`${config.budgetUrl}/api/budget/control/rule/details/${record.id}`).then(response => {
@@ -111,19 +105,15 @@ class BudgetControlRulesDetail extends React.Component{
     //根据路径上的预算规则id查出完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/${this.props.params.ruleId}`).then((response)=>{
       if(response.status === 200){
-        console.log(response.data.startDate.substring(0,10))
         let endDate = response.data.endDate === null ? "" : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
         response.data.strategyGroupName = {label:response.data.strategyGroupName,value:response.data.strategyGroupName,key:response.data.strategyGroupId}
-        console.log(response.data)
         this.setState({
           controlRule: response.data,
           createParams: response.data
         })
 
       }
-    }).catch((e)=>{
-      //console.log(e)
     });
     //加载页面时，获取启用的控制策略
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
@@ -143,7 +133,6 @@ class BudgetControlRulesDetail extends React.Component{
   }
 
   handleChange = (e)=>{
-    console.log(123)
     this.setState({
       buttonLoading: false,
     })
@@ -164,7 +153,6 @@ class BudgetControlRulesDetail extends React.Component{
   };
 
   handleEdit = (record) =>{
-    console.log(record)
     this.setState({
       ruleDetail: record,
       showSlideFrameUpdate: true
@@ -189,8 +177,6 @@ class BudgetControlRulesDetail extends React.Component{
 
   //保存编辑后的预算规则
   handleUpdate = (values)=>{
-
-    console.log(values.startDate.utc())
     let startTime = new Date(values.startDate);
     let endTime = new Date(values.endDate);
     startTime.setHours(startTime.getHours()+8);
@@ -209,17 +195,11 @@ class BudgetControlRulesDetail extends React.Component{
         values.strategyGroupId = item.id;
       }
     });
-
-
-    console.log(values)
     httpFetch.put(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
       if(response) {
-        console.log(response)
         let endDate = response.data.endDate === null ? "" : response.data.endDate.substring(0,10);
         response.data.effectiveDate = response.data.startDate.substring(0,10) + " ~ " +endDate;
         response.data.strategyGroupName = {label:values.strategyGroupName,value:values.strategyGroupName,key:values.strategyGroupId}
-        console.log(response.data.startDate+8)
-        console.log(moment(response.data.endDate))
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           controlRule: response.data,
@@ -237,7 +217,6 @@ class BudgetControlRulesDetail extends React.Component{
   //获取规则明细
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}`).then((response)=>{
-      console.log(response)
       if(response.status === 200){
         response.data.map((item)=>{
           item.key = item.id
@@ -250,8 +229,6 @@ class BudgetControlRulesDetail extends React.Component{
           pagination
         })
       }
-    }).catch((e)=>{
-      //console.log(e)
     })
   }
 
