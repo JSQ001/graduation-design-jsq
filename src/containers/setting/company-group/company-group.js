@@ -21,7 +21,7 @@ class CompanyGroup extends React.Component {
       loading: true,
       data: [],
       searchParams: {
-        setOfBooks: "",
+        setOfBook: "",
         companyGroupCode: "",
         companyGroupName: ""
       },
@@ -54,7 +54,7 @@ class CompanyGroup extends React.Component {
           title: formatMessage({id:"common.column.status"}),
           key: 'status',
           width: '10%',
-          dataIndex: 'isEnabled',
+          dataIndex: 'enabled',
           render: enabled => (
             <Badge status={enabled ? 'success' : 'error'}
                    text={enabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
@@ -62,8 +62,6 @@ class CompanyGroup extends React.Component {
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
-            <span className="ant-divider" />
             <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
               <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
             </Popconfirm>
@@ -71,12 +69,6 @@ class CompanyGroup extends React.Component {
       ],
     }
   }
-
-
-  editItem = (e, record) =>{
-    console.log(record)
-
-  };
 
   deleteItem = (e, record) => {
     this.setState({loading: true});
@@ -95,10 +87,7 @@ class CompanyGroup extends React.Component {
   //获取公司组数据
   getList(){
     let params = this.state.searchParams;
-    let url = `${config.baseUrl}/api/company/group/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
-    }
+    let url = `${config.baseUrl}/api/company/group/query/dto?companyGroupCode=${params.companyGroupCode}&companyGroupName=${params.companyGroupName}&setOfBooksId=${params.setOfBook}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     httpFetch.get(url).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
@@ -114,14 +103,20 @@ class CompanyGroup extends React.Component {
   };
 
   handleSearch = (values) =>{
-    let searchParams = {
-      structureName: values.structureName,
-      structureCode: values.structureCode
-    };
+    let searchParams = {};
+    console.log(values)
+    for(let key in values){
+      if(typeof values[key]!== 'undefined'){
+        console.log(key)
+        searchParams[key] = values[key]
+      }else {
+        searchParams[key] = ""
+      }
+    }
+    console.log(searchParams)
     this.setState({
-      searchParams:searchParams,
+      searchParams,
       loading: true,
-      page: 1
     }, ()=>{
       this.getList();
     })
@@ -182,7 +177,7 @@ class CompanyGroup extends React.Component {
 
 CompanyGroup.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {
