@@ -214,8 +214,6 @@ class NewBudgetRulesDetail extends React.Component{
           if(e.response){
             message.error(`${this.props.intl.formatMessage({id:"common.save.failed"})}, ${e.response.data.validationErrors[0].message}`);
             this.setState({loading: false});
-          } else {
-            console.log(e)
           }
         })
       }
