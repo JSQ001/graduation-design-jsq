@@ -31,7 +31,7 @@ const newDepartmentGroup = {
 //部门组详情
 const departmentGroupDetail = {
   key: 'department-group-detail',
-  url: '/main/setting/department-group/department-group-detail:id',
+  url: '/main/setting/department-group/department-group-detail/:id',
   components: DepartmentGroupDetail,
   parent: 'department-group'
 };

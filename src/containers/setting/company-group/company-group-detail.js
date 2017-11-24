@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import { Form, Button, Select, Checkbox, Input, Switch, Icon, Badge, Tabs, Table, message  } from 'antd'
+import { Form, Button, Select, Popover, Input, Switch, Icon, Popconfirm , Tabs, Table, message  } from 'antd'
 
 import ListSelector from 'components/list-selector.js'
 import BasicInfo from 'components/basic-info'
@@ -24,6 +24,7 @@ class CompanyGroupDetail extends React.Component{
     this.state = {
       loading: true,
       buttonLoading: false,
+      batchCompany: true,
       companyListSelector: false,  //控制公司选则弹框
       companyGroup:{},
       data: [],
@@ -50,18 +51,42 @@ class CompanyGroupDetail extends React.Component{
           getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksName', valueKey: 'id', getParams: {roleType: 'TENANT'}},
         {type: 'switch', id: 'enabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
-
       columns: [
         {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
-        {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
-        {                        /*启用*/
-          title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
-          render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
+        {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName',/*公司明称*/
+          render: record => (
+            <span>{record ? <Popover content={record}>{record} </Popover> : '-'} </span>)
         },
+        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType', /*公司类型*/
+          render: record => (
+            <span>{record ? <Popover content={record}>{record} </Popover> : '-'} </span>)},
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+          <span>
+            <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+              <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
+            </Popconfirm>
+          </span>)},  //操作
       ],
     }
   }
+
+  deleteItem = (e,record) =>{
+    this.setState({loading: true});
+    console.log(record)
+    let param = [];
+    typeof record === 'undefined' ? param = this.state.selectedEntityOIDs : param.push(record.id);
+    httpFetch.delete(`${config.baseUrl}/api/company/group/assign/batch`,param).then(response => {
+      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name:typeof record === 'undefined' ? "" : record.companyName})); // name删除成功
+      this.setState({
+        selectedRowKeys:[],
+        selectedEntityOIDs:[]
+      },this.getList());
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+      }
+    })
+  };
 
   componentWillMount(){
     //根据路径上的id,查出该条完整数据
@@ -78,20 +103,13 @@ class CompanyGroupDetail extends React.Component{
 
   //保存所做的详情修改
   handleUpdate = (value) => {
-    value.organizationId = this.state.budgetItem.organizationId;
-    value.id = this.state.budgetItem.id;
-    value.versionNumber = this.state.budgetItem.versionNumber;
-    console.log(this.state.budgetItem)
-    httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
+    value.id = this.props.params.id;
+    httpFetch.put(`${config.baseUrl}/api/company/group`,value).then((response)=>{
       if(response) {
-        console.log(response)
-        response.data.organizationName = this.state.budgetItem.organizationName;
-        console.log(value)
-        response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
-        response.data.variationAttribute = {label:response.data.variationAttribute,value:response.data.variationAttribute};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
+        response.data.setOfBook = {label: "假账套", value: response.data.setOfBooksId};
         this.setState({
-          budgetItem: response.data,
+          companyGroup: response.data,
           edit: true
         })
       }
@@ -102,6 +120,9 @@ class CompanyGroupDetail extends React.Component{
   getList(){
     httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/dto?companyGroupId=${this.props.params.id}`).then((response)=>{
       console.log(response)
+      response.data.map((item)=>{
+        item.key = item.id
+      });
       if(response.status === 200){
         this.setState({
           loading: false,
@@ -195,20 +216,32 @@ class CompanyGroupDetail extends React.Component{
 
   //处理公司弹框点击ok,添加公司
   handleListOk = (result) => {
-    let company = [];
-    console.log(result.result)
-    this.showListSelector(false)
+    let lov = this.state.lov;
+    let param = [];
+    console.log(result)
+    result.result.map((item)=>{
+      param.push({companyGroupId: this.props.params.id, companyId: item.id})
+    });
+    httpFetch.post(`${config.baseUrl}/api/company/group/assign/batch`,param).then((response)=>{
+      if(response.status === 200){
+        lov.visible = false;
+        this.setState({
+          loading: true,
+          lov
+        },this.getList())
+      }
+    });
   };
 
   render(){
-    const { edit, lov, pagination, companyGroup, columns, data, infoList, selectedRowKeys} = this.state;
+    const { edit, lov, pagination, companyGroup, columns, data, infoList, selectedRowKeys, batchCompany} = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
       onSelect: this.onSelectRow,
       onSelectAll: this.onSelectAllRow
     };
-    console.log(companyGroup)
+
     return(
       <div className="budget-item-detail">
         <BasicInfo
@@ -220,7 +253,7 @@ class CompanyGroupDetail extends React.Component{
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
-            <Button disabled onClick={()=>this.showListSelector(false)}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            <Button disabled={batchCompany} onClick={this.deleteItem}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
           </div>
         </div>
         <Table
@@ -236,8 +269,7 @@ class CompanyGroupDetail extends React.Component{
           type={lov.type}
           onCancel={()=>this.showListSelector(false)}
           onOk={this.handleListOk}
-         // selectedData={lov.listSelectedData}
-          extraParams={{"companyGroupId": companyGroup.id, "setOfBooksId": companyGroup.setOfBooksId}}/>
+          extraParams={{ "companyGroupId": companyGroup.id,"setOfBooksId": companyGroup.setOfBooksId}}/>
       </div>)
   }
 }

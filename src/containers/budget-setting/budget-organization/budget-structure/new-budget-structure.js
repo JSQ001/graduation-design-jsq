@@ -74,7 +74,7 @@ class NewBudgetStructure extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })

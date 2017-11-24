@@ -129,7 +129,7 @@ class BudgetItemDetail extends React.Component{
   handleListOk = (result) => {
     let companyIds = [];
     let resourceIds = [];
-    resourceIds.push(parseInt(this.props.params.itemId));
+    resourceIds.push(this.props.params.itemId);
     result.result.map((item)=>{
       companyIds.push(item.id)
     });

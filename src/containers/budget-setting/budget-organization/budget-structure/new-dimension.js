@@ -16,6 +16,7 @@ const Option = Select.Option;
 class NewDimension extends React.Component{
   constructor(props) {
     super(props);
+    const { formatMessage} = this.props.intl;
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
@@ -26,15 +27,15 @@ class NewDimension extends React.Component{
       defaultDimension: [],
       dimensionValue:{},
       selectorItem:{
-        title: '选择默认维值',
+        title: formatMessage({id:"structure.selectDefaultDim"}),
         url: `${config.baseUrl}/api/cost/center/item/`,
         searchForm: [
-          {type: 'input', id: 'code', label: '维值代码'},
-          {type: 'input', id: 'name', label: '维值名称'},
+          {type: 'input', id: 'code', label: formatMessage({id:"structure.dimensionValueCode"})},
+          {type: 'input', id: 'name', label: formatMessage({id:"structure.dimensionValueName"})},
         ],
         columns: [
-          {title: '维值代码', dataIndex: 'code', width: '25%'},
-          {title: '维值名称', dataIndex: 'name', width: '25%'},
+          {title: formatMessage({id:"structure.dimensionValueCode"}), dataIndex: 'code', width: '25%'},
+          {title: formatMessage({id:"structure.dimensionValueName"}), dataIndex: 'name', width: '25%'},
         ],
         key: 'id'
       },
@@ -76,7 +77,7 @@ class NewDimension extends React.Component{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
-            message.success('保存成功');
+            message.success(`${this.props.intl.formatMessage({id:"common.save.success"},{name: res.data.id})}`);
           }
         }).catch((e)=>{
           if(e.response){
