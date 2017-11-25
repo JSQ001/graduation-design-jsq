@@ -46,6 +46,11 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillMount() {
     let organizationIdParams = {organizationId : this.props.organization.id};
     let userSelectorItem = selectorData['user'];
+
+    let budgetItem = selectorData['budget_item'];
+    budgetItem.searchForm[1].getUrl = budgetItem.searchForm[1].getUrl + "?organizationId="+`${this.props.organization.id}`;
+    budgetItem.searchForm[2].getUrl = budgetItem.searchForm[2].getUrl + "?organizationId="+`${this.props.organization.id}`;
+
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -71,7 +76,7 @@ class NewBudgetRulesDetail extends React.Component{
         valueKey: 'itemName',
         codeKey: 'itemCode',
         listExtraParams: organizationIdParams,
-        selectorItem: undefined
+        selectorItem: budgetItem
       },
       'CURRENCY': {
         listType: 'currency',
