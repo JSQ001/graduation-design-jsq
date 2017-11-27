@@ -257,7 +257,7 @@ class BudgetJournalDetail extends React.Component {
   //   let priority =item.priority;
       let priority =i+1;
      columns.push(
-       {title:`${item.name}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
+       {title:`${item.dimensionName}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
          render: recode => (
            <Popover content={recode}>
              {recode}

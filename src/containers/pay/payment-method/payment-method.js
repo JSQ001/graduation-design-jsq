@@ -12,10 +12,12 @@ import httpFetch from 'share/httpFetch'
 
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
+
+import WrappedPaymentMethod from 'containers/pay/payment-method/new-payment-method'
 import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
-import 'styles/budget-setting/budget-organization/buget-item-type/budget-item-type.scss'
+import 'styles/pay/payment-method/payment-method.scss'
 
 
 class PaymentMethod extends React.Component {
@@ -25,19 +27,19 @@ class PaymentMethod extends React.Component {
       data: [],
       columns: [
         {/*付款方式类型*/
-          title: this.props.intl.formatMessage({id: "budget.itemTypeCode"}),
-          dataIndex: 'itemTypeCode',
-          key: 'itemTypeCode',
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
+          dataIndex: 'paymentMethodCategory',
+          key: 'paymentMethodCategory',
         },
         {/*付款方式代码*/
-          title: this.props.intl.formatMessage({id: "budget.itemTypeName"}),
-          dataIndex: 'itemTypeName',
-          key: 'itemTypeName',
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
+          dataIndex: 'paymentMethodCode',
+          key: 'paymentMethodCode',
         },
         {/*付款方式名称*/
-          title: "付款方式名称",
-          dataIndex: '1',
-          key: '2',
+          title: this.props.intl.formatMessage({id: "paymentMethod.description"}),
+          dataIndex: 'description',
+          key: 'description',
         },
 
         {/*状态*/
@@ -50,8 +52,8 @@ class PaymentMethod extends React.Component {
         },
       ],
       searchForm: [
-        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id: "budget.itemTypeCode"})},
-        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id: "budget.itemTypeName"})},
+        {type: 'input', id: 'paymentMethodCode', label: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})},
+        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: "paymentMethod.description"})},
       ],
       pageSize: 10,
       page: 0,
@@ -59,12 +61,15 @@ class PaymentMethod extends React.Component {
         total: 0
       },
       searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
+        paymentMethodCategory: '',
+        paymentMethodCode: '',
+        description:'',
+        isEnabled:null,
+
       },
       updateParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
+        paymentMethodCategory: '',
+        paymentMethodCode: '',
       },
       showSlideFrameNew: false,
       showSlideFramePut: false,
@@ -81,7 +86,7 @@ class PaymentMethod extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.budgetUrl}/api/budget/itemType/query?organizationId=${this.props.organization.id}&size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode || ''}&itemTypeName=${this.state.searchParams.itemTypeName || ''}`;
+    let url = `http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -218,9 +223,9 @@ class PaymentMethod extends React.Component {
           />
         </div>
 
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.newItemType"})}
+        <SlideFrame title="新建付款方式"
                     show={showSlideFrameNew}
-                    content={WrappedNewBudgetItemType}
+                    content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
@@ -239,9 +244,8 @@ class PaymentMethod extends React.Component {
 
 }
 
-function mapStateToProps(state) {
+function mapStateToProps() {
   return {
-    organization: state.budget.organization
   }
 }
 

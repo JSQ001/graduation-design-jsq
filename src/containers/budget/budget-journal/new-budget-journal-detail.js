@@ -555,7 +555,7 @@ class NewBudgetJournalDetail extends React.Component {
       //const priority = item.priority;
       let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimensionValue"+priority+"Id","dimensionValue"+priority+"Name"];
       dimensionList[dimensionListKey[0]]=item.id;
-      dimensionList[dimensionListKey[1]]=item.name;
+      dimensionList[dimensionListKey[1]]=item.dimensionName;
       dimensionList[dimensionListKey[2]]=item.defaultDimValueId?item.defaultDimValueId:null;
       dimensionList[dimensionListKey[3]]=item.defaultDimValueName?item.defaultDimValueName:null;
       console.log(item);
