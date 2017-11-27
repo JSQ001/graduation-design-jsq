@@ -104,7 +104,6 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
-
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
@@ -132,7 +131,6 @@ class BudgetItem extends React.Component {
   }
 
   handleSearch = (values) =>{
-    console.log(values)
     this.setState({
       searchParams:{
         itemCode: values.itemCode,

@@ -450,6 +450,38 @@ class NewBudgetRulesDetail extends React.Component{
           </Row>
           <Row gutter={30}>
             <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
+                        validateStatus={validateStatusMap.parameterLowerLimit}
+                        help={helpMap.parameterLowerLimit}>
+                {getFieldDecorator('parameterLowerLimit',
+                  {
+                    rules: [
+                      {
+                        required: true,
+                        message: formatMessage({id: "common.please.select"})
+                      },
+                      {
+                        validator: (item,value,callback)=>{
+                          if(typeof value === 'undefined'){
+                            validateStatusMap.parameterLowerLimit = "error";
+                            helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
+                          }
+                          callback();
+                        }
+                      }
+                    ]
+                  })(
+                  <Selput type={lov.listType}
+                          valueKey={ lov.codeKey}
+                          listExtraParams={lov.listExtraParams}
+                          disabled={lov.disabled}
+                          onChange={()=>{}}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
                 validateStatus={validateStatusMap.parameterUpperLimit}
                 help={helpMap.parameterUpperLimit}>
@@ -476,38 +508,6 @@ class NewBudgetRulesDetail extends React.Component{
                           disabled={lov.disabled}
                           onChange={()=>{}}/>
                 )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-              validateStatus={validateStatusMap.parameterLowerLimit}
-              help={helpMap.parameterLowerLimit}>
-              {getFieldDecorator('parameterLowerLimit',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({id: "common.please.select"})
-                    },
-                    {
-                      validator: (item,value,callback)=>{
-                        if(typeof value === 'undefined'){
-                          validateStatusMap.parameterLowerLimit = "error";
-                          helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
-                        }
-                        callback();
-                      }
-                    }
-                  ]
-                })(
-                <Selput type={lov.listType}
-                        valueKey={ lov.codeKey}
-                        listExtraParams={lov.listExtraParams}
-                        disabled={lov.disabled}
-                        onChange={()=>{}}/>
-              )}
               </FormItem>
             </Col>
           </Row>
