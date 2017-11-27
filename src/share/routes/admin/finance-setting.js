@@ -53,7 +53,7 @@ const accountPeriodControl = {
 //公司分配
 const companyDistribution = {
   key:'company-distribution',
-  url:'/main/finance-setting/contract-type-define/company-distribution',
+  url:'/main/finance-setting/contract-type-define/company-distribution/:setOfBooksId/:id',
   components: CompanyDistribution,
   parent: 'contract-type-define'
 };

@@ -85,7 +85,7 @@ class StrategyControlDetail extends React.Component {
         pagination: {
           total: Number(response.headers['x-total-count']),
           onChange: this.onChangePager,
-          pageSize: this.state.pageSize
+          current: this.state.page + 1
         }
       })
     }).catch((e)=>{

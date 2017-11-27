@@ -29,7 +29,11 @@
   "structure.companyCode": "公司代码",
   "structure.companyName": "公司名称",
   "structure.companyCodeFrom": "公司代码从",
-  "structure.companyCodeTo": "公司代码至"
+  "structure.companyCodeTo": "公司代码至",
+  "structure.selectDefaultDim":"选择默认维值",
+  "structure.dimensionValueCode": "维值代码",
+  "structure.dimensionValueName": "维值名称"
+
 
 
 

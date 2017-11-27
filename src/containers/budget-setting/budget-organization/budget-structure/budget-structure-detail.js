@@ -24,7 +24,6 @@ const TabPane = Tabs.TabPane;
 const Search = Input.Search;
 
 let periodStrategy = [];
-let flag = false;
 
 class BudgetStructureDetail extends React.Component{
 
@@ -61,7 +60,7 @@ class BudgetStructureDetail extends React.Component{
         {type: 'input', id: 'organizationName',isRequired: true, disabled: true, label: formatMessage({id: 'budget.organization'})+" :" /*预算组织*/},
         {type: 'input', id: 'structureCode',isRequired: true, disabled: true, label: formatMessage({id: 'budget.structureCode'})+" :" /*预算表代码*/},
         {type: 'input', id: 'structureName' ,isRequired: true, label: formatMessage({id: 'budget.structureName'}) +" :"/*预算表名称*/},
-        {type: 'select',options: periodStrategy ,disabled: flag, isRequired: true, id: 'periodStrategy', label: formatMessage({id: 'budget.periodStrategy'}) +" :"/*编制期段*/},
+        {type: 'select',options: periodStrategy , isRequired: true, id: 'periodStrategy', label: formatMessage({id: 'budget.periodStrategy'}) +" :"/*编制期段*/},
         {type: 'input', id: 'description', label: formatMessage({id: 'budget.structureDescription'}) +" :"/*预算表描述*/},
         {type: 'switch', id: 'isEnabled', label: formatMessage({id: 'common.column.status'}) +" :"/*状态*/},
       ],
@@ -92,7 +91,7 @@ class BudgetStructureDetail extends React.Component{
                 <span>{record ? <Popover content={record}>{record} </Popover> : '-'} </span>)
             },
             {                        /*布局位置*/
-              title:formatMessage({id:"structure.layoutPosition"}), key: "layoutPosition", dataIndex: 'layoutPosition'
+              title:formatMessage({id:"structure.layoutPosition"}), key: "layoutPositionName", dataIndex: 'layoutPositionName'
             },
             {                        /*布局顺序*/
               title:formatMessage({id:"structure.layoutPriority"}), key: "layoutPriority", dataIndex: 'layoutPriority'
@@ -122,8 +121,6 @@ class BudgetStructureDetail extends React.Component{
   }
   //改变启用状态
   onChangeEnabled = (e, record) => {
-    console.log(e)
-    console.log(record)
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
     httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/companies`, record).then(() => {
@@ -132,6 +129,7 @@ class BudgetStructureDetail extends React.Component{
   };
 
   componentWillMount(){
+
     //获取编制期段
     this.getSystemValueList(2002).then((response)=>{
       response.data.values.map((item)=>{
@@ -151,18 +149,11 @@ class BudgetStructureDetail extends React.Component{
           columns: this.state.columnGroup.dimension,
           structure: response.data
         });
+        let infoList = this.state.infoList;
+        infoList[3].disabled = response.data.usedFlag;
       }
     });
     this.getList();
-    //修改时，如果该预算表已被日志记账类型引用，不允许修改编制期段
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?structureId=${this.props.params.structureId}`).then((response)=>{
-      if(response.status === 200){
-        if(response.data.length>0 /*&& this.state.structure.periodStrategy !== value.periodStrategy*/){
-          flag = true
-          message.error(this.props.intl.formatMessage({id:"structure.validatePeriodStrategy"})) //该预算表已被预算日记账引用，不允许修改编制期段！
-        }
-      }
-    });
   }
 
   //保存所做的修改
@@ -176,7 +167,6 @@ class BudgetStructureDetail extends React.Component{
         structure.organizationName = this.state.structure.organizationName;
         message.success(this.props.intl.formatMessage({id: "structure.saveSuccess"})); /*保存成功！*/
         structure.periodStrategy = {label:response.data.periodStrategyName, value:response.data.periodStrategy}
-        console.log(structure)
         this.setState({
           structure: structure,
           updateState: true
@@ -186,9 +176,8 @@ class BudgetStructureDetail extends React.Component{
       }
     }).catch((e)=>{
       if(e.response){
-        message.error(`修改失败, ${e.response.data.validationErrors[0].message}`);
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})}, ${e.response.data.message}`);
       }
-      this.setState({loading: false});
     })
   };
 
@@ -216,7 +205,6 @@ class BudgetStructureDetail extends React.Component{
 
   //输入条件时的查询
   handleSearch = (e) =>{
-    console.log(e.target.value)
     this.search(e.target.value)
   };
 
@@ -285,16 +273,18 @@ class BudgetStructureDetail extends React.Component{
 
   //点击行，进入维度编辑页面
   handleRowClick = (record, index, event) =>{
-    console.log(record)
-    let defaultDimensionCode = [];
-    let defaultDimensionValue = [];
-    defaultDimensionCode.push({ id: record.dimensionId, code: record.defaultDimValueCode,key: record.dimensionId});
-    defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
-    record.defaultDimensionCode = defaultDimensionCode;
-    this.setState({
-      showSlideFrameUpdate: true,
-      dimension:record
-    })
+    if(this.state.label !== 'company'){
+      let defaultDimensionCode = [];
+      let defaultDimensionValue = [];
+      defaultDimensionCode.push({ id: record.dimensionId, code: record.dimensionCode,key: record.dimensionId});
+      defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
+      record.defaultDimensionCode = defaultDimensionCode;
+      record.defaultDimensionValue = defaultDimensionValue;
+      this.setState({
+        showSlideFrameUpdate: true,
+        dimension:record
+      })
+    }
   };
 
   showSlideUpdate = (flag)=>{
@@ -305,7 +295,6 @@ class BudgetStructureDetail extends React.Component{
 
   //关闭新建侧滑维度页面
   handleCloseSlideUpdate = (params) => {
-    console.log(params)
     this.setState({
       showSlideFrameUpdate: false,
       loading: typeof params === 'undefined' ? false : true
@@ -328,9 +317,7 @@ class BudgetStructureDetail extends React.Component{
     result.result.map((item)=>{
       company.push({companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
     });
-    console.log(company)
     httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/companies/batch`,company).then((response)=>{
-      console.log(response)
       if(response.status === 200) {
         this.showListSelector(false);
         this.setState({
@@ -341,7 +328,7 @@ class BudgetStructureDetail extends React.Component{
       }
     }).catch((e)=>{
       if(e.response){
-        message.error(`保存失败, ${e.response.data.validationErrors[0].message}`);
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})}, ${e.response.data.message}`);
       }
       this.setState({loading: false});
     });

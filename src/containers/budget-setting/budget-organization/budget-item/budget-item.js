@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select, Popover, Badge } from 'antd';
+import { Button, Table, Select, Popover, Badge, message } from 'antd';
 import SearchArea from 'components/search-area.js';
 import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
 import httpFetch from 'share/httpFetch';
@@ -148,12 +148,12 @@ class BudgetItem extends React.Component {
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
     this.setState({
-      pagination:{
-        page: pagination.current-1,
-        current: pagination.current,
-        pageSize: pagination.pageSize
-      }
+      pagination: temp
     }, ()=>{
       this.getList();
     })
@@ -234,13 +234,19 @@ class BudgetItem extends React.Component {
       companyIds.push(item.id)
     });
     let param = [];
+
     param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
     httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      console.log(response)
+      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
       if(response.status === 200){
         this.setState({
           loading: true,
+          batchCompany: true
         },this.getList())
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
       }
     });
 

@@ -33,7 +33,6 @@ class NewBudgetControlRules extends React.Component{
    //加载页面时，获取启用的控制策略
    httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
      if(response.status === 200){
-       console.log(response.data)
        let strategyGroup = [];
        response.data.map((item)=>{
          let strategy = {
@@ -111,7 +110,6 @@ class NewBudgetControlRules extends React.Component{
 
   validateRuleCode = (item,value,callback)=>{
     httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.params.id}&controlRuleCode=${value}`).then((response)=>{
-      console.log(response.data)
       let flag = false;
       if(response.data.length > 0 ){
         response.data.map((item)=>{
@@ -261,10 +259,6 @@ class NewBudgetControlRules extends React.Component{
                             return
                           }
                           callback();
-                          /*httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?priority=${value}`).then((response)=>{
-                            console.log(response)
-                            response.data.length>0 ? callback(this.props.intl.formatMessage({id:"budget.controlRuleExist"})) : callback()
-                          })*/
                         }
                       }
                     ]
