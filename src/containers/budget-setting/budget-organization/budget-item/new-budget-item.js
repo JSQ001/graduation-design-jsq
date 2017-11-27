@@ -56,9 +56,6 @@ class NewBudgetItem extends React.Component{
             message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
             this.setState({loading: false});
           }
-          else {
-            console.log(e)
-          }
         })
       }
     });
@@ -84,7 +81,6 @@ class NewBudgetItem extends React.Component{
   };
 
   handleListOk = (result) => {
-    console.log(result)
     let values = [];
     result.result.map(item => {
       values.push({

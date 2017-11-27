@@ -121,8 +121,6 @@ class BudgetStructureDetail extends React.Component{
   }
   //改变启用状态
   onChangeEnabled = (e, record) => {
-    console.log(e)
-    console.log(record)
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
     httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/companies`, record).then(() => {
@@ -169,7 +167,6 @@ class BudgetStructureDetail extends React.Component{
         structure.organizationName = this.state.structure.organizationName;
         message.success(this.props.intl.formatMessage({id: "structure.saveSuccess"})); /*保存成功！*/
         structure.periodStrategy = {label:response.data.periodStrategyName, value:response.data.periodStrategy}
-        console.log(structure)
         this.setState({
           structure: structure,
           updateState: true
@@ -208,7 +205,6 @@ class BudgetStructureDetail extends React.Component{
 
   //输入条件时的查询
   handleSearch = (e) =>{
-    console.log(e.target.value)
     this.search(e.target.value)
   };
 
@@ -277,17 +273,18 @@ class BudgetStructureDetail extends React.Component{
 
   //点击行，进入维度编辑页面
   handleRowClick = (record, index, event) =>{
-    console.log(record)
-    let defaultDimensionCode = [];
-    let defaultDimensionValue = [];
-    defaultDimensionCode.push({ id: record.dimensionId, code: record.dimensionCode,key: record.dimensionId});
-    defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
-    record.defaultDimensionCode = defaultDimensionCode;
-    record.defaultDimensionValue = defaultDimensionValue;
-    this.setState({
-      showSlideFrameUpdate: true,
-      dimension:record
-    })
+    if(this.state.label !== 'company'){
+      let defaultDimensionCode = [];
+      let defaultDimensionValue = [];
+      defaultDimensionCode.push({ id: record.dimensionId, code: record.dimensionCode,key: record.dimensionId});
+      defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
+      record.defaultDimensionCode = defaultDimensionCode;
+      record.defaultDimensionValue = defaultDimensionValue;
+      this.setState({
+        showSlideFrameUpdate: true,
+        dimension:record
+      })
+    }
   };
 
   showSlideUpdate = (flag)=>{
@@ -298,7 +295,6 @@ class BudgetStructureDetail extends React.Component{
 
   //关闭新建侧滑维度页面
   handleCloseSlideUpdate = (params) => {
-    console.log(params)
     this.setState({
       showSlideFrameUpdate: false,
       loading: typeof params === 'undefined' ? false : true
@@ -321,9 +317,7 @@ class BudgetStructureDetail extends React.Component{
     result.result.map((item)=>{
       company.push({companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
     });
-    console.log(company)
     httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/companies/batch`,company).then((response)=>{
-      console.log(response)
       if(response.status === 200) {
         this.showListSelector(false);
         this.setState({

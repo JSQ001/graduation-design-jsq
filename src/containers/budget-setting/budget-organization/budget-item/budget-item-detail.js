@@ -62,7 +62,6 @@ class BudgetItemDetail extends React.Component{
     //根据路径上的id,查出该条预算项目完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
       if(response.status === 200){
-        console.log(response)
         response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
         response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttribute};
         this.setState({
@@ -99,7 +98,9 @@ class BudgetItemDetail extends React.Component{
   //查询已经分配过的公司
   getList(){
     httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
-      console.log(response)
+      response.data.map((item)=>{
+        item.id = item.key
+      });
       if(response.status === 200){
         let pagination = this.state.pagination;
         pagination.total = Number(response.headers['x-total-count']);
@@ -138,9 +139,14 @@ class BudgetItemDetail extends React.Component{
     httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
       if(response.status === 200){
         this.showListSelector(false);
+        message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
         this.setState({
           loading: true
         },this.getList())
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
       }
     });
   };
