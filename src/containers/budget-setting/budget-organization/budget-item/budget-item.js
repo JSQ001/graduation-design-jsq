@@ -104,6 +104,7 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
+
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
@@ -131,6 +132,7 @@ class BudgetItem extends React.Component {
   }
 
   handleSearch = (values) =>{
+    console.log(values)
     this.setState({
       searchParams:{
         itemCode: values.itemCode,
@@ -269,7 +271,7 @@ class BudgetItem extends React.Component {
     };
     return (
       <div className="budget-item">
-       <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
+        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
