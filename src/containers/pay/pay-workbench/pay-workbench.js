@@ -1,12 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl'
 
-import { Radio } from 'antd';
+import { Tabs } from 'antd'
+const TabPane = Tabs.TabPane;
 
-import PayOnline from 'containers/pay/pay-workbench/pay-online'
-import PayOffline from 'containers/pay/pay-workbench/pay-offline'
-import PayFile from 'containers/pay/pay-workbench/pay-file'
+import PayUnpaid from 'containers/pay/pay-workbench/pay-unpaid'
+import PayPaying from 'containers/pay/pay-workbench/pay-paying'
+import PayFail from 'containers/pay/pay-workbench/pay-fail'
+import PaySuccess from 'containers/pay/pay-workbench/pay-success'
 
 import 'styles/pay/pay-workbench/pay-workbench.scss'
 
@@ -14,7 +16,7 @@ class PayWorkbench extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nowStatus: '线上',
+
     };
   }
 
@@ -40,15 +42,29 @@ class PayWorkbench extends React.Component {
   };
 
   render(){
-    const { nowStatus } = this.state;
     return (
       <div className="pay-workbench">
-        <Radio.Group onChange={this.handleModeChange} value={nowStatus} style={{marginBottom:'20px'}}>
-          <Radio.Button value="线上">线上</Radio.Button>
-          <Radio.Button value="线下">线下</Radio.Button>
-          <Radio.Button value="落地文件">落地文件</Radio.Button>
-        </Radio.Group>
-        {this.renderContent()}
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="未付款" key="Unpaid">
+            <PayUnpaid/>
+          </TabPane>
+          <TabPane tab="支付中" key="Paying">
+            <PayPaying/>
+          </TabPane>
+          <TabPane tab="退票或失败" key="Fail">
+            <PayFail/>
+          </TabPane>
+          <TabPane tab="支付成功" key="Success">
+            <PaySuccess/>
+          </TabPane>
+        </Tabs>
+
+        {/*<Radio.Group onChange={this.handleModeChange} value={nowStatus} style={{marginBottom:'20px'}}>*/}
+          {/*<Radio.Button value="线上">线上</Radio.Button>*/}
+          {/*<Radio.Button value="线下">线下</Radio.Button>*/}
+          {/*<Radio.Button value="落地文件">落地文件</Radio.Button>*/}
+        {/*</Radio.Group>*/}
+        {/*{this.renderContent()}*/}
       </div>
     )
   }
