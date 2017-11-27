@@ -88,7 +88,12 @@
   "menu.contract": "Contract",
   "menu.my-contract": "My Contract",
   "menu.new-contract": "New Contract",
-  "menu.new-bank-account":"New Bank Account",
-  "menu.bank-account-detail":"Bank Account Detail",
-  "menu.add-authorization":"Add Authorization"
+  "menu.contract-detail": "合同详情",
+  "menu.new-bank-account": "New Bank Account",
+  "menu.bank-account-detail": "Bank Account Detail",
+  "menu.add-authorization": "Add Authorization",
+  "menu.budget-journal-check": "Budget Journal Check",
+  "menu.budget-journal-check-detail": "Budget Journal Check Detail",
+  "menu.payment-method":"Payment Method",
+  "menu.payment-company-setting":"Payment Company Setting"
 }

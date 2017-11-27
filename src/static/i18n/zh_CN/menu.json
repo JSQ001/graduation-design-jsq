@@ -89,7 +89,11 @@
   "menu.my-contract": "我的合同",
   "menu.new-contract": "合同创建",
   "menu.contract-detail": "合同详情",
-  "menu.new-bank-account":"新建银行账户",
-  "menu.bank-account-detail":"银行账户详情",
-  "menu.add-authorization":"添加授权"
+  "menu.new-bank-account": "新建银行账户",
+  "menu.bank-account-detail": "银行账户详情",
+  "menu.add-authorization": "添加授权",
+  "menu.budget-journal-check": "预算审批",
+  "menu.budget-journal-check-detail": "预算审批详情",
+  "menu.payment-method":"付款方式",
+  "menu.payment-company-setting":"付款公司配置"
 }

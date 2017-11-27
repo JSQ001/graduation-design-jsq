@@ -47,7 +47,7 @@ class BudgetJournalDetail extends React.Component {
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
         {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'unitId',columnValue: 'departmentName'},//部门
-        {type: 'select', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},
+        {type: 'select', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},     //预算项目
         {type: 'select', id:'periodName',options: [], labelKey:'periodName',valueKey:'periodName',columnLabel:'periodName',columnValue:'periodName'}, //期间
         {type: 'value_list', id: 'periodQuarter', options: [],labelKey:'periodQuarter',columnLabel:'periodQuarter',columnValue:'periodQuarterName',value:'periodQuarter'}, //季度
         {type: 'select', id:'periodYear', options:[],labelKey:'periodYear',valueKey:'periodYear',columnLabel:'periodYear',columnValue:'periodYear'}, //年度
@@ -135,7 +135,7 @@ class BudgetJournalDetail extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName',
         },
         {          /*季度*/
-          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarter", dataIndex: 'periodQuarter',
+          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarterName", dataIndex: 'periodQuarterName',
         },
         {          /*年度*/
           title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',
@@ -159,9 +159,6 @@ class BudgetJournalDetail extends React.Component {
         {          /*数字*/
           title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',
         },
-        /* {          /!*单位*!/
-         title: this.props.intl.formatMessage({id:"budget.unit"}), key: "unit", dataIndex: 'unit'
-         },*/
         {          /*备注*/
           title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark',
           render: remark => (
@@ -257,9 +254,10 @@ class BudgetJournalDetail extends React.Component {
     const dimensionList = this.state.dimensionList;
     for(let i=0;i<dimensionList.length;i++){
      const item =dimensionList[i];
-     let priority =item.priority;
+  //   let priority =item.priority;
+      let priority =i+1;
      columns.push(
-       {title:`${item.name}`, key:`dimensionValue${i+1}Name`, dataIndex: `dimensionValue${i+1}Name`,
+       {title:`${item.name}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
          render: recode => (
            <Popover content={recode}>
              {recode}
@@ -267,7 +265,7 @@ class BudgetJournalDetail extends React.Component {
        }
      )
      handleData.push(
-      {type: 'select', id:`dimension${i+1}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${i+1}ValueName`,columnValue: `dimension${i+1}ValueId`},
+      {type: 'select', id:`dimension${priority}`,options: [],labelKey:'id',valueKey:'name',columnLabel: `dimension${priority}ValueName`,columnValue: `dimension${priority}ValueId`},
      )
    }
     this.setState({
@@ -285,6 +283,7 @@ class BudgetJournalDetail extends React.Component {
     })
     const journalCode =this.props.params.journalCode;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
+      console.log(response.data);
       let listData = response.data.list;
       let headerData =response.data.dto;
       if(this.state.columnsSetFlag){
@@ -389,19 +388,18 @@ class BudgetJournalDetail extends React.Component {
     this.handleModal(false)
   }
 
-
   showSlideFrameNew=(value)=>{
     this.setState({
       showSlideFrameNew:value,
     })
   }
 
-
   showSlideFrameNewData=()=> {
     let params = {
       "isNew": true,
       "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
-      "structureId":this.state.headerAndListData.dto.structureId
+      "structureId":this.state.headerAndListData.dto.structureId,
+      "journalTypeId":this.state.headerAndListData.dto.journalTypeId,
     }
     this.setState({
       params: params,
@@ -459,21 +457,17 @@ class BudgetJournalDetail extends React.Component {
     },()=>{});
   }
 
-
-
 //删除该预算日记账
   handleDeleteJournal=()=> {
     const id = this.state.headerAndListData.dto.id;
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/${id}`).then((req) => {
       message.success("成功删除该预算日记账");
-
       //删除完该预算日记账，跳转
       let path=this.state.budgetJournalPage.url;
       this.context.router.push(path);
     }).catch((e) => {
       message.error("失败")
     })
-
   }
 
 //保存新增，或修改
@@ -483,29 +477,25 @@ class BudgetJournalDetail extends React.Component {
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
       message.success("预算日记账行保存成功");
       this.getDataByBudgetJournalCode();
-
     }).catch((e)=>{
       console.log(e.response.data.message)
     })
-
   }
 
   //提交单据
   handlePut=()=>{
     if(this.state.commitFlag) {
-      let headerId =this.state. headerAndListData.dto.id;
-      httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`).then((req) => {
+      let header =this.state. headerAndListData.dto;
+      httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");
         // this.getDataByBudgetJournalCode();
         this.setState({
           listData:[],
         })
-
         let path=this.state.budgetJournalPage.url;
         this.context.router.push(path);
-
       }).catch(e => {
-        message.error("提交失败")
+        message.error(e.response.data.message)
       })
     }else {
       notification.open({
@@ -515,7 +505,6 @@ class BudgetJournalDetail extends React.Component {
       });
     }
   }
-
 
   //编辑行前,数据处理，传入数据
   headleUpData(values) {
@@ -541,17 +530,19 @@ class BudgetJournalDetail extends React.Component {
     return valuesData;
   }
 
-
   //编辑行
   handlePutData=(value)=>{
+    console.log(value);
     let valuePutData =this.headleUpData(value);
     this.setState({
      params:{...valuePutData,
               "id":value.id,
                "structureId":this.state.headerAndListData.dto.structureId,
-               "versionNumber":value.id,
+              "journalTypeId":this.state.headerAndListData.dto.journalTypeId,
+              "versionNumber":value.id,
               "isNew":false,
-              "oldData":value,}
+              "oldData":value,
+            }
      },()=>{
      this.setState({
        isNew:false,
@@ -580,11 +571,11 @@ class BudgetJournalDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys}条数据</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys.length}条数据</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
-              <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="Yes" cancelText="No">
+              <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="确定" cancelText="取消">
                 <Button className="delete"    disabled={this.state.selectedRowKeys.length === 0} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
             </div>
@@ -618,9 +609,11 @@ class BudgetJournalDetail extends React.Component {
 
         <div className="divider"> </div>
         <div className="footer-operate">
-          <Button type="primary" onClick={this.handlePut}>提交</Button>
+          <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">
+          <Button type="primary">提交</Button>
+          </Popconfirm>
           <Button  type="primary"  onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
-          <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="Yes" cancelText="No">
+          <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="确定" cancelText="取消">
             <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>
           <Button onClick={this.handleReturn}>返回</Button>
@@ -628,7 +621,6 @@ class BudgetJournalDetail extends React.Component {
       </div>
     )
   }
-
 }
 
 BudgetJournalDetail.contextTypes ={

@@ -25,7 +25,9 @@ class NewBudgetJournalDetail extends React.Component {
       dimensionList:{},
       params:{},
       periodStrategyFlag:true,
-      structureIdFlag:true
+      structureIdFlag:true,
+      journalTypeIdFlag:true,
+      journalTypeId:null,
 
     };
 
@@ -71,12 +73,22 @@ class NewBudgetJournalDetail extends React.Component {
 
   chooserChangeHandle(value,e){
     if(value.length>0){
-      if(e=="company"){
+      if(e === "company"){
         let searchFrom =this.state.searchForm;
         searchFrom.map((item)=>{
-          if(item.id=="unit"){
+          if(item.id === "unit"){
             item["listExtraParams"]={companyId:value[0].id}
             item["disabled"]=false
+            return
+          }
+          if(item.id === "item" ){
+            console.log(123123)
+            let getParams = item["getParams"];
+            console.log(getParams);
+            getParams.companyId = value[0].id;
+            item["getParams"]=getParams;
+            item["disable"]=false
+            console.log(item);
             return
           }
         })
@@ -93,15 +105,15 @@ class NewBudgetJournalDetail extends React.Component {
   getStrategyControl=()=>{
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
-      if(item.id=="periodYear"){
+      if(item.id === "periodYear"){
         item["disabled"]=this.props.params.periodStrategy=="MONTH"?true:false
         item["isRequired"]=true
       }
-      if(item.id=="periodQuarter"){
+      if(item.id === "periodQuarter"){
         item["disabled"]=this.props.params.periodStrategy=="QUARTER"?false:true
         item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false
       }
-      if(item.id =="periodName"){
+      if(item.id === "periodName"){
         item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
         item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
       }
@@ -131,15 +143,17 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
       {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
-        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: true,disabled:true, listExtraParams:{"companyId": ''},
+        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false,
+        listExtraParams:{"companyId": ''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
       {type: 'select', id:'item',method:'get', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id', getUrl:`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.organization.id}`,
+        labelKey:'itemName',valueKey:'id',
+        getUrl:`${config.budgetUrl}/api/budget/journals/selectItemsByJournalTypeAndCompany`,getParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
       {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
-        labelKey:'periodName',valueKey:'periodName',event:'periodName', disabled:true,
+        labelKey:'periodName',valueKey:'periodName',event:'periodName',
         getUrl:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
         columnLabel:'periodName',columnValue:'periodName'
       }, //期间
@@ -168,7 +182,7 @@ class NewBudgetJournalDetail extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && nextProps.params!=={} ){
-      if(nextProps.params.isNew===false){
+      if(nextProps.params.isNew === false){
         this.state.rate=nextProps.params.rate;
         rateData=nextProps.params.rate;
       }
@@ -180,12 +194,19 @@ class NewBudgetJournalDetail extends React.Component {
           this.getStrategyControl();
         })
       }
-      //获取维度表单
+      //获取维度表单,
       if(nextProps.params.structureId  && this.state.structureIdFlag ){
         this.setState({
           structureIdFlag:false,
         },()=>{
           this.getDimensionByStructureId();
+        })
+      }
+      if(nextProps.params.journalTypeId && this.state.journalTypeIdFlag){
+        this.setState({
+          journalTypeIdFlag:false,
+        },()=>{
+          this.getUntilUrl();
         })
       }
       if(nextProps.params.id !== this.state.params.id){
@@ -201,8 +222,20 @@ class NewBudgetJournalDetail extends React.Component {
       }
     }
     else
-      this.setState({ params : {} });
+      this.setState({ params : {}});
   };
+
+  getUntilUrl(){
+    let searchForm = this.state.searchForm;
+    searchForm = searchForm.map(searchItem => {
+      if(searchItem.id === "unit")
+        console.log(this.props.params.journalTypeId);
+        searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
+      return searchItem;
+    });
+    console.log(searchForm);
+    this.setState({ searchForm });
+  }
 
 
   //给select增加options
@@ -520,9 +553,11 @@ class NewBudgetJournalDetail extends React.Component {
       const item =dimension[i];
       const priority =i+1;
       //const priority = item.priority;
-      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name"];
+      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimensionValue"+priority+"Id","dimensionValue"+priority+"Name"];
       dimensionList[dimensionListKey[0]]=item.id;
       dimensionList[dimensionListKey[1]]=item.name;
+      dimensionList[dimensionListKey[2]]=item.defaultDimValueId?item.defaultDimValueId:null;
+      dimensionList[dimensionListKey[3]]=item.defaultDimValueName?item.defaultDimValueName:null;
       console.log(item);
       let options=[];
       httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/${item.oid}`).then((res)=>{
@@ -533,8 +568,9 @@ class NewBudgetJournalDetail extends React.Component {
         })
 
       })
+
       const searchFormItem=  {type: 'select_dimension', label:`${item.name}`, options:options,
-        labelKey:'name',valueKey:'id',
+        labelKey:'name',valueKey:'id',defaultValue:dimensionList[dimensionListKey[3]],
         columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
       };
       searchFormItem["id"]="dimension"+priority,
