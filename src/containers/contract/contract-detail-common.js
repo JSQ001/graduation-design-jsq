@@ -62,7 +62,7 @@ class ContractDetailCommon extends React.Component {
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 非摊销类
-          <Button type="primary">编辑</Button>
+          {this.props.contractEdit && <Button type="primary">编辑</Button>}
         </h3>
         <Row>
           <Col span={6}>
@@ -88,17 +88,31 @@ class ContractDetailCommon extends React.Component {
     let contractHistory = (
       <div>
         <Timeline>
-          <Timeline.Item color="grey">Create a services site 2015-09-01</Timeline.Item>
-          <Timeline.Item color="green">Create a services site 2015-09-01</Timeline.Item>
-          <Timeline.Item color="red">
-            <p>Solve initial network problems 1</p>
-            <p>Solve initial network problems 2</p>
-            <p>Solve initial network problems 3 2015-09-01</p>
+          <Timeline.Item color="grey">
+            <p>
+              <span style={{fontWeight:'bold'}}>等待审批</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234，李丽丽 2234，王小明 1234</span>
+            </p>
+          </Timeline.Item>
+          <Timeline.Item color="green">
+            <p>
+              <span style={{fontWeight:'bold'}}>审批通过</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234</span>
+            </p>
+            <p>审批意见啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
+          </Timeline.Item>
+          <Timeline.Item color="#ff6600">
+            <p>
+              <span style={{fontWeight:'bold'}}>审批驳回</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234</span>
+            </p>
+            <p style={{color:'#ff6600'}}>金额超标，不同意！金额超标，不同意！金额超标，不同意！金额超标，不同意！</p>
           </Timeline.Item>
           <Timeline.Item>
-            <p>Technical testing 1</p>
-            <p>Technical testing 2</p>
-            <p>Technical testing 3 2015-09-01</p>
+            <p>
+              <span style={{fontWeight:'bold'}}>提交审批</span>
+              <span style={{marginLeft:50}}>王小明 1234</span>
+            </p>
           </Timeline.Item>
         </Timeline>
       </div>
