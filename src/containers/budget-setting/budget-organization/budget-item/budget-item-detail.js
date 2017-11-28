@@ -58,6 +58,15 @@ class BudgetItemDetail extends React.Component{
     }
   }
 
+  //改变启用状态
+  onChangeEnabled = (e, record) => {
+    this.setState({loading: true});
+    record.isEnabled = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/item/companies`, record).then(() => {
+      this.getList()
+    })
+  };
+
   componentWillMount(){
     //根据路径上的id,查出该条预算项目完整数据
     httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{

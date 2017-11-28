@@ -139,7 +139,7 @@ class BudgetItem extends React.Component {
         itemName: values.itemName,
         itemCodeFrom: values.itemCodeFrom,
         itemCodeTo: values.itemCodeTo,
-        itemTypeId: typeof values.itemTypeName === "undefined" ? "" : values.itemTypeName[0],
+        itemTypeId: typeof values.itemTypeName === "undefined" ? "" : values.itemTypeName,
       },
     },()=>{
       this.getList()
