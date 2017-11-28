@@ -1,11 +1,11 @@
 /**
- * Created by 13576 on 2017/10/20.
+ * Created by 13576 on 2017/11/22.
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button,Popover, Table, Select,Tag,Badge} from 'antd';
-
+import { Button,Popover, Table, Select,Tag,Badge,Tabs} from 'antd';
+const TabPane =Tabs.TabPane;
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -13,7 +13,7 @@ import SearchArea from 'components/search-area.js';
 
 import "styles/budget/budget-journal-re-check/budget-journal-re-check.scss"
 
-class BudgetJournalReCheck extends React.Component {
+class BudgetJournalCheck extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +26,11 @@ class BudgetJournalReCheck extends React.Component {
         total:0,
         pageSize:10,
       },
-
+      tabs:[
+        {key:"APPROVAL_ING",name:"未审批"},
+        {key:"APPROVAL_END",name:"已审批"}
+      ],
+      nowStatus:"APPROVAL_ING",
       searchForm: [
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
@@ -88,7 +92,7 @@ class BudgetJournalReCheck extends React.Component {
             </Popover>)
         },
         {          /*申请人*/
-          title: "申请人", key: "employeeName", dataIndex: 'employeeName',
+          title: "申请人", key: "employeeId", dataIndex: 'employeeId',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -119,7 +123,8 @@ class BudgetJournalReCheck extends React.Component {
           }
         },
       ],
-      budgetJournalDetailReCheckDetailPage: menuRoute.getRouteItem('budget-journal-re-check-detail','key'),    //预算日记账复核详情
+
+      budgetJournalDetailCheckDetailPage: menuRoute.getRouteItem('budget-journal-check-detail','key'),    //预算日记账复核详情
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
   }
@@ -128,9 +133,33 @@ class BudgetJournalReCheck extends React.Component {
     this.getList();
   }
 
+  //渲染Tabs
+  renderTabs = () =>{
+    return (
+      this.state.tabs.map(tab => {
+        return <TabPane tab={tab.name} key={tab.key}/>
+      })
+    )
+  }
+
+  //点击
+  onChangeTabs = (key) =>{
+    this.setState({
+      nowStatus: key,
+      loading: true,
+      data:[],
+      pagination: {
+        total: 0
+      },
+      page: 0
+    }, ()=>{
+      this.getList(key);
+    })
+  };
+
 
 //获取复核
-  getList(){
+  getList(key){
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}&structureId=${this.state.params.structureId||''}&versionId=${this.state.params.versionId||''}&scenarioId=${this.state.params.scenarioId||''}&createDate=${this.state.params.createData||''}&empId=${this.state.params.employeeId||''}`).then((response)=>{
       this.setState({
         loading: false,
@@ -180,8 +209,7 @@ class BudgetJournalReCheck extends React.Component {
   //跳转到详情
   HandleRowClick=(value)=>{
     const journalCode =value.journalCode;
-
-    let path=this.state.budgetJournalDetailReCheckDetailPage.url.replace(":journalCode",journalCode);
+    let path=this.state.budgetJournalDetailCheckDetailPage.url.replace(":journalCode",journalCode);
     this.context.router.push(path);
     //budgetJournalDetailSubmit
 
@@ -192,6 +220,9 @@ class BudgetJournalReCheck extends React.Component {
     const {organization} =this.props.organization;
     return (
       <div className="budget-journal">
+        <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
+          {this.renderTabs()}
+        </Tabs>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
@@ -212,7 +243,7 @@ class BudgetJournalReCheck extends React.Component {
 
 }
 
-BudgetJournalReCheck.contextTypes ={
+BudgetJournalCheck.contextTypes ={
   router: React.PropTypes.object
 }
 
@@ -222,4 +253,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetJournalReCheck));
+export default connect(mapStateToProps)(injectIntl(BudgetJournalCheck));

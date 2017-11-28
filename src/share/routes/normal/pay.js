@@ -4,6 +4,10 @@ import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 import BankDefinition from 'containers/pay/bank-definition/bank-definition'
 import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
+import PaymentMethod from 'containers/pay/payment-method/payment-method'
+
+import PaymentCompanySetting from 'containers/pay/payment-company-setting/payment-company-setting'
+
 //支付流水详情
 const paymentDetail = {
   key:'payment-detail',
@@ -42,10 +46,29 @@ const bankDefinition = {
   }
 };
 
+//付款方式定义
+const paymentMethod = {
+  key:'payment-method',
+  url:'/main/pay/payment-method',
+  components: PaymentMethod ,
+  parent: 'pay',
+  children: {}
+};
+
+//付款公司配置
+const paymentCompanySetting = {
+  key:'payment-company-setting',
+  url:'/main/pay/payment-company-setting',
+  components: PaymentCompanySetting ,
+  parent: 'pay',
+  children: {}
+};
+
+
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench, bankDefinition],
+  subMenu: [payWorkbench, bankDefinition,paymentMethod,paymentCompanySetting],
   icon: 'pay-circle'
 };
 
