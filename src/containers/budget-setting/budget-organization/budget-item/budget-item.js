@@ -153,6 +153,7 @@ class BudgetItem extends React.Component {
     temp.current = pagination.current;
     temp.pageSize = pagination.pageSize;
     this.setState({
+      loading: true,
       pagination: temp
     }, ()=>{
       this.getList();

@@ -216,7 +216,8 @@ class BudgetControlRulesDetail extends React.Component{
 
   //获取规则明细
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}`).then((response)=>{
+    const {pagination} = this.state;
+    httpFetch.get(`${config.budgetUrl}/api/budget/control/rule/details/query?controlRuleId=${this.props.params.ruleId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
       if(response.status === 200){
         response.data.map((item)=>{
           item.key = item.id
@@ -236,6 +237,20 @@ class BudgetControlRulesDetail extends React.Component{
   //返回预算规则页面
   handleBack = () => {
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=RULE');
+  };
+
+   //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
+    })
   };
 
   render(){
@@ -260,6 +275,7 @@ class BudgetControlRulesDetail extends React.Component{
           columns={columns}
           onRowClick={this.handleEdit}
           pagination={pagination}
+          onChange={this.onChangePager}
           size="middle"
           bordered/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>

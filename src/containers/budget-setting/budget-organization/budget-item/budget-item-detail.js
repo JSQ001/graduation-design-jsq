@@ -97,7 +97,8 @@ class BudgetItemDetail extends React.Component{
 
   //查询已经分配过的公司
   getList(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}`).then((response)=>{
+    const {pagination} = this.state;
+    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
       response.data.map((item)=>{
         item.id = item.key
       });
@@ -156,8 +157,22 @@ class BudgetItemDetail extends React.Component{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=ITEM');
   };
 
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
+    })
+  };
+
   render(){
-    const { edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector} = this.state;
+    const { loading,edit, pagination, columns, data, visible, infoList, budgetItem, companyListSelector} = this.state;
     return(
       <div className="budget-item-detail">
         <BasicInfo
@@ -172,9 +187,11 @@ class BudgetItemDetail extends React.Component{
           </div>
         </div>
         <Table
+          loading={loading}
           dataSource={data}
           columns={columns}
           pagination={pagination}
+          onChange={this.onChangePager}
           size="middle"
           bordered/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>

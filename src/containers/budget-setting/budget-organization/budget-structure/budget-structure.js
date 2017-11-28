@@ -117,13 +117,13 @@ class BudgetStructure extends React.Component {
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
     this.setState({
-      pagination:{
-        current: pagination.current,
-        page: pagination.current-1,
-        pageSize: pagination.pageSize,
-        total: pagination.total
-      }
+      loading: true,
+      pagination: temp
     }, ()=>{
       this.getList();
     })
