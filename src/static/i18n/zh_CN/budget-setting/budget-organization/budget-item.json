@@ -10,5 +10,7 @@
   "budget.itemCodeExist": "该预算项目已存在",
   "variationAttribute.immobilization": "固定",
   "variationAttribute.mix": "混合",
-  "variationAttribute.alteration": "变动"
+  "variationAttribute.alteration": "变动",
+  "itemMap.sourceType": "来源类别",
+  "itemMap.detailType": "明细类型"
 }
