@@ -157,14 +157,14 @@ class BudgetStructure extends React.Component {
           </div>
         </div>
         <Table
-            loading={loading}
-            dataSource={data}
-            columns={columns}
-            pagination={pagination}
-            onChange={this.onChangePager}
-            onRowClick={this.handleRowClick}
-            size="middle"
-            bordered/>
+          loading={loading}
+          dataSource={data}
+          columns={columns}
+          pagination={pagination}
+          onChange={this.onChangePager}
+          onRowClick={this.handleRowClick}
+          size="middle"
+          bordered/>
       </div>
     )
   }

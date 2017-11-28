@@ -69,7 +69,6 @@ class DepartmentGroup extends React.Component {
     const {searchParams, pagination} = this.state;
     let url = `${config.baseUrl}/api/DepartmentGroup/selectByInput?deptGroupCode=${searchParams.deptGroupCode}&description=${searchParams.description}&page=${pagination.page}&size=${pagination.pageSize}`;
     httpFetch.get(url).then((response)=>{
-      console.log(response)
       response.data.map((item,index)=>{
         item.key = item.id;
       });
@@ -99,7 +98,6 @@ class DepartmentGroup extends React.Component {
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
-    console.log(pagination)
     this.setState({
       pagination:{
         current: pagination.current,

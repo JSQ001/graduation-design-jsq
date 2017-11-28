@@ -29,7 +29,7 @@ class CreateOrUpdateBank extends React.Component{
       bankTypeHelp: "",
       bank:{},
       isEditor: false,
-      bankType:[],
+      country:[],
     };
     this.validateBankCode = debounce(this.validateBankCode,1000)
   }
@@ -173,7 +173,7 @@ class CreateOrUpdateBank extends React.Component{
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
 
-    const { defaultStatus, loading, bankTypeHelp, bank, bankType, isEditor} = this.state;
+    const { defaultStatus, loading, bankTypeHelp, bank, country, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -181,12 +181,11 @@ class CreateOrUpdateBank extends React.Component{
 
     console.log(this.state.defaultStatus)
 
-    const bankTypeOptions = bankType.map((item)=><Option key={item.id}>{item.value}</Option>)
     return(
       <div className="new-bank-definition">
         <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
           <FormItem {...formItemLayout}
-                    label={formatMessage({id:"common.column.status"})+" :"}>
+                    label={formatMessage({id:"common.column.status"})}>
             {getFieldDecorator('isEnabled',{
               initialValue: defaultStatus,
               valuePropName: 'checked'
@@ -203,11 +202,11 @@ class CreateOrUpdateBank extends React.Component{
           </FormItem>
           <span className="enabled-type" style={{marginLeft:15,width:100}}>{(this.state.flag === 'y'? this.state.isEnabled : defaultStatus ) ? "启用" : "禁用"}</span>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankCodeLong"})}
+            label={formatMessage({id:"bank.bankCode"})}
             help={this.state.bankCodeLongHelp}
             validateStatus={this.state.bankCodeLongStatus}>
             {getFieldDecorator('bankCodeLong', {
-              initialValue: bank.bankCodeLong,
+              initialValue: bank.bankCode,
               rules: [
                 {
                   required: true,
@@ -222,7 +221,7 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankCodeString"})}
+            label="Swift Code"
             validateStatus={this.state.bankCodeLStringStatus}
             help={this.state.bankCodeStringHelp}>
             {getFieldDecorator('bankCodeString', {
@@ -254,10 +253,41 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankType"})}
+            label={formatMessage({id:"bank.country"})}
             help={bankTypeHelp}>
-            {getFieldDecorator('bankType', {
+            {getFieldDecorator('country', {
               initialValue: bank.bankType,
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage({id:"common.please.select"})
+                },
+                {
+                  validator: (item,value,callback)=>{
+                    console.log(value)
+                    this.setState({
+                      bankTypeHelp: value === "INTERNAL" ? formatMessage({id:"bank.innerBankInfo"}) : null
+                    });
+                    callback()
+                  }
+                }
+              ],
+            })(
+              <Select
+                placeholder={ formatMessage({id:"common.please.select"})}
+                showSearch>
+
+                {
+                 country.map((item)=><Option key={item.key}>{item.label}</Option>)
+                }
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout}
+                    label={formatMessage({id:"bank.address"})}
+                    help={bankTypeHelp}>
+            {getFieldDecorator('address', {
+              //initialValue: bank.bankType,
               rules: [
                 {
                   required: true,
@@ -276,7 +306,7 @@ class CreateOrUpdateBank extends React.Component{
             })(
               <Select placeholder={ formatMessage({id:"common.please.select"})}>
                 {
-                  bankType.map((item)=><Option key={item.key}>{item.label}</Option>)
+                  [].map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
