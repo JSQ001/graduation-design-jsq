@@ -99,7 +99,6 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
-
   componentWillMount(){
     this.getList();
     //根据路径上的预算规则id查出完整数据
