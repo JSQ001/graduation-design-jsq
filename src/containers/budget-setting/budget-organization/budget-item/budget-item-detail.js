@@ -89,13 +89,9 @@ class BudgetItemDetail extends React.Component{
     value.organizationId = this.state.budgetItem.organizationId;
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
-    console.log(this.state.budgetItem)
-    console.log(value)
     httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
-        console.log(response)
         response.data.organizationName = this.state.budgetItem.organizationName;
-        console.log(value)
         response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({

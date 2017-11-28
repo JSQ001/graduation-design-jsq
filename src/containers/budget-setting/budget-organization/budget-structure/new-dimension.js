@@ -65,7 +65,6 @@ class NewDimension extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        console.log(values)
         values.dimensionId = values.dimensionCode[0].id;
         values.structureId = this.props.params.id;
         if(defaultDimension.length>0){
@@ -73,7 +72,6 @@ class NewDimension extends React.Component{
         }
 
         httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
-          console.log(res);
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
@@ -106,7 +104,6 @@ class NewDimension extends React.Component{
   };
 
   handleDimensionCode = (value)=>{
-    console.log(value)
     if(value.length>0){
       let selectorItem = this.state.selectorItem;
       selectorItem.url = `${config.baseUrl}/api/my/cost/center/items/${value[0].costCenterOID}`;
@@ -120,7 +117,6 @@ class NewDimension extends React.Component{
   };
 
   handleDimensionValue = (value)=>{
-    console.log(value)
     this.setState({
       defaultDimension:value
     })
@@ -243,9 +239,6 @@ class NewDimension extends React.Component{
                   rules: [
                     {
                       validator:(item,value,callback)=>{
-                        console.log(value)
-                        console.log(dimensionCode)
-
                         callback()
                       }
                     }],

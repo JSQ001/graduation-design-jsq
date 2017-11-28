@@ -40,7 +40,7 @@ class BudgetControlRulesDetail extends React.Component{
       ruleDetail: {},
       pagination: {
         current:0,
-        page: 1,
+        page: 0,
         total: 0,
         pageSize: 10,
         showSizeChanger: true,
