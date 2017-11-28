@@ -64,7 +64,7 @@ class BudgetItemDetail extends React.Component{
   onChangeEnabled = (e, record) => {
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
-    httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/companies`, record).then(() => {
+    httpFetch.put(`${config.budgetUrl}/api/budget/item/companies`, record).then(() => {
       this.getList()
     })
   };
