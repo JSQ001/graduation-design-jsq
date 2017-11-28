@@ -46,11 +46,6 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillMount() {
     let organizationIdParams = {organizationId : this.props.organization.id};
     let userSelectorItem = selectorData['user'];
-
-    let budgetItem = selectorData['budget_item'];
-    budgetItem.searchForm[1].getUrl = budgetItem.searchForm[1].getUrl + "?organizationId="+`${this.props.organization.id}`;
-    budgetItem.searchForm[2].getUrl = budgetItem.searchForm[2].getUrl + "?organizationId="+`${this.props.organization.id}`;
-
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -76,7 +71,7 @@ class NewBudgetRulesDetail extends React.Component{
         valueKey: 'itemName',
         codeKey: 'itemCode',
         listExtraParams: organizationIdParams,
-        selectorItem: budgetItem
+        selectorItem: undefined
       },
       'CURRENCY': {
         listType: 'currency',
@@ -450,38 +445,6 @@ class NewBudgetRulesDetail extends React.Component{
           </Row>
           <Row gutter={30}>
             <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                        validateStatus={validateStatusMap.parameterLowerLimit}
-                        help={helpMap.parameterLowerLimit}>
-                {getFieldDecorator('parameterLowerLimit',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: formatMessage({id: "common.please.select"})
-                      },
-                      {
-                        validator: (item,value,callback)=>{
-                          if(typeof value === 'undefined'){
-                            validateStatusMap.parameterLowerLimit = "error";
-                            helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
-                          }
-                          callback();
-                        }
-                      }
-                    ]
-                  })(
-                  <Selput type={lov.listType}
-                          valueKey={ lov.codeKey}
-                          listExtraParams={lov.listExtraParams}
-                          disabled={lov.disabled}
-                          onChange={()=>{}}/>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
                 validateStatus={validateStatusMap.parameterUpperLimit}
                 help={helpMap.parameterUpperLimit}>
@@ -508,6 +471,38 @@ class NewBudgetRulesDetail extends React.Component{
                           disabled={lov.disabled}
                           onChange={()=>{}}/>
                 )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
+              validateStatus={validateStatusMap.parameterLowerLimit}
+              help={helpMap.parameterLowerLimit}>
+              {getFieldDecorator('parameterLowerLimit',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({id: "common.please.select"})
+                    },
+                    {
+                      validator: (item,value,callback)=>{
+                        if(typeof value === 'undefined'){
+                          validateStatusMap.parameterLowerLimit = "error";
+                          helpMap.parameterLowerLimit = formatMessage({id: "common.please.select"})
+                        }
+                        callback();
+                      }
+                    }
+                  ]
+                })(
+                <Selput type={lov.listType}
+                        valueKey={ lov.codeKey}
+                        listExtraParams={lov.listExtraParams}
+                        disabled={lov.disabled}
+                        onChange={()=>{}}/>
+              )}
               </FormItem>
             </Col>
           </Row>

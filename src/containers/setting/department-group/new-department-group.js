@@ -28,6 +28,7 @@ class NewDepartmentGroup extends React.Component{
 
   componentWillMount(){
     httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
+      console.log(response)
       let setOfBooks = [];
       response.data.map((item)=>{
         let option = {
@@ -51,8 +52,10 @@ class NewDepartmentGroup extends React.Component{
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        console.log(values);
         httpFetch.post(`${config.baseUrl}/api/DepartmentGroup/insertOrUpdate`,values).then((response)=>{
           if(response) {
+            console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             this.context.router.push(menuRoute.getMenuItemByAttr('department-group', 'key').children.departmentGroupDetail.url.replace(':id',response.data.id))
           }

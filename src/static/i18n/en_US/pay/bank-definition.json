@@ -1,11 +1,9 @@
 {
-  "bank.commonBank": "universal bank",
-  "bank.customBank": "custom bank",
   "bank.bankCode": "Bank code",
   "bank.bankName": "Bank name",
-  "bank.bankNames": "银行名称/支行名称",
   "bank.bankType": "Bank type",
-  "bank.bankCode": "Bank code",
+  "bank.bank.digitalCode": "Bank digital code",
+  "bank.bank.letterCode": "Bank letter code",
   "bank.branchBankCode": "Branch bank code",
   "bank.branchBankName": "Branch bank name",
   "bank.branchBankNumber": "Branch bank number",
@@ -23,9 +21,6 @@
   "bank.bankAddress": "bank address",
   "bank.contactName": "contact",
   "bank.phone": "contactPhone",
-  "bank.email": "contactEmail",
-  "bank.country": "country",
-  "bank.address": "开户地"
-
+  "bank.email": "contactEmail"
 
 }
