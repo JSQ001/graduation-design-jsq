@@ -17,6 +17,8 @@ import accountPeriodControl from 'static/i18n/zh_CN/finance-setting/account-peri
 import companyMaintain from 'static/i18n/zh_CN/setting/company-maintain.json'
 import financeView from 'static/i18n/zh_CN/financial-management/finance-view.json'
 import departmentGroup from 'static/i18n/zh_CN/setting/department-group.json'
+import paymentMethod from 'static/i18n/zh_CN/pay/payment-method.json'
+import paymentCompanySetting from 'static/i18n/zh_CN/pay/payment-company-setting.json'
 
 
 const i18nList = [
@@ -38,7 +40,9 @@ const i18nList = [
   accountPeriodControl, //会计期间控制
   companyMaintain,     //公司维护
   financeView, //单据查看
-  departmentGroup //部门组
+  departmentGroup, //部门组
+  paymentMethod,  //付款方式定义
+  paymentCompanySetting //付款公司配置
 
 ];
 

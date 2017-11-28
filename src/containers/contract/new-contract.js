@@ -6,6 +6,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
 
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
 
@@ -24,6 +25,7 @@ class NewContract extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
+      myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
     }
   }
 
@@ -68,7 +70,7 @@ class NewContract extends React.Component{
   };
 
   onCancel = () => {
-
+    this.context.router.push(this.state.myContract.url);
   };
 
   render() {
@@ -285,6 +287,10 @@ class NewContract extends React.Component{
     )
   }
 }
+
+NewContract.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedNewContract = Form.create()(injectIntl(NewContract));
 
