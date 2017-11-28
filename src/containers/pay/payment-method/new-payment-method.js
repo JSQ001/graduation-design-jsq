@@ -21,10 +21,30 @@ class NewPaymentMethod extends React.Component {
       isPut: false,
       loading: false,
       paymentMethodCategoryOptions:[],
+      searchFrom:[
+        {id:"isEnabled"},
+        {id:"paymentMethodCategory"},
+        {id:"paymentMethodCode"},
+        {id:"description"}
+      ]
     };
   }
 
   componentWillMount() {
+    let params = this.props.params;
+    console.log(params);
+    if(params && JSON.stringify(params) != "{}"){
+      this.setState({
+        isEnabled:params.isEnabled
+      },()=>{
+        console.log(this.state.isEnabled);
+      })
+    }else {
+      this.setState({
+        isEnabled:true,
+      })
+    }
+
     this.getPaymentMethodCategory();
   }
 
@@ -43,11 +63,21 @@ class NewPaymentMethod extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(this.props.params !=nextProps.params && nextProps.params){
-        this.state.params = this.props.params;
+    console.log(nextProps.params);
+    console.log("componentWillReceiveProps");
+    if(nextProps.params && JSON.stringify(nextProps.params) != "{}" && this.props.params != nextProps.params) {
+      console.log("params");
+      console.log(nextProps.params.isEnabled);
+      this.setState({
+        isEnabled:nextProps.params.isEnabled
+      },()=>{})
+    }
+    else {
+      this.setState({
+        isEnabled:true
+      },()=>{})
     }
   }
-
 
 
 
@@ -57,24 +87,49 @@ class NewPaymentMethod extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        let toValue = {
-          id:"",
-          versionNumber:1,
-          ...this.props.params,
-          ...values
-        }
-        console.log(toValue);
-        httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
-          this.setState({loading: false});
-          this.props.form.resetFields();
-          this.props.close(true);
-          message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
-          console.log(this.props.id);
-        }).catch((e) => {
-          this.setState({loading: false});
+        if (JSON.stringify(this.props.params) === "{}") {
+          console.log("星建");
+          let toValue = {
+            id: "",
+            versionNumber: 1,
+            ...this.props.params,
+            ...values,
+            isEnabled:this.state.isEnabled
+          }
+          toValue.isEnabled =this.state.isEnabled;
+          console.log(toValue);
+          httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+            this.setState({loading: false});
+            this.props.form.resetFields();
+            this.props.close(true);
+            message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
+            console.log(this.props.id);
+          }).catch((e) => {
+            this.setState({loading: false});
 
-          message.error(this.props.intl.formatMessage({id: "common.save.filed"}));
-        })
+            message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);
+          })
+        }else {
+          console.log("编辑");
+          let toValue ={
+            ...this.props.params,
+            ...values,
+            isEnabled:this.state.isEnabled
+          }
+          toValue.isEnabled = this.state.isEnabled;
+          console.log(toValue);
+          httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+            this.setState({loading: false});
+            this.props.form.resetFields();
+            this.props.close(true);
+            message.success("编辑成功");
+            console.log(this.props.id);
+          }).catch((e) => {
+            this.setState({loading: false});
+            message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);
+          })
+
+        }
       }
     });
   }
@@ -104,11 +159,10 @@ class NewPaymentMethod extends React.Component {
           <FormItem {...formItemLayout}
                     label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
-              valuePropName: "defaultChecked",
-              initialValue: isEnabled
+
             })(
               <div>
-                <Switch defaultChecked={isEnabled} checkedChildren={<Icon type="check"/>}
+                <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}
                         unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
                 <span className="enabled-type" style={{
                   marginLeft: 20,
@@ -120,7 +174,7 @@ class NewPaymentMethod extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"})}>
             {getFieldDecorator('paymentMethodCategory', {
               rules: [{}],
-
+              initialValue:this.props.params.paymentMethodCategory||''
             })(
               <Select>
                 {this.state.paymentMethodCategoryOptions.map((option)=>{
@@ -135,6 +189,7 @@ class NewPaymentMethod extends React.Component {
                 required: true,
                 message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
+              initialValue:this.props.params.paymentMethodCode||''
             })(
               <Input/>
             )}
@@ -145,6 +200,7 @@ class NewPaymentMethod extends React.Component {
                 required: true,
                 message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
+              initialValue:this.props.params.description||''
             })(
               <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}/>
             )}

@@ -30,6 +30,15 @@ class PaymentMethod extends React.Component {
           title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
           dataIndex: 'paymentMethodCategory',
           key: 'paymentMethodCategory',
+          render(recode){
+            if(recode === "ONLINE_PAYMENT"){
+              return "线上"
+            }else if(recode === "OFFLINE_PAYMENT"){
+              return "线下"
+            }else if(recode === "EBANK_PAYMENT"){
+              return "落地文件"
+            }
+          }
         },
         {/*付款方式代码*/
           title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
@@ -184,7 +193,7 @@ class PaymentMethod extends React.Component {
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -228,7 +237,7 @@ class PaymentMethod extends React.Component {
                     content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
 
         <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
                     show={showSlideFramePut}
