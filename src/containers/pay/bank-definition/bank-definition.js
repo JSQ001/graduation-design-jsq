@@ -51,27 +51,64 @@ class BankDefinition extends React.Component{
         {key: 'universalBank', name: '通用银行'},
         {key: 'customBank', name: '自定义银行'}
       ],
-      columns: [
-        {          /*国家*/
-          title: formatMessage({id:"bank.country"}), key: "country", dataIndex: 'country'
-        },
-        {          /*银行代码*/
-          title: formatMessage({id:"bank.bankCode"}), key: "bankCode", dataIndex: 'bankCode'
-        },
-        {          /*银行字母代码*/
-          title: 'Swift Code', key: "bankCodeString", dataIndex: 'bankCodeString'
-        },
-        {          /*银行名称*/
-          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
-        },
-        {          /*开户地*/
-          title: formatMessage({id:"bank.address"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
-        },
-      ]
+      columns:[],
+      columnGroup: {
+        'universalBank': [
+          {
+            /*国家*/
+            title: formatMessage({id: "bank.country"}), key: "country", dataIndex: 'country'
+          },
+          {
+            /*银行代码*/
+            title: formatMessage({id: "bank.bankCode"}), key: "bankCode", dataIndex: 'bankCode'
+          },
+          {
+            /*银行字母代码*/
+            title: 'Swift Code', key: "bankCodeString", dataIndex: 'bankCodeString'
+          },
+          {
+            /*银行名称*/
+            title: formatMessage({id: "bank.bankName"}), key: "bankName", dataIndex: 'bankName'
+          },
+          {
+            /*开户地*/
+            title: formatMessage({id: "bank.address"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
+          },
+        ],
+        'customBank': [
+          {
+            /*国家*/
+            title: formatMessage({id: "bank.country"}), key: "country", dataIndex: 'country'
+          },
+          {
+            /*银行代码*/
+            title: formatMessage({id: "bank.bankCode"}), key: "bankCode", dataIndex: 'bankCode'
+          },
+          {
+            /*银行字母代码*/
+            title: 'Swift Code', key: "bankCodeString", dataIndex: 'bankCodeString'
+          },
+          {
+            /*银行名称*/
+            title: formatMessage({id: "bank.bankName"}), key: "bankName", dataIndex: 'bankName'
+          },
+          {
+            /*开户地*/
+            title: formatMessage({id: "bank.address"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
+          },
+          {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+            <span>
+            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
+          </span>)},  //操作
+        ]
+      }
     }
   }
 
   componentWillMount(){
+    this.setState({
+      columns: this.state.columnGroup.universalBank,
+    });
     this.getList();
   }
 
@@ -100,9 +137,8 @@ class BankDefinition extends React.Component{
   //获取公司下的银行数据
   getList(){
     const {params, key, pagination  }  = this.state;
-    let path = ''
-
-    let url = `${config.payUrl}/api/cash/banks/query?page=${pagination.page}&size=${pagination.pageSize}`;
+    let path = '';
+    let url = `${config.payUrl}/api/cash/bank/user/defineds/query?page=${pagination.page}&size=${pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -149,7 +185,6 @@ class BankDefinition extends React.Component{
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
-    console.log(pagination)
     this.setState({
       pagination:{
         current: pagination.current,
@@ -179,12 +214,15 @@ class BankDefinition extends React.Component{
 
   //Tabs点击
   onChangeTabs = (key) => {
-    let pagination = this.state.pagination;
+    const { pagination, columnGroup} = this.state;
+    pagination.page = 0;
+    pagination.current = 1;
     this.setState({
       loading: true,
       page: 0,
       data: [],
       label: key,
+      columns: columnGroup[key]
     },()=>{
       this.getList()
     });

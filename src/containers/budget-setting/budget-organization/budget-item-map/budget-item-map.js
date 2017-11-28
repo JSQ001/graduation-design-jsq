@@ -26,7 +26,7 @@ class BudgetItem extends React.Component {
       paramsKey:0,
       sourceTypeArray: [
         {label: "申请类型", value: "appType"},
-        {label: "费用类型", value:"costType"}
+        {label: "费用类型", value:"expenseType"}
       ],
       searchParams:{
         sourceType: "",
@@ -71,7 +71,7 @@ class BudgetItem extends React.Component {
         labelKey: 'itemTypeName',
         valueKey: 'id',
         codeKey: 'itemTypeCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'BUDGET_ITEM_GROUP': {
@@ -79,7 +79,7 @@ class BudgetItem extends React.Component {
         labelKey: 'itemGroupName',
         valueKey: 'id',
         codeKey: 'itemGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'BUDGET_ITEM': {
@@ -87,8 +87,8 @@ class BudgetItem extends React.Component {
         labelKey: 'itemName',
         valueKey: 'id',
         codeKey: 'itemCode',
-        listExtraParams: organizationIdParams,
-        selectorItem: itemSelectorItem
+        listExtraParams: {},
+        selectorItem: {}
       },
     };
   }
@@ -172,15 +172,25 @@ class BudgetItem extends React.Component {
   //修改来源类型
   handleChangeType = (value, index) => {
     let { params } = this.state;
+    console.log(value)
     params[index].sourceType = value;
     this.setState({ params });
   };
 
+  //选择费用类型
+  handleChangeExpenseType = (value, index) => {
+    console.log(value)
+    const {params} = this.state;
+    params[index].detail = value;
+    this.setState({params})
+  };
+
   //选择项目类型
-  handleChangeValue = (value, index) => {
+  handleChangeItem = (value, index) => {
     console.log(value)
     let { params } = this.state;
     params[index].item = value;
+    params[index].budgetItemId = value[0].id;
     this.setState({ params });
   };
 
@@ -201,20 +211,38 @@ class BudgetItem extends React.Component {
       }
       case 'detail':{
         let disabled = !params[index].sourceType;
-        return (
-          <Chooser
-            onChange={(value) => this.handleChangeDetail(value, index)}
-            type='cost_type'
-            labelKey='itemName'
-            valueKey='itemCode'
-            listExtraParams={{organizationId: this.props.organization.id}}
-            value={params[index].item}
-            single={true}/>
-        );
+        console.log(params[index])
+        console.log(params[index].sourceType)
+        if(params[index].sourceType === 'expenseType'){
+          return (
+            <Chooser
+              onChange={(value) => this.handleChangeExpenseType(value, index)}
+              type='expense_type'
+              labelKey='name'
+              valueKey='expenseTypeOID'
+              listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId}}
+              value={params[index].detail}
+              single={true}/>
+          );
+        }else {
+          if (params[index].sourceType === 'appType'){
+            return (
+              <Chooser
+                onChange={(value) => this.handleChangeExpenseType(value, index)}
+                type='cost_type'
+                labelKey='itemName'
+                valueKey='itemCode'
+                listExtraParams={{organizationId: this.props.organization.id}}
+                value={params[index].item}
+                single={true}/>
+            );
+          }else
+            return <Select disabled/>;
+        }
       }
       case 'item':{
         return <Chooser
-                  onChange={(value) => this.handleChangeValue(value, index)}
+                  onChange={(value) => this.handleChangeItem(value, index)}
                   type='budget_item'
                   labelKey='itemName'
                   valueKey='itemCode'
@@ -227,10 +255,21 @@ class BudgetItem extends React.Component {
 
   handleAdd = ()=>{
     let { params, paramsKey } = this.state;
-    let newParams = {sourceType: '', params: '', item: [], key: paramsKey};
+    let newParams = {sourceType: '', detail: [], item: [], key: paramsKey};
     params.push(newParams);
     paramsKey++;
     this.setState({ params, paramsKey});
+  };
+
+  handleSave = () =>{
+    let params = this.state.params;
+    httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`,params).then((response)=>{
+      console.log(response)
+    }).catch((e)=>{
+      if(e.response){
+        e.error(``)
+      }
+    })
   };
 
   render(){
@@ -246,10 +285,11 @@ class BudgetItem extends React.Component {
       <div className="budget-item-map">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
-          <Button type="primary" onClick={this.handleCreate}>EXCEL导入</Button>
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
+            <Button type="primary" onClick={this.handleCreate}>EXCEL导入</Button>
             <Button type="primary" onClick={this.handleAdd}>{formatMessage({id: 'common.add'})}</Button>  {/*添加*/}
+            <Button type="primary" onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*添加*/}
           </div>
         </div>
         <Table

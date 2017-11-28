@@ -154,8 +154,6 @@ const selectorData = {
     columns: [
       {title: '维度代码', dataIndex: 'code', width: '25%'},
       {title: '维度名称', dataIndex: 'name', width: '25%'},
-      {title: '公司级别', dataIndex: 'companyLevel', width: '25%'},
-      {title: '系统级别', dataIndex: 'systemLevel', width: '25%'},
     ],
     key: 'id'
   },
@@ -399,7 +397,21 @@ const selectorData = {
     ],
     key: 'companyOID'
   },
-
+  'expense_type': {
+    title: '费用类型',
+    url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
+    searchForm: [
+      {type: 'input', id: 'expenseTypeCode', label: "费用类型代码"},
+      {type: 'input', id: 'name', label: '费用类型名称'}
+    ],
+    columns: [
+      {title: "费用类型代码", dataIndex: 'expenseTypeCode'},
+      {title: "费用类型名称", dataIndex: 'name'},
+      {title:"图标",dataIndex:'iconName'},
+      {title:"账套",dataIndex:'setOfBook'}
+    ],
+    key: 'expenseTypeOID'
+  },
 };
 
 export default selectorData;
