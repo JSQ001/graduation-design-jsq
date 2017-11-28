@@ -173,7 +173,7 @@ class BudgetJournalDetailSubmit extends React.Component {
     for(let i=1;i<dimensionList.length;i++){
       const item =dimensionList[i];
       columns.push(
-        {title:`${item.name}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+        {title:`${item.dimensionName}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
           render: recode => (
             <Popover content={recode}>
               {recode}

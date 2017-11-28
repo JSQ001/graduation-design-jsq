@@ -12,7 +12,5 @@
   "variationAttribute.mix": "混合",
   "variationAttribute.alteration": "变动",
   "itemMap.sourceType": "来源类别",
-  "itemMap.detailType": "明细类型",
-  "budget.item": "预算项目"
-
+  "itemMap.detailType": "明细类型"
 }

@@ -83,4 +83,41 @@
   .margin-20-0 {
     margin: 20px 0;
   }
+  .fast-reply {
+    max-height: 87px;
+    overflow: auto;
+    .add-new-btn, .fast-reply-tag {
+      margin-bottom: 8px;
+      background: none;
+      border-radius: 15px;
+      padding: 3px 10px;
+      height: auto;
+    }
+    .add-new-btn {
+      height: 28px;
+    }
+    .fast-reply-tag {
+      border: 1px solid #e9e9e9;
+      &.ant-tag-checkable-checked {
+        border-color: #108ee9;
+        color: #108ee9;
+      }
+      .delete-tag {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        font-size: 16px;
+        &:hover {
+          color: #108ee9;
+        }
+      }
+    }
+  }
+  .fast-reply-title {
+    .edit {
+      float: right;
+    }
+  }
 }

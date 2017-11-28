@@ -11,7 +11,8 @@ class Contract extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      loading1: false,
+      loading2: false,
       SearchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'contractName', label: '合同名称'},
@@ -30,16 +31,14 @@ class Contract extends React.Component{
         {type: 'input', id: 'employeeId', label: '创建人'},
       ],
       columns: [
-        {title: '合同编号', dataIndex: 'contractNumber'},
-        {title: '公司', dataIndex: 'companyId'},
-        {title: '合同类型', dataIndex: 'contractTypeId'},
-        {title: '合同名称', dataIndex: 'contractTypeName'},
-        {title: '签署日期', dataIndex: 'signDate'},
-        {title: '合同方类型', dataIndex: 'partnerCategory'},
-        {title: '合同方', dataIndex: 'partnerId'},
+        {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
+        {title: '申请人', dataIndex: 'companyId'},
+        {title: '提交时间', dataIndex: 'contractTypeId'},
+        {title: '类型', dataIndex: 'contractTypeName'},
+        {title: '报销单号', dataIndex: 'signDate'},
         {title: '币种', dataIndex: 'currency'},
-        {title: '合同金额', dataIndex: 'amount'},
-        {title: '创建人', dataIndex: 'createdBy'}
+        {title: '金额', dataIndex: 'amount'},
+        {title: '状态', dataIndex: 'status'},
       ],
       unapprovedData: [],
       approvedData: [],
@@ -57,15 +56,62 @@ class Contract extends React.Component{
   }
 
   componentWillMount() {
-    this.getList()
+    this.getUnapprovedList();
+    this.getApprovedList()
   }
 
-  getList = () => {
-    const { unapprovedPage, unapprovedPageSize, approvedPage, approvedPageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
-    httpFetch.get(url).then((res) => {
-
+  getUnapprovedList = () => {
+    const { unapprovedPage, unapprovedPageSize } = this.state;
+    let unapprovedUrl = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    this.setState({ loading1: true });
+    httpFetch.get(unapprovedUrl).then((res) => {
+      if (res.status === 200) {
+        this.setState({
+          unapprovedData: res.data,
+          loading1: false,
+          unapprovedPagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            current: unapprovedPage + 1,
+            onChange: this.onUnapprovedChangePaper
+          }
+        })
+      }
     })
+  };
+
+  getApprovedList = () => {
+    const { approvedPage, approvedPageSize } = this.state;
+    let approvedUrl = `${config.contractUrl}/contract/api/contract/header/confirmEd/query?page=${approvedPage}&size=${approvedPageSize}`;
+    this.setState({ loading2: true });
+    httpFetch.get(approvedUrl).then((res) => {
+      if (res.status === 200) {
+        this.setState({
+          approvedData: res.data,
+          loading2: false,
+          approvedPagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            current: approvedPage + 1,
+            onChange: this.onApprovedChangePaper
+          }
+        })
+      }
+    })
+  };
+
+  onUnapprovedChangePaper = (page) => {
+    if (page - 1 !== this.state.page) {
+      this.setState({ unapprovedPage: page - 1 }, () => {
+        this.getUnapprovedList()
+      })
+    }
+  };
+
+  onApprovedChangePaper = (page) => {
+    if (page - 1 !== this.state.page) {
+      this.setState({ approvedPage: page - 1 }, () => {
+        this.getApprovedList()
+      })
+    }
   };
 
   unapprovedSearch = (values) => {
@@ -77,7 +123,7 @@ class Contract extends React.Component{
   };
 
   render() {
-    const { loading, SearchForm, columns, unapprovedData, approvedData, unapprovedPagination, approvedPagination } = this.state;
+    const { loading1, loading2, SearchForm, columns, unapprovedData, approvedData, unapprovedPagination, approvedPagination } = this.state;
     return (
       <div className="approve-contract">
         <Tabs onChange={this.handleTabsChange}>
@@ -91,7 +137,7 @@ class Contract extends React.Component{
                    columns={columns}
                    dataSource={unapprovedData}
                    padination={unapprovedPagination}
-                   loading={loading}
+                   loading={loading1}
                    bordered
                    size="middle"/>
           </TabPane>
@@ -105,7 +151,7 @@ class Contract extends React.Component{
                    columns={columns}
                    dataSource={approvedData}
                    padination={approvedPagination}
-                   loading={loading}
+                   loading={loading2}
                    bordered
                    size="middle"/>
           </TabPane>

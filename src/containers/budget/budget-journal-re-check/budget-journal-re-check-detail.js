@@ -81,16 +81,6 @@ class BudgetJournalReCheckDetail extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        /*{
-
-          title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-        },
-        {
-
-          title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
-          key: "rateQuotation",
-          dataIndex: 'rateQuotation'
-        },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
@@ -178,10 +168,11 @@ class BudgetJournalReCheckDetail extends React.Component {
   //根据预算表的维度.获取维度Columuns
   getColumnsAndDimensionhandleData(dimensionList){
     let columns=this.state.columns;
-    for(let i=1;i<dimensionList.length;i++){
+    for(let i=0;i<dimensionList.length;i++){
       const item =dimensionList[i];
+      let priority =i+1;
       columns.push(
-        {title:`${item.name}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+        {title:`${item.dimensionName}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -275,16 +266,6 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   }
 
-  getPeriodStrategyData=()=>{
-    const infoData = this.state.infoData;
-    const periodStrategy =  infoData.periodStrategy;
-    switch (periodStrategy){
-      case 'MONTH':{ return `期间`}
-      case 'QUARTER':{ return `年`}
-      case 'YEAR':{ return `季度`}
-    }
-
-  }
 
   //获取附件
   getFile=()=>{
@@ -296,19 +277,6 @@ class BudgetJournalReCheckDetail extends React.Component {
     return file_arr.length > 0 ? file_arr : '-';
 
   }
-
-
-  getPeriod=()=>{
-    const infoData = this.state.infoData;
-    switch (infoData.periodStrategy){
-      case 'MONTH':{ return `${infoData.periodName?infoData.periodName:''}`}
-      case 'QUARTER':{ return `${infoData.periodYear}年-第 ${infoData.periodQuarter?infoData.periodQuarter:''} 季度`}
-      case 'YEAR':{ return `${infoData.periodYear}年`}
-
-    }
-  }
-
-
 
   render(){
     const { data, columns,infoData} = this.state;
@@ -322,23 +290,23 @@ class BudgetJournalReCheckDetail extends React.Component {
 
          <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">状态</div>
+              <div className="base-info-title">状态:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算日记账编号</div>
+              <div className="base-info-title">预算日记账编号:</div>
               <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">总金额</div>
+              <div className="base-info-title">总金额:</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">申请人</div>
+              <div className="base-info-title">申请人:</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
            <Col span={8}>
@@ -346,31 +314,31 @@ class BudgetJournalReCheckDetail extends React.Component {
              <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
            </Col>
             <Col span={8}>
-            <div className="base-info-title">创建日期</div>
+            <div className="base-info-title">创建日期:</div>
             <div className="beep-info-text">{String(infoData.createdDate).substring(0,10)}</div>
           </Col>
             <Col span={8}>
-            <div className="base-info-title">预算项目类型</div>
+            <div className="base-info-title">预算项目类型:</div>
             <div className="beep-info-text">{infoData.journalTypeName}</div>
           </Col>
             <Col span={8}>
-            <div className="base-info-title">预算表</div>
+            <div className="base-info-title">预算表:</div>
             <div className="beep-info-text">{infoData.structureName}</div>
           </Col>
             <Col span={8}>
-            <div className="base-info-title">预算场景</div>
+            <div className="base-info-title">预算场景:</div>
             <div className="beep-info-text">{infoData.scenario}</div>
           </Col>
             <Col span={8}>
-            <div className="base-info-title">预算版本</div>
+            <div className="base-info-title">预算版本:</div>
             <div className="beep-info-text">{infoData.versionName}</div>
           </Col>
             <Col span={8}>
-              <div className="base-info-title">编制期段</div>
+              <div className="base-info-title">编制期段:</div>
               <div className="beep-info-text">{this.getPeriodStrategy()}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">附件</div>
+              <div className="base-info-title">附件:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
 
@@ -385,7 +353,6 @@ class BudgetJournalReCheckDetail extends React.Component {
                size="middle"
                scroll={{ x: '150%' }}
                rowKey={recode=>{return recode.id}}
-
         />
 
         <div className="collapse">
@@ -408,13 +375,9 @@ class BudgetJournalReCheckDetail extends React.Component {
             <Button type="primary" onClick={this.handlePass}>通过</Button>
             <Button className="button-reject" type="primary"   onClick={this.handleReject}>驳回</Button>
             <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
-
           </div>
           <div>
-
-
           </div>
-
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Tabs, Button, Row, Col, Affix, Spin, Breadcrumb, Table } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import SlideFrame from 'components/slide-frame'
@@ -62,7 +62,7 @@ class ContractDetailCommon extends React.Component {
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 非摊销类
-          <Button type="primary">编辑</Button>
+          {this.props.contractEdit && <Button type="primary">编辑</Button>}
         </h3>
         <Row>
           <Col span={6}>
@@ -86,7 +86,36 @@ class ContractDetailCommon extends React.Component {
       </Spin>
     );
     let contractHistory = (
-      <div>合同历史</div>
+      <div>
+        <Timeline>
+          <Timeline.Item color="grey">
+            <p>
+              <span style={{fontWeight:'bold'}}>等待审批</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234，李丽丽 2234，王小明 1234</span>
+            </p>
+          </Timeline.Item>
+          <Timeline.Item color="green">
+            <p>
+              <span style={{fontWeight:'bold'}}>审批通过</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234</span>
+            </p>
+            <p>审批意见啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
+          </Timeline.Item>
+          <Timeline.Item color="#ff6600">
+            <p>
+              <span style={{fontWeight:'bold'}}>审批驳回</span>
+              <span style={{marginLeft:50}}>【部门主管】王小明 1234</span>
+            </p>
+            <p style={{color:'#ff6600'}}>金额超标，不同意！金额超标，不同意！金额超标，不同意！金额超标，不同意！</p>
+          </Timeline.Item>
+          <Timeline.Item>
+            <p>
+              <span style={{fontWeight:'bold'}}>提交审批</span>
+              <span style={{marginLeft:50}}>王小明 1234</span>
+            </p>
+          </Timeline.Item>
+        </Timeline>
+      </div>
     );
     let subContent = {};
     subContent.DETAIL = (
@@ -125,7 +154,7 @@ class ContractDetailCommon extends React.Component {
         <h3 className="sub-header-title">付款计划</h3>
         <div className="table-header">
           <div className="table-header-buttons">
-            <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>
+            {this.props.contractEdit && <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>}
           </div>
           <Breadcrumb style={{marginBottom:'10px'}}>
             <Breadcrumb.Item>{`共 ${pagination.total || 0} 条数据`}</Breadcrumb.Item>

@@ -45,7 +45,7 @@ class BudgetItem extends React.Component {
         {type: 'select', id: 'itemTypeName',options:[], labelKey: 'itemTypeName',valueKey: 'id',
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id},
-          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.id}
+          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.organization.id}
         },
         {type: 'select', id: 'itemCodeFrom',
           label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
@@ -104,7 +104,6 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
-
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
@@ -114,17 +113,12 @@ class BudgetItem extends React.Component {
       response.data.map((item,index)=>{
         item.key = item.id;
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
         loading: false,
         data: response.data,
-        pagination: {
-          page: this.state.pagination.page,
-          current: this.state.pagination.current,
-          pageSize:this.state.pagination.pageSize,
-          showSizeChanger:true,
-          showQuickJumper:true,
-          total: Number(response.headers['x-total-count']),
-        }
+        pagination
       },()=>{
         this.refreshRowSelection()
       })
@@ -132,8 +126,8 @@ class BudgetItem extends React.Component {
   }
 
   handleSearch = (values) =>{
-    console.log(values)
     this.setState({
+      loading: true,
       searchParams:{
         itemCode: values.itemCode,
         itemName: values.itemName,
@@ -272,7 +266,7 @@ class BudgetItem extends React.Component {
     };
     return (
       <div className="budget-item">
-        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
+       <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
@@ -312,3 +306,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetItem));
+

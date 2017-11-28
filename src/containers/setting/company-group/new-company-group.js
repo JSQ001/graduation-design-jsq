@@ -28,6 +28,7 @@ class NewCompanyGroup extends React.Component{
 
   componentWillMount(){
     httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
+      console.log(response)
       let setOfBooks = [];
       response.data.map((item)=>{
         let option = {
@@ -52,8 +53,10 @@ class NewCompanyGroup extends React.Component{
 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        console.log(values)
         httpFetch.post(`${config.baseUrl}/api/company/group`,values).then((response)=>{
           if(response) {
+            console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url.replace(':id',response.data.id));
             this.setState({loading:false})
@@ -62,6 +65,9 @@ class NewCompanyGroup extends React.Component{
           if(e.response){
             message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
             this.setState({loading: false});
+          }
+          else {
+            console.log(e)
           }
         })
       }

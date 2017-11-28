@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select,Tag,Badge} from 'antd';
+import { Button,Popover, Table, Select,Tag,Badge} from 'antd';
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
@@ -55,13 +55,52 @@ class BudgetJournalReCheck extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
         },
         {          /*预算表*/
-          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
+          title:"预算表", key: "structureName", dataIndex: 'structureName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*预算场景*/
+          title: this.props.intl.formatMessage({id:"budget.scenarioId"}), key: "scenario", dataIndex: 'scenario',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*预算版本*/
+          title: this.props.intl.formatMessage({id:"budget.versionId"}), key: "versionName", dataIndex: 'versionName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {          /*申请人*/
+          title: "申请人", key: "employeeName", dataIndex: 'employeeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*创建时间*/
+          title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
+          render: recode => (
+            <Popover content={recode}>
+              {String(recode).substring(0,10)}
+            </Popover>)
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
@@ -80,7 +119,6 @@ class BudgetJournalReCheck extends React.Component {
           }
         },
       ],
-
       budgetJournalDetailReCheckDetailPage: menuRoute.getRouteItem('budget-journal-re-check-detail','key'),    //预算日记账复核详情
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
