@@ -72,14 +72,14 @@ class CompanyGroupDetail extends React.Component{
 
   deleteItem = (e,record) =>{
     this.setState({loading: true});
-    console.log(record)
     let param = [];
     typeof record === 'undefined' ? param = this.state.selectedEntityOIDs : param.push(record.id);
     httpFetch.delete(`${config.baseUrl}/api/company/group/assign/batch`,param).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name:typeof record === 'undefined' ? "" : record.companyName})); // name删除成功
       this.setState({
         selectedRowKeys:[],
-        selectedEntityOIDs:[]
+        selectedEntityOIDs:[],
+        batchCompany: true
       },this.getList());
     }).catch((e)=>{
       if(e.response){
@@ -119,7 +119,6 @@ class CompanyGroupDetail extends React.Component{
   //查询公司组子公司
   getList(){
     httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/dto?companyGroupId=${this.props.params.id}`).then((response)=>{
-      console.log(response)
       response.data.map((item)=>{
         item.key = item.id
       });
@@ -218,13 +217,13 @@ class CompanyGroupDetail extends React.Component{
   handleListOk = (result) => {
     let lov = this.state.lov;
     let param = [];
-    console.log(result)
     result.result.map((item)=>{
       param.push({companyGroupId: this.props.params.id, companyId: item.id})
     });
     httpFetch.post(`${config.baseUrl}/api/company/group/assign/batch`,param).then((response)=>{
       if(response.status === 200){
         lov.visible = false;
+        message.success(`${this.props.intl.formatMessage({id: "common.operate.success"})}`);
         this.setState({
           loading: true,
           lov
@@ -235,6 +234,7 @@ class CompanyGroupDetail extends React.Component{
 
   render(){
     const { edit, lov, pagination, companyGroup, columns, data, infoList, selectedRowKeys, batchCompany} = this.state;
+    const {formatMessage} = this.props.intl;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -250,10 +250,12 @@ class CompanyGroupDetail extends React.Component{
           updateHandle={this.handleUpdate}
           updateState={edit}/>
         <div className="table-header">
-          <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
-            <Button disabled={batchCompany} onClick={this.deleteItem}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            <Button type="primary" onClick={()=>this.showListSelector(true)}>{formatMessage({id: 'common.add'})}</Button>  {/*添加公司*/}
+            <Popconfirm onConfirm={this.deleteItem} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: ""})}>{/* 你确定要删除organizationName吗 */}
+              <Button disabled={batchCompany}>{this.props.intl.formatMessage({id: 'common.delete'})}</Button>
+            </Popconfirm>
           </div>
         </div>
         <Table

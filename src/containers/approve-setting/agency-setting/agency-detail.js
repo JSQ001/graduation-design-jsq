@@ -66,7 +66,7 @@ class AgencyDetail extends React.Component {
         });
         return;
       }
-      if (this.state.principalValidateStatus != 'error') {
+      if (this.state.principalValidateStatus !== 'error') {
         let principalObj = values[`principalObj-${this.state.principalEditNum}`];
         try {
           principalObj = JSON.parse(principalObj)
@@ -132,7 +132,7 @@ class AgencyDetail extends React.Component {
           principalHelp: '此员工已存在被代理信息，请返回至前一页面搜索该员工并编辑'
         })
       } else {
-        if (principalInfo.status == 1002) {
+        if (principalInfo.status === 1002) {
           this.setState({
             principalValidateStatus: 'warning',
             principalHelp: `该员工将于${principalInfo.leavingDate}离职，离职后此代理将自动禁用`
@@ -214,7 +214,7 @@ class AgencyDetail extends React.Component {
       saveBtn = "";
     }
     let alertMessage;
-    if(principalInfo.status == 1003) {
+    if(principalInfo.status === 1003) {
       alertMessage = (
         <Alert message="请注意"
                description={formatMessage({id: 'agencySetting.dimission-info'},

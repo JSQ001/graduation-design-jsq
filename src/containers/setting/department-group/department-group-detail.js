@@ -76,13 +76,12 @@ class DepartmentGroupDetail extends React.Component{
     let param = [];
     typeof record === 'undefined' ? param = this.state.selectedEntityOIDs : param.push(record.departmentDetailId);
     httpFetch.delete(`${config.baseUrl}/api/DepartmentGroupDetail/BatchDeleteByIds`,param).then(response => {
-
-      if(typeof record !== 'undefined'){
-        message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.name})); // name删除成功
-      }
+      let batchDelete = typeof record !== 'undefined';
+      message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: batchDelete ? record.name : ""})); // name删除成功
       this.setState({
         selectedRowKeys:[],
-        selectedEntityOIDs:[]
+        selectedEntityOIDs:[],
+        batchDelete: true
       },this.getList());
 
     }).catch((e)=>{
@@ -93,7 +92,6 @@ class DepartmentGroupDetail extends React.Component{
   };
 
   componentWillMount(){
-    console.log(this.props)
     httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectById?id=${this.props.params.id}`).then((response)=>{
       if(response.status === 200){
          this.setState({
@@ -110,7 +108,6 @@ class DepartmentGroupDetail extends React.Component{
     value.id = this.props.params.id;
     httpFetch.post(`${config.baseUrl}/api/DepartmentGroup/insertOrUpdate`,value).then((response)=>{
       if(response) {
-        console.log(response)
         message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
         this.setState({
           deptGroup: response.data,
@@ -127,7 +124,6 @@ class DepartmentGroupDetail extends React.Component{
   //查询部门组详情
   getList(){
     httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectDepartmentByGroupId?departmentGroupId=${this.props.params.id}`).then((response)=>{
-      console.log(response)
       if(response.status === 200){
         response.data.map((item)=>{
           item.key = item.departmentDetailId
@@ -166,6 +162,7 @@ class DepartmentGroupDetail extends React.Component{
     });
     httpFetch.post(`${config.baseUrl}/api/DepartmentGroupDetail/BatchAddDepartmentGroupDetail`,param).then((response)=>{
       if(response.status === 200){
+        message.success(`${this.props.intl.formatMessage({id: "common.operate.success"})}`);
         this.setState({
           loading: true,
           deptListSelector: false

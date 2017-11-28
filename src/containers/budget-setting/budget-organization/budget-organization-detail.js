@@ -14,6 +14,7 @@ import BudgetGroup from 'containers/budget-setting/budget-organization/budget-gr
 import BudgetStrategy from 'containers/budget-setting/budget-organization/budget-strategy/budget-strategy'
 import BudgetControlRules from 'containers/budget-setting/budget-organization/budget-control-rules/budget-control-rules'
 import BudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type'
+import BudgetItemMap from 'containers/budget-setting/budget-organization/budget-item-map/budget-item-map'
 
 import menuRoute from 'share/menuRoute'
 
@@ -31,6 +32,7 @@ class BudgetOrganizationDetail extends React.Component {
         {key: 'GROUP', name:'项目组'},
         {key: 'RULE', name:'控制规则'},
         {key: 'STRATEGY', name:'控制策略'},
+        {key: 'ITEM_MAP', name:'项目映射'},
         {key: 'JOURNAL_TYPE', name:'日记账类型'}
       ],
       budgetOrganizationDetailPage: menuRoute.getRouteItem('budget-organization-detail','key'),    //组织定义详情的页面项
@@ -86,6 +88,8 @@ class BudgetOrganizationDetail extends React.Component {
         break;
       case 'JOURNAL_TYPE':
         content = BudgetJournalType;
+      case 'ITEM_MAP':
+        content = BudgetItemMap;
         break;
     }
     return this.props.organization.id ? React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization})) : null;
