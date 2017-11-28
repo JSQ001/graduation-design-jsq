@@ -49,7 +49,9 @@ class BudgetItemDetail extends React.Component{
       columns: [
         {title: formatMessage({id:'structure.companyCode'}), key: 'companyCode', dataIndex: 'companyCode'},/*公司代码*/
         {title: formatMessage({id:'structure.companyName'}), key: 'companyName', dataIndex: 'companyName'}, /*公司明称*/
-        {title: formatMessage({id:'structure.companyType'}), key: 'companyType', dataIndex: 'companyType'}, /*公司类型*/
+        {title: formatMessage({id:'structure.companyType'}), key: 'companyTypeName', dataIndex: 'companyTypeName', /*公司类型*/
+          render: desc => <span>{desc ? desc : '-'}</span>
+        },
         {                        /*启用*/
           title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
           render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
@@ -57,6 +59,15 @@ class BudgetItemDetail extends React.Component{
       ],
     }
   }
+
+  //改变启用状态
+  onChangeEnabled = (e, record) => {
+    this.setState({loading: true});
+    record.isEnabled = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/companies`, record).then(() => {
+      this.getList()
+    })
+  };
 
   componentWillMount(){
     //根据路径上的id,查出该条预算项目完整数据
