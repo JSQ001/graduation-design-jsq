@@ -23,6 +23,13 @@ class NewBudgetJournalFrom extends React.Component {
       budgetJournalPage: menuRoute.getRouteItem('budget-journal', 'key'),    //预算日记账
       idSelectJournal: false,
       isStructureIn: false,
+      defaultValueList:{},
+      defaultDataList:[
+        {type:'chooser',event:'versionName',defaultValueKey:'versionName',
+          url:`${config.budgetUrl}/api/budget/versions/query?status=CURRENT&organizationId=${this.props.organization.id}`},
+        {type:'chooser',event:'scenarioName',defaultValueKey:'scenarioName',
+          url:`${config.budgetUrl}/api/budget/scenarios/query?defaultFlag=true&organizationId=${this.props.organization.id}`}
+      ],
       structureGroup: [],
       periodStrategy: [],
       periodPeriodQuarter: [],
@@ -32,6 +39,7 @@ class NewBudgetJournalFrom extends React.Component {
       periodYearFlag: true,
       periodQuarterFlag: true,
       periodStrategyFlag: true,
+      journalTypeIdFlag:true,
       file: {},
       attachmentOID: [],
     };
@@ -40,12 +48,31 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   componentWillMount() {
-    console.log(this.props.company)
-    console.log(this.props.user)
     this.getPeriodStrategy();
     this.getPeriodQuarter();
     this.getPeriod();
+    this.getDefaultValue();
   }
+
+  //获取表单默认值
+  getDefaultValue(){
+    let defaultValueList =  this.state.defaultValueList;
+    let defaultDataList = this.state.defaultDataList;
+    defaultDataList.map((item)=>{
+      console.log(item);
+      httpFetch.get(item.url).then((res)=>{
+        let data=res.data;
+        console.log(data);
+        if(item.type === "chooser"){
+          defaultValueList[item.defaultValueKey]=data;
+        }
+      }).catch((e)=>{
+
+      })
+    })
+    console.log(defaultValueList);
+  }
+
 
 
   //获取编制期段
@@ -177,13 +204,19 @@ class NewBudgetJournalFrom extends React.Component {
 
   //根据账套类型，获得预算表
   getStructure(value) {
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryStructureId?journalTypeId=${value}`).then(response => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
       console.log(response.data);
       this.setState(
-        {
-          structureGroup: response.data,
-        }
+        {structureGroup: response.data}
       )
+    })
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
+      console.log(response.data);
+        if(response.data){
+          this.props.from.setFieldsValue({
+            "structureId": response.data.id
+          })
+        }
     })
   }
 
@@ -457,19 +490,21 @@ class NewBudgetJournalFrom extends React.Component {
                       required:true,
                       message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算版本"})
                     }],
-
+                    valuePropName:"value",
+                    initialValue:this.state.defaultValueList["versionName"],
                   })(
                    <Chooser
                       type='budget_versions'
                       labelKey='versionName'
                       valueKey='id'
                       single={true}
-                      listExtraParams={{"organizationId": this.props.organization.id}}
+                      listExtraParams={{"organizationId": this.props.organization.id,"isEnabled":true}}
                     />
                   )}
                 </FormItem>
               </Col>
 
+              {/*${config.budgetUrl}/api/budget/scenarios/query*/}
               <Col span={8}>
                 <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.scenarios"})}>
                   {getFieldDecorator('scenarioName', {
@@ -477,6 +512,9 @@ class NewBudgetJournalFrom extends React.Component {
                       required:true,
                       message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算场景"})
                     }],
+                    valuePropsName:"value",
+                    initialValue:this.state.defaultValueList["scenarioName"],
+
 
                   })(
                     <Chooser

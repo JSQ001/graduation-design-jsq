@@ -141,12 +141,13 @@ class BudgetControlRules extends React.Component {
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
     this.setState({
-      pagination:{
-        page: pagination.current-1,
-        current: pagination.current,
-        pageSize: pagination.pageSize
-      }
+      loading: true,
+      pagination: temp
     }, ()=>{
       this.getList();
     })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select ,Tag,Badge} from 'antd';
+import { Button, Popover,Table, Select ,Tag,Badge} from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -38,31 +38,63 @@ class BudgetJournal extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName'
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {          /*编制期段*/
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
         },
         {          /*预算表*/
-          title: this.props.intl.formatMessage({id:"budget.structureName"}), key: "structureName", dataIndex: 'structureName'
+          title:"预算表", key: "structureName", dataIndex: 'structureName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*预算场景*/
+          title: this.props.intl.formatMessage({id:"budget.scenarioId"}), key: "scenario", dataIndex: 'scenario',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*预算版本*/
+          title: this.props.intl.formatMessage({id:"budget.versionId"}), key: "versionName", dataIndex: 'versionName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {
+          /*创建时间*/
+          title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
+          render: recode => (
+            <Popover content={recode}>
+              {String(recode).substring(0,10)}
+            </Popover>)
         },
         {          /*状态*/
           title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
           render(recode,text){
             switch (recode){
               case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
-              case 'SUBMIT':{ return   <Badge status="warning"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
+              case 'SUBMIT':{ return   <Badge status="default"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
               case 'SUBMIT_RETURN':{return <Badge status="default" style={{backgroundColor:"#fef0ef"}} text={text.statusName}/> }
               case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
-              case 'CHECKED':{return < Badge status="default" style={{backgroundColor:"#f56a00"}}text={text.statusName}/>}
-              case 'CHECKING':{return <Badge  status="warning"text={text.statusName}/>}
+              case 'CHECKED':{return < Badge status="warning" text={text.statusName}/>}
+              case 'CHECKING':{return <Badge  status="warning" text={text.statusName}/>}
               case 'POSTED':{return <Badge status="success" text={text.statusName}/>}
               case 'BACKLASH_SUBMIT':{return <Badge status="default" style={{backgroundColor:"#c11c7b"}} text={text.statusName}/>}
               case 'BACKLASH_CHECKED':{return <Badge status="default" style={{backgroundColor:"#42299a"}} text={text.statusName}/>}
             }
           }
-    },
-  ],
+        },
+      ],
       newBudgetJournalDetailPage: menuRoute.getRouteItem('new-budget-journal','key'),    //新建预算日记账的页面项
       budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail','key'),    //预算日记账详情
       budgetJournalDetailSubmit: menuRoute.getRouteItem('budget-journal-detail-submit','key'),
@@ -83,7 +115,7 @@ class BudgetJournal extends React.Component {
     })
 
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
-
+      console.log(response.data);
       this.setState({
         data: response.data,
         loading: false,
@@ -150,7 +182,8 @@ class BudgetJournal extends React.Component {
             <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
-        <Table rowKey={record => record.id}
+        <Table
+          rowKey={record => record.journalTypeCode}
           loading={loading}
           dataSource={data}
           columns={columns}

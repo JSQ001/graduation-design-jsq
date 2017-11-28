@@ -16,7 +16,9 @@ import accountPeriodDefine from 'static/i18n/en_US/finance-setting/account-perio
 import accountPeriodControl from 'static/i18n/en_US/finance-setting/account-period-control.json'
 import companyMaintain from 'static/i18n/en_US/setting/company-maintain.json'
 import financeView from 'static/i18n/en_US/financial-management/finance-view.json'
-
+import departmentGroup from 'static/i18n/en_US/setting/department-group.json'
+import paymentMethod from 'static/i18n/en_US/pay/payment-method.json'
+import paymentCompanySetting from 'static/i18n/en_US/pay/payment-company-setting.json'
 
 
 const i18nList = [
@@ -37,8 +39,10 @@ const i18nList = [
   accountPeriodDefine, //会计期间定义
   accountPeriodControl, //会计期间控制
   companyMaintain, //公司维护
-  financeView //单据查看
-
+  financeView,//单据查看
+  departmentGroup,
+  paymentMethod, //付款方式
+  paymentCompanySetting //付款公司配置
 ];
 
 let result = {};
