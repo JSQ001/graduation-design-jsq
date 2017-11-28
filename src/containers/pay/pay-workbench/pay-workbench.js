@@ -17,31 +17,11 @@ class PayWorkbench extends React.Component {
     super(props);
     this.state = {
 
-    };
+    }
   }
 
-  handleModeChange = (e) => {
-    const nowStatus = e.target.value;
-    this.setState({ nowStatus });
-  };
-
-  renderContent = () => {
-    let content = null;
-    switch (this.state.nowStatus){
-      case '线上':
-        content = PayOnline;
-        break;
-      case '线下':
-        content = PayOffline;
-        break;
-      case '落地文件':
-        content = PayFile;
-        break;
-    }
-    return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));
-  };
-
   render(){
+    const {} = this.state;
     return (
       <div className="pay-workbench">
         <Tabs defaultActiveKey="1">
@@ -58,13 +38,6 @@ class PayWorkbench extends React.Component {
             <PaySuccess/>
           </TabPane>
         </Tabs>
-
-        {/*<Radio.Group onChange={this.handleModeChange} value={nowStatus} style={{marginBottom:'20px'}}>*/}
-          {/*<Radio.Button value="线上">线上</Radio.Button>*/}
-          {/*<Radio.Button value="线下">线下</Radio.Button>*/}
-          {/*<Radio.Button value="落地文件">落地文件</Radio.Button>*/}
-        {/*</Radio.Group>*/}
-        {/*{this.renderContent()}*/}
       </div>
     )
   }
