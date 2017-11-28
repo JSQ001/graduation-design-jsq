@@ -67,9 +67,6 @@ class NewDimension extends React.Component{
 
   }
   componentWillReceiveProps(nextprops){
-    console.log(nextprops)
-    console.log(this.state.dimension)
-
     if(nextprops.params.versionNumber !== this.state.dimension){
       let dimension = this.props.params;
       let extraParams = this.state.extraParams;
@@ -94,10 +91,7 @@ class NewDimension extends React.Component{
         values.defaultDimValueId = values.defaultDimensionCode[0].id;
         values.versionNumber = this.state.dimension.versionNumber;
         httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
-          this.setState({
-            loading: false,
-            dimension: {}
-          });
+          this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
             message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
