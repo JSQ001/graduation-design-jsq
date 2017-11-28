@@ -104,13 +104,16 @@ class CompanyGroup extends React.Component {
 
   handleSearch = (values) =>{
     let searchParams = {};
+    console.log(values)
     for(let key in values){
       if(typeof values[key]!== 'undefined'){
+        console.log(key)
         searchParams[key] = values[key]
       }else {
         searchParams[key] = ""
       }
     }
+    console.log(searchParams)
     this.setState({
       searchParams,
       loading: true,
@@ -121,6 +124,7 @@ class CompanyGroup extends React.Component {
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
+    console.log(pagination)
     this.setState({
       pagination:{
         current: pagination.current,
@@ -140,6 +144,7 @@ class CompanyGroup extends React.Component {
 
   //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
+    console.log(record)
     this.context.router.push(menuRoute.getMenuItemByAttr('company-group', 'key').children.companyGroupDetail.url.replace(':id',record.id));
   };
 
