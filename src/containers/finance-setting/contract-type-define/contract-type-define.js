@@ -171,6 +171,7 @@ class ContractTypeDefine extends React.Component{
                columns={columns}
                dataSource={data}
                loading={loading}
+               pagination={pagination}
                bordered
                size="middle"/>
         <SlideFrame title={editContractType.id ? "编辑合同类型" :  "新建合同类型"}

@@ -1,8 +1,9 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
+import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Form, Row, Col, Badge, Button, Table, Checkbox, message } from 'antd'
+import { Form, Row, Col, Badge, Button, Table, Checkbox, message, Icon } from 'antd'
 
 import ListSelector from 'components/list-selector'
 
@@ -22,8 +23,8 @@ class CompanyDistribution extends React.Component{
         {title: '公司代码', dataIndex: 'companyCode'},
         {title: '公司名称', dataIndex: 'companyName'},
         {title: '公司类型', dataIndex: 'companyTypeName', render: type => <span>{type ? type : '-'}</span>},
-        {title: '账套', dataIndex: 'setOfBooksCode'},
-        {title: '启用', dataIndex: 'isEnabled', width: '8%', render: isEnabled => <Checkbox defaultChecked={isEnabled} onChange={this.handleStatusChange}/>}
+        {title: '启用', dataIndex: 'isEnabled', width: '8%', render: (isEnabled, record) =>
+          <Checkbox defaultChecked={isEnabled} onChange={(e) => this.handleStatusChange(e, record)}/>}
       ],
       data: [],
       pagination: {
@@ -33,6 +34,7 @@ class CompanyDistribution extends React.Component{
       pageSize: 10,
       showListSelector: false,
       selectorItem: {},
+      contractTypeDefine:  menuRoute.getRouteItem('contract-type-define','key'),    //合同类型定义
     }
   }
 
@@ -55,10 +57,9 @@ class CompanyDistribution extends React.Component{
           {type: 'input', id: 'companyCodeTo', label: '公司代码至'},
         ],
         columns: [
-          {title: '公司代码', dataIndex: 'companyCode'},
+          {title: '公司代码', dataIndex: 'code'},
           {title: '公司名称', dataIndex: 'name'},
-          {title: '公司类型', dataIndex: 'companyType'},
-          {title: '账套', dataIndex: 'setOfBooksCode', render: () => <span>{res.data.setOfBooksCode}</span>}
+          {title: '公司类型', dataIndex: 'attribute4',render: value => value ? value : '-'},
         ],
         key: 'id'
       };
@@ -73,13 +74,44 @@ class CompanyDistribution extends React.Component{
     let url = `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/companies/query?page=${page}&size=${pageSize}&contractTypeId=${params.id}`;
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {
-        this.setState({ data: res.data, loading: false })
+        this.setState({
+          data: res.data,
+          loading: false,
+          pagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            current: page + 1,
+            onChange: this.onChangePaper
+          }
+        })
       }
     })
   };
 
-  handleStatusChange = (e) => {
-    console.log(e.target.checked)
+  onChangePaper = (page) => {
+    if (page - 1 !== this.state.page) {
+      this.setState({ page: page - 1 }, () => {
+        this.getList()
+      })
+    }
+  };
+
+  handleStatusChange = (e, record) => {
+    console.log(e.target.checked);
+    console.log(record);
+    let url =  `${config.contractUrl}/contract/api/contract/type/${this.props.params.setOfBooksId}/toCompany`;
+    let params = {
+      id: record.id,
+      isEnabled: e.target.checked,
+      versionNumber: record.versionNumber
+    };
+    httpFetch.put(url, params).then((res) => {
+      if (res.status === 200) {
+        this.getList();
+        message.success('操作成功')
+      }
+    }).catch(e => {
+      message.error(`操作失败，${e.response.data.message}`)
+    })
   };
 
   handleListShow = (flag) => {
@@ -87,9 +119,13 @@ class CompanyDistribution extends React.Component{
   };
 
   handleListOk = (values) => {
-    console.log(values);
     const { params } = this.props;
-    let paramsValue = [];
+    let paramsValue = {};
+    paramsValue.contractTypeId = this.props.params.id;
+    paramsValue.companyIds = [];
+    values.result.map(item => {
+      paramsValue.companyIds.push(item.id)
+    });
     let url = `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/toCompany`;
     httpFetch.post(url, paramsValue).then((res) => {
       if (res.status === 200) {
@@ -102,6 +138,10 @@ class CompanyDistribution extends React.Component{
         message.error(`操作失败，${e.response.data.message}`)
       }
     })
+  };
+
+  handleBack = () => {
+    this.context.router.push(this.state.contractTypeDefine.url);
   };
 
   render() {
@@ -117,14 +157,14 @@ class CompanyDistribution extends React.Component{
       );
       if (index === 2) {
         periodRow.push(
-          <Row style={{background:'#f7f7f7',padding:'20px 25px 0',borderRadius:'6px'}} key="1">
+          <Row style={{background:'#f7f7f7',padding:'20px 25px 0',borderRadius:'6px 6px 0 0'}} key="1">
             {periodCol}
           </Row>
         );
       }
       if (index === 3) {
         periodRow.push(
-          <Row style={{background:'#f7f7f7',padding:'0 25px 5px',borderRadius:'6px'}} key="2">
+          <Row style={{background:'#f7f7f7',padding:'0 25px 5px',borderRadius:'0 0 6px 6px'}} key="2">
             <Col span={8} style={{marginBottom: '15px'}} key={item.id}>
               <div style={{color: '#989898'}}>{item.label}</div>
               <Badge status={companyTypeInfo[item.id] ? 'success' : 'error'}
@@ -153,10 +193,15 @@ class CompanyDistribution extends React.Component{
                       selectorItem={selectorItem}
                       extraParams={{contractTypeId: this.props.params.id}}
                       onOk={this.handleListOk}/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
       </div>
     )
   }
 }
+
+CompanyDistribution.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedCompanyDistribution = Form.create()(injectIntl(CompanyDistribution));
 
