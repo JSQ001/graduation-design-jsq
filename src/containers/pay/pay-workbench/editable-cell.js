@@ -7,6 +7,7 @@ class EditableCell extends React.Component {
     super(props);
     this.state = {
       value: null,
+      modifyValue: null,
       editable: false,
     }
   }
@@ -15,12 +16,24 @@ class EditableCell extends React.Component {
     this.setState({ value: this.props.value })
   }
 
-  check = () => {
-    this.props.onChange(this.state.value)
+  check = (e) => {
+    e.stopPropagation();
+    this.props.onChange(this.state.value);
+    setTimeout(() => {
+      !this.props.onChangeError && this.setState({ editable: false, modifyValue: this.state.value })
+    })
+  };
+
+  cancel = (e) => {
+    e.stopPropagation();
+    this.setState({
+      editable: false,
+      value: this.state.modifyValue || this.props.value
+    })
   };
 
   render() {
-    const { maxValue, type, message } = this.props;
+    const { type, message } = this.props;
     const { value, editable } = this.state;
     return (
       <div className="editable-cell">
@@ -30,28 +43,24 @@ class EditableCell extends React.Component {
               {
                 type === 'number' ?
                   <InputNumber value={value}
-                               max={maxValue ? maxValue : Infinity}
-                               min={0}
-                               onChange={(value) => this.setState({ value })}
-                               onPressEnter={this.check}/>
+                               onChange={(value) => this.setState({ value })}/>
                   :
                   <Input value={value}
-                         style={{width:125}}
-                         onChange={(e) => this.setState({ value: e.target.value })}
-                         onPressEnter={this.check}/>
+                         style={{width:140}}
+                         onChange={(e) => this.setState({ value: e.target.value })}/>
               }
               <Tooltip placement="top" title="保存">
                 <Icon type="check" className="editable-cell-icon-check" onClick={this.check}/>
               </Tooltip>
               <Tooltip placement="top" title="取消">
-                <Icon type="close" className="editable-cell-icon-cancel" onClick={() => this.setState({ editable: false })}/>
+                <Icon type="close" className="editable-cell-icon-cancel" onClick={this.cancel}/>
               </Tooltip>
             </div>
             :
             <div className="editable-cell-text-wrapper">
               {type === 'number' ? (value || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : (value || '')}
               <Tooltip placement="top" title={message}>
-                <Icon type="edit" className="editable-cell-icon" onClick={() => this.setState({ editable: true })} />
+                <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />
               </Tooltip>
             </div>
         }
@@ -61,18 +70,15 @@ class EditableCell extends React.Component {
 }
 
 EditableCell.propTypes = {
-  type: React.PropTypes.string,        //修改数据的类型，为 number、string
-  value: React.PropTypes.any,          //默认值
-  message: React.PropTypes.string,     //点击修改时的提示信息
-  maxValue: React.PropTypes.number,    //若type为number，可设置的最大值
-  onChange: React.PropTypes.func,      //确认修改时的回调
-  onChangeError: React.PropTypes.bool  //确认修改时的回调后是否出错
+  type: React.PropTypes.string,          //修改数据的类型，为 number、string
+  value: React.PropTypes.any.isRequired, //默认值
+  message: React.PropTypes.string,       //点击修改时的提示信息
+  onChange: React.PropTypes.func,        //确认修改时的回调
+  onChangeError: React.PropTypes.bool    //确认修改时的回调后是否出错
 };
 
 EditableCell.defaultProps={
   type: 'string',
-  stringValue: '',
-  numberValue: 0,
   message: '点击修改',
   onChange: () => {},
   onChangeError: false

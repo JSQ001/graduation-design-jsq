@@ -16,28 +16,49 @@ class PayWorkbench extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      nowStatus: 'Success',
+      tabs: [
+        {key: 'Unpaid', name:'未付款'},
+        {key: 'Paying', name:'支付中'},
+        {key: 'Fail', name:'退票或失败'},
+        {key: 'Success', name:'支付成功'}
+      ],
     }
   }
 
+  onChangeTabs = (key) => {
+    this.setState({ nowStatus: key })
+  };
+
+  renderContent = () => {
+    let content = null;
+    switch (this.state.nowStatus){
+      case 'Unpaid':
+        content = <PayUnpaid/>;
+        break;
+      case 'Paying':
+        content = <PayPaying/>;
+        break;
+      case 'Fail':
+        content = <PayFail/>;
+        break;
+      case 'Success':
+        content = <PaySuccess/>;
+        break;
+    }
+    return content;
+  };
+
   render(){
-    const {} = this.state;
+    const { tabs } = this.state;
     return (
       <div className="pay-workbench">
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="未付款" key="Unpaid">
-            <PayUnpaid/>
-          </TabPane>
-          <TabPane tab="支付中" key="Paying">
-            <PayPaying/>
-          </TabPane>
-          <TabPane tab="退票或失败" key="Fail">
-            <PayFail/>
-          </TabPane>
-          <TabPane tab="支付成功" key="Success">
-            <PaySuccess/>
-          </TabPane>
+        <Tabs onChange={this.onChangeTabs} defaultActiveKey="Success">
+          {tabs.map(tab => {
+            return <TabPane tab={tab.name} key={tab.key}/>
+          })}
         </Tabs>
+        {this.renderContent()}
       </div>
     )
   }

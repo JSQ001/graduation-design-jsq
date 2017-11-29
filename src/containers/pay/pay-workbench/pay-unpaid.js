@@ -32,19 +32,19 @@ class PayUnpaid extends React.Component {
           {type: 'date', id: 'dateTo', label: formatMessage({id: "payWorkbench.dateTo"})} //申请日期至
         ]},
         {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})}, //金额区间从
-          {type: 'input', id: 'mountTo', label: formatMessage({id: "payWorkbench.mountTo"})} //金额区间至
+          {type: 'input', id: 'mountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})}, //总金额从
+          {type: 'input', id: 'mountTo', label: formatMessage({id: "payWorkbench.mountTo"})} //总金额至
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "payWorkbench.payee"}), items: [
-          {type: 'value_list', id: 'partnerCategory', label: formatMessage({id: "payWorkbench.payee"}), options: [], valueListCode: 2107},//收款方类型
-          {type: 'select', id: 'partnerName', label: ' ', options: []}  //收款方
+          {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
+          {type: 'select', id: 'partnerName', label: '收款方', options: []}  //收款方
         ]}
       ],
       columns: [
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
             <Breadcrumb separator="|">
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
+              <Breadcrumb.Item><a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a></Breadcrumb.Item>
               <Breadcrumb.Item>{record.documentCategory}</Breadcrumb.Item>
             </Breadcrumb>
           )}
@@ -59,7 +59,6 @@ class PayUnpaid extends React.Component {
             <EditableCell type="number"
                           value={value}
                           message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
-                          maxPayedAmount={value}
                           onChangeError={this.state.editCellError}
                           onChange={(editValue) => this.editCurrentPay(editValue, record)} />
           )}
@@ -73,9 +72,11 @@ class PayUnpaid extends React.Component {
             </Breadcrumb>
           )}
         },
-        {title: '收款账号', dataIndex: 'accountNumber', render: (account) => (
+        {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
           <EditableCell value={account}
-                        message={formatMessage({id: "payWorkbench.accountNumber.tooltip"})} />
+                        message={formatMessage({id: "payWorkbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
+                        onChangeError={this.state.editCellError}
+                        onChange={(value) => this.editAccount(value, record)}/>
         )},
         {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>}
       ],
@@ -134,6 +135,11 @@ class PayUnpaid extends React.Component {
 
   };
 
+  //查看支付流水详情
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
+  };
+
   //线上 - 获取列表
   getOnlineList = () => {
     const { onlinePage, onlinePageSize } = this.state;
@@ -188,13 +194,34 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 编辑修改本次支付金额
+  //线上 - 修改本次支付金额
   editCurrentPay = (value, record) => {
+    if (value > record.payableAmount) {
+      message.error('本次支付金额不能大于可支付金额');
+      this.setState({ editCellError: true });
+      return
+    }
+    if (value <= 0) {
+      message.error('本次支付金额必须大于0');
+      this.setState({ editCellError: true });
+      return
+    }
+    this.setState({ editCellError: false });
+    this.state.onlineData.map(item => {
+      if (item.id === record.id) {
+        item.currentPay = value;
+        this.onlineNotice(this.state.onlineSelectedRows);
+        message.success('修改成功')
+      }
+    })
+  };
+
+  //线上 - 修改收款账号
+  editAccount = (value, record) => {
     let url = `${config.contractUrl}/payment/api/cash/transactionData`;
     let params = [{
       id: record.id,
-      payableAmount: record.payableAmount,
-      currentPayAmount: value,
+      accountNumber: value,
       versionNumber: record.versionNumber
     }];
     httpFetch.put(url, params).then(res => {
@@ -250,7 +277,7 @@ class PayUnpaid extends React.Component {
   //线上 - 提示框显示
   onlineNotice = (rows) => {
     let amount = 0;
-    rows.forEach(item => { amount += item.currentPayAmount });
+    rows.forEach(item => { amount += item.currentPay || item.currentPayAmount });
     let onlineNotice = (
       <span>
         已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
@@ -266,7 +293,6 @@ class PayUnpaid extends React.Component {
 
   //线上 - 弹框支付确认
   handleOk = (e) => {
-    console.log(e);
     this.setState({ payModalVisible: false });
   };
 
@@ -277,6 +303,9 @@ class PayUnpaid extends React.Component {
       this.getOnlineList()
     })
   };
+
+  //落地文件 - 修改每页显示数量
+  filePaginationChange = () => {};
 
   //线上 - 内容渲染
   renderOnlineContent = () => {
@@ -310,6 +339,7 @@ class PayUnpaid extends React.Component {
                pagination={false}
                loading={onlineLoading}
                rowSelection={rowSelection}
+               // onRowClick={this.checkPaymentDetail}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
                bordered
@@ -415,8 +445,8 @@ class PayUnpaid extends React.Component {
                     showSizeChanger
                     pageSizeOptions={['1','2','5','10']}
                     total={filePagination.total}
-                    onChange={this.onlinePaginationChange}
-                    onShowSizeChange={this.onlinePaginationChange}
+                    onChange={this.filePaginationChange}
+                    onShowSizeChange={this.filePaginationChange}
                     style={{margin:'16px 0', textAlign:'right'}} />
       </div>
     )

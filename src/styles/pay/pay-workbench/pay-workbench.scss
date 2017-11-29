@@ -21,7 +21,16 @@
     }
   }
 
+  .num-style {
+    color: rgb(51, 153, 0);
+    font-size: 14px;
+    font-weight: bolder;
+  }
+
   .pay-online {
+    .ant-breadcrumb a {
+      color: #108ee9;
+    }
     .ant-tabs-card .ant-tabs-nav {
       margin-left: 0;
     }
@@ -35,11 +44,6 @@
     }
     .ant-alert-icon {
       top: 13px;
-    }
-    .num-style {
-      color: rgb(51, 153, 0);
-      font-size: 14px;
-      font-weight: bolder;
     }
   }
 }

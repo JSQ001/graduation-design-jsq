@@ -1,7 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-import { Alert, Badge, Table, Card, Row, Col } from 'antd';
+import { injectIntl } from 'react-intl'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Alert, Badge, Table, Card } from 'antd'
 
 import 'styles/pay/pay-workbench/payment-detail.scss'
 
@@ -47,64 +49,15 @@ class PaymentDetail extends React.Component {
   }
 
   componentWillMount() {
-    let data = [{
-      'id': 1,
-      'serialNumber': '123312312312',
-      'billsNumber': 'LA12321231213',
-      'billsType': '差旅申请单',
-      'applicant': '12303 | Louis',
-      'date': '2017-12-12',
-      'payDate': '2017-12-12',
-      'currency': 'CNY',
-      'totalAmount': 12122122,
-      'cancelAmount': 2000,
-      'payAmount': 122122,
-      'payedAmount': 122122,
-      'payWay': '线上',
-      'payee': '对私 | jack',
-      'accountNumber': '123666',
-      'batchNumber': 'FK12341234123',
-      'state': '未付款',
-      'abstract': 'XXX',
-      'company': '上海甄汇信息科技有限公司',
-      'costCenter': '小桔闪报产品',
-      'subject': '122111233-应付',
-    }];
-    let logData = [{
-      'id': 1,
-      'operaType': '支付',
-      'operaPerson': '迎曦',
-      'executionResult': '成功',
-      'operaTime': '2016-09-21  08:50:08',
-      'remark': '这是一段描述，关于这个应用的描述',
-      'description': '这是一段description，关于这个应用的description'
-    },{
-      'id': 2,
-      'operaType': '重新支付',
-      'operaPerson': '海纳',
-      'executionResult': '失败',
-      'operaTime': '2016-09-21  08:50:08',
-      'remark': '这是一段描述，关于这个应用的描述',
-      'description': '这是一段description，关于这个应用的description'
-    },{
-      'id': 3,
-      'operaType': '更改状态',
-      'operaPerson': '王大锤',
-      'executionResult': '成功',
-      'operaTime': '2016-09-21  08:50:08',
-      'remark': '这是一段描述，关于这个应用的描述',
-      'description': '这是一段description，关于这个应用的description'
-    },{
-      'id': 4,
-      'operaType': '取消支付',
-      'operaPerson': '小王子',
-      'executionResult': '未支付',
-      'operaTime': '2016-09-21  08:50:08',
-      'remark': '这是一段描述，关于这个应用的描述',
-      'description': '这是一段description，关于这个应用的description'
-    }];
-    this.setState({ data, logData })
+    this.getInfo()
   }
+
+  getInfo = () => {
+    let url = `${config.contractUrl}/payment/api/Cash/PaymentMethod/selectById/${this.props.params.id}`;
+    httpFetch.get(url).then(res => {
+
+    })
+  };
 
   render(){
     const { formatMessage } = this.props.intl;
