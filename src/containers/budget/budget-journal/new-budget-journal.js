@@ -204,83 +204,42 @@ class NewBudgetJournalFrom extends React.Component {
 
   //根据账套类型，获得预算表
   getStructure(value) {
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
-      console.log(response.data);
-      this.setState(
-        {structureGroup: response.data}
-      )
-    })
+    console.log(value);
+    console.log(666);
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       console.log(response.data);
+      response.data.map((item)=>{
+        item.key=item.id;
+      })
+      console.log(response.data);
+      this.setState(
+        {"structureGroup": response.data},()=>{
+          console.log(this.state.structureGroup);
+        }
+      )
+    })
+    let structureId = null;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
+      console.log(response.data);
         if(response.data){
-          this.props.from.setFieldsValue({
-            "structureId": response.data.id
+          structureId =  response.data.id;
+          console.log(structureId);
+          this.props.form.setFieldsValue({
+            "structureId":structureId
           })
         }
     })
+
+
   }
 
 
   //选择预算表时，获得期间段
   handleSelectChange = (values) => {
     console.log(values);
-    const data = new Date();
-    const year = data.getFullYear();
-    const month = data.getMonth() + 1;
-    const po = (month < 2 ? 2 : month);
-    const quarter = parseInt((po - 1) / 3 + 1);
-    console.log(values);
     this.state.structureGroup.map((item) => {
       if (item.id == values) {
         const periodStrategy = item.periodStrategy;
-        if (periodStrategy == 'MONTH') {
-          this.props.form.setFieldsValue({
-            periodYear: ''
-          });
-
-          this.props.form.setFieldsValue({
-            periodQuarter: ''
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodYearFlag: true,
-            periodQuarterFlag: true,
-            periodFlag: false
-          })
-        } else if (periodStrategy == 'YEAR') {
-          this.props.form.setFieldsValue({
-            periodYear: year
-          });
-          this.props.form.setFieldsValue({
-            periodQuarter: ''
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodFlag: true,
-            periodQuarterFlag: true,
-            periodYearFlag: false,
-          })
-        } else {
-          this.props.form.setFieldsValue({
-            periodYear: year
-          });
-
-          this.props.form.setFieldsValue({
-            periodQuarter: quarter
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodFlag: true,
-            periodYearFlag: false,
-            periodQuarterFlag: false,
-          })
-        }
         this.props.form.setFieldsValue({
           periodStrategy: periodStrategy,
         });
@@ -309,15 +268,7 @@ class NewBudgetJournalFrom extends React.Component {
       this.props.form.setFieldsValue({
         structureId: ''
       });
-      this.props.form.setFieldsValue({
-        periodYear: ''
-      });
-      this.props.form.setFieldsValue({
-        periodQuarter: ''
-      });
-      this.props.form.setFieldsValue({
-        periodName: ''
-      });
+
       this.getStructure(valueData.id);
     }
 
@@ -335,24 +286,12 @@ class NewBudgetJournalFrom extends React.Component {
   render() {
     const {getFieldDecorator} = this.props.form;
     const organization = this.props.organization;
-    const {structureGroup, periodStrategy, periodPeriodQuarter, periodPeriod, structureFlag, periodFlag, periodYearFlag, periodQuarterFlag, periodStrategyFlag, uploading} = this.state;
+    const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading} = this.state;
     const formItemLayout = {};
 
 
-    const strategyOptions = structureGroup.map((item) => <Option key={item.id}
-                                                                 value={item.id}>{item.structureName}</Option>);
-    const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key}
-                                                                       value={item.key}>{item.label}</Option>);
-    const periodPeriodQuarterOptions = periodPeriodQuarter.map((item) => <Option key={item.key}
-                                                                                 value={item.key}>{item.label}</Option>);
-    const periodPeriodOptions = periodPeriod.map((item) => <Option key={item.key}
-                                                                   value={JSON.stringify(item.value)}>{item.label}</Option>);
-    let nowYear = new Date().getFullYear();
-    let yearOptions = [];
-    for (let i = nowYear - 20; i <= nowYear + 20; i++)
-      yearOptions.push({label: i, key: i})
-    const yearOptionsData = yearOptions.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
-
+    const strategyOptions = structureGroup.map((item) => <Option value={String(item.id)}>{item.structureName}</Option>);
+    const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
     return (
       <div className="new-budget-journal">

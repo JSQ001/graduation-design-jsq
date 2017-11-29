@@ -14,59 +14,74 @@ import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
 import NewPaymentCompanySetting from 'containers/pay/payment-company-setting/new-payment-company-setting.js'
-import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
-import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
-
+import NewPayRequisitionType from 'containers/setting/pay-requisition-type/new-pay-requisition-type.js'
 import 'styles/pay/payment-method/payment-method.scss'
 
 
-class PaymentCompanySetting extends React.Component {
+class PayRequisitionType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
+      isNew:null,
       columns: [
-        {/*优先级*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.priorty"}),
-          dataIndex: 'priorty',
-          key: 'priorty',
+        {/*预付款类型代码*/
+          title:"预付款类型代码",
+          dataIndex: 'typeCode',
+          key: 'typeCode',
 
         },
-        {/*单据公司代码*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"}),
-          dataIndex: 'companyCode',
-          key: 'companyCode',
+        {/*预付款类型名称*/
+          title:"预付款类型名称",
+          dataIndex: 'typeName',
+          key: 'typeName',
         },
-        {/*单据公司名称*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"}),
-          dataIndex: 'companyName',
-          key: 'companyName',
+        {/*付款方式*/
+          title: "付款方式",
+          dataIndex: 'paymentMethodCategory',
+          key: 'paymentMethodCategory',
         },
-        {/*单据类别*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"}),
-          dataIndex: 'ducumentCategory',
-          key: 'ducumentCategory',
+        {/*必须关联申请*/
+          title:"必须关联申请",
+          dataIndex: 'reqRequiredFlag',
+          key: 'reqRequiredFlag',
+          render(coder){
+            if(coder){
+              return "必需"
+            }else{
+              return "非必需"
+            }
+          }
+
         },
-        {/*单据类型*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"}),
-          dataIndex: 'ducumentType',
-          key: 'ducumentType',
+        {/*账套*/
+          title:"账套",
+          dataIndex: 'setOfBookId',
+          key: 'setOfBookId',
         },
-        {/*付款公司代码*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyCode"}),
-          dataIndex: 'paymentCompanyCode',
-          key: 'paymentCompanyCode',
+        {/*状态*/
+          title: "状态",
+          dataIndex: 'isEnabled',
+          key: 'isEnabled',
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? this.props.intl.formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
         },
-        {/*付款公司名称*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyName"}),
-          dataIndex: 'paymentCompanyName',
-          key: 'paymentCompanyName',
+        {/*操作*/
+          title:"操作",
+          dataIndex: 'operation',
+          key: 'operation',
+          render: (text, record) => (
+            <span>
+              <a href="#" onClick={(e) => this.putItemTypeShowSlide(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})}|</a>
+              <a href="#" onClick={(e) => this.distributionCompany(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})}</a>
+          </span>)
         },
 
       ],
       searchForm: [
-        {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
-        {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
+        {type: 'input', id: 'typeCode', label:"预付款类型代码"},
+        {type: 'input', id: 'typeName', label:"预付款类型名称"},
       ],
       pageSize: 10,
       page: 0,
@@ -74,9 +89,9 @@ class PaymentCompanySetting extends React.Component {
         total: 0
       },
       searchParams: {
-        companyCode: '',
-        companyName: '',
-        ducumentCategory:'',
+        setOfBookId: '',
+        typeCode: '',
+        typeName:'',
       },
       updateParams: {
         paymentMethodCategory: '',
@@ -97,7 +112,7 @@ class PaymentCompanySetting extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode}&companyName=${this.state.searchParams.companyName}&ducumentCategory=${this.state.searchParams.ducumentCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.localUrl}/api/cash/setofbooks/pay/requisition/types/query?setOfBookId=${this.state.searchParams.setOfBookId}&typeCode=${this.state.searchParams.typeCode}&typeName=${this.state.searchParams.typeName}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -127,6 +142,9 @@ class PaymentCompanySetting extends React.Component {
       })
   };
 
+  distributionCompany=(e,coder)=>{
+
+  }
 
   //清空搜索区域
   clear = () => {
@@ -191,7 +209,7 @@ class PaymentCompanySetting extends React.Component {
     })
   }
 
-  putItemTypeShowSlide = (recode) => {
+  putItemTypeShowSlide = (e,recode) => {
     this.setState({
       updateParams: recode,
     }, () => {
@@ -230,22 +248,19 @@ class PaymentCompanySetting extends React.Component {
             loading={loading}
             rowKey={recode=>{return recode.id}}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
             size="middle"
           />
         </div>
 
         <SlideFrame title="新建公司付款配置"
                     show={showSlideFrameNew}
-                    content={NewPaymentCompanySetting}
+                    content={NewPayRequisitionType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
-
       </div>
     );
   }
-
 }
 
 function mapStateToProps() {
@@ -253,4 +268,4 @@ function mapStateToProps() {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(PaymentCompanySetting));
+export default connect(mapStateToProps)(injectIntl(PayRequisitionType));

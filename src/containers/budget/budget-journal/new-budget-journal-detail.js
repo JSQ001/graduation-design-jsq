@@ -230,7 +230,7 @@ class NewBudgetJournalDetail extends React.Component {
     searchForm = searchForm.map(searchItem => {
       if(searchItem.id === "unit")
         console.log(this.props.params.journalTypeId);
-        searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
+      searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
       return searchItem;
     });
     console.log(searchForm);
@@ -538,7 +538,7 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
-    console.log(resp.data);
+      console.log(resp.data);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })

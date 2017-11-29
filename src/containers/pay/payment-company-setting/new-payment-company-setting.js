@@ -60,37 +60,37 @@ class NewPaymentCompanySetting extends React.Component {
   }
 
   //获得列表的值
-/*
-  getOptions(){
-    const searchFrom = this.state.searchFrom;
-    console.log(searchFrom);
-    searchFrom.map((item)=>{
-      let options =[];
-      let searchItem =item;
-      if(item.type === "select" && item.getUrl){
-        httpFetch.get(item.getUrl).then((respose)=>{
-          const data =respose.data;
-          data.map((dataValue)=>{
-            let option ={"label":dataValue.labelKey,"value":dataValue.valueKey,data:dataValue}
-            options = options.push(option);
-          })
-        })
-      }
-      if(item.type === "select_List"){
-        this.getSystemValueList(item.valueListCode).then(res=>{
-          res.data.values.map(data => {
-            options.push({label: data.messageKey, value: data.code})
-          });
-        })
-      }
+  /*
+   getOptions(){
+   const searchFrom = this.state.searchFrom;
+   console.log(searchFrom);
+   searchFrom.map((item)=>{
+   let options =[];
+   let searchItem =item;
+   if(item.type === "select" && item.getUrl){
+   httpFetch.get(item.getUrl).then((respose)=>{
+   const data =respose.data;
+   data.map((dataValue)=>{
+   let option ={"label":dataValue.labelKey,"value":dataValue.valueKey,data:dataValue}
+   options = options.push(option);
+   })
+   })
+   }
+   if(item.type === "select_List"){
+   this.getSystemValueList(item.valueListCode).then(res=>{
+   res.data.values.map(data => {
+   options.push({label: data.messageKey, value: data.code})
+   });
+   })
+   }
 
-      searchItem.options =options;
-      return searchItem;
-    })
-    console.log(searchFrom);
-    this.setState(searchFrom);
-  }
-*/
+   searchItem.options =options;
+   return searchItem;
+   })
+   console.log(searchFrom);
+   this.setState(searchFrom);
+   }
+   */
 
 
   getPaymentMethodCategory(){
@@ -110,15 +110,15 @@ class NewPaymentCompanySetting extends React.Component {
   getCompany(){
     let companyOptions = [];
     httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.props.company.setOfBooksId}&isEnabled=true`).then((res)=>{
-      console.log(res.data);
-      res.data.map(data =>{
-        companyOptions.push({label:data.name,value:String(data.id)})
-      })
-      this.setState({
-        companyOptions
-      })
-    }
-  )
+        console.log(res.data);
+        res.data.map(data =>{
+          companyOptions.push({label:data.name,value:String(data.id)})
+        })
+        this.setState({
+          companyOptions
+        })
+      }
+    )
   }
 
   //新建
@@ -127,7 +127,6 @@ class NewPaymentCompanySetting extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        if(JSON.stringify(this.props.params) != "{}"){
           let toValue = {
             ...values,
             setOfBooksId:this.props.company.setOfBooksId
@@ -143,9 +142,6 @@ class NewPaymentCompanySetting extends React.Component {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"}));
           })
-      }else {
-
-        }
       }
     });
   }
@@ -195,14 +191,14 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"})}>
             {getFieldDecorator('ducumentCategory', {
               rules: [{ required: true, message: '请选择' }],
-          })(
-          <Select>
-            {this.state.ducumentCategoryOptions.map((option)=>{
-              return <Option value={option.value} lable={option.label} >{option.label}</Option>
-            })}
-          </Select>
-          )}
-        </FormItem>
+            })(
+              <Select>
+                {this.state.ducumentCategoryOptions.map((option)=>{
+                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"})}>
             {getFieldDecorator('ducumentType', {
