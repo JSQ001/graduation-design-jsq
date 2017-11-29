@@ -192,9 +192,12 @@ class BudgetStructureDetail extends React.Component{
   //Tabs点击
   onChangeTabs = (key) => {
     let columnGroup = this.state.columnGroup;
+    let pagination = this.state.pagination
+    pagination.page = 0;
+    pagination.pageSize = 10;
     this.setState({
       loading: true,
-      page: 0,
+      pagination,
       data: [],
       label: key,
       columns: key === 'company' ? columnGroup.company : columnGroup.dimension
@@ -219,9 +222,9 @@ class BudgetStructureDetail extends React.Component{
   };
 
   getList = ()=>{
-    let params = this.state.params;
+    const { pagination } = this.state;
     this.state.label === "company" ?
-      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/companies/query?structureId=${this.props.params.structureId}`).then((response)=>{
+      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/companies/query?structureId=${this.props.params.structureId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
         if(response.status === 200) {
           response.data.map((item)=>{
             item.key = item.id
@@ -236,7 +239,7 @@ class BudgetStructureDetail extends React.Component{
         }
       })
       :
-      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}`).then((response)=>{
+      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
         if(response.status === 200){
           response.data.map((item)=>{
             item.key = item.id
@@ -339,6 +342,20 @@ class BudgetStructureDetail extends React.Component{
     this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id)+ '?tab=STRUCTURE');
   };
 
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
+    })
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { infoList, dimension, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
@@ -368,6 +385,7 @@ class BudgetStructureDetail extends React.Component{
             columns={columns}
             loading={loading}
             onRowClick={this.handleRowClick}
+            onChange={this.onChangePager}
             pagination={pagination}
             size="middle"
             bordered/>

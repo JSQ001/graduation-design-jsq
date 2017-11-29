@@ -63,10 +63,8 @@ class NewBudgetStructure extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.state.organization.id;
-        console.log(values)
         httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
           if(response) {
-            console.log(response)
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
             this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetStructureDetail.url.replace(':id', this.props.params.id).replace(':structureId',response.data.id));

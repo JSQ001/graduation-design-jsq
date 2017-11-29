@@ -88,6 +88,7 @@ class BudgetOrganizationDetail extends React.Component {
         break;
       case 'JOURNAL_TYPE':
         content = BudgetJournalType;
+        break;
       case 'ITEM_MAP':
         content = BudgetItemMap;
         break;
