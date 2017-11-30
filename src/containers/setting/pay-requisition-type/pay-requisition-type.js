@@ -8,61 +8,88 @@ import {Button, Table, Badge} from 'antd'
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 
 
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
-import WrappedPaymentMethod from 'containers/pay/payment-method/new-payment-method'
-import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
-import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
-
+import NewPaymentCompanySetting from 'containers/pay/payment-company-setting/new-payment-company-setting.js'
+import NewPayRequisitionType from 'containers/setting/pay-requisition-type/new-pay-requisition-type.js'
 import 'styles/pay/payment-method/payment-method.scss'
 
 
-class PaymentMethod extends React.Component {
+class PayRequisitionType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
+      isNew:null,
       columns: [
-        {/*付款方式类型*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
-          dataIndex: 'paymentMethodCategory',
-          key: 'paymentMethodCategory',
-          render(recode){
-            if(recode === "ONLINE_PAYMENT"){
-              return "线上"
-            }else if(recode === "OFFLINE_PAYMENT"){
-              return "线下"
-            }else if(recode === "EBANK_PAYMENT"){
-              return "落地文件"
+        {/*预付款类型代码*/
+          title:"预付款类型代码",
+          dataIndex: 'typeCode',
+          key: 'typeCode',
+
+        },
+        {/*预付款类型名称*/
+          title:"预付款类型名称",
+          dataIndex: 'typeName',
+          key: 'typeName',
+        },
+        {/*付款方式*/
+          title: "付款方式",width: '10%',
+          dataIndex: 'paymentMethodCategoryName',
+          key: 'paymentMethodCategoryName',
+        },
+        {/*必须关联申请*/
+          title:"必须关联申请",
+          dataIndex: 'reqRequiredFlag',
+          key: 'reqRequiredFlag',width: '10%',
+          render(coder){
+            if(coder){
+              return "必需"
+            }else{
+              return "非必需"
             }
           }
-        },
-        {/*付款方式代码*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
-          dataIndex: 'paymentMethodCode',
-          key: 'paymentMethodCode',
-        },
-        {/*付款方式名称*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.description"}),
-          dataIndex: 'description',
-          key: 'description',
-        },
 
-        {/*状态*/
-          title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
-          dataIndex: 'isEnabled',
-          key: 'isEnabled',
-          render: (recode, text) => {
-            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+        },
+        {/*账套*/
+          title:"账套",
+          dataIndex: 'setOfBookName',
+          key: 'setOfBookName',
+          render(text,recode){
+            return `${recode.setOfBookCode}—${text}`
           }
         },
+        {/*状态*/
+          title: "状态",
+          dataIndex: 'isEnabled',
+          key: 'isEnabled', width: '6%',
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? this.props.intl.formatMessage({id: "common.status.enable"}) :this.props.intl.formatMessage({id: "common.status.disable"})} />)
+        },
+        {/*操作*/
+          title:"操作",
+          dataIndex: 'operation',
+          key: 'operation', width: '18%',
+          render: (text, record) => (
+            <span>
+              <a href="#" onClick={(e) => this.putItemTypeShowSlide(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})} | </a>
+              <a href="#" onClick={(e) => this.distributionCompany(e, record)}>现金事务分配 | </a>
+               <a href="#" onClick={(e) => this.distributionCompany(e, record)}>公司分配</a>
+          </span>)
+        },
+
       ],
       searchForm: [
-        {type: 'input', id: 'paymentMethodCode', label: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})},
-        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: "paymentMethod.description"})},
+        {type: 'select', id:'setOfBookId', label: '账套', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          labelKey: 'setOfBooksName', valueKey: 'id',defaultValue:this.props.company.setOfBooksId},
+        {type: 'input', id: 'typeCode', label:"预付款类型代码"},
+        {type: 'input', id: 'typeName', label:"预付款类型名称"},
       ],
       pageSize: 10,
       page: 0,
@@ -70,11 +97,9 @@ class PaymentMethod extends React.Component {
         total: 0
       },
       searchParams: {
-        paymentMethodCategory: '',
-        paymentMethodCode: '',
-        description:'',
-        isEnabled:null,
-
+        setOfBookId:this.props.company.setOfBooksId,
+        typeCode: '',
+        typeName:'',
       },
       updateParams: {
         paymentMethodCategory: '',
@@ -82,7 +107,8 @@ class PaymentMethod extends React.Component {
       },
       showSlideFrameNew: false,
       showSlideFramePut: false,
-      loading: true
+      loading: true,
+      payRequisitionTypeDetailPage:menuRoute.getRouteItem("pay-requisition-type-detail","key")
 
     };
   }
@@ -95,7 +121,10 @@ class PaymentMethod extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.payUrl}/payment/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    this.setState({
+      loading:true,
+    })
+    let url = `${config.localUrl}/api/cash/setofbooks/pay/requisition/types/query?setOfBookId=${this.state.searchParams.setOfBookId}&typeCode=${this.state.searchParams.typeCode}&typeName=${this.state.searchParams.typeName}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -125,13 +154,19 @@ class PaymentMethod extends React.Component {
       })
   };
 
+  //分配公司
+  distributionCompany=(e,coder)=>{
+    const path = this.state.payRequisitionTypeDetailPage.url.replace(":requisitionTypeId",coder.id);
+    this.context.router.push(path)
+  }
 
   //清空搜索区域
   clear = () => {
     this.setState({
       searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
+        setOfBookId:this.props.company.setOfBookId,
+        typeCode: '',
+        typeName:'',
       }
     })
   }
@@ -139,8 +174,9 @@ class PaymentMethod extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-      itemTypeCode: result.itemTypeCode,
-      itemTypeName: result.itemTypeName
+      setOfBookId:result.setOfBookId,
+      typeCode: result.typeCode||'',
+      typeName:result.typeName||''
     };
     this.setState({
       searchParams: searchParams,
@@ -189,7 +225,7 @@ class PaymentMethod extends React.Component {
     })
   }
 
-  putItemTypeShowSlide = (recode) => {
+  putItemTypeShowSlide = (e,recode) => {
     this.setState({
       updateParams: recode,
     }, () => {
@@ -226,36 +262,30 @@ class PaymentMethod extends React.Component {
             dataSource={data}
             pagination={pagination}
             loading={loading}
+            rowKey={recode=>{return recode.id}}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
             size="middle"
           />
         </div>
 
-        <SlideFrame title="新建付款方式"
+        <SlideFrame title="新建公司付款配置"
                     show={showSlideFrameNew}
-                    content={WrappedPaymentMethod}
+                    content={NewPayRequisitionType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={updateParams}/>
-
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
-                    show={showSlideFramePut}
-                    content={WrappedPutBudgetItemType}
-                    afterClose={this.handleCloseUpdateSlide}
-                    onClose={() => this.showSlidePut(false)}
-                    params={updateParams}/>
-
-
       </div>
     );
   }
-
 }
 
-function mapStateToProps() {
+PayRequisitionType.contextTypes = {
+  router: React.PropTypes.object
+}
+
+function mapStateToProps(state) {
   return {
+    company: state.login.company,
   }
 }
-
-export default connect(mapStateToProps)(injectIntl(PaymentMethod));
+export default connect(mapStateToProps)(injectIntl(PayRequisitionType));

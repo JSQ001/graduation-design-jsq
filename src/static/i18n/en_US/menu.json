@@ -93,5 +93,7 @@
   "menu.budget-journal-check": "Budget Journal Check",
   "menu.budget-journal-check-detail": "Budget Journal Check Detail",
   "menu.payment-method":"Payment Method",
-  "menu.payment-company-setting":"Payment Company Setting"
+  "menu.payment-company-setting":"Payment Company Setting",
+  "menu.pay-requisition-type-detail":"Pay Requisition Type Detail",
+  "menu.pay-requisition-type":"Pay Requisition Type"
 }
