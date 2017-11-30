@@ -45,7 +45,7 @@ class BudgetJournalTypeDetail extends React.Component {
             {title: "预算表代码", dataIndex: "structureCode", width: '40%'},
             {title: "预算表", dataIndex: "structureName", width: '30%'},
             {title: "默认", dataIndex: "isDefault", width: '15%', render: (isDefault, record) => <Checkbox onChange={(e) => this.onChangeDefault(e, record)} checked={record.isDefault}/>},
-            {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>}
+            {title: '启用', key: 'isEnabled', width: '15%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeStructureEnabled(e, record)} checked={record.isEnabled}/>}
   ]
         },
         ITEM:{
@@ -57,11 +57,7 @@ class BudgetJournalTypeDetail extends React.Component {
           [
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
             {title: "预算项目名称", dataIndex: "itemName", width: '50%'},
-            {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '20%',
-              render: isEnabled => (
-                <Badge status={isEnabled ? 'success' : 'error'}
-                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
-              )}, //状态
+            {title: '启用', key: 'isEnabled', width: '20%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeItemEnabled(e, record)} checked={record.isEnabled}/>}
           ]
         },
         COMPANY: {
@@ -95,17 +91,27 @@ class BudgetJournalTypeDetail extends React.Component {
     this.setState({loading: true});
     record.isDefault = e.target.checked;
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/type/assign/structures`, record).then(() => {
-      this.getList(this.state.nowStatus).then(response => {
+      this.getList(this.state.nowStatus).then(() => {
         this.setState({loading: false})
       });
     })
   };
 
-  onChangeEnabled = (e, record) => {
+  onChangeStructureEnabled = (e, record) => {
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/type/assign/structures`, record).then(() => {
-      this.getList(this.state.nowStatus).then(response => {
+      this.getList(this.state.nowStatus).then(() => {
+        this.setState({loading: false})
+      });
+    })
+  };
+
+  onChangeItemEnabled = (e, record) => {
+    this.setState({loading: true});
+    record.isEnabled = e.target.checked;
+    httpFetch.put(`${config.budgetUrl}/api/budget/journal/type/assign/items`, record).then(() => {
+      this.getList(this.state.nowStatus).then(() => {
         this.setState({loading: false})
       });
     })
@@ -115,7 +121,7 @@ class BudgetJournalTypeDetail extends React.Component {
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
     httpFetch.put(`${config.budgetUrl}/api/budget/journal/type/assign/companies`, record).then(() => {
-      this.getList(this.state.nowStatus).then(response => {
+      this.getList(this.state.nowStatus).then(() => {
         this.setState({loading: false})
       });
     })

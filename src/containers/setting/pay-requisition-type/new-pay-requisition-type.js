@@ -4,7 +4,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {injectIntl} from 'react-intl';
-import {Button,Form,Switch, Input,message, Icon,Select} from 'antd';
+import {Button,Form,Switch, Input,message, Icon,Select,Radio} from 'antd';
 const FormItem = Form.Item;
 const Option =Select.Option;
 
@@ -12,15 +12,17 @@ import config from 'config';
 import httpFetch from 'share/httpFetch';
 import 'styles/pay/payment-method/new-payment-method.scss'
 
-class NewPaymentMethod extends React.Component {
+class NewPayRequisitionType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       params: {},
+      setOfBookId:this.props.company.setOfBooksId,
       isEnabled: true,
       isPut: false,
       loading: false,
       paymentMethodCategoryOptions:[],
+      setOfBooksOptions:[],
       searchFrom:[
         {id:"isEnabled"},
         {id:"paymentMethodCategory"},
@@ -34,16 +36,20 @@ class NewPaymentMethod extends React.Component {
     let params = this.props.params;
     if(params && JSON.stringify(params) != "{}"){
       this.setState({
-        isEnabled:params.isEnabled
+        isEnabled:params.isEnabled,
+        setOfBookId:params.setOfBookId
       },()=>{
+
       })
     }else {
       this.setState({
         isEnabled:true,
+        setOfBookId:this.props.company.setOfBooksId
       })
     }
 
     this.getPaymentMethodCategory();
+    this.getSetOfBooksIdOptions();
   }
 
   getPaymentMethodCategory(){
@@ -58,17 +64,24 @@ class NewPaymentMethod extends React.Component {
     });
   }
 
+  getSetOfBooksIdOptions(){
+    let setOfBooksOptions =[];
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((res)=>{
+        res.data.map(data =>{
+          setOfBooksOptions.push({label:`${data.setOfBooksCode}—${data.setOfBooksName}`,value:String(data.id)})
+        })
+        this.setState({
+          setOfBooksOptions
+        },()=>{
+          this.props.form.setFieldsValue({
+            setOfBooksId:this.props.company.setOfBooksId
+          })
+        })
+      }
+    )
+  }
+
   componentWillReceiveProps(nextProps){
-    if(nextProps.params && JSON.stringify(nextProps.params) != "{}" && this.props.params != nextProps.params) {
-      this.setState({
-        isEnabled:nextProps.params.isEnabled
-      },()=>{})
-    }
-    else {
-      this.setState({
-        isEnabled:true
-      },()=>{})
-    }
   }
 
 
@@ -81,14 +94,13 @@ class NewPaymentMethod extends React.Component {
         this.setState({loading: true});
         if (JSON.stringify(this.props.params) === "{}") {
           let toValue = {
-            id: "",
-            versionNumber: 1,
             ...this.props.params,
             ...values,
-            isEnabled:this.state.isEnabled
+            "currencyCode":"RMB",
+            "autoApproveFlag":false,
           }
           toValue.isEnabled =this.state.isEnabled;
-          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.post(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`,toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -105,7 +117,7 @@ class NewPaymentMethod extends React.Component {
             isEnabled:this.state.isEnabled
           }
           toValue.isEnabled = this.state.isEnabled;
-          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.put(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -142,24 +154,50 @@ class NewPaymentMethod extends React.Component {
 
       <div className="new-payment-method">
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout}
-                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
-            {getFieldDecorator('isEnabled', {
-
+          <FormItem {...formItemLayout} label="账套">
+            {getFieldDecorator('setOfBookId', {
+              rules: [{
+                required: true,
+                message:"请选择",
+              }],
+              initialValue:this.state.setOfBookId
             })(
-              <div>
-                <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}
-                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{
-                  marginLeft: 20,
-                  width: 100
-                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
-              </div>
+              <Select>
+                {this.state.setOfBooksOptions.map((option)=>{
+                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
+                })}
+              </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"})}>
+          <FormItem {...formItemLayout} label="预付款单类型代码">
+            {getFieldDecorator('typeCode', {
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
+              }],
+              initialValue:this.props.params.typeCode||''
+            })(
+              <Input/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="预付款单类型名称">
+            {getFieldDecorator('typeName', {
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
+              }],
+              initialValue:this.props.params.typeName||''
+            })(
+              <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}/>
+            )}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label="付款方式">
             {getFieldDecorator('paymentMethodCategory', {
-              rules: [{}],
+              rules: [{
+                required: true,
+                message:"请选择",
+              }],
               initialValue:this.props.params.paymentMethodCategory||''
             })(
               <Select>
@@ -169,26 +207,38 @@ class NewPaymentMethod extends React.Component {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})}>
-            {getFieldDecorator('paymentMethodCode', {
+
+          <FormItem
+            label="必须关联申请"
+            {...formItemLayout}
+          >
+
+            {getFieldDecorator('reqRequiredFlag', {
               rules: [{
                 required: true,
                 message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
-              initialValue:this.props.params.paymentMethodCode||''
+              valuePropName:"defaultValue",
+              initialValue:this.props.params.reqRequiredFlag?"true":"false",
             })(
-              <Input/>
+              <Radio.Group>
+                <Radio.Button value="true">必须</Radio.Button>
+                <Radio.Button value="false">非必须</Radio.Button>
+              </Radio.Group>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.description"})}>
-            {getFieldDecorator('description', {
-              rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({id: "common.please.enter"})
-              }],
-              initialValue:this.props.params.description||''
+          <FormItem {...formItemLayout}
+                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+            {getFieldDecorator('isEnabled', {
             })(
-              <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})}/>
+              <div>
+                <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
+                <span className="enabled-type" style={{
+                  marginLeft: 20,
+                  width: 100
+                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
+              </div>
             )}
           </FormItem>
 
@@ -205,10 +255,10 @@ class NewPaymentMethod extends React.Component {
 
 
 
-const WrappedPaymentMethod = Form.create()(NewPaymentMethod);
-function mapStateToProps() {
+const WrappedNewPayRequisitionType = Form.create()(NewPayRequisitionType);
+function mapStateToProps(state) {
   return {
-
+    company: state.login.company,
   }
 }
-export default connect(mapStateToProps)(injectIntl(WrappedPaymentMethod));
+export default connect(mapStateToProps)(injectIntl(WrappedNewPayRequisitionType));

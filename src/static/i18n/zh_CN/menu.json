@@ -96,5 +96,7 @@
   "menu.budget-journal-check": "预算审批",
   "menu.budget-journal-check-detail": "预算审批详情",
   "menu.payment-method":"付款方式",
-  "menu.payment-company-setting":"付款公司配置"
+  "menu.payment-company-setting":"付款公司配置",
+  "menu.pay-requisition-type-detail":"预付款单定义详情",
+  "menu.pay-requisition-type":"预付款单定义"
 }
