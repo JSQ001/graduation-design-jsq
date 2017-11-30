@@ -11,7 +11,6 @@ import httpFetch from 'share/httpFetch';
 import config from 'config';
 import menuRoute from 'share/menuRoute';
 
-
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';
 import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js';
@@ -257,7 +256,7 @@ class BudgetJournalDetail extends React.Component {
   //   let priority =item.priority;
       let priority =i+1;
      columns.push(
-       {title:`${item.dimensionName}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
+       {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
          render: recode => (
            <Popover content={recode}>
              {recode}
@@ -489,7 +488,6 @@ class BudgetJournalDetail extends React.Component {
       console.log(header);
       httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");
-        // this.getDataByBudgetJournalCode();
         this.setState({
           listData:[],
         })
@@ -607,7 +605,6 @@ class BudgetJournalDetail extends React.Component {
                     afterClose={this.handleAfterCloseNewSlide}
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={this.state.params}/>
-
         <div className="divider"> </div>
         <div className="footer-operate">
           <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">

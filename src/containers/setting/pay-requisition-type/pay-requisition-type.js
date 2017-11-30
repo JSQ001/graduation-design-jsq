@@ -8,6 +8,7 @@ import {Button, Table, Badge} from 'antd'
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 
 
 import SlideFrame from 'components/slide-frame'
@@ -106,7 +107,8 @@ class PayRequisitionType extends React.Component {
       },
       showSlideFrameNew: false,
       showSlideFramePut: false,
-      loading: true
+      loading: true,
+      payRequisitionTypeDetailPage:menuRoute.getRouteItem("pay-requisition-type-detail","key")
 
     };
   }
@@ -152,8 +154,10 @@ class PayRequisitionType extends React.Component {
       })
   };
 
+  //分配公司
   distributionCompany=(e,coder)=>{
-
+    const path = this.state.payRequisitionTypeDetailPage.url.replace(":requisitionTypeId",coder.id);
+    this.context.router.push(path)
   }
 
   //清空搜索区域
@@ -273,6 +277,10 @@ class PayRequisitionType extends React.Component {
       </div>
     );
   }
+}
+
+PayRequisitionType.contextTypes = {
+  router: React.PropTypes.object
 }
 
 function mapStateToProps(state) {
