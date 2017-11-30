@@ -1,7 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { injectIntl } from 'react-intl';
-import { Breadcrumb, Badge, Radio, Table, Pagination } from 'antd'
+import { injectIntl } from 'react-intl'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Breadcrumb, Badge, Radio, Table, Pagination, Alert } from 'antd'
 
 import SearchArea from 'components/search-area'
 
@@ -85,6 +87,66 @@ class PaySuccess extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this.getOnlineList();
+    this.getOfflineList();
+    this.getFileList()
+  }
+
+  //线上 - 获取列表
+  getOnlineList = () => {
+    const { onlinePage, onlinePageSize } = this.state;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
+    this.setState({ onlineLoading: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          onlineData: res.data,
+          onlineLoading: false,
+          onlinePagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
+          }
+        })
+      }
+    })
+  };
+
+  //线下 - 获取列表
+  getOfflineList = () => {
+    const { offlinePage, offlinePageSize } = this.state;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
+    this.setState({ offlineLoading: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          offlineData: res.data,
+          offlineLoading: false,
+          offlinePagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
+          }
+        })
+      }
+    })
+  };
+
+  //落地文件 - 获取列表
+  getFileList = () => {
+    const { filePage, filePageSize } = this.state;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
+    this.setState({ fileLoading: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          fileData: res.data,
+          fileLoading: false,
+          filePagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
+          }
+        })
+      }
+    })
+  };
+
   search = () => {};
 
   clear = () => {};
@@ -97,6 +159,22 @@ class PaySuccess extends React.Component {
     })
   };
 
+  //线下 - 修改每页显示数量
+  offlinePaginationChange = (offlinePage, offlinePageSize) => {
+    offlinePage = offlinePage - 1;
+    this.setState({ offlinePage, offlinePageSize },() => {
+      this.getOfflineList()
+    })
+  };
+
+  //落地文件 - 修改每页显示数量
+  filePaginationChange = (filePage, filePageSize) => {
+    filePage = filePage - 1;
+    this.setState({ filePage, filePageSize }, () => {
+      this.getFileList()
+    })
+  };
+
   //线上 - 内容渲染
   renderOnlineContent = () => {
     const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination } = this.state;
@@ -106,7 +184,7 @@ class PaySuccess extends React.Component {
     );
     const tableTitle = (
       <Breadcrumb separator="|">
-        <Breadcrumb.Item>等待付款结果</Breadcrumb.Item>
+        <Breadcrumb.Item>成功</Breadcrumb.Item>
         <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
         <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
         <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
@@ -115,6 +193,7 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-online">
+        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={onlineColumns}
                dataSource={onlineData}
@@ -138,18 +217,70 @@ class PaySuccess extends React.Component {
 
   //线下 - 内容渲染
   renderOfflineContent = () => {
+    const { columns, offlineData, offlineLoading, offlinePageSize, offlinePagination } = this.state;
+    const tableTitle = (
+      <Breadcrumb separator="|">
+        <Breadcrumb.Item>成功</Breadcrumb.Item>
+        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
+        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
+        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
+        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
+      </Breadcrumb>
+    );
     return (
       <div className="success-offline">
-        offline
+        <Table rowKey={record => record.id}
+               columns={columns}
+               dataSource={offlineData}
+               pagination={false}
+               loading={offlineLoading}
+               title={()=>{return tableTitle}}
+               scroll={{x: true, y: false}}
+               bordered
+               size="middle"/>
+        <Pagination size="small"
+                    defaultPageSize={offlinePageSize}
+                    showSizeChanger
+                    pageSizeOptions={['1','2','5','10']}
+                    total={offlinePagination.total}
+                    onChange={this.offlinePaginationChange}
+                    onShowSizeChange={this.offlinePaginationChange}
+                    style={{margin:'16px 0', textAlign:'right'}} />
       </div>
     )
   };
 
   //落地文件 - 内容渲染
   renderFileContent = () => {
+    const { columns, fileData, fileLoading, filePageSize, filePagination } = this.state;
+    const tableTitle = (
+      <Breadcrumb separator="|">
+        <Breadcrumb.Item>成功</Breadcrumb.Item>
+        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
+        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
+        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
+        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
+      </Breadcrumb>
+    );
     return (
       <div className="success-file">
-        file
+        <Table rowKey={record => record.id}
+               columns={columns}
+               dataSource={fileData}
+               pagination={false}
+               loading={fileLoading}
+               title={()=>{return tableTitle}}
+               scroll={{x: true, y: false}}
+               bordered
+               size="middle"/>
+        <Pagination size="small"
+                    defaultPageSize={filePageSize}
+                    showSizeChanger
+                    pageSizeOptions={['1','2','5','10']}
+                    total={filePagination.total}
+                    onChange={this.filePaginationChange}
+                    onShowSizeChange={this.filePaginationChange}
+                    style={{margin:'16px 0', textAlign:'right'}} />
       </div>
     )
   };

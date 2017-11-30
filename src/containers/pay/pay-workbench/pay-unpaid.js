@@ -19,10 +19,8 @@ class PayUnpaid extends React.Component {
     super(props);
     const {formatMessage} = this.props.intl;
     this.state = {
-      onlineLoading: false,
-      offlineLoading: false,
-      fileLoading: false,
       radioValue: 'online',
+      editCellError: false,
       searchForm: [
         {type: 'input', id: 'receiptNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})}, //单据编号
         {type: 'select', id: 'receiptType', label: formatMessage({id: "payWorkbench.receiptType"}), options: []}, //单据类型
@@ -80,38 +78,46 @@ class PayUnpaid extends React.Component {
         )},
         {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>}
       ],
-      editCellError: false,
+
+      /* 线上 */
+      onlineLoading: false,
       onlinePage: 0,
       onlinePageSize: 10,
       onlinePagination: {
         total: 0,
       },
+      onlineData: [],
+      onlineSelectedRows: [],         //选中行
+      onlineNotice: null,             //提示
+      onlineError: null,              //错误
+      payOnlineAble: false,           //支付按钮是否可用
+
+      /* 线下 */
+      offlineLoading: false,
       offlinePage: 0,
       offlinePageSize: 10,
       offlinePagination: {
         total: 0,
       },
+      offlineData: [],
+      offlineSelectedRowKeys: [],     //选中行
+      offlineNotice: null,            //提示
+      offlineError: null,             //错误
+      payOfflineAble: false,          //支付按钮是否可用
+
+      /* 落地文件 */
+      fileLoading: false,
       filePage: 0,
       filePageSize: 10,
       filePagination: {
         total: 0,
       },
-      onlineData: [],                 //线上 - 列表值
-      onlineSelectedRows: [],         //线上 - 选中行
-      onlineNotice: null,             //线上 - 提示
-      onlineError: null,              //线上 - 错误
-      payOnlineAble: false,           //线上 - 支付按钮是否可用
+      fileData: [],
+      failSelectedRowKeys: [],        //选中行
+      fileNotice: null,               //提示
+      fileError: null,                //错误
+      payFileAble: false,             //支付按钮是否可用
 
-      offlineData: [],                //线下 - 列表值
-      offlineNotice: null,            //线下 - 提示
-      offlineError: null,             //线下 - 错误
-      payOfflineAble: false,          //线下 - 支付按钮是否可用
-
-      fileData: [],                   //落地文件 - 列表值
-      fileNotice: null,               //落地文件 - 提示
-      fileError: null,                //落地文件 - 错误
-      payFileAble: false,             //落地文件 - 支付按钮是否可用
-      failSelectedRowKeys: [],
       payModalVisible: false,
       confirmSuccessDate: null,
       partnerCategoryOptions: [],
@@ -135,10 +141,22 @@ class PayUnpaid extends React.Component {
 
   };
 
+  //选择 线上／线下／落地文件
+  onRadioChange = (e) => {
+    this.setState({
+      radioValue: e.target.value,
+      onlineSelectedRows: []
+    }, () => {
+      this.onlineNotice(this.state.onlineSelectedRows)
+    })
+  };
+
   //查看支付流水详情
   checkPaymentDetail = (record) => {
     this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
   };
+
+  /************************ 获取列表 ************************/
 
   //线上 - 获取列表
   getOnlineList = () => {
@@ -194,7 +212,9 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 修改本次支付金额
+  /************************** 线上 **************************/
+
+  //修改本次支付金额
   editCurrentPay = (value, record) => {
     if (value > record.payableAmount) {
       message.error('本次支付金额不能大于可支付金额');
@@ -216,7 +236,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 修改收款账号
+  //修改收款账号
   editAccount = (value, record) => {
     let url = `${config.contractUrl}/payment/api/cash/transactionData`;
     let params = [{
@@ -236,7 +256,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 选择/取消选择某行的回调
+  //选择/取消选择某行的回调
   onOnlineSelectRow = (record, selected) => {
     let onlineSelectedRows = this.state.onlineSelectedRows;
     if(selected) {
@@ -252,7 +272,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 选择/取消选择所有行的回调
+  //选择/取消选择所有行的回调
   onOnlineSelectAllRow = (selected, selectedRows, changeRows) => {
     let onlineSelectedRows = this.state.onlineSelectedRows;
     if(selected){
@@ -274,7 +294,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线上 - 提示框显示
+  //提示框显示
   onlineNotice = (rows) => {
     let amount = 0;
     rows.forEach(item => { amount += item.currentPay || item.currentPayAmount });
@@ -291,12 +311,12 @@ class PayUnpaid extends React.Component {
     });
   };
 
-  //线上 - 弹框支付确认
+  //弹框支付确认
   handleOk = (e) => {
     this.setState({ payModalVisible: false });
   };
 
-  //线上 - 修改每页显示数量
+  //修改每页显示数量
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -304,10 +324,17 @@ class PayUnpaid extends React.Component {
     })
   };
 
+  /************************** 线下 **************************/
+
+
+  /************************ 落地文件 ************************/
+
   //落地文件 - 修改每页显示数量
   filePaginationChange = () => {};
 
-  //线上 - 内容渲染
+  /************************ 内容渲染 ************************/
+
+  //线上
   renderOnlineContent = () => {
     const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineNotice, onlineError } = this.state;
     const rowSelection = {
@@ -339,7 +366,6 @@ class PayUnpaid extends React.Component {
                pagination={false}
                loading={onlineLoading}
                rowSelection={rowSelection}
-               // onRowClick={this.checkPaymentDetail}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
                bordered
@@ -356,7 +382,7 @@ class PayUnpaid extends React.Component {
     )
   };
 
-  //线下 - 内容渲染
+  //线下
   renderOfflineContent = () => {
     const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineNotice, offlineError, payOfflineAble } = this.state;
     const rowSelection = {
@@ -404,7 +430,7 @@ class PayUnpaid extends React.Component {
     )
   };
 
-  //落地文件 - 内容渲染
+  //落地文件
   renderFileContent = () => {
     const { fileLoading, columns, fileData, filePageSize, filePagination, fileNotice, fileError, payFileAble } = this.state;
     const rowSelection = {
@@ -452,6 +478,8 @@ class PayUnpaid extends React.Component {
     )
   };
 
+  /************************* End *************************/
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { searchForm, payModalVisible, radioValue } = this.state;
@@ -466,7 +494,7 @@ class PayUnpaid extends React.Component {
           submitHandle={this.search}
           clearHandle={this.clear}/>
         <Radio.Group value={radioValue} style={{margin:'20px 0'}}
-                     onChange={(e) => {this.setState({ radioValue: e.target.value })}}>
+                     onChange={this.onRadioChange}>
           <Radio.Button value="online">线上</Radio.Button>
           <Radio.Button value="offline">线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
