@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Select, Popover, Badge, message, Form, Spin } from 'antd';
+import { Button, Table, Select, Popover, Badge, message, Form, Spin, Popconfirm} from 'antd';
 import SearchArea from 'components/search-area.js';
 import Chooser from 'components/chooser'
 import "styles/budget-setting/budget-organization/budget-item-map/budget-item-map.scss"
@@ -16,18 +16,18 @@ import ListSelector from 'components/list-selector'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class BudgetItem extends React.Component {
+class BudgetItemMap extends React.Component {
   constructor(props) {
     super(props);
+    this.sourceTypeArray=[
+      {label: "申请类型", value: "appType"},
+      {label: "费用类型", value:"EXPENSE_TYPE"}
+    ];
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       params: [],
       paramsKey:0,
-      sourceTypeArray: [
-        {label: "申请类型", value: "appType"},
-        {label: "费用类型", value:"expenseType"}
-      ],
       searchParams:{
         sourceType: "",
         itemId: "",
@@ -40,8 +40,9 @@ class BudgetItem extends React.Component {
         showSizeChanger:true,
         showQuickJumper:true,
       },
+      paramValueMap:{},
       searchForm: [
-        {type: 'input', id: 'itemCode', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
+        {type: 'select', options: this.sourceTypeArray, id: 'itemCode', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
         {type: 'select', id: 'budgetItemName',options:[], labelKey: 'itemName',valueKey: 'itemTypeId',
           label: formatMessage({id: 'budget.item'}),  /*预算项目*/
           listExtraParams:{organizationId: this.props.id},
@@ -50,50 +51,105 @@ class BudgetItem extends React.Component {
       ],
       columns: [
         {          /*来源类别*/
-          title: formatMessage({id:"itemMap.sourceType"}), key: "sourceType", dataIndex: 'sourceType',render: (text, record, index) => this.renderColumns(index, 'sourceType')
+          title: formatMessage({id:"itemMap.sourceType"}), key: "sourceType", dataIndex: 'sourceType',render: (text, record, index) => this.renderColumns(text, record,index, 'sourceType')
         },
         {          /*明细类型*/
-          title: formatMessage({id:"itemMap.detailType"}), key: "detailType", dataIndex: 'detailType',render: (text, record, index) => this.renderColumns(index, 'detail')
+          title: formatMessage({id:"itemMap.detailType"}), key: "sourceItemName", dataIndex: 'sourceItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'detail')
         },
         {          /*预算项目*/
-          title: formatMessage({id:"budget.item"}), key: "itemTypeName", dataIndex: 'itemTypeName',render: (text, record, index) => this.renderColumns(index, 'item')
+          title: formatMessage({id:"budget.item"}), key: "budgetItemName", dataIndex: 'budgetItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'item')
+        },                            //操作
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
+          <span>
+            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
+            {record.edit ?
+              <a href="#" style={{marginLeft: 12}}
+                onClick={(e) => this.operateItem(e, record, index, false)} >{ formatMessage({id: "common.cancel" })}</a>
+              :
+              <Popconfirm onConfirm={(e) => this.deleteItem(e, record,index)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+                <a href="#" style={{marginLeft: 12}}>{ formatMessage({id: "common.delete"})}</a>
+              </Popconfirm>
+
+            }
+          </span>)
         },
       ],
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     };
   }
 
+  //保存
+  saveItem = (e, record)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(record)
+  };
+
+  operateItem = (e,record,index,flag)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    let params = this.state.params;
+    if(!flag){
+      if(typeof record.id === 'undefined'){
+        params.delete(params[index])
+        this.setState(params);
+        return
+      }
+    }
+    params[index].edit = flag;
+    this.setState({
+      params
+    });
+  };
+
+  //删除
+  deleteItem = (e, record,index)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(record)
+    let param = [record.id];
+    httpFetch.delete(`${config.budgetUrl}/api/budget/itemsMapping/deleteByIds`,param).then((response)=>{
+      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`)
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+      }
+    })
+  };
+
   componentWillMount(){
+    const {formatMessage} = this.props.intl;
     this.getList();
     let paramValueMap = {
-      'cost_type': {
-        listType: 'cost_type',
-        labelKey: 'itemTypeName',
-        valueKey: 'id',
-        codeKey: 'itemTypeCode',
-        listExtraParams: {},
-        selectorItem: undefined
-      },
-      'BUDGET_ITEM_GROUP': {
-        listType: 'budget_item_group',
-        labelKey: 'itemGroupName',
-        valueKey: 'id',
-        codeKey: 'itemGroupCode',
-        listExtraParams: {},
-        selectorItem: undefined
-      },
-      'BUDGET_ITEM': {
-        listType: 'budget_item',
-        labelKey: 'itemName',
-        valueKey: 'id',
-        codeKey: 'itemCode',
-        listExtraParams: {},
-        selectorItem: {}
+      EXPENSE_TYPE:{
+        title: formatMessage({id:"itemMap.expenseType"}),
+        url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
+        searchForm: [
+          {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
+          {type: 'switch', id: 'enabled', defaultValue: true, label: formatMessage({id:"common.column.status"})},
+        ],
+        columns: [
+          {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconName', width: '25%',
+            render: (value,index,record) =>{
+              <span>
+                <img src={record.iconURL} />
+              </span>
+            }
+          },
+          {title: formatMessage({id:"itemMap.expenseTypeName"}), dataIndex: 'name', width: '25%'},
+          {title: formatMessage({id:"common.column.status"}), dataIndex: 'enabled', width: '25%',
+            render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          )},
+        ],
+        key: 'id'
       },
     };
+    this.setState({paramValueMap});
   }
 
-  //获取预算项目数据
+  //获取预算项目映射数据
   getList(){
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
@@ -101,10 +157,18 @@ class BudgetItem extends React.Component {
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
     httpFetch.get(url).then((response)=>{
+      let paramsKey = this.state.paramsKey;
       response.data.map((item,index)=>{
-        item.key = item.id;
+        item.key = paramsKey++;
+        item.edit = false;
+        item.item = [{id: item.budgetItemId, itemName: item.budgetItemName}];
+        item.detail = [{id: item.sourceItemId, sourceItemName: item.sourceItemName}]
       });
-
+      this.setState({
+        loading: false,
+        params: response.data,
+        paramsKey
+      })
     })
   }
 
@@ -142,38 +206,12 @@ class BudgetItem extends React.Component {
     })
   };
 
-  //处理公司弹框点击ok
-  handleListOk = (result) => {
-    let companyIds = [];
-    result.result.map((item)=>{
-      companyIds.push(item.id)
-    });
-    let param = [];
-
-    param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
-    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
-      if(response.status === 200){
-        this.setState({
-          loading: true,
-          batchCompany: true
-        },this.getList())
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
-      }
-    });
-
-    this.showListSelector(false)
-
-  };
-
   //修改来源类型
   handleChangeType = (value, index) => {
     let { params } = this.state;
     console.log(value)
     params[index].sourceType = value;
+    params[index].detail = [];
     this.setState({ params });
   };
 
@@ -182,10 +220,14 @@ class BudgetItem extends React.Component {
     console.log(value)
     const {params} = this.state;
     params[index].detail = value;
+    params[index].sourceItemId = value[0].id
     this.setState({params})
   };
 
-  //选择项目类型
+  //申请类型
+  handleChangeAppType = ()=>{};
+
+  //选择项目
   handleChangeItem = (value, index) => {
     console.log(value)
     let { params } = this.state;
@@ -194,93 +236,101 @@ class BudgetItem extends React.Component {
     this.setState({ params });
   };
 
-  renderColumns = (index, dataIndex) => {
-    const { sourceTypeArray, params } = this.state;
-    switch(dataIndex){
-      case 'sourceType':{
-        return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
-                  onChange={(value) => this.handleChangeType(value, index)}
-                  value={params[index].sourceType}
-                  notFoundContent={<Spin size="small" />}>
-            {sourceTypeArray.map((option)=>{
-              return <Option key={option.value}>{option.label}</Option>
-            })}
-          </Select>
-        );
-      }
-      case 'detail':{
-        let disabled = !params[index].sourceType;
-        console.log(params[index])
-        console.log(params[index].sourceType)
-        if(params[index].sourceType === 'expenseType'){
+  renderColumns = (decode, record,index, dataIndex) => {
+    const { paramValueMap } = this.state;
+    if( record.edit){
+      switch(dataIndex){
+        case 'sourceType':{
           return (
-            <Chooser
-              onChange={(value) => this.handleChangeExpenseType(value, index)}
-              type='expense_type'
-              labelKey='name'
-              valueKey='expenseTypeOID'
-              listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId}}
-              value={params[index].detail}
-              single={true}/>
+            <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                    onChange={(value) => this.handleChangeType(value, index)}
+                    value={record.sourceType}
+                    notFoundContent={<Spin size="small" />}>
+              {this.sourceTypeArray.map((option)=>{
+                return <Option key={option.value}>{option.label}</Option>
+              })}
+            </Select>
           );
-        }else {
-          if (params[index].sourceType === 'appType'){
+        }
+        case 'detail':{
+          if(record.sourceType === 'EXPENSE_TYPE'){
             return (
               <Chooser
                 onChange={(value) => this.handleChangeExpenseType(value, index)}
-                type='cost_type'
-                labelKey='itemName'
-                valueKey='itemCode'
-                listExtraParams={{organizationId: this.props.organization.id}}
-                value={params[index].item}
+                labelKey='sourceItemName'
+                valueKey='id'
+                itemMap={true}
+                selectorItem={paramValueMap[record.sourceType]}
+                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId}}
+                value={record.detail}
                 single={true}/>
             );
-          }else
-            return <Select disabled/>;
+          }else {
+            if (record.sourceType === 'appType'){
+              return (
+                <Chooser
+                  onChange={(value) => this.handleChangeAppType(value, index)}
+                  type='cost_type'
+                  labelKey='itemName'
+                  valueKey='id'
+                  listExtraParams={{organizationId: this.props.organization.id}}
+                  value={record.item}
+                  single={true}/>
+              );
+            }else
+              return <Select disabled/>;
+          }
+        }
+        case 'item':{
+          console.log(record)
+          return(
+              <Chooser
+                onChange={(value) => this.handleChangeItem(value, index)}
+                type='budget_item'
+                labelKey='itemName'
+                valueKey='id'
+                itemMap={true}
+                listExtraParams={{organizationId: this.props.organization.id}}
+                value={record.item}
+                single={true}/>)
         }
       }
-      case 'item':{
-        return <Chooser
-                  onChange={(value) => this.handleChangeItem(value, index)}
-                  type='budget_item'
-                  labelKey='itemName'
-                  valueKey='itemCode'
-                  listExtraParams={{organizationId: this.props.organization.id}}
-                  value={params[index].item}
-                  single={true}/>;
+    }else {
+      switch (dataIndex){
+        case 'sourceType':  return decode === "EXPENSE_TYPE" ? "费用类型" : "申请类型";break;
+        case 'detail': return record.sourceItemName ? record.sourceItemName : '-';break;
+        case 'item': return record.budgetItemName;break
       }
     }
   };
 
   handleAdd = ()=>{
     let { params, paramsKey } = this.state;
-    let newParams = {sourceType: '', detail: [], item: [], key: paramsKey};
-    params.push(newParams);
-    paramsKey++;
-    this.setState({ params, paramsKey});
+    let newParams = {sourceType: '', detail: [], item: [], key: paramsKey++, edit: true};
+    let array=[];
+    array.push(newParams);
+    let newArray =  array.concat(params);
+    this.setState({ params: newArray,paramsKey});
   };
 
   handleSave = () =>{
     let params = this.state.params;
     httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`,params).then((response)=>{
       console.log(response)
+      message.success(`${this.props.intl.formatMessage({id: "common.save.success"},{name:""})}`);
+      this.setState({
+       loading: true
+      },this.getList())
     }).catch((e)=>{
       if(e.response){
-        e.error(``)
+        message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`)
       }
     })
   };
 
   render(){
-    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, batchCompany, companyListSelector} = this.state;
+    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, } = this.state;
     const { formatMessage } = this.props.intl;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-      onSelect: this.onSelectRow,
-      onSelectAll: this.onSelectAllRow
-    };
     return (
       <div className="budget-item-map">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
@@ -297,22 +347,16 @@ class BudgetItem extends React.Component {
           <Table
             dataSource={params}
             columns={columns}
+            loading={loading}
             pagination={pagination}
-            size="middle"
-            bordered/>
+            size="middle"/>
         </Form>
-
-        <ListSelector type="company"
-                      visible={companyListSelector}
-                      onOk={this.handleListOk}
-                      extraParams={{setOfBooksId: this.props.company.setOfBooksId,isEnabled: true}}
-                      onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
   }
 
 }
-BudgetItem.contextTypes = {
+BudgetItemMap.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -323,4 +367,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetItem));
+export default connect(mapStateToProps)(injectIntl(BudgetItemMap));
