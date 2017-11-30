@@ -100,7 +100,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //保存日记账头
   saveHeard = (value) => {
-    httpFetch.post(`${config.liouliangUrl}/api/budget/journals`, value).then((response) => {
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals`, value).then((response) => {
       let path = this.state.budgetJournalDetailPage.url.replace(":journalCode", response.data.dto.journalCode);
       this.context.router.push(path);
     })
