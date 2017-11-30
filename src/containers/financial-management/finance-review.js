@@ -240,7 +240,8 @@ class FinanceReview extends React.Component {
       businessCode: result.formID,
       corporationOIDs: result.legalEntity,
       endDate: result.dateTo,
-      startDate: result.dateFrom
+      startDate: result.dateFrom,
+      formOIDs: result.formOIDs
     };
     this.setState({
       searchParams: searchParams,
