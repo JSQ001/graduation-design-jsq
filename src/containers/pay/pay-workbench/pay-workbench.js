@@ -16,55 +16,49 @@ class PayWorkbench extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
-    };
+      nowStatus: 'Success',
+      tabs: [
+        {key: 'Unpaid', name:'未付款'},
+        {key: 'Paying', name:'支付中'},
+        {key: 'Fail', name:'退票或失败'},
+        {key: 'Success', name:'支付成功'}
+      ],
+    }
   }
 
-  handleModeChange = (e) => {
-    const nowStatus = e.target.value;
-    this.setState({ nowStatus });
+  onChangeTabs = (key) => {
+    this.setState({ nowStatus: key })
   };
 
   renderContent = () => {
     let content = null;
     switch (this.state.nowStatus){
-      case '线上':
-        content = PayOnline;
+      case 'Unpaid':
+        content = <PayUnpaid/>;
         break;
-      case '线下':
-        content = PayOffline;
+      case 'Paying':
+        content = <PayPaying/>;
         break;
-      case '落地文件':
-        content = PayFile;
+      case 'Fail':
+        content = <PayFail/>;
+        break;
+      case 'Success':
+        content = <PaySuccess/>;
         break;
     }
-    return React.createElement(content, Object.assign({}, this.props.params, {organization: this.props.organization}));
+    return content;
   };
 
   render(){
+    const { tabs } = this.state;
     return (
       <div className="pay-workbench">
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="未付款" key="Unpaid">
-            <PayUnpaid/>
-          </TabPane>
-          <TabPane tab="支付中" key="Paying">
-            <PayPaying/>
-          </TabPane>
-          <TabPane tab="退票或失败" key="Fail">
-            <PayFail/>
-          </TabPane>
-          <TabPane tab="支付成功" key="Success">
-            <PaySuccess/>
-          </TabPane>
+        <Tabs onChange={this.onChangeTabs} defaultActiveKey="Success">
+          {tabs.map(tab => {
+            return <TabPane tab={tab.name} key={tab.key}/>
+          })}
         </Tabs>
-
-        {/*<Radio.Group onChange={this.handleModeChange} value={nowStatus} style={{marginBottom:'20px'}}>*/}
-          {/*<Radio.Button value="线上">线上</Radio.Button>*/}
-          {/*<Radio.Button value="线下">线下</Radio.Button>*/}
-          {/*<Radio.Button value="落地文件">落地文件</Radio.Button>*/}
-        {/*</Radio.Group>*/}
-        {/*{this.renderContent()}*/}
+        {this.renderContent()}
       </div>
     )
   }
