@@ -154,7 +154,7 @@ class NewBudgetJournalFrom extends React.Component {
     this.props.form.validateFieldsAndScroll((err, value) => {
       if (!err) {
         let formOid =null;
-        let documentOid =null;
+        let documentType =null;
    /*     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value.journalTypeName[0].id}`).then((res)=>{
           console.log(123);
           console.log(res.data);
@@ -190,7 +190,7 @@ class NewBudgetJournalFrom extends React.Component {
             "versionNumber": "1",
             "attachmentOID": this.state.attachmentOID,
             "formOid":this.state.formOid,
-            "documentOid":this.state.documentOid
+            "documentType":this.state.documentOid
           }
           ,
           "list": []
