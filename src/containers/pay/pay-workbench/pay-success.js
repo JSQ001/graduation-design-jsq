@@ -5,6 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import { Breadcrumb, Badge, Radio, Table, Pagination, Alert, message } from 'antd'
 
+import moment from 'moment'
 import SearchArea from 'components/search-area'
 
 class PaySuccess extends React.Component {
@@ -100,7 +101,7 @@ class PaySuccess extends React.Component {
   //线上 - 获取列表
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
     this.setState({ onlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -122,7 +123,7 @@ class PaySuccess extends React.Component {
   //线下 - 获取列表
   getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentTypeCode=OFFLINE_PAYMENT`;
     this.setState({ offlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -144,7 +145,7 @@ class PaySuccess extends React.Component {
   //落地文件 - 获取列表
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
     this.setState({ fileLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {

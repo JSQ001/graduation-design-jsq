@@ -18,6 +18,8 @@ class NewContract extends React.Component{
     this.state = {
       loading: false,
       user: {},
+      contractTypeDisabled: true,
+      setOfBooksId: null,
       partnerCategoryOptions: [], //合同方类型选项
       currencyOptions: [], //币种
       companyIdOptions: [], //公司
@@ -25,6 +27,7 @@ class NewContract extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
+      contractTypeOptions: [], //合同类型选择
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
       contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
     }
@@ -45,6 +48,7 @@ class NewContract extends React.Component{
       this.setState({ currencyOptions })
     });
     httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
+      this.setState({ setOfBooksId: res.data[0].setOfBooksId });
       httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
         let companyIdOptions = res.data;
         this.setState({ companyIdOptions })
@@ -84,9 +88,22 @@ class NewContract extends React.Component{
     this.context.router.push(this.state.myContract.url);
   };
 
+  //选择公司
+  handleCompanyId = (value) => {
+    if (value) {
+      let url = `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company?companyId=${value}`;
+      httpFetch.get(url).then(res => {
+        this.setState({
+          contractTypeOptions: res.data,
+          contractTypeDisabled: false
+        })
+      })
+    }
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions } = this.state;
+    const { loading, user, contractTypeDisabled, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, contractTypeOptions } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
@@ -140,9 +157,9 @@ class NewContract extends React.Component{
                     rules: [{
                       required: true,
                       message: '请选择'
-                    }],
+                    }]
                   })(
-                    <Select placeholder="请选择">
+                    <Select placeholder="请选择" onChange={this.handleCompanyId}>
                       {companyIdOptions.map((option) => {
                         return <Option key={option.id}>{option.name}</Option>
                       })}
@@ -151,15 +168,17 @@ class NewContract extends React.Component{
                 </FormItem>
               </Col>
               <Col span={7} offset={1}>
-                <FormItem label="合同类型">
+                <FormItem label="合同类型（请先选择公司）">
                   {getFieldDecorator('contractTypeId', {
                     rules: [{
                       required: true,
                       message: '请选择'
                     }],
                   })(
-                    <Select placeholder="请选择">
-                      <Option key="911143733222408193">合同类型</Option>
+                    <Select placeholder="请选择" disabled={contractTypeDisabled}>
+                      {contractTypeOptions.map(option => {
+                        return <Option key={option.id}>{option.contractTypeName}</Option>
+                      })}
                     </Select>
                   )}
                 </FormItem>
@@ -188,10 +207,9 @@ class NewContract extends React.Component{
                     <FormItem label="合同金额">
                       {getFieldDecorator('currency')(
                         <Select placeholder="请选择">
-                          {/*{currencyOptions.map((option) => {*/}
-                            {/*return <Option value={option.otherCurrency} key={option.otherCurrency}>{option.otherCurrency}</Option>*/}
-                          {/*})}*/}
-                          <Option key="CNY">CNY</Option>
+                          {currencyOptions.map((option) => {
+                            return <Option key={option.otherCurrency}>{option.otherCurrency}</Option>
+                          })}
                         </Select>
                       )}
                     </FormItem>

@@ -1,10 +1,11 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Button, Table, message } from 'antd'
+import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 
+import moment from 'moment'
 import SearchArea from 'components/search-area'
 
 class MyContract extends React.Component{
@@ -13,6 +14,15 @@ class MyContract extends React.Component{
     this.state = {
       loading: false,
       setOfBooksId: null,
+      contractStatus: {
+        CANCEL: {label: '取消', state: ''},
+        CONFIRM: {label: '确认', state: ''},
+        FINISH: {label: '完成', state: ''},
+        GENERATE: {label: '新建', state: ''},
+        HOLD: {label: '暂挂', state: ''},
+        REJECTED: {label: '拒绝', state: ''},
+        SUBMITTED: {label: '提交', state: ''},
+      },
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'contractName', label: '合同名称'},
@@ -34,15 +44,15 @@ class MyContract extends React.Component{
         {type: 'value_list', id: 'status', label: '合同状态', valueListCode: 2201, options: []},
       ],
       columns: [
-        {title: '序号', dataIndex: 'id', width: '6%'},
+        {title: '序号', dataIndex: 'id', render: (value, record, index) => index + 1},
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '公司', dataIndex: 'companyId'},
-        {title: '合同类型', dataIndex: 'contractTypeId'},
-        {title: '签署日期', dataIndex: 'signDate'},
-        {title: '合同方', dataIndex: 'partnerCategory'},
+        {title: '合同类型', dataIndex: 'contractTypeId', render: (value, record) => (record.contractCategory + ' - ' + value)},
+        {title: '签署日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
+        {title: '合同方', dataIndex: 'partnerCategory', render: (value, record) => (value + ' - ' + record.partnerId)},
         {title: '币种', dataIndex: 'currency'},
-        {title: '合同金额', dataIndex: 'amount'},
-        {title: '状态', dataIndex: 'status', width: '8%'}
+        {title: '合同金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '状态', dataIndex: 'status', render: value => <Badge status="processing" text={this.state.contractStatus[value].label} />}
       ],
       data: [],
       page: 0,
@@ -51,6 +61,7 @@ class MyContract extends React.Component{
         total: 0
       },
       NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
+      ContractDetail: menuRoute.getRouteItem('contract-detail', 'key'), //合同详情
     }
   }
 
@@ -109,6 +120,11 @@ class MyContract extends React.Component{
     this.context.router.push(this.state.NewContract.url)
   };
 
+  //合同详情
+  rowClick = (record) => {
+    this.context.router.push(this.state.ContractDetail.url.replace(':id', record.id))
+  };
+
   render() {
     const { loading, searchForm, columns, data, pagination } = this.state;
     return (
@@ -126,6 +142,8 @@ class MyContract extends React.Component{
                dataSource={data}
                padination={pagination}
                loading={loading}
+               scroll={{x: true, y: false}}
+               onRowClick={this.rowClick}
                bordered
                size="middle"/>
       </div>
