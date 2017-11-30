@@ -230,7 +230,7 @@ class NewBudgetJournalDetail extends React.Component {
     searchForm = searchForm.map(searchItem => {
       if(searchItem.id === "unit")
         console.log(this.props.params.journalTypeId);
-        searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
+      searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
       return searchItem;
     });
     console.log(searchForm);
@@ -538,7 +538,7 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
-
+      console.log(resp.data);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
@@ -553,14 +553,14 @@ class NewBudgetJournalDetail extends React.Component {
       const item =dimension[i];
       const priority =i+1;
       //const priority = item.priority;
-      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimensionValue"+priority+"Id","dimensionValue"+priority+"Name"];
-      dimensionList[dimensionListKey[0]]=item.id;
+      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimension"+priority+"ValueId","dimension"+priority+"ValueName"];
+      dimensionList[dimensionListKey[0]]=item.dimensionId;
       dimensionList[dimensionListKey[1]]=item.dimensionName;
       dimensionList[dimensionListKey[2]]=item.defaultDimValueId?item.defaultDimValueId:null;
       dimensionList[dimensionListKey[3]]=item.defaultDimValueName?item.defaultDimValueName:null;
       console.log(item);
       let options=[];
-      httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/${item.oid}`).then((res)=>{
+      httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/by/costcenterid?costCenterId=${item.dimensionId}`).then((res)=>{
         console.log(res.data);
         const data =res.data;
         data.map((item)=>{
@@ -569,7 +569,9 @@ class NewBudgetJournalDetail extends React.Component {
 
       })
 
-      const searchFormItem=  {type: 'select_dimension', label:`${item.name}`, options:options,
+      console.log(options);
+
+      const searchFormItem=  {type: 'select_dimension', label:`${item.dimensionName}`, options:options,
         labelKey:'name',valueKey:'id',defaultValue:dimensionList[dimensionListKey[3]],
         columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
       };

@@ -42,6 +42,8 @@ class NewBudgetJournalFrom extends React.Component {
       journalTypeIdFlag:true,
       file: {},
       attachmentOID: [],
+      formOid:null,
+      documentOid:null
     };
   }
 
@@ -49,8 +51,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   componentWillMount() {
     this.getPeriodStrategy();
-    this.getPeriodQuarter();
-    this.getPeriod();
     this.getDefaultValue();
   }
 
@@ -65,6 +65,10 @@ class NewBudgetJournalFrom extends React.Component {
         console.log(data);
         if(item.type === "chooser"){
           defaultValueList[item.defaultValueKey]=data;
+          console.log(defaultDataList);
+          this.props.from.setFieldsValue(
+            defaultValueList
+          )
         }
       }).catch((e)=>{
 
@@ -93,49 +97,10 @@ class NewBudgetJournalFrom extends React.Component {
     });
   };
 
-//获取季度
-  getPeriodQuarter = () => {
-    this.getSystemValueList(2021).then((response) => {
-      let periodPeriodQuarter = [];
-      response.data.values.map((item) => {
-        let option = {
-          key: item.code,
-          label: item.messageKey
-        };
-        periodPeriodQuarter.push(option);
-      });
-      this.setState({
-        periodPeriodQuarter: periodPeriodQuarter
-      })
-    });
-  };
-
-  //获取期间
-  getPeriod = () => {
-    console.log(this.props.user);
-    console.log(this.props.company);
-    //
-    httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then((response) => {
-      console.log(response.data);
-      let periodPeriod = [];
-      response.data.map((item) => {
-        let option = {
-          value: item,
-          key: item.periodName,
-          label: item.periodName
-        };
-        periodPeriod.push(option);
-      });
-      this.setState({
-        periodPeriod: periodPeriod
-      })
-    })
-
-  };
 
   //保存日记账头
   saveHeard = (value) => {
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals`, value).then((response) => {
+    httpFetch.post(`${config.liouliangUrl}/api/budget/journals`, value).then((response) => {
       let path = this.state.budgetJournalDetailPage.url.replace(":journalCode", response.data.dto.journalCode);
       this.context.router.push(path);
     })
@@ -147,50 +112,45 @@ class NewBudgetJournalFrom extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
       if (!err) {
-        const period = value.periodName ? JSON.parse(value.periodName) : '';
-        const periodName = period.periodName;
-        const periodYear = period.periodYear;
-        //处理期间
-        let periodNameData;
-        console.log(periodName);
-        if (periodName != '' && periodName != null && periodName != undefined) {
-
-          const periodNameArray = periodName.split("-");
-          for (let i = 0; i < periodNameArray.length; i++) {
-            console.log(periodNameArray[i]);
-            if (periodNameArray[i] != periodYear) {
-              periodNameData = periodYear + "" + periodNameArray[i]
-            }
-          }
-        } else {
-          periodNameData = '';
-        }
+        let formOid =null;
+        let documentType =null;
+   /*     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value.journalTypeName[0].id}`).then((res)=>{
+          console.log(123);
+          console.log(res.data);
+            formOid = res.data.formOid;
+            documentOid =res.data.documentOid;
+        })*/
+        //${config.budgetUrl}/api/budget/journals/journalType/selectByInput
+        ///api/budget/journal/types/query
 
         let userData = {
           "dto": {
-            "companyId": this.props.company.id,
-            "companyName": this.props.company.name,
-            "organizationId": this.props.organization.id,
-            "organizationName": this.props.organization.organizationName,
-            "structureId": value.structureId,
-            "structureName": "structureName",
-            "description": "",
-            "reversedFlag": "N",
-            "sourceBudgetHeaderId": undefined,
-            "sourceType": undefined,
-            "employeeId": this.props.user.id,
-            "employeeName": this.props.user.fullName,
-            "unitName": "periodNumber",
-            'versionId': value.versionName[0].id,
-            'versionName': value.versionName[0].versionName,
-            'scenarioId': value.scenarioName[0].id,
-            'scenarioName': value.scenarioName[0].scenarioName,
-            "status": "NEW",
-            "journalTypeId": value.journalTypeName[0].id,
-            "journalTypeName": value.journalTypeName[0].journalTypeName,
-            "periodStrategy": value.periodStrategy,
-            "versionNumber": "1",
-            "attachmentOID": this.state.attachmentOID,
+
+             "companyId": this.props.company.id,
+             "companyName": this.props.company.name,
+             "organizationId": this.props.organization.id,
+             "organizationName": this.props.organization.organizationName,
+             "structureId": value.structureId,
+             "structureName": "structureName",
+             "description": "",
+             "reversedFlag": "N",
+             "sourceBudgetHeaderId": undefined,
+             "sourceType": undefined,
+             "employeeId": this.props.user.id,
+             "employeeName": this.props.user.fullName,
+             "unitName": "periodNumber",
+             'versionId': value.versionName[0].id,
+             'versionName': value.versionName[0].versionName,
+             'scenarioId': value.scenarioName[0].id,
+             'scenarioName': value.scenarioName[0].scenarioName,
+             "status": "NEW",
+             "journalTypeId": value.journalTypeName[0].id,
+             "journalTypeName": value.journalTypeName[0].journalTypeName,
+             "periodStrategy": value.periodStrategy,
+             "versionNumber": "1",
+             "attachmentOID": this.state.attachmentOID,
+             "formOid":this.state.formOid,
+             "documentType":this.state.documentOid
           }
           ,
           "list": []
@@ -202,21 +162,58 @@ class NewBudgetJournalFrom extends React.Component {
   };
 
 
-  //根据账套类型，获得预算表
+  //根据预算日记账类型，获得预算表
   getStructure(value) {
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
-      console.log(response.data);
-      this.setState(
-        {structureGroup: response.data}
-      )
-    })
+    console.log(value);
+
+    console.log(666);
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       console.log(response.data);
+      response.data.map((item)=>{
+        item.key=item.id;
+      })
+      console.log(response.data);
+      this.setState(
+        {"structureGroup": response.data},()=>{
+          console.log(this.state.structureGroup);
+        }
+      )
+    })
+    let structureId = null;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
+      console.log(response.data);
         if(response.data){
-          this.props.from.setFieldsValue({
-            "structureId": response.data.id
+          structureId =  response.data.id;
+          console.log(structureId);
+          this.props.form.setFieldsValue({
+            "structureId":structureId,
+            "periodStrategy":response.data.periodStrategy
           })
         }
+    })
+
+    this.getFormOid(value);
+
+  }
+
+  getFormOid(value){
+    let formOid =null;
+    let documentOid =null;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/journalType/selectByInput?&page=0&size=50&organizationId=${this.props.organization.id}`).then((res)=>{
+
+      res.data.map((item)=>{
+        if(item.id == value){
+          console.log(555);
+          formOid = item.form0id;
+          documentOid = item.formType;
+          console.log(formOid);
+          console.log(documentOid);
+          this.setState({
+            formOid,
+            documentOid
+          })
+        }
+      })
     })
   }
 
@@ -224,63 +221,9 @@ class NewBudgetJournalFrom extends React.Component {
   //选择预算表时，获得期间段
   handleSelectChange = (values) => {
     console.log(values);
-    const data = new Date();
-    const year = data.getFullYear();
-    const month = data.getMonth() + 1;
-    const po = (month < 2 ? 2 : month);
-    const quarter = parseInt((po - 1) / 3 + 1);
-    console.log(values);
     this.state.structureGroup.map((item) => {
       if (item.id == values) {
         const periodStrategy = item.periodStrategy;
-        if (periodStrategy == 'MONTH') {
-          this.props.form.setFieldsValue({
-            periodYear: ''
-          });
-
-          this.props.form.setFieldsValue({
-            periodQuarter: ''
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodYearFlag: true,
-            periodQuarterFlag: true,
-            periodFlag: false
-          })
-        } else if (periodStrategy == 'YEAR') {
-          this.props.form.setFieldsValue({
-            periodYear: year
-          });
-          this.props.form.setFieldsValue({
-            periodQuarter: ''
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodFlag: true,
-            periodQuarterFlag: true,
-            periodYearFlag: false,
-          })
-        } else {
-          this.props.form.setFieldsValue({
-            periodYear: year
-          });
-
-          this.props.form.setFieldsValue({
-            periodQuarter: quarter
-          });
-          this.props.form.setFieldsValue({
-            periodName: ''
-          });
-          this.setState({
-            periodFlag: true,
-            periodYearFlag: false,
-            periodQuarterFlag: false,
-          })
-        }
         this.props.form.setFieldsValue({
           periodStrategy: periodStrategy,
         });
@@ -298,6 +241,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType = (value) => {
+
     console.log(value);
     if (value.length > 0) {
       console.log(value);
@@ -309,19 +253,19 @@ class NewBudgetJournalFrom extends React.Component {
       this.props.form.setFieldsValue({
         structureId: ''
       });
-      this.props.form.setFieldsValue({
-        periodYear: ''
-      });
-      this.props.form.setFieldsValue({
-        periodQuarter: ''
-      });
-      this.props.form.setFieldsValue({
-        periodName: ''
-      });
+
       this.getStructure(valueData.id);
     }
 
   };
+
+  getjournalTypes(value){
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value}`).then((res)=>{
+          console.log(res.data);
+          let formOid = res.data.formOid;
+          let documentOid =res.data.documentOid;
+      })
+  }
 
 
   //上传附件，获取OID
@@ -335,24 +279,12 @@ class NewBudgetJournalFrom extends React.Component {
   render() {
     const {getFieldDecorator} = this.props.form;
     const organization = this.props.organization;
-    const {structureGroup, periodStrategy, periodPeriodQuarter, periodPeriod, structureFlag, periodFlag, periodYearFlag, periodQuarterFlag, periodStrategyFlag, uploading} = this.state;
+    const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading} = this.state;
     const formItemLayout = {};
 
 
-    const strategyOptions = structureGroup.map((item) => <Option key={item.id}
-                                                                 value={item.id}>{item.structureName}</Option>);
-    const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key}
-                                                                       value={item.key}>{item.label}</Option>);
-    const periodPeriodQuarterOptions = periodPeriodQuarter.map((item) => <Option key={item.key}
-                                                                                 value={item.key}>{item.label}</Option>);
-    const periodPeriodOptions = periodPeriod.map((item) => <Option key={item.key}
-                                                                   value={JSON.stringify(item.value)}>{item.label}</Option>);
-    let nowYear = new Date().getFullYear();
-    let yearOptions = [];
-    for (let i = nowYear - 20; i <= nowYear + 20; i++)
-      yearOptions.push({label: i, key: i})
-    const yearOptionsData = yearOptions.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
-
+    const strategyOptions = structureGroup.map((item) => <Option value={String(item.id)}>{item.structureName}</Option>);
+    const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
     return (
       <div className="new-budget-journal">

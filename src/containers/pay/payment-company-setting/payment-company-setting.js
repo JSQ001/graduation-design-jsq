@@ -1,34 +1,4 @@
 /**
- * Created by 13576 on 2017/11/27.
- */
-/*
-import React from 'react'
-import {connect} from 'react-redux'
-import {injectIntl} from 'react-intl'
-class PaymentCompanySetting extends React.Component{
-  constructor(props){
-    super(props);
-    this.state({
-
-    })
-  }
-
-  render(){
-    <div className="payment-company-setting">
-      payment-company-setting
-    </div>
-  }
-}
-
-function mapStateToProps() {
-
-}
-export default connect(mapStateToProps)(injectIntl(PaymentCompanySetting))
-*/
-/**
- * Created by 13576 on 2017/11/25.
- */
-/**
  * Created by 13576 on 2017/11/25.
  */
 import React from 'react'
@@ -43,7 +13,7 @@ import httpFetch from 'share/httpFetch'
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
-import WrappedPaymentMethod from 'containers/pay/payment-method/new-payment-method'
+import NewPaymentCompanySetting from 'containers/pay/payment-company-setting/new-payment-company-setting.js'
 import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
@@ -56,34 +26,47 @@ class PaymentCompanySetting extends React.Component {
     this.state = {
       data: [],
       columns: [
-        {/*付款方式类型*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
-          dataIndex: 'paymentMethodCategory',
-          key: 'paymentMethodCategory',
+        {/*优先级*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.priorty"}),
+          dataIndex: 'priorty',
+          key: 'priorty',
+
         },
-        {/*付款方式代码*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
-          dataIndex: 'paymentMethodCode',
-          key: 'paymentMethodCode',
+        {/*单据公司代码*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"}),
+          dataIndex: 'companyCode',
+          key: 'companyCode',
         },
-        {/*付款方式名称*/
-          title: this.props.intl.formatMessage({id: "paymentMethod.description"}),
-          dataIndex: 'description',
-          key: 'description',
+        {/*单据公司名称*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"}),
+          dataIndex: 'companyName',
+          key: 'companyName',
+        },
+        {/*单据类别*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"}),
+          dataIndex: 'ducumentCategory',
+          key: 'ducumentCategory',
+        },
+        {/*单据类型*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"}),
+          dataIndex: 'ducumentType',
+          key: 'ducumentType',
+        },
+        {/*付款公司代码*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyCode"}),
+          dataIndex: 'paymentCompanyCode',
+          key: 'paymentCompanyCode',
+        },
+        {/*付款公司名称*/
+          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyName"}),
+          dataIndex: 'paymentCompanyName',
+          key: 'paymentCompanyName',
         },
 
-        {/*状态*/
-          title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
-          dataIndex: 'isEnabled',
-          key: 'isEnabled',
-          render: (recode, text) => {
-            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
-          }
-        },
       ],
       searchForm: [
-        {type: 'input', id: 'paymentMethodCode', label: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})},
-        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: "paymentMethod.description"})},
+        {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
+        {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
       ],
       pageSize: 10,
       page: 0,
@@ -91,11 +74,9 @@ class PaymentCompanySetting extends React.Component {
         total: 0
       },
       searchParams: {
-        paymentMethodCategory: '',
-        paymentMethodCode: '',
-        description:'',
-        isEnabled:null,
-
+        companyCode: '',
+        companyName: '',
+        ducumentCategory:'',
       },
       updateParams: {
         paymentMethodCategory: '',
@@ -116,7 +97,7 @@ class PaymentCompanySetting extends React.Component {
 
 //获得数据
   getList() {
-    let url = `http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode}&companyName=${this.state.searchParams.companyName}&ducumentCategory=${this.state.searchParams.ducumentCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -247,26 +228,19 @@ class PaymentCompanySetting extends React.Component {
             dataSource={data}
             pagination={pagination}
             loading={loading}
+            rowKey={recode=>{return recode.id}}
             bordered
             onRowClick={this.putItemTypeShowSlide}
             size="middle"
           />
         </div>
 
-        <SlideFrame title="新建付款方式"
+        <SlideFrame title="新建公司付款配置"
                     show={showSlideFrameNew}
-                    content={WrappedPaymentMethod}
+                    content={NewPaymentCompanySetting}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
-
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
-                    show={showSlideFramePut}
-                    content={WrappedPutBudgetItemType}
-                    afterClose={this.handleCloseUpdateSlide}
-                    onClose={() => this.showSlidePut(false)}
-                    params={updateParams}/>
-
 
       </div>
     );

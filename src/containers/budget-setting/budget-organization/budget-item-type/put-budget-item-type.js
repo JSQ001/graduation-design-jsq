@@ -33,14 +33,14 @@ class PutBudgetItemType extends React.Component {
   }
 
 //状态变化时,获取默认值数据
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps (nextProps){
     if (nextProps.params && nextProps.params.length > 0)
       this.setState({
         params: this.props.params,
         isEnabled: this.props.params.isEnabled,
       })
     else
-      this.setState({params: []});
+      this.setState({params: {}});
 
   };
 
