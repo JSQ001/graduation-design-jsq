@@ -11,7 +11,6 @@ import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 
-import 'styles/budget-setting/budget-organization/budget-versions/budget-versions-detail.scss'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
@@ -35,43 +34,31 @@ class PayRequisitionTypeDetail extends React.Component {
       infoDate: {},
       infoList: [
         {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.organization"}),
-          id: 'organizationName',
+          /*账套*/
+          type: 'input', label:"账套", id: 'setOfBookId',
           message: this.props.intl.formatMessage({id: "common.please.enter"}),
           disabled: true
         },
         {
+          /*预付款类型代码*/
           type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.versionCode"}),
-          id: 'versionCode',
+          label:"预付款类型代码",
+          id: 'typeName',
           message: this.props.intl.formatMessage({id: "common.please.enter"}),
           disabled: true
         },
-        {
-          type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.versionName"}),
-          id: 'versionName',
-          message: this.props.intl.formatMessage({id: "common.please.enter"})
-        },
-        {
-          type: 'select', label: this.props.intl.formatMessage({id: "budget.versionStatus"}), id: 'status',
-          options: [
-            {value: 'NEW', label: this.props.intl.formatMessage({id: "budget.new"})},
-            {value: 'CURRENT', label: this.props.intl.formatMessage({id: "budget.current"})},
-            {value: 'HISTORY', label: this.props.intl.formatMessage({id: "budget.history"})}
 
-          ]
 
-        },
-        {type: 'date', label: this.props.intl.formatMessage({id: "budget.versionDate"}), id: 'versionDate'},
         {
+          /*预付款类型名称*/
           type: 'input',
-          label: this.props.intl.formatMessage({id: "budget.versionDescription"}),
-          id: 'description',
-          message: this.props.intl.formatMessage({id: "common.please.enter"})
+          label: "预付款类型名称",
+          id: 'typeCode',
+          message: this.props.intl.formatMessage({id: "common.please.enter"}),
+          disabled: true
         },
-        {type: 'switch', label: this.props.intl.formatMessage({id: "budget.isEnabled"}), id: 'isEnabled'}
+        /*预付款类型状态*/
+        {type: 'switch', label:"预付款类型状态", id: 'isEnabled',disabled: true}
       ],
       pagination: {
         total: 0
@@ -87,7 +74,7 @@ class PayRequisitionTypeDetail extends React.Component {
       page: 0,
       pageSize: 10,
       budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
-
+      payRequisitionTypePage:menuRoute.getRouteItem('pay-requisition-type','key')  //预付款单定义
     }
 
   }
@@ -128,13 +115,12 @@ class PayRequisitionTypeDetail extends React.Component {
     console.log("123123123")
     console.log(this.props)
     let data = {}
-    httpFetch.get(`${config.budgetUrl}/api/budget/versions/${this.props.params.versionId}`,).then((response) => {
+    httpFetch.get(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types/${this.props.params.requisitionTypeId}`,).then((response) => {
       console.log(response.data);
       data = response.data;
-      let statusData = response.data.status;
-      response.data.organizationName = this.props.organization.organizationName;
+
       let info = {
-        ...response.data,
+        ...data,
       }
       this.setState({
         formData: data,
@@ -150,7 +136,7 @@ class PayRequisitionTypeDetail extends React.Component {
     this.setState({
       loading: true
     })
-    httpFetch.get(`${config.budgetUrl}/api/budget/version/assign/companies/query?versionId=${this.props.params.versionId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response) => {
+    httpFetch.get(`${config.localUrl}/api/cash/setofbooks/pay/requisition/type/assign/companies/query?sobPayReqTypeId=${this.props.params.requisitionTypeId}&setOfBookId=${this.props.company.setOfBooksId}&page=${this.state.page}&size=${this.state.pageSize}`).then((response) => {
       this.setState({
         data: response.data,
         loading: false,
@@ -336,7 +322,7 @@ PayRequisitionTypeDetail.contextTypes = {
 
 function mapStateToProps(state) {
   return {
-    organization: state.budget.organization
+    company: state.login.company,
   }
 }
 export default connect(mapStateToProps)(injectIntl(PayRequisitionTypeDetail));

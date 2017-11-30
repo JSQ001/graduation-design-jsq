@@ -22,14 +22,7 @@ class NewPaymentCompanySetting extends React.Component {
       loading: false,
       ducumentCategoryOptions:[],
       companyOptions:[],
-      ducumentCategoryData:[
-        {value: "COMPANY", id: 1502592, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "c31d54ed-17f7-4187-b115-e6a95b8f8c0d", messageKey: "公司",},
-        {value: "COMPANY_GROUP", id: 1502593, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "1adfd91b-7461-4caf-bb60-816aaf880e11", messageKey: "公司组",},
-        {value: "UNIT", id: 1502594, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "9706072a-e23a-40a5-affc-92db12297162", messageKey: "部门",},
-        {value: "UNIT_GROUP", id: 1502595, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "791b768b-9f67-4134-9a23-b926e8567aff", messageKey: "部门组",},
-        {value: "EMPLOYEE", id: 1502596, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "7769fca2-b70c-46dd-977a-a1d2dffb6ce2", messageKey: "员工",},
-        {value: "EMPLOYEE_GROUP", id: 1502597, customEnumerationOID: "d728c26c-cb3f-445d-bfca-ee791dbd1425", customEnumerationItemOID: "3e4d8103-e679-4bf3-be87-d6d639d92826", messageKey: "员工组",}
-      ]
+    
     };
 
 
