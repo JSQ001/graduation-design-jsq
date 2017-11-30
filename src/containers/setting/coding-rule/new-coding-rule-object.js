@@ -74,12 +74,7 @@ class NewCodingRuleObject extends React.Component {
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="应用公司">
-            {getFieldDecorator('company', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.select'}),  //请选择
-              }]
-            })(
+            {getFieldDecorator('company')(
               <Chooser single={true} type="company" labelKey="companyName" valueKey="companyCode" listExtraParams={{setOfBooksId: this.props.company.setOfBooksId}}/>
             )}
           </FormItem>
