@@ -59,9 +59,9 @@ class NewContract extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       values.attachmentOID = this.state.uploadOIDs;
-      values.startDate = values.rangePicker[0].format('YYYY-MM-DD');
-      values.endDate = values.rangePicker[1].format('YYYY-MM-DD');
-      values.signDate = values.signDate.format('YYYY-MM-DD');
+      values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
+      values.rangePicker && (values.startDate = values.rangePicker[0].format('YYYY-MM-DD'));
+      values.rangePicker && (values.endDate = values.rangePicker[1].format('YYYY-MM-DD'));
       console.log(values)
       if (!err) {
         console.log(values)
@@ -133,7 +133,7 @@ class NewContract extends React.Component{
                   })(
                     <Select placeholder="请选择">
                       {companyIdOptions.map((option) => {
-                        return <Option key={option.companyOID}>{option.legalEntityName}</Option>
+                        return <Option key={option.id}>{option.name}</Option>
                       })}
                     </Select>
                   )}
