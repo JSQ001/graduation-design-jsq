@@ -486,6 +486,7 @@ class BudgetJournalDetail extends React.Component {
   handlePut=()=>{
     if(this.state.commitFlag) {
       let header =this.state. headerAndListData.dto;
+      console.log(header);
       httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");
         // this.getDataByBudgetJournalCode();

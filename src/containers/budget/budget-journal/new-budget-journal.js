@@ -51,8 +51,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   componentWillMount() {
     this.getPeriodStrategy();
-    this.getPeriodQuarter();
-    this.getPeriod();
     this.getDefaultValue();
   }
 
@@ -99,45 +97,6 @@ class NewBudgetJournalFrom extends React.Component {
     });
   };
 
-//获取季度
-  getPeriodQuarter = () => {
-    this.getSystemValueList(2021).then((response) => {
-      let periodPeriodQuarter = [];
-      response.data.values.map((item) => {
-        let option = {
-          key: item.code,
-          label: item.messageKey
-        };
-        periodPeriodQuarter.push(option);
-      });
-      this.setState({
-        periodPeriodQuarter: periodPeriodQuarter
-      })
-    });
-  };
-
-  //获取期间
-  getPeriod = () => {
-    console.log(this.props.user);
-    console.log(this.props.company);
-    //
-    httpFetch.get(`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`).then((response) => {
-      console.log(response.data);
-      let periodPeriod = [];
-      response.data.map((item) => {
-        let option = {
-          value: item,
-          key: item.periodName,
-          label: item.periodName
-        };
-        periodPeriod.push(option);
-      });
-      this.setState({
-        periodPeriod: periodPeriod
-      })
-    })
-
-  };
 
   //保存日记账头
   saveHeard = (value) => {
