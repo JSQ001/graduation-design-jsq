@@ -58,11 +58,6 @@ class BudgetJournalTypeDetail extends React.Component {
             {title: "预算项目代码", dataIndex: "itemCode", width: '30%'},
             {title: "预算项目名称", dataIndex: "itemName", width: '50%'},
             {title: '启用', key: 'isEnabled', width: '20%', render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeItemEnabled(e, record)} checked={record.isEnabled}/>}
-            // {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '20%',
-            //   render: isEnabled => (
-            //     <Badge status={isEnabled ? 'success' : 'error'}
-            //            text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
-            //   )}, //状态
           ]
         },
         COMPANY: {
