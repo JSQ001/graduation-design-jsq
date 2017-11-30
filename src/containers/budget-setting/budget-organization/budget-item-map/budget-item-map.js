@@ -292,12 +292,16 @@ class BudgetItem extends React.Component {
             <Button type="primary" onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*添加*/}
           </div>
         </div>
-        <Table
-          dataSource={params}
-          columns={columns}
-          pagination={pagination}
-          size="middle"
-          bordered/>
+        <Form
+          className="ant-advanced-search-form">
+          <Table
+            dataSource={params}
+            columns={columns}
+            pagination={pagination}
+            size="middle"
+            bordered/>
+        </Form>
+
         <ListSelector type="company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
