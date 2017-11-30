@@ -126,9 +126,13 @@ class PayUnpaid extends React.Component {
   }
 
   componentWillMount() {
-    this.getOnlineList();
-    this.getOfflineList();
-    this.getFileList()
+    return new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject);
+      this.getOfflineList(resolve, reject);
+      this.getFileList(resolve, reject)
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    });
   }
 
   //搜索
@@ -159,7 +163,7 @@ class PayUnpaid extends React.Component {
   /************************ 获取列表 ************************/
 
   //线上 - 获取列表
-  getOnlineList = () => {
+  getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
     this.setState({ onlineLoading: true });
@@ -171,13 +175,17 @@ class PayUnpaid extends React.Component {
           onlinePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ onlineLoading: false });
+      reject()
     })
   };
 
   //线下 - 获取列表
-  getOfflineList = () => {
+  getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
     this.setState({ offlineLoading: true });
@@ -189,13 +197,17 @@ class PayUnpaid extends React.Component {
           offlinePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ offlineLoading: false });
+      reject()
     })
   };
 
   //落地文件 - 获取列表
-  getFileList = () => {
+  getFileList = (resolve, reject) => {
     const { filePage, filePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
     this.setState({ fileLoading: true });
@@ -207,8 +219,12 @@ class PayUnpaid extends React.Component {
           filePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ fileLoading: false });
+      reject()
     })
   };
 

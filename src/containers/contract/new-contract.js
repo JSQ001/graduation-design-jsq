@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber } from 'antd'
+import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
@@ -26,6 +26,7 @@ class NewContract extends React.Component{
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
+      contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
     }
   }
 
@@ -51,6 +52,7 @@ class NewContract extends React.Component{
     });
   }
 
+  //上传附件
   handleUpload = (OIDs) => {
     this.setState({ uploadOIDs: OIDs })
   };
@@ -58,13 +60,22 @@ class NewContract extends React.Component{
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      values.attachmentOID = this.state.uploadOIDs;
-      values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
-      values.rangePicker && (values.startDate = values.rangePicker[0].format('YYYY-MM-DD'));
-      values.rangePicker && (values.endDate = values.rangePicker[1].format('YYYY-MM-DD'));
-      console.log(values)
       if (!err) {
-        console.log(values)
+        values.attachmentOID = this.state.uploadOIDs;
+        values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
+        values.rangePicker && (values.startDate = values.rangePicker[0].format('YYYY-MM-DD'));
+        values.rangePicker && (values.endDate = values.rangePicker[1].format('YYYY-MM-DD'));
+        this.setState({ loading: true });
+        let url = `${config.contractUrl}/contract/api/contract/header`;
+        httpFetch.post(url, values).then(res => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('保存成功');
+            this.context.router.push(this.state.contractDetail.url.replace(':id', res.data.id));
+          }
+        }).catch(e => {
+          message.error(`保存失败，${e.response.data.message}`)
+        })
       }
     })
   };
@@ -148,7 +159,7 @@ class NewContract extends React.Component{
                     }],
                   })(
                     <Select placeholder="请选择">
-
+                      <Option key="911143733222408193">合同类型</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -177,9 +188,10 @@ class NewContract extends React.Component{
                     <FormItem label="合同金额">
                       {getFieldDecorator('currency')(
                         <Select placeholder="请选择">
-                          {currencyOptions.map((option) => {
-                            return <Option value={option.otherCurrency} key={option.otherCurrency}>{option.otherCurrency}</Option>
-                          })}
+                          {/*{currencyOptions.map((option) => {*/}
+                            {/*return <Option value={option.otherCurrency} key={option.otherCurrency}>{option.otherCurrency}</Option>*/}
+                          {/*})}*/}
+                          <Option key="CNY">CNY</Option>
                         </Select>
                       )}
                     </FormItem>
@@ -211,6 +223,7 @@ class NewContract extends React.Component{
                       required: true,
                       message: '请选择'
                     }],
+                    initialValue: partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : ''
                   })(
                     <Select placeholder="请选择">
                       {partnerCategoryOptions.map((option) => {
@@ -229,7 +242,7 @@ class NewContract extends React.Component{
                     }],
                   })(
                     <Select placeholder="请选择">
-
+                      <Option key="911143733222408193">lucky</Option>
                     </Select>
                   )}
                 </FormItem>

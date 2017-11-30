@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Button, Table } from 'antd'
+import { Form, Button, Table, message } from 'antd'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
@@ -85,6 +85,9 @@ class MyContract extends React.Component{
           }
         })
       }
+    }).catch(() => {
+      this.setState({ loading: false });
+      message.error('数据加载失败请重试')
     })
   };
 

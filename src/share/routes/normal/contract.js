@@ -13,7 +13,7 @@ const newContract = {
 //新建详情
 const contractDetail = {
   key: 'contract-detail',
-  url: '/main/contract/my-contract/contract-detail',
+  url: '/main/contract/my-contract/contract-detail/:id',
   components: ContractDetail,
   parent: 'my-contract'
 };
