@@ -141,7 +141,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //保存日记账头
   saveHeard = (value) => {
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals`, value).then((response) => {
+    httpFetch.post(`${config.liouliangUrl}/api/budget/journals`, value).then((response) => {
       let path = this.state.budgetJournalDetailPage.url.replace(":journalCode", response.data.dto.journalCode);
       this.context.router.push(path);
     })
@@ -166,31 +166,32 @@ class NewBudgetJournalFrom extends React.Component {
 
         let userData = {
           "dto": {
-            "companyId": this.props.company.id,
-            "companyName": this.props.company.name,
-            "organizationId": this.props.organization.id,
-            "organizationName": this.props.organization.organizationName,
-            "structureId": value.structureId,
-            "structureName": "structureName",
-            "description": "",
-            "reversedFlag": "N",
-            "sourceBudgetHeaderId": undefined,
-            "sourceType": undefined,
-            "employeeId": this.props.user.id,
-            "employeeName": this.props.user.fullName,
-            "unitName": "periodNumber",
-            'versionId': value.versionName[0].id,
-            'versionName': value.versionName[0].versionName,
-            'scenarioId': value.scenarioName[0].id,
-            'scenarioName': value.scenarioName[0].scenarioName,
-            "status": "NEW",
-            "journalTypeId": value.journalTypeName[0].id,
-            "journalTypeName": value.journalTypeName[0].journalTypeName,
-            "periodStrategy": value.periodStrategy,
-            "versionNumber": "1",
-            "attachmentOID": this.state.attachmentOID,
-            "formOid":this.state.formOid,
-            "documentType":this.state.documentOid
+
+             "companyId": this.props.company.id,
+             "companyName": this.props.company.name,
+             "organizationId": this.props.organization.id,
+             "organizationName": this.props.organization.organizationName,
+             "structureId": value.structureId,
+             "structureName": "structureName",
+             "description": "",
+             "reversedFlag": "N",
+             "sourceBudgetHeaderId": undefined,
+             "sourceType": undefined,
+             "employeeId": this.props.user.id,
+             "employeeName": this.props.user.fullName,
+             "unitName": "periodNumber",
+             'versionId': value.versionName[0].id,
+             'versionName': value.versionName[0].versionName,
+             'scenarioId': value.scenarioName[0].id,
+             'scenarioName': value.scenarioName[0].scenarioName,
+             "status": "NEW",
+             "journalTypeId": value.journalTypeName[0].id,
+             "journalTypeName": value.journalTypeName[0].journalTypeName,
+             "periodStrategy": value.periodStrategy,
+             "versionNumber": "1",
+             "attachmentOID": this.state.attachmentOID,
+             "formOid":this.state.formOid,
+             "documentType":this.state.documentOid
           }
           ,
           "list": []

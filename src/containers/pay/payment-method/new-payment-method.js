@@ -32,12 +32,10 @@ class NewPaymentMethod extends React.Component {
 
   componentWillMount() {
     let params = this.props.params;
-    console.log(params);
     if(params && JSON.stringify(params) != "{}"){
       this.setState({
         isEnabled:params.isEnabled
       },()=>{
-        console.log(this.state.isEnabled);
       })
     }else {
       this.setState({
@@ -51,23 +49,17 @@ class NewPaymentMethod extends React.Component {
   getPaymentMethodCategory(){
     let paymentMethodCategoryOptions = [];
     this.getSystemValueList(2105).then(res => {
-      console.log(res.data.values);
       res.data.values.map(data => {
         paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code})
       });
       this.setState({
         paymentMethodCategoryOptions
       })
-      console.log(paymentMethodCategoryOptions);
     });
   }
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.params);
-    console.log("componentWillReceiveProps");
     if(nextProps.params && JSON.stringify(nextProps.params) != "{}" && this.props.params != nextProps.params) {
-      console.log("params");
-      console.log(nextProps.params.isEnabled);
       this.setState({
         isEnabled:nextProps.params.isEnabled
       },()=>{})
@@ -88,7 +80,6 @@ class NewPaymentMethod extends React.Component {
       if (!err) {
         this.setState({loading: true});
         if (JSON.stringify(this.props.params) === "{}") {
-          console.log("星建");
           let toValue = {
             id: "",
             versionNumber: 1,
@@ -97,33 +88,28 @@ class NewPaymentMethod extends React.Component {
             isEnabled:this.state.isEnabled
           }
           toValue.isEnabled =this.state.isEnabled;
-          console.log(toValue);
-          httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
             message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
-            console.log(this.props.id);
           }).catch((e) => {
             this.setState({loading: false});
 
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);
           })
         }else {
-          console.log("编辑");
           let toValue ={
             ...this.props.params,
             ...values,
             isEnabled:this.state.isEnabled
           }
           toValue.isEnabled = this.state.isEnabled;
-          console.log(toValue);
-          httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
             message.success("编辑成功");
-            console.log(this.props.id);
           }).catch((e) => {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);

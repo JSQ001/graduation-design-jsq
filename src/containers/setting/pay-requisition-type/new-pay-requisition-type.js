@@ -33,19 +33,15 @@ class NewPayRequisitionType extends React.Component {
   }
 
   componentWillMount() {
-    console.log(123)
     let params = this.props.params;
-    console.log(params);
     if(params && JSON.stringify(params) != "{}"){
-      console.log(1);
       this.setState({
         isEnabled:params.isEnabled,
         setOfBookId:params.setOfBookId
       },()=>{
-        console.log(this.state.isEnabled);
+
       })
     }else {
-      console.log(2);
       this.setState({
         isEnabled:true,
         setOfBookId:this.props.company.setOfBooksId
@@ -59,23 +55,18 @@ class NewPayRequisitionType extends React.Component {
   getPaymentMethodCategory(){
     let paymentMethodCategoryOptions = [];
     this.getSystemValueList(2105).then(res => {
-      console.log(res.data.values);
       res.data.values.map(data => {
         paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code})
       });
       this.setState({
         paymentMethodCategoryOptions
       })
-      console.log(paymentMethodCategoryOptions);
     });
   }
 
   getSetOfBooksIdOptions(){
-    console.log(1234);
     let setOfBooksOptions =[];
     httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((res)=>{
-        console.log(res.data);
-        console.log(1234);
         res.data.map(data =>{
           setOfBooksOptions.push({label:`${data.setOfBooksCode}—${data.setOfBooksName}`,value:String(data.id)})
         })
@@ -91,22 +82,6 @@ class NewPayRequisitionType extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-  /*  console.log(nextProps.params);
-    console.log("componentWillReceiveProps");
-    if(nextProps.params && JSON.stringify(nextProps.params) != "{}" && this.props.params != nextProps.params) {
-      console.log(3);
-      console.log("params");
-      console.log(nextProps.params.isEnabled);
-      this.setState({
-        isEnabled:nextProps.params.isEnabled
-      },()=>{})
-    }
-    else {
-      console.log(4);
-      this.setState({
-        isEnabled:true
-      },()=>{})
-    }*/
   }
 
 
@@ -125,33 +100,28 @@ class NewPayRequisitionType extends React.Component {
             "autoApproveFlag":false,
           }
           toValue.isEnabled =this.state.isEnabled;
-          console.log(toValue);
           httpFetch.post(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`,toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
             message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
-            console.log(this.props.id);
           }).catch((e) => {
             this.setState({loading: false});
 
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);
           })
         }else {
-          console.log("编辑");
           let toValue ={
             ...this.props.params,
             ...values,
             isEnabled:this.state.isEnabled
           }
           toValue.isEnabled = this.state.isEnabled;
-          console.log(toValue);
           httpFetch.put(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
             message.success("编辑成功");
-            console.log(this.props.id);
           }).catch((e) => {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);

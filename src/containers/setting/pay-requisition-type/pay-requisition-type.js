@@ -153,8 +153,7 @@ class PayRequisitionType extends React.Component {
   };
 
   distributionCompany=(e,coder)=>{
-      console.log(e);
-      console.log(coder);
+
   }
 
   //清空搜索区域
@@ -223,7 +222,6 @@ class PayRequisitionType extends React.Component {
   }
 
   putItemTypeShowSlide = (e,recode) => {
-    console.log(recode);
     this.setState({
       updateParams: recode,
     }, () => {
