@@ -559,12 +559,21 @@ class SearchArea extends React.Component{
     return (
       <div className="checkbox-list-form">
         {this.state.checkboxListForm.map(list => {
-          let checkedArr = [];
-          list.items.map(item => {
-            item.checked && item.checked.map(value => {
-              checkedArr.push(value)
+          let checked;
+          if(list.single){
+            list.items.map(item => {
+              item.checked && item.checked.map(value => {
+                checked = value;
+              });
             });
-          });
+          } else {
+            checked = [];
+            list.items.map(item => {
+              item.checked && item.checked.map(value => {
+                checked.push(value)
+              });
+            });
+          }
           return (
             <FormItem key={list.id}>
               {list.items.map(item => {
@@ -584,30 +593,52 @@ class SearchArea extends React.Component{
                 )
               })}
               {getFieldDecorator(list.id, {
-                initialValue: checkedArr
+                initialValue: checked
               })(
-                <Checkbox.Group onChange={values => this.props.checkboxChange(values)}>
-                  {list.items.map(item => {
-                    return (
-                      <Row className="list-row" key={item.key}>
-                        <Col span={3} className="list-col-header"><span>{item.label} :</span></Col>
-                        <Col span={2} className="list-col-content" onClick={() => this.checkboxToggle(item)}>
-                          <a>{item.expand ? '折叠' : '展开'}
-                            <Icon type={item.expand ? 'up' : 'down'} style={{marginLeft:'10px'}} />
-                          </a>
-                        </Col>
-                        <Col span={19} className="list-col-content" style={{overflow:'hidden', height: item.expand ? 'auto' : '42px'}}>
-                          {item.options.map((option, index) => {
-                            return(
-                              <Checkbox value={option.value}
-                                        key={option.value}
-                                        onClick={(e) => this.onCheckChange(e, list.id, item.key, option.value)}
-                                        style={{paddingLeft: index === 0 && item.checkAllOption ? '62px' : '0'}}>{option.label}</Checkbox>)
-                          })}
-                        </Col>
-                      </Row>)
-                  })}
-                </Checkbox.Group>
+                list.single ?
+                  <RadioGroup onChange={e => {this.props.checkboxChange({[list.id]: e.target.value})}}>
+                    {list.items.map(item => {
+                      return (
+                        <Row className="list-row" key={item.key}>
+                          <Col span={3} className="list-col-header"><span>{item.label} :</span></Col>
+                          <Col span={2} className="list-col-content" onClick={() => this.checkboxToggle(item)}>
+                            <a>{item.expand ? '折叠' : '展开'}
+                              <Icon type={item.expand ? 'up' : 'down'} style={{marginLeft:'10px'}} />
+                            </a>
+                          </Col>
+                          <Col span={19} className="list-col-content" style={{height: item.expand ? 'auto' : '42px'}}>
+                            {item.options.map(option => {
+                              return(
+                                <Radio value={option.value}
+                                       key={option.value}>{option.label}</Radio>)
+                            })}
+                          </Col>
+                        </Row>)
+                    })}
+                  </RadioGroup>
+                  :
+                  <Checkbox.Group onChange={values => this.props.checkboxChange({[list.id]: values})}>
+                    {list.items.map(item => {
+                      return (
+                        <Row className="list-row" key={item.key}>
+                          <Col span={3} className="list-col-header"><span>{item.label} :</span></Col>
+                          <Col span={2} className="list-col-content" onClick={() => this.checkboxToggle(item)}>
+                            <a>{item.expand ? '折叠' : '展开'}
+                              <Icon type={item.expand ? 'up' : 'down'} style={{marginLeft:'10px'}} />
+                            </a>
+                          </Col>
+                          <Col span={19} className="list-col-content" style={{height: item.expand ? 'auto' : '42px'}}>
+                            {item.options.map((option, index) => {
+                              return(
+                                <Checkbox value={option.value}
+                                          key={option.value}
+                                          onClick={(e) => this.onCheckChange(e, list.id, item.key, option.value)}
+                                          style={{paddingLeft: index === 0 && item.checkAllOption ? '62px' : '0'}}>{option.label}</Checkbox>)
+                            })}
+                          </Col>
+                        </Row>)
+                    })}
+                  </Checkbox.Group>
               )}
             </FormItem>)
         })}
@@ -662,7 +693,7 @@ class SearchArea extends React.Component{
           searchKey: '',         ╲╲可选，搜索参数名
           labelKey: '',           ╲╲可选，接口返回或list返回的数据内所需要页面options显示名称label的参数名，
           valueKey: ''             ╲╲可选，接口返回或list返回的数据内所需要options值key的参数名, 或selput内回填的参数名
-          items:[]                  ╲╲可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
+          items: []                 ╲╲可选，当type为items时必填，type为items时代表在一个单元格内显示多个表单项，数组元素属性与以上一致
           entity: false              ╲╲可选，select、combobox、multiple、list选项下是否返回实体类，如果为true则返回整个选项的对象，否则返回valueKey对应的值
           getParams: {}               ╲╲可选,getUrl所需要的参数
           single: false                ╲╲可选,当type为list时是否为单选
@@ -676,6 +707,7 @@ class SearchArea extends React.Component{
  * @type checkboxListForm checkbox表单列表，每一项的格式如下：
  * {
       id: '',     //必填，表单id，搜索后返回的数据key
+      single: false,  //可选，是否单选
       items: [{label: '', key: '', options: [{label: '',  value: '', disabled: false}]}], //必填，详见下
    }
  *
