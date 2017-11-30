@@ -86,7 +86,6 @@ class BudgetVersions extends React.Component {
       newBudgetVersionsPage: menuRoute.getRouteItem('new-budget-versions', 'key'),
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail', 'key'),    //预算版本详情的页面项
 
-
     };
 
   }

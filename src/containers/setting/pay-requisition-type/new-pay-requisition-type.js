@@ -17,6 +17,7 @@ class NewPayRequisitionType extends React.Component {
     super(props);
     this.state = {
       params: {},
+      setOfBookId:this.props.company.setOfBooksId,
       isEnabled: true,
       isPut: false,
       loading: false,
@@ -32,17 +33,22 @@ class NewPayRequisitionType extends React.Component {
   }
 
   componentWillMount() {
+    console.log(123)
     let params = this.props.params;
     console.log(params);
     if(params && JSON.stringify(params) != "{}"){
+      console.log(1);
       this.setState({
-        isEnabled:params.isEnabled
+        isEnabled:params.isEnabled,
+        setOfBookId:params.setOfBookId
       },()=>{
         console.log(this.state.isEnabled);
       })
     }else {
+      console.log(2);
       this.setState({
         isEnabled:true,
+        setOfBookId:this.props.company.setOfBooksId
       })
     }
 
@@ -71,7 +77,7 @@ class NewPayRequisitionType extends React.Component {
         console.log(res.data);
         console.log(1234);
         res.data.map(data =>{
-          setOfBooksOptions.push({label:data.setOfBooksName,value:String(data.id)})
+          setOfBooksOptions.push({label:`${data.setOfBooksCode}—${data.setOfBooksName}`,value:String(data.id)})
         })
         this.setState({
           setOfBooksOptions
@@ -85,9 +91,10 @@ class NewPayRequisitionType extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    console.log(nextProps.params);
+  /*  console.log(nextProps.params);
     console.log("componentWillReceiveProps");
     if(nextProps.params && JSON.stringify(nextProps.params) != "{}" && this.props.params != nextProps.params) {
+      console.log(3);
       console.log("params");
       console.log(nextProps.params.isEnabled);
       this.setState({
@@ -95,10 +102,11 @@ class NewPayRequisitionType extends React.Component {
       },()=>{})
     }
     else {
+      console.log(4);
       this.setState({
         isEnabled:true
       },()=>{})
-    }
+    }*/
   }
 
 
@@ -138,7 +146,7 @@ class NewPayRequisitionType extends React.Component {
           }
           toValue.isEnabled = this.state.isEnabled;
           console.log(toValue);
-          httpFetch.post(`http://rjfin.haasgz.hand-china.com:30498/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.put(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -182,7 +190,7 @@ class NewPayRequisitionType extends React.Component {
                 required: true,
                 message:"请选择",
               }],
-              initialValue:this.props.params.setOfBooksId||''
+              initialValue:this.state.setOfBookId
             })(
               <Select>
                 {this.state.setOfBooksOptions.map((option)=>{
@@ -241,7 +249,7 @@ class NewPayRequisitionType extends React.Component {
                 message: this.props.intl.formatMessage({id: "common.please.enter"})
               }],
               valuePropName:"defaultValue",
-              initialValue:"true",
+              initialValue:this.props.params.reqRequiredFlag?"true":"false",
             })(
               <Radio.Group>
                 <Radio.Button value="true">必须</Radio.Button>
@@ -252,12 +260,6 @@ class NewPayRequisitionType extends React.Component {
           <FormItem {...formItemLayout}
                     label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
-              rules: [{
-                required: true,
-                message: this.props.intl.formatMessage({id: "common.please.enter"})
-              }],
-              valuePropName:"checked",
-              initialValue:"true",
             })(
               <div>
                 <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}

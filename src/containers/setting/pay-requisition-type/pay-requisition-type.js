@@ -37,14 +37,14 @@ class PayRequisitionType extends React.Component {
           key: 'typeName',
         },
         {/*付款方式*/
-          title: "付款方式",
-          dataIndex: 'paymentMethodCategory',
-          key: 'paymentMethodCategory',
+          title: "付款方式",width: '10%',
+          dataIndex: 'paymentMethodCategoryName',
+          key: 'paymentMethodCategoryName',
         },
         {/*必须关联申请*/
           title:"必须关联申请",
           dataIndex: 'reqRequiredFlag',
-          key: 'reqRequiredFlag',
+          key: 'reqRequiredFlag',width: '10%',
           render(coder){
             if(coder){
               return "必需"
@@ -56,30 +56,37 @@ class PayRequisitionType extends React.Component {
         },
         {/*账套*/
           title:"账套",
-          dataIndex: 'setOfBookId',
-          key: 'setOfBookId',
+          dataIndex: 'setOfBookName',
+          key: 'setOfBookName',
+          render(text,recode){
+            return `${recode.setOfBookCode}—${text}`
+          }
         },
         {/*状态*/
           title: "状态",
           dataIndex: 'isEnabled',
-          key: 'isEnabled',
+          key: 'isEnabled', width: '6%',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
-                   text={isEnabled ? this.props.intl.formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
+                   text={isEnabled ? this.props.intl.formatMessage({id: "common.status.enable"}) :this.props.intl.formatMessage({id: "common.status.disable"})} />)
         },
         {/*操作*/
           title:"操作",
           dataIndex: 'operation',
-          key: 'operation',
+          key: 'operation', width: '18%',
           render: (text, record) => (
             <span>
-              <a href="#" onClick={(e) => this.putItemTypeShowSlide(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})}|</a>
-              <a href="#" onClick={(e) => this.distributionCompany(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})}</a>
+              <a href="#" onClick={(e) => this.putItemTypeShowSlide(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})} | </a>
+              <a href="#" onClick={(e) => this.distributionCompany(e, record)}>现金事务分配 | </a>
+               <a href="#" onClick={(e) => this.distributionCompany(e, record)}>公司分配</a>
           </span>)
         },
 
       ],
       searchForm: [
+        {type: 'select', id:'setOfBookId', label: '账套', isRequired: true, options: [], method: 'get',
+          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+          labelKey: 'setOfBooksName', valueKey: 'id',defaultValue:this.props.company.setOfBooksId},
         {type: 'input', id: 'typeCode', label:"预付款类型代码"},
         {type: 'input', id: 'typeName', label:"预付款类型名称"},
       ],
@@ -89,7 +96,7 @@ class PayRequisitionType extends React.Component {
         total: 0
       },
       searchParams: {
-        setOfBookId: '',
+        setOfBookId:this.props.company.setOfBooksId,
         typeCode: '',
         typeName:'',
       },
@@ -112,6 +119,9 @@ class PayRequisitionType extends React.Component {
 
 //获得数据
   getList() {
+    this.setState({
+      loading:true,
+    })
     let url = `${config.localUrl}/api/cash/setofbooks/pay/requisition/types/query?setOfBookId=${this.state.searchParams.setOfBookId}&typeCode=${this.state.searchParams.typeCode}&typeName=${this.state.searchParams.typeName}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
@@ -143,15 +153,17 @@ class PayRequisitionType extends React.Component {
   };
 
   distributionCompany=(e,coder)=>{
-
+      console.log(e);
+      console.log(coder);
   }
 
   //清空搜索区域
   clear = () => {
     this.setState({
       searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
+        setOfBookId:this.props.company.setOfBookId,
+        typeCode: '',
+        typeName:'',
       }
     })
   }
@@ -159,8 +171,9 @@ class PayRequisitionType extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-      itemTypeCode: result.itemTypeCode,
-      itemTypeName: result.itemTypeName
+      setOfBookId:result.setOfBookId,
+      typeCode: result.typeCode||'',
+      typeName:result.typeName||''
     };
     this.setState({
       searchParams: searchParams,
@@ -210,10 +223,11 @@ class PayRequisitionType extends React.Component {
   }
 
   putItemTypeShowSlide = (e,recode) => {
+    console.log(recode);
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -257,15 +271,15 @@ class PayRequisitionType extends React.Component {
                     content={NewPayRequisitionType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
       </div>
     );
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
+    company: state.login.company,
   }
 }
-
 export default connect(mapStateToProps)(injectIntl(PayRequisitionType));

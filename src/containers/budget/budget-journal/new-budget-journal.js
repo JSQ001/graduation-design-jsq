@@ -42,6 +42,8 @@ class NewBudgetJournalFrom extends React.Component {
       journalTypeIdFlag:true,
       file: {},
       attachmentOID: [],
+      formOid:null,
+      documentOid:null
     };
   }
 
@@ -65,6 +67,10 @@ class NewBudgetJournalFrom extends React.Component {
         console.log(data);
         if(item.type === "chooser"){
           defaultValueList[item.defaultValueKey]=data;
+          console.log(defaultDataList);
+          this.props.from.setFieldsValue(
+            defaultValueList
+          )
         }
       }).catch((e)=>{
 
@@ -147,24 +153,16 @@ class NewBudgetJournalFrom extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
       if (!err) {
-        const period = value.periodName ? JSON.parse(value.periodName) : '';
-        const periodName = period.periodName;
-        const periodYear = period.periodYear;
-        //处理期间
-        let periodNameData;
-        console.log(periodName);
-        if (periodName != '' && periodName != null && periodName != undefined) {
-
-          const periodNameArray = periodName.split("-");
-          for (let i = 0; i < periodNameArray.length; i++) {
-            console.log(periodNameArray[i]);
-            if (periodNameArray[i] != periodYear) {
-              periodNameData = periodYear + "" + periodNameArray[i]
-            }
-          }
-        } else {
-          periodNameData = '';
-        }
+        let formOid =null;
+        let documentOid =null;
+   /*     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value.journalTypeName[0].id}`).then((res)=>{
+          console.log(123);
+          console.log(res.data);
+            formOid = res.data.formOid;
+            documentOid =res.data.documentOid;
+        })*/
+        //${config.budgetUrl}/api/budget/journals/journalType/selectByInput
+        ///api/budget/journal/types/query
 
         let userData = {
           "dto": {
@@ -191,6 +189,8 @@ class NewBudgetJournalFrom extends React.Component {
             "periodStrategy": value.periodStrategy,
             "versionNumber": "1",
             "attachmentOID": this.state.attachmentOID,
+            "formOid":this.state.formOid,
+            "documentOid":this.state.documentOid
           }
           ,
           "list": []
@@ -202,9 +202,10 @@ class NewBudgetJournalFrom extends React.Component {
   };
 
 
-  //根据账套类型，获得预算表
+  //根据预算日记账类型，获得预算表
   getStructure(value) {
     console.log(value);
+
     console.log(666);
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       console.log(response.data);
@@ -225,12 +226,35 @@ class NewBudgetJournalFrom extends React.Component {
           structureId =  response.data.id;
           console.log(structureId);
           this.props.form.setFieldsValue({
-            "structureId":structureId
+            "structureId":structureId,
+            "periodStrategy":response.data.periodStrategy
           })
         }
     })
 
+    this.getFormOid(value);
 
+  }
+
+  getFormOid(value){
+    let formOid =null;
+    let documentOid =null;
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/journalType/selectByInput?&page=0&size=50&organizationId=${this.props.organization.id}`).then((res)=>{
+
+      res.data.map((item)=>{
+        if(item.id == value){
+          console.log(555);
+          formOid = item.form0id;
+          documentOid = item.formType;
+          console.log(formOid);
+          console.log(documentOid);
+          this.setState({
+            formOid,
+            documentOid
+          })
+        }
+      })
+    })
   }
 
 
@@ -257,6 +281,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType = (value) => {
+
     console.log(value);
     if (value.length > 0) {
       console.log(value);
@@ -273,6 +298,14 @@ class NewBudgetJournalFrom extends React.Component {
     }
 
   };
+
+  getjournalTypes(value){
+    httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value}`).then((res)=>{
+          console.log(res.data);
+          let formOid = res.data.formOid;
+          let documentOid =res.data.documentOid;
+      })
+  }
 
 
   //上传附件，获取OID
