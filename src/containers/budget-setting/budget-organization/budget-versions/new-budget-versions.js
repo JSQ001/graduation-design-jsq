@@ -94,12 +94,6 @@ class NewBudgetVersions extends React.Component {
     });
   }
 
-//取消
-  CancelHandle = (e) => {
-    e.preventDefault();
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetOrganizationDetail.url.replace(':id', this.props.params.id));
-  };
-
   onCancel =()=>{
     this.props.close(true);
     console.log(this.props)
