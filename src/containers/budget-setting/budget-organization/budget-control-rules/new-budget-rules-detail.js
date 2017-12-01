@@ -44,7 +44,7 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillMount() {
-    let organizationIdParams = {organizationId : this.props.organization.id};
+    let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let userSelectorItem = selectorData['user'];
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {

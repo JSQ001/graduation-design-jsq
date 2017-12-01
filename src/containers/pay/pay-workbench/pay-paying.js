@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Breadcrumb, Table, Pagination } from 'antd'
+import { Radio, Badge, Breadcrumb, Table, Pagination, message } from 'antd'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -82,12 +82,16 @@ class PayPaying extends React.Component {
   }
 
   componentWillMount() {
-    this.getOnlineList();
-    this.getFileList()
+    return new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject);
+      this.getFileList(resolve, reject)
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    });
   }
 
   //线上 - 获取列表
-  getOnlineList = () => {
+  getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
     for(let paramsName in searchParams){
@@ -102,13 +106,17 @@ class PayPaying extends React.Component {
           onlinePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ onlineLoading: false });
+      reject()
     })
   };
 
   //落地文件 - 获取列表
-  getFileList = () => {
+  getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
     for(let paramsName in searchParams){
@@ -123,8 +131,12 @@ class PayPaying extends React.Component {
           filePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ fileLoading: false });
+      reject()
     })
   };
 
