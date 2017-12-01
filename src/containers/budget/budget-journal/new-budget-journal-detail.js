@@ -77,10 +77,10 @@ class NewBudgetJournalDetail extends React.Component {
         let searchFrom =this.state.searchForm;
         searchFrom.map((item)=>{
           if(item.id === "item" ){
-            let getParams = item["getParams"];
-            console.log(getParams);
-            getParams.companyId = value[0].id;
-            item["getParams"]=getParams;
+            let listExtraParams = item["listExtraParams"];
+            console.log(listExtraParams);
+            listExtraParams.companyId = value[0].id;
+            item["listExtraParams"]=listExtraParams;
             item["disable"]=false
             console.log(item);
             return
@@ -137,10 +137,12 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
       {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
-        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false, columnLabel: 'departmentName',columnValue: 'unitId'
+        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false,
+        listExtraParams:{"companyId":''},
+        columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
       {type: 'list', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id',disabled:false, listExtraParams:{"journalTypeId":'',"companyId":''},
+        labelKey:'itemName',valueKey:'id',disabled:false,single:true, listExtraParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
       {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
@@ -217,15 +219,12 @@ class NewBudgetJournalDetail extends React.Component {
   };
 
   getItemUrl(){
-    console.log(1234);
     let searchForm = this.state.searchForm;
-    searchForm = searchForm.map(searchItem => {
+      searchForm.map(searchItem => {
       if(searchItem.id === "item"){
-          console.log(123);
           console.log(searchItem.id)
           console.log(this.props.params.journalTypeId);
         searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
-        return searchItem;
       }
     });
     console.log(searchForm);
