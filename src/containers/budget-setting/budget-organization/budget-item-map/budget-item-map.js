@@ -175,7 +175,10 @@ class BudgetItemMap extends React.Component {
         item.item = [{id: item.budgetItemId, itemName: item.budgetItemName}];
         item.detail = [{id: item.sourceItemId, sourceItemName: item.sourceItemName}]
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
+        pagination,
         loading: false,
         params: response.data,
         paramsKey
