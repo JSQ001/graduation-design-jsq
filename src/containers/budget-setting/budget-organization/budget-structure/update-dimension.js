@@ -15,6 +15,7 @@ const { TextArea } = Input;
 class NewDimension extends React.Component{
   constructor(props) {
     super(props);
+    const { formatMessage} = this.props.intl;
     this.state = {
       isEnabled: true,
       showSelectDimension: false,
@@ -22,27 +23,42 @@ class NewDimension extends React.Component{
       layoutPosition:[],
       extraParams: {},
       loading: false,
-      selectorItem:{
-        title: '选择默认维值',
-        url: `${config.baseUrl}/api/my/cost/center/items/by/costcenterid`,
+      dimensionSelectorItem:{
+        title: formatMessage({id:"structure.selectDim"}),
+        url: `${config.budgetUrl}/api/budget/structure/assign/layouts/queryNotSaveDimension`,
         searchForm: [
-          {type: 'input', id: 'code', label: '维值代码'},
-          {type: 'input', id: 'name', label: '维值名称'},
+          {type: 'input', id: 'dimensionCode', label: formatMessage({id:"structure.dimensionCode"})},
+          {type: 'input', id: 'dimensionName', label: formatMessage({id:"structure.dimensionName"})},
         ],
         columns: [
-          {title: '维值代码', dataIndex: 'code', width: '25%'},
-          {title: '维值名称', dataIndex: 'name', width: '25%'},
+          {title: formatMessage({id:"structure.dimensionCode"}), dataIndex: 'dimensionCode', width: '25%'},
+          {title: formatMessage({id:"structure.dimensionName"}), dataIndex: 'dimensionName', width: '25%'},
         ],
-        key: 'id'
+        key: 'dimensionId'
       },
+      selectorItem:{
+        title: formatMessage({id:"structure.selectDefaultDim"}),
+        url: `${config.budgetUrl}/api/budget/structure/assign/layouts/queryDefaultDimValue`,
+        searchForm: [
+          {type: 'input', id: 'defaultDimValueCode', label: formatMessage({id:"structure.dimensionValueCode"})},
+          {type: 'input', id: 'defaultDimValueName', label: formatMessage({id:"structure.dimensionValueName"})},
+        ],
+        columns: [
+          {title: formatMessage({id:"structure.dimensionValueCode"}), dataIndex: 'defaultDimValueCode', width: '25%'},
+          {title: formatMessage({id:"structure.dimensionValueName"}), dataIndex: 'defaultDimValueName', width: '25%'},
+        ],
+        key: 'defaultDimValueId'
+      },
+
     };
   }
 
   componentWillMount(){
     let dimension = this.props.params;
     let extraParams = this.state.extraParams;
+    console.log(dimension)
     if(typeof dimension.id !== 'undefined'){
-      extraParams = {costCenterId: dimension.dimensionId}
+      extraParams = {dimensionId: dimension.dimensionId}
     }
     this.setState({
       dimension,
@@ -67,11 +83,12 @@ class NewDimension extends React.Component{
 
   }
   componentWillReceiveProps(nextprops){
+    console.log(nextprops)
     if(nextprops.params.versionNumber !== this.state.dimension){
       let dimension = this.props.params;
       let extraParams = this.state.extraParams;
       if(typeof dimension.id !== 'undefined'){
-        extraParams = {costCenterId: dimension.dimensionId}
+        extraParams = {dimensionId: dimension.dimensionId}
       }
       this.setState({
         dimension,
@@ -107,6 +124,7 @@ class NewDimension extends React.Component{
   };
 
   onCancel = () =>{
+    this.props.form.resetFields();
     this.props.close();
   };
 
@@ -160,7 +178,7 @@ class NewDimension extends React.Component{
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { isEnabled, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
+    const { dimensionSelectorItem, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
     const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -197,10 +215,11 @@ class NewDimension extends React.Component{
                 })(
                   <Chooser
                     placeholder={ formatMessage({id:"common.please.enter"}) }
-                    type={"select_dimension"}
                     single={true}
-                    labelKey="code"
-                    valueKey="code"
+                    labelKey="dimensionCode"
+                    valueKey="dimensionId"
+                    selectorItem={dimensionSelectorItem}
+                    listExtraParams={{structureId: this.props.params.id, setOfBooksId: this.props.company.setOfBooksId}}
                     onChange={this.handleDimensionCode}/>
                 )}
               </FormItem>
@@ -260,10 +279,9 @@ class NewDimension extends React.Component{
                 })(
                   <Chooser
                     placeholder={formatMessage({id:"common.please.select"})}
-                    type={"select_dimensionValue"}
                     single={true}
-                    labelKey="code"
-                    valueKey="code"
+                    labelKey="defaultDimValueCode"
+                    valueKey="defaultDimValueId"
                     selectorItem={selectorItem}
                     listExtraParams={extraParams}
                     onChange={this.handleDimensionValue}/>
@@ -293,7 +311,10 @@ class NewDimension extends React.Component{
 }
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    organization: state.login.organization,
+    company: state.login.company,
+  }
 }
 
 const WrappedNewDimension = Form.create()(NewDimension);

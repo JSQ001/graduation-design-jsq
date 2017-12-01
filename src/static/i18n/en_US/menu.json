@@ -17,8 +17,6 @@
   "menu.budget-organization": "Budget Organization",
   "menu.budget-organization-detail": "Budget Organization Detail",
   "menu.budget-scenarios": "Budget Scenarios",
-  "menu.new-budget-versions": "New Budget Versions",
-  "menu.budget-versions-detail":"Budget Versions Detail",
   "menu.budget-strategy": "Budget Strategy",
   "menu.new-budget-strategy": "New Budget Strategy",
   "menu.budget-strategy-detail": "Budget Strategy Detail",
@@ -101,5 +99,10 @@
   "menu.pay-requisition-type":"Pay Requisition Type",
   "menu.budget-occupancy":"Budget Adjustment",
   "menu.new-budget-occupancy":"Budget Adjustment New",
-  "menu.export-detail":"Export Detail"
+  "menu.export-detail":"Export Detail",
+  "menu.cash-flow-item":"Cash flow item",
+  "menu.cash-transaction-class": "Cash transaction class",
+  "menu.new-cash-transaction-class": "New cash transaction class",
+  "menu.cash-transaction-class-detail": "Cash transaction class detail",
+  "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction"
 }

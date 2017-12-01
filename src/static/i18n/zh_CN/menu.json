@@ -17,8 +17,6 @@
   "menu.budget-organization": "预算组织定义",
   "menu.budget-organization-detail": "预算组织详情",
   "menu.budget-scenarios": "预算场景定义",
-  "menu.new-budget-versions": "新建预算版本",
-  "menu.budget-versions-detail":"预算版本详情",
   "menu.budget-strategy": "预算控制策略定义",
   "menu.new-budget-strategy": "新建预算控制策略",
   "menu.budget-strategy-detail": "预算控制策略详情",
@@ -101,5 +99,10 @@
   "menu.pay-requisition-type":"预付款单定义",
   "menu.budget-occupancy":"预算占用调整",
   "menu.new-budget-occupancy":"预算占用调整新建",
-  "menu.export-detail":"导入详情"
+  "menu.export-detail":"导入详情",
+  "menu.cash-flow-item":"现金流量项",
+  "menu.cash-transaction-class": "现金事务分类定义",
+  "menu.new-cash-transaction-class": "新建现金事务分类",
+  "menu.cash-transaction-class-detail": "现金事务分类详情",
+  "menu.pay-requisition-type-assign-transaction":"现金事务分配"
 }
