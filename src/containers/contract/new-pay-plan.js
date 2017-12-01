@@ -14,11 +14,16 @@ class NewPayPlan extends React.Component{
   }
 
   onCancel = () => {
-
+    this.props.close();
   };
 
   handleSave = (e) => {
     e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values)
+      }
+    })
   };
 
   render() {
@@ -37,12 +42,13 @@ class NewPayPlan extends React.Component{
               <FormItem>
                 {getFieldDecorator('currency', {
                   rules: [{
-                    required: true
+                    required: true,
+                    message: '请选择'
                   }],
-                  initialValue: 'cny'
+                  initialValue: 'CNY'
                 })(
                   <Select>
-                    <Option value="cny">CNY</Option>
+                    <Option value="CNY">CNY</Option>
                   </Select>
                 )}
               </FormItem>
@@ -51,7 +57,8 @@ class NewPayPlan extends React.Component{
               <FormItem className="ant-col-offset-1">
                 {getFieldDecorator('amount', {
                   rules: [{
-                    required: true
+                    required: true,
+                    message: '请输入'
                   }],
                   initialValue: ''
                 })(
@@ -63,7 +70,8 @@ class NewPayPlan extends React.Component{
           <FormItem {...formItemLayout} label="合同方类型">
             {getFieldDecorator('partnerCategory', {
               rules: [{
-                required: true
+                required: true,
+                message: '请选择'
               }],
               initialValue: ''
             })(
@@ -73,7 +81,8 @@ class NewPayPlan extends React.Component{
           <FormItem {...formItemLayout} label="合同方">
             {getFieldDecorator('partnerId', {
               rules: [{
-                required: true
+                required: true,
+                message: '请输入'
               }],
               initialValue: ''
             })(
@@ -83,7 +92,8 @@ class NewPayPlan extends React.Component{
           <FormItem {...formItemLayout} label="计划付款日期">
             {getFieldDecorator('dueDate', {
               rules: [{
-                required: true
+                required: true,
+                message: '请选择'
               }]})(
               <DatePicker style={{width:'100%'}}/>
             )}

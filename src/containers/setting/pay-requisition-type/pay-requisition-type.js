@@ -30,7 +30,6 @@ class PayRequisitionType extends React.Component {
           title:"预付款类型代码",
           dataIndex: 'typeCode',
           key: 'typeCode',
-
         },
         {/*预付款类型名称*/
           title:"预付款类型名称",
@@ -53,7 +52,6 @@ class PayRequisitionType extends React.Component {
               return "非必需"
             }
           }
-
         },
         {/*账套*/
           title:"账套",
@@ -78,15 +76,14 @@ class PayRequisitionType extends React.Component {
           render: (text, record) => (
             <span>
               <a href="#" onClick={(e) => this.putItemTypeShowSlide(e, record)}>{this.props.intl.formatMessage({id: "common.edit"})} | </a>
-              <a href="#" onClick={(e) => this.distributionCompany(e, record)}>现金事务分配 | </a>
+              <a href="#" onClick={(e) => this.distributionTransaction(e, record)}>现金事务分配 | </a>
                <a href="#" onClick={(e) => this.distributionCompany(e, record)}>公司分配</a>
           </span>)
         },
 
       ],
       searchForm: [
-        {type: 'select', id:'setOfBookId', label: '账套', isRequired: true, options: [], method: 'get',
-          getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
+        {type: 'select', id:'setOfBookId', label: '账套', isRequired: true, options: [],
           labelKey: 'setOfBooksName', valueKey: 'id',defaultValue:this.props.company.setOfBooksId},
         {type: 'input', id: 'typeCode', label:"预付款类型代码"},
         {type: 'input', id: 'typeName', label:"预付款类型名称"},
@@ -108,14 +105,28 @@ class PayRequisitionType extends React.Component {
       showSlideFrameNew: false,
       showSlideFramePut: false,
       loading: true,
-      payRequisitionTypeDetailPage:menuRoute.getRouteItem("pay-requisition-type-detail","key")
+      payRequisitionTypeDetailPage:menuRoute.getRouteItem("pay-requisition-type-detail","key"),
+      PayRequisitionTypeAssignTransactionPage:menuRoute.getRouteItem("pay-requisition-type-assign-transaction","key"),
 
     };
   }
 
-
   componentWillMount() {
-    this.getList();
+    let searchForm = this.state.searchForm;
+    let options =[];
+      httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((res)=>{
+        res.data.map((item)=>{
+          options.push({
+            label: `${item.setOfBooksCode}—${item.setOfBooksName}`,
+            value: item.id
+          })
+        })
+        console.log(options);
+        searchForm[0].options=options;
+        this.setState({searchForm}, () => {
+          this.getList()
+        })
+      })
   }
 
 
@@ -160,6 +171,12 @@ class PayRequisitionType extends React.Component {
     this.context.router.push(path)
   }
 
+  //现金事务分配
+  distributionTransaction=(e,coder)=>{
+    const path = this.state.PayRequisitionTypeAssignTransactionPage.url.replace(":requisitionTypeId",coder.id);
+    this.context.router.push(path)
+  }
+
   //清空搜索区域
   clear = () => {
     this.setState({
@@ -192,22 +209,6 @@ class PayRequisitionType extends React.Component {
     this.getList();
     this.setState({
       showSlideFrameNew: false
-    })
-  };
-
-
-  handleCloseUpdateSlide = (params) => {
-    this.getList();
-
-    this.setState({
-      showSlideFramePut: false
-    })
-  };
-
-
-  showSlidePut = (flag) => {
-    this.setState({
-      showSlideFramePut: flag
     })
   };
 

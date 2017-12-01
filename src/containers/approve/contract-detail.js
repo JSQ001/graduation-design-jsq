@@ -21,7 +21,7 @@ class ContractDetail extends React.Component{
       fastReplyChosen: [],
       inputVisible: false,
       inputValue: '',
-      contract:  menuRoute.getRouteItem('contract','key'),    //合同
+      contract:  menuRoute.getRouteItem('approve-contract','key'),    //合同
     }
   }
 
