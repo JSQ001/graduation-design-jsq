@@ -61,7 +61,7 @@ class BudgetItemMap extends React.Component {
         },                            //操作
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
           <span>
-            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
+            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record,index) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
             {record.edit ?
               <a href="#" style={{marginLeft: 12}}
                 onClick={(e) => this.operateItem(e, record, index, false)} >{ formatMessage({id: "common.cancel" })}</a>
@@ -79,11 +79,10 @@ class BudgetItemMap extends React.Component {
   }
 
   //保存
-  saveItem = (e, record)=>{
+  saveItem = (e, record,index)=>{
     e.preventDefault();
     e.stopPropagation();
-    console.log(record)
-    if(record.sourceType !=="" && typeof record.budgetItemId === 'undefined' && typeof record.sourceItemId === 'undefined') {
+    if(record.sourceType !=="" && typeof record.budgetItemId !== 'undefined' && typeof record.sourceItemId !== 'undefined') {
       httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`, [record]).then((response) => {
         message.success(`${this.props.intl.formatMessage({id: "common.save.success"}, {name: ""})}`);
         this.setState({
@@ -94,6 +93,13 @@ class BudgetItemMap extends React.Component {
           message.error(`${this.props.intl.formatMessage({id: "common.save.filed"})}, ${e.response.data.message}`)
         }
       })
+    }else {
+      if(typeof record.id === 'undefined'){
+        let params = this.state.params;
+        params.delete(params[index])
+        this.setState({params});
+        return
+      }
     }
   };
 
@@ -104,7 +110,7 @@ class BudgetItemMap extends React.Component {
     if(!flag){
       if(typeof record.id === 'undefined'){
         params.delete(params[index])
-        this.setState(params);
+        this.setState({params});
         return
       }
     }
