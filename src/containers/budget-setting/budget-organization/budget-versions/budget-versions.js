@@ -7,9 +7,11 @@ import {injectIntl} from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import {Link, Redirect, browserHistory, History} from 'react-router'
 import {Button, Table, Badge, Popconfirm, Form, message, DatePicker, Col, Row, Switch, notification, Icon} from 'antd'
 import SearchArea from 'components/search-area'
+import NewBudgetVersion from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
+import SlideFrame from 'components/slide-frame'
+
 import 'styles/budget-setting/budget-organization/budget-versions/budget-versions.scss'
 const FormItem = Form.Item;
 
@@ -18,6 +20,10 @@ class BudgetVersions extends React.Component {
     super(props);
     this.state = {
       data: [],
+      loading: true,
+      slideFrame:{
+        visible: false
+      },
       columns: [
         {
           title: this.props.intl.formatMessage({id: "budget.versionCode"}),
@@ -93,9 +99,18 @@ class BudgetVersions extends React.Component {
 
   //显示新建
   showSlide = (flag) => {
-    this.setState({
-      showSlideFrame: flag
-    })
+    let slideFrame = this.state.slideFrame;
+    slideFrame.visible = flag;
+    slideFrame.params = {};
+    this.setState({slideFrame})
+  };
+
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.setState({loading: true});
+      this.getList();
+    }
+   this.showSlide(false)
   };
 
   //一开始就显示数据
@@ -164,21 +179,27 @@ class BudgetVersions extends React.Component {
     })
   }
 
-//跳转到新建页面
-  createHandle = () => {
-    let path = this.state.newBudgetVersionsPage.url.replace(':id', this.props.id);
-    this.context.router.push(path)
-  }
+//策划新建页面
+  handleCreate = () => {
+    let slideFrame = {};
+    slideFrame.title = this.props.intl.formatMessage({id:"budget.newVersion"});
+    slideFrame.visible = true;
+    slideFrame.params = {};
+    this.setState({slideFrame})
+  };
 
-  //跳转到详情
-  ToDetailHandle = (recode) => {
-    let path = this.state.budgetVersionsDetailDetailPage.url.replace(":id", this.props.organization.id).replace(":versionId", recode.id)
-    this.context.router.push(path)
-  }
+  //策划编辑页面
+  handleUpdate = (record) => {
+    let slideFrame = {};
+    slideFrame.title = this.props.intl.formatMessage({id:"budget.updateVersion"});
+    slideFrame.visible = true;
+    slideFrame.params = record;
+    this.setState({slideFrame})
+  };
 
 
   render() {
-    const {columns, data, pagination, searchForm, loading} = this.state
+    const {columns, data, pagination, searchForm, loading, slideFrame} = this.state
     return (
       <div className="budget-versions">
         <div className="search-from">
@@ -194,7 +215,7 @@ class BudgetVersions extends React.Component {
             className="table-header-title"> {this.props.intl.formatMessage({id: 'common.total'}, {total: `${pagination.total}`})}</div>
           <div className="table-header-buttons">
             <Button type="primary"
-                    onClick={this.createHandle}>{this.props.intl.formatMessage({id: "common.create"})}</Button>
+                    onClick={this.handleCreate}>{this.props.intl.formatMessage({id: "common.create"})}</Button>
           </div>
         </div>
 
@@ -203,13 +224,19 @@ class BudgetVersions extends React.Component {
             columns={columns}
             dataSource={data}
             pagination={pagination}
-            loading={this.state.loading}
+            loading={loading}
             bordered
             size="middle"
-            onRowClick={this.ToDetailHandle}
+            onRowClick={this.handleUpdate}
           />
         </div>
 
+        <SlideFrame title={slideFrame.title}
+                    show={slideFrame.visible}
+                    content={NewBudgetVersion}
+                    afterClose={this.handleCloseSlide}
+                    onClose={() => this.showSlide(false)}
+                    params={slideFrame.params}/>
       </div>
     )
   }

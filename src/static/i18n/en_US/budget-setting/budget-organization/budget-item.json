@@ -12,6 +12,9 @@
   "variationAttribute.mix": "混合",
   "variationAttribute.alteration": "变动",
   "itemMap.sourceType": "来源类别",
-  "itemMap.detailType": "明细类型"
+  "itemMap.detailType": "明细类型",
+  "itemMap.expenseType": "费用类型",
+  "itemMap.expenseTypeName": "费用类型名称",
+  "itemMap.icon": "图标"
 
 }

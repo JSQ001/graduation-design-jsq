@@ -279,8 +279,8 @@ class BudgetStructureDetail extends React.Component{
     if(this.state.label !== 'company'){
       let defaultDimensionCode = [];
       let defaultDimensionValue = [];
-      defaultDimensionCode.push({ id: record.dimensionId, code: record.dimensionCode,key: record.dimensionId});
-      defaultDimensionValue.push({ id: record.defaultDimValueId, code: record.defaultDimValueCode,key: record.defaultDimValueId});
+      defaultDimensionCode.push({ dimensionId: record.dimensionId, dimensionCode: record.dimensionCode,key: record.dimensionId});
+      defaultDimensionValue.push({ defaultDimValueId: record.defaultDimValueId, defaultDimValueCode: record.defaultDimValueCode,key: record.defaultDimValueId});
       record.defaultDimensionCode = defaultDimensionCode;
       record.defaultDimensionValue = defaultDimensionValue;
       this.setState({

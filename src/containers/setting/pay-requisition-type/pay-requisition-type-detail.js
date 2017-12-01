@@ -47,8 +47,6 @@ class PayRequisitionTypeDetail extends React.Component {
           message: this.props.intl.formatMessage({id: "common.please.enter"}),
           disabled: true
         },
-
-
         {
           /*预付款类型名称*/
           type: 'input',
@@ -81,14 +79,11 @@ class PayRequisitionTypeDetail extends React.Component {
 
   //编辑启用
   onChangeEnabled = (e, record) => {
-    console.log(e);
-    console.log(record);
     let data = record;
     const isEnabled = record.isEnabled;
     data.isEnabled = !isEnabled;
     console.log(data);
-    console.log("qwewqewq");
-    httpFetch.put(`${config.budgetUrl}/api/budget/version/assign/companies`, data).then(response => {
+    httpFetch.put(`${config.budgetUrl}/api/cash/setofbooks/pay/requisition/type/assign/companies`, data).then(response => {
       message.success("编辑成功")
       this.getAssignCompanyList();
     }).catch(
@@ -106,9 +101,6 @@ class PayRequisitionTypeDetail extends React.Component {
   }
 
 
-  AssignCompanyHandle = () => {
-
-  }
 
   //获得详情数据
   getDetail = () => {
@@ -179,7 +171,7 @@ class PayRequisitionTypeDetail extends React.Component {
   //弹窗中，按确定，立即保存公司
   saveCompany = (values) => {
     console.log(values);
-    httpFetch.post(`${config.budgetUrl}/api/budget/version/assign/companies/batch`, values).then((res) => {
+    httpFetch.post(`${config.localUrl}/api/cash/setofbooks/pay/requisition/type/assign/companies/batch`, values).then((res) => {
       console.log(res.data);
       message.success("成功");
       this.setState({})
@@ -211,7 +203,6 @@ class PayRequisitionTypeDetail extends React.Component {
       }
       //保存
       dataValue.push(newData)
-      //  this.state.data.push(newData)
     }
 
     this.saveCompany(dataValue);
@@ -227,38 +218,7 @@ class PayRequisitionTypeDetail extends React.Component {
     this.showImport(false)
   }
 
-  //修改预算版本
   updateHandleInfo = (value) => {
-    let valueDate = value.versionDate ? value.versionDate.format('YYYY-MM-DD') : '';
-    const infoData = {
-      ...this.state.infoDate,
-      'versionName': value.versionName,
-      'versionDate': valueDate,
-      'status': value.status,
-      'description': value.description,
-      'isEnabled': value.isEnabled
-    }
-    httpFetch.put(`${config.budgetUrl}/api/budget/versions`, infoData).then((response) => {
-      const data = response.data;
-      console.log(response.data);
-      const valueData = {
-        ...data,
-        'organizationName': this.props.organization.organizationName
-      }
-      console.log(valueData)
-      this.setState({
-        infoDate: valueData,
-        updateState: true,
-      })
-      message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
-      this.getDetail();
-    }).catch((e) => {
-      if (e.response) {
-        console.log(e.response.data);
-        message.error(`${e.response.data.message}`);
-      }
-    });
-
   }
 
   render() {
@@ -267,15 +227,6 @@ class PayRequisitionTypeDetail extends React.Component {
     return (
       <div>
         <div className="budget-versions-detail">
-          <div className="common-help">
-            <Alert
-              message={formatMessage({id: 'common.help'})}
-              description={formatMessage({id: 'budget.newVersion.info'})}
-              type=""
-              showIcon
-            />
-          </div>
-
           {console.log(infoDate)}
           <BasicInfo infoList={infoList}
                      infoData={infoDate}
@@ -305,8 +256,8 @@ class PayRequisitionTypeDetail extends React.Component {
           <ListSelector visible={this.state.showImportFrame}
                         onOk={this.submitHandle}
                         onCancel={this.CancelHandle}
-                        type='version_company'
-                        extraParams={{"versionId": this.props.params.versionId}}
+                        type='company'
+                        extraParams={{}}
           />
 
         </div>

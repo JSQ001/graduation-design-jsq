@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Tabs, Table } from 'antd'
+import { Form, Tabs, Table, message } from 'antd'
 const TabPane = Tabs.TabPane;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
@@ -56,11 +56,15 @@ class Contract extends React.Component{
   }
 
   componentWillMount() {
-    this.getUnapprovedList();
-    this.getApprovedList()
+    return new Promise((resolve, reject) => {
+      this.getUnapprovedList(resolve, reject);
+      this.getApprovedList(resolve, reject)
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    });
   }
 
-  getUnapprovedList = () => {
+  getUnapprovedList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
     let unapprovedUrl = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
     this.setState({ loading1: true });
@@ -74,12 +78,16 @@ class Contract extends React.Component{
             current: unapprovedPage + 1,
             onChange: this.onUnapprovedChangePaper
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ loading1: false });
+      reject()
     })
   };
 
-  getApprovedList = () => {
+  getApprovedList = (resolve, reject) => {
     const { approvedPage, approvedPageSize } = this.state;
     let approvedUrl = `${config.contractUrl}/contract/api/contract/header/confirmEd/query?page=${approvedPage}&size=${approvedPageSize}`;
     this.setState({ loading2: true });
@@ -93,8 +101,12 @@ class Contract extends React.Component{
             current: approvedPage + 1,
             onChange: this.onApprovedChangePaper
           }
-        })
+        });
+        resolve()
       }
+    }).catch(() => {
+      this.setState({ loading2: false });
+      reject()
     })
   };
 

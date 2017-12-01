@@ -19,7 +19,8 @@ import financeView from 'static/i18n/zh_CN/financial-management/finance-view.jso
 import departmentGroup from 'static/i18n/zh_CN/setting/department-group.json'
 import paymentMethod from 'static/i18n/zh_CN/pay/payment-method.json'
 import paymentCompanySetting from 'static/i18n/zh_CN/pay/payment-company-setting.json'
-
+import cashFlowItem from 'static/i18n/zh_CN/pay/cash-flow-item.json'
+import cashTransactionClass from 'static/i18n/zh_CN/pay/cash-transaction-class.json'
 
 const i18nList = [
   common,  //公用
@@ -42,7 +43,9 @@ const i18nList = [
   financeView, //单据查看
   departmentGroup, //部门组
   paymentMethod,  //付款方式定义
-  paymentCompanySetting //付款公司配置
+  paymentCompanySetting, //付款公司配置
+  cashFlowItem,  //现金流量项
+  cashTransactionClass   //现金事物
 
 ];
 

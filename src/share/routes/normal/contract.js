@@ -5,7 +5,7 @@ import ContractDetail from 'containers/contract/contract-detail'
 //新建合同
 const newContract = {
   key: 'new-contract',
-  url: '/main/contract/my-contract/new-contract',
+  url: '/main/contract/my-contract/new-contract/:id',
   components: NewContract,
   parent: 'my-contract'
 };
@@ -13,7 +13,7 @@ const newContract = {
 //新建详情
 const contractDetail = {
   key: 'contract-detail',
-  url: '/main/contract/my-contract/contract-detail',
+  url: '/main/contract/my-contract/contract-detail/:id',
   components: ContractDetail,
   parent: 'my-contract'
 };

@@ -17,8 +17,6 @@
   "menu.budget-organization": "预算组织定义",
   "menu.budget-organization-detail": "预算组织详情",
   "menu.budget-scenarios": "预算场景定义",
-  "menu.new-budget-versions": "新建预算版本",
-  "menu.budget-versions-detail":"预算版本详情",
   "menu.budget-strategy": "预算控制策略定义",
   "menu.new-budget-strategy": "新建预算控制策略",
   "menu.budget-strategy-detail": "预算控制策略详情",
@@ -85,9 +83,11 @@
   "menu.company-distribution": "公司分配",
   "menu.approve": "审批",
   "menu.contract": "合同",
+  "menu.approve-contract": "合同",
   "menu.my-contract": "我的合同",
   "menu.new-contract": "合同创建",
   "menu.contract-detail": "合同详情",
+  "menu.approve-contract-detail": "合同详情",
   "menu.new-bank-account": "新建银行账户",
   "menu.bank-account-detail": "银行账户详情",
   "menu.add-authorization": "添加授权",
@@ -96,5 +96,10 @@
   "menu.payment-method":"付款方式",
   "menu.payment-company-setting":"付款公司配置",
   "menu.pay-requisition-type-detail":"预付款单定义详情",
-  "menu.pay-requisition-type":"预付款单定义"
+  "menu.pay-requisition-type":"预付款单定义",
+  "menu.cash-flow-item":"现金流量项",
+  "menu.cash-transaction-class": "现金事务分类定义",
+  "menu.new-cash-transaction-class": "新建现金事务分类",
+  "menu.cash-transaction-class-detail": "现金事务分类详情",
+  "menu.pay-requisition-type-assign-transaction":"现金事务分配"
 }

@@ -1,19 +1,19 @@
-import Contract from 'containers/approve/contract'
-import ContractDetail from 'containers/approve/contract-detail'
+import ApproveContract from 'containers/approve/contract'
+import ApproveContractDetail from 'containers/approve/contract-detail'
 
 //审批合同
 const contractDetail = {
-  key:'contract-detail',
-  url:'/main/approve/contract/contract-detail',
-  components: ContractDetail ,
-  parent: 'contract'
+  key:'approve-contract-detail',
+  url:'/main/approve/approve-contract/approve-contract-detail',
+  components: ApproveContractDetail ,
+  parent: 'approve-contract'
 };
 
 //合同
 const contract = {
-  key:'contract',
-  url:'/main/approve/contract',
-  components: Contract ,
+  key:'approve-contract',
+  url:'/main/approve/approve-contract',
+  components: ApproveContract ,
   parent: 'approve',
   children: {
     contractDetail

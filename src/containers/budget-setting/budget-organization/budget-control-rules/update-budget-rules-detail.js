@@ -54,7 +54,7 @@ class UpdateBudgetRulesDetail extends React.Component{
     }
   }
   componentWillMount() {
-    let organizationIdParams = {organizationId : this.props.organization.id};
+    let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let {lov, ruleParameterTypeArray, ruleParamsArray, summaryOrDetailArray, filtrateMethodArray,valueListMap} = this.state;
 
     let userSelectorItem = selectorData['user'];
@@ -523,8 +523,8 @@ class UpdateBudgetRulesDetail extends React.Component{
             </Col>
           </Row>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id:"common.save"})}</Button>
+            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
             <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>
