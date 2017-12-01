@@ -260,7 +260,7 @@ const selectorData = {
       {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
     ],
     columns: [
-      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
@@ -399,7 +399,19 @@ const selectorData = {
     ],
     key: 'companyOID'
   },
-
+  'cash_flow_item': {
+    title: '现金流量项',
+    url: `${config.payUrl}/api/cash/flow/items/query`,
+    searchForm: [
+      {type: 'input', id:'flowCode', label: '	现金流量项代码', defaultValue: ''},
+      {type: 'input', id:'description', label: '现金流量项名称', defaultValue: ''},
+    ],
+    columns: [
+      {title: "现金流量项代码", dataIndex: 'flowCode'},
+      {title: "现金流量项名称", dataIndex: 'description'},
+    ],
+    key: 'id'
+  },
 };
 
 export default selectorData;

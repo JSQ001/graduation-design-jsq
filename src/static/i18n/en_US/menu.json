@@ -95,5 +95,9 @@
   "menu.payment-method":"Payment Method",
   "menu.payment-company-setting":"Payment Company Setting",
   "menu.pay-requisition-type-detail":"Pay Requisition Type Detail",
-  "menu.pay-requisition-type":"Pay Requisition Type"
+  "menu.pay-requisition-type":"Pay Requisition Type",
+  "menu.cash-flow-item":"Cash flow item",
+  "menu.cash-transaction-class": "Cash transaction class",
+  "menu.new-cash-transaction-class": "New cash transaction class",
+  "menu.cash-transaction-class-detail": "Cash transaction class detail"
 }
