@@ -2,6 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message } from 'antd'
 const TabPane = Tabs.TabPane;
 
@@ -47,10 +48,12 @@ class ContractDetailCommon extends React.Component {
         {title: '操作', dataIndex: 'id'}
       ],
       data: [],
+      planAmount: 0,
       pagination: {
         total: 0
       },
       showSlideFrame: false,
+      NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
     }
   }
 
@@ -75,12 +78,20 @@ class ContractDetailCommon extends React.Component {
 
   //获取资金计划
   getPayInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/line/header/${this.props.id}`;
+    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}`;
     this.setState({ planLoading: true });
     httpFetch.get(url).then(res => {
+      let planAmount = 0;
+      res.data.map(item => {
+        planAmount += item.amount;
+      });
       this.setState({
         data: res.data,
-        planLoading: false
+        planAmount,
+        planLoading: false,
+        pagination: {
+          total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+        }
       })
     })
   };
@@ -102,12 +113,17 @@ class ContractDetailCommon extends React.Component {
     )
   };
 
+  //编辑
+  edit = () => {
+    this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
+  };
+
   render() {
-    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus } = this.state;
+    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus } = this.state;
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
-          {this.props.contractEdit && <Button type="primary">编 辑</Button>}
+          {this.props.contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
         </h3>
         <Row>
           <Col span={6}>
@@ -167,7 +183,7 @@ class ContractDetailCommon extends React.Component {
       <div className="tab-container">
         <Spin spinning={detailLoading}>
           <h3 className="sub-header-title">合同信息
-            {this.props.contractEdit && <a className="edit">编辑</a>}
+            {this.props.contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
           </h3>
           <Row>
             <Col span={8}>{this.renderList('合同名称', headerData.contractName)}</Col>
@@ -208,10 +224,10 @@ class ContractDetailCommon extends React.Component {
               {this.props.contractEdit && <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>}
             </div>
             <Breadcrumb style={{marginBottom:'10px'}}>
-              <Breadcrumb.Item>{`共 ${pagination.total || 0} 条数据`}</Breadcrumb.Item>
-              <Breadcrumb.Item>{`合同总金额: CNY 568.00`}</Breadcrumb.Item>
-              <Breadcrumb.Item>{`计划总金额: CNY 568.00`}</Breadcrumb.Item>
-              <Breadcrumb.Item>{`待计划金额: CNY 568.00`}</Breadcrumb.Item>
+              <Breadcrumb.Item>共 {pagination.total} 条数据</Breadcrumb.Item>
+              <Breadcrumb.Item>合同总金额: {headerData.currency} {this.filterMoney(planAmount)}</Breadcrumb.Item>
+              <Breadcrumb.Item>计划总金额: {headerData.currency} {this.filterMoney(headerData.amount)}</Breadcrumb.Item>
+              <Breadcrumb.Item>待计划金额: {headerData.currency} {this.filterMoney(headerData.amount - planAmount)}</Breadcrumb.Item>
             </Breadcrumb>
           </div>
           <Table rowKey={record => record.id}
@@ -272,6 +288,10 @@ ContractDetailCommon.propTypes = {
 
 ContractDetailCommon.defaultProps = {
   contractEdit: false
+};
+
+ContractDetailCommon.contextTypes = {
+  router: React.PropTypes.object
 };
 
 const wrappedContractDetailCommon = Form.create()(injectIntl(ContractDetailCommon));

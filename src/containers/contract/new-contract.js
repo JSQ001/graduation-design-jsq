@@ -5,12 +5,13 @@ import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNu
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
-
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
 
+import moment from 'moment'
 import Upload from 'components/upload'
+import Chooser from 'components/chooser'
 
 class NewContract extends React.Component{
   constructor(props) {
@@ -20,6 +21,8 @@ class NewContract extends React.Component{
       user: {},
       contractTypeDisabled: true,
       setOfBooksId: null,
+      isNew: true, //新建 or 编辑
+      data: [], //编辑的合同信息
       partnerCategoryOptions: [], //合同方类型选项
       currencyOptions: [], //币种
       companyIdOptions: [], //公司
@@ -27,13 +30,15 @@ class NewContract extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
-      contractTypeOptions: [], //合同类型选择
+      selectorItem: {},
+      extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
       contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
     }
   }
 
   componentWillMount() {
+    Number(this.props.params.id) && this.getInfo(); //合同编辑
     this.setState({ user: this.props.user });
     this.getSystemValueList(2107).then(res => { //合同方类型
       let partnerCategoryOptions = res.data.values;
@@ -55,6 +60,19 @@ class NewContract extends React.Component{
       })
     });
   }
+
+  //获取合同信息
+  getInfo = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
+    httpFetch.get(url).then(res => {
+      this.setState({
+        data: res.data,
+        isNew: false
+      })
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    })
+  };
 
   //上传附件
   handleUpload = (OIDs) => {
@@ -91,26 +109,39 @@ class NewContract extends React.Component{
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
-      let url = `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company?companyId=${value}`;
-      httpFetch.get(url).then(res => {
-        this.setState({
-          contractTypeOptions: res.data,
-          contractTypeDisabled: false
-        })
+      let selectorItem = {
+        title: "合同类型",
+        url: `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company`,
+        searchForm: [
+          {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
+          {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
+          {type: 'input', id: 'contractCategory', label: '合同大类'}
+        ],
+        columns: [
+          {title: '合同类型代码', dataIndex: 'contractTypeCode'},
+          {title: '合同类型名称', dataIndex: 'contractTypeName'},
+          {title: '合同大类', dataIndex: 'contractCategoryName'},
+        ],
+        key: 'id'
+      };
+      this.setState({
+        selectorItem,
+        extraParams: value,
+        contractTypeDisabled: false
       })
     }
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user, contractTypeDisabled, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, contractTypeOptions } = this.state;
+    const { loading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
           <Row>
             <Col span={7}>
               <div style={{lineHeight: '32px'}}>合同编号:</div>
-              <Input value="-" disabled />
+              <Input value={isNew ? '-' : data.id} disabled />
             </Col>
             <Col span={7} offset={1}>
               <div style={{lineHeight: '32px'}}>创建人:</div>
@@ -118,7 +149,7 @@ class NewContract extends React.Component{
             </Col>
             <Col span={7} offset={1}>
               <div style={{lineHeight: '32px'}}>创建日期:</div>
-              <Input value={new Date().format('yyyy-MM-dd')} disabled />
+              <Input value={isNew ? moment(data.createdDate).format('YYYY-MM-DD') : new Date().format('yyyy-MM-dd')} disabled />
             </Col>
           </Row>
         </Card>
@@ -132,6 +163,7 @@ class NewContract extends React.Component{
                       required: true,
                       message: '请输入'
                     }],
+                    initialValue: isNew ? '' : data.contractName
                   })(
                     <Input placeholder="请输入"/>
                   )}
@@ -144,6 +176,7 @@ class NewContract extends React.Component{
                       required: true,
                       message: '请选择'
                     }],
+                    initialValue: isNew ? undefined : moment(data.signDate)
                   })(
                     <DatePicker style={{width:'100%'}}/>
                   )}
@@ -157,7 +190,8 @@ class NewContract extends React.Component{
                     rules: [{
                       required: true,
                       message: '请选择'
-                    }]
+                    }],
+                    initialValue: isNew ? undefined : data.companyId
                   })(
                     <Select placeholder="请选择" onChange={this.handleCompanyId}>
                       {companyIdOptions.map((option) => {
@@ -174,12 +208,14 @@ class NewContract extends React.Component{
                       required: true,
                       message: '请选择'
                     }],
+                    initialValue: isNew ? undefined : data.contractTypeId
                   })(
-                    <Select placeholder="请选择" disabled={contractTypeDisabled}>
-                      {contractTypeOptions.map(option => {
-                        return <Option key={option.id}>{option.contractTypeName}</Option>
-                      })}
-                    </Select>
+                    <Chooser disabled={isNew ? contractTypeDisabled : false}
+                             selectorItem={selectorItem}
+                             listExtraParams={{companyId: extraParams}}
+                             valueKey="contractTypeCode"
+                             labelKey="contractTypeName"
+                             single/>
                   )}
                 </FormItem>
               </Col>
@@ -190,6 +226,7 @@ class NewContract extends React.Component{
                       required: true,
                       message: '请选择'
                     }],
+                    initialValue: isNew ? '' : data.contractCategory
                   })(
                     <Select placeholder="请选择">
                       {contractCategoryOptions.map(option => {
