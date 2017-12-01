@@ -17,7 +17,7 @@ class NewDimension extends React.Component{
     super(props);
     const { formatMessage} = this.props.intl;
     this.state = {
-      isEnabled: true,
+      isEnabled: null,
       showSelectDimension: false,
       dimension:{},
       layoutPosition:[],
@@ -56,13 +56,13 @@ class NewDimension extends React.Component{
   componentWillMount(){
     let dimension = this.props.params;
     let extraParams = this.state.extraParams;
-    console.log(dimension)
     if(typeof dimension.id !== 'undefined'){
       extraParams = {dimensionId: dimension.dimensionId}
     }
     this.setState({
       dimension,
       extraParams,
+      isEnabled: dimension.isEnabled,
       defaultDimension: dimension.defaultDimensionValue
     });
     //获取布局位置的值列表
@@ -83,7 +83,6 @@ class NewDimension extends React.Component{
 
   }
   componentWillReceiveProps(nextprops){
-    console.log(nextprops)
     if(nextprops.params.versionNumber !== this.state.dimension){
       let dimension = this.props.params;
       let extraParams = this.state.extraParams;
@@ -91,6 +90,7 @@ class NewDimension extends React.Component{
         extraParams = {dimensionId: dimension.dimensionId}
       }
       this.setState({
+        isEnabled: dimension.isEnabled,
         dimension,
         extraParams,
         defaultDimension: dimension.defaultDimensionValue
@@ -178,7 +178,7 @@ class NewDimension extends React.Component{
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { dimensionSelectorItem, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
+    const { dimensionSelectorItem, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams, isEnabled} = this.state;
     const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -192,11 +192,11 @@ class NewDimension extends React.Component{
               <FormItem {...formItemLayout} label={formatMessage({id:"common.column.status"})} colon={true}>
                 {getFieldDecorator('isEnabled', {
                   valuePropName:"defaultChecked",
-                  initialValue: dimension.isEnabled
+                  initialValue: isEnabled
                 })(
                   <div>
-                    <Switch defaultChecked={dimension.isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.status.disable"}) }</span>
+                    <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
                   </div>
                 )}
               </FormItem>
