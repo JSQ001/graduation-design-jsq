@@ -82,6 +82,7 @@ class BudgetItemMap extends React.Component {
   saveItem = (e, record)=>{
     e.preventDefault();
     e.stopPropagation();
+    console.log(record)
     if(record.sourceType !=="" && typeof record.budgetItemId === 'undefined' && typeof record.sourceItemId === 'undefined') {
       httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`, [record]).then((response) => {
         message.success(`${this.props.intl.formatMessage({id: "common.save.success"}, {name: ""})}`);
@@ -137,14 +138,11 @@ class BudgetItemMap extends React.Component {
         url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
         searchForm: [
           {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
-          {type: 'switch', id: 'enabled', defaultValue: true, label: formatMessage({id:"common.column.status"})},
         ],
         columns: [
-          {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconName', width: '25%',
-            render: (value,index,record) =>{
-              <span>
-                <img src={record.iconURL} />
-              </span>
+          {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconURL', width: '25%',
+            render: (value) =>{
+                return <img src={value} />
             }
           },
           {title: formatMessage({id:"itemMap.expenseTypeName"}), dataIndex: 'name', width: '25%'},
@@ -272,7 +270,7 @@ class BudgetItemMap extends React.Component {
                 valueKey='id'
                 itemMap={true}
                 selectorItem={paramValueMap[record.sourceType]}
-                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId}}
+                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId, enabled: true}}
                 value={record.detail}
                 single={true}/>
             );
@@ -324,6 +322,7 @@ class BudgetItemMap extends React.Component {
   };
 
   handleSave = () =>{
+    let params = this.state.params;
     httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`,params).then((response)=>{
       message.success(`${this.props.intl.formatMessage({id: "common.save.success"},{name:""})}`);
       this.setState({
