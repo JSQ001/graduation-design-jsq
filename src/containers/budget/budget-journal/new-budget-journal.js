@@ -454,7 +454,7 @@ class NewBudgetJournalFrom extends React.Component {
                       labelKey='scenarioName'
                       valueKey='id'
                       single={true}
-                      listExtraParams={{"organizationId": this.props.organization.id}
+                      listExtraParams={{"organizationId": this.props.organization.id,"isEnabled":true}
                   }
 
                     />

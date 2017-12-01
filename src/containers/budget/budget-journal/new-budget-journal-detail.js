@@ -76,13 +76,7 @@ class NewBudgetJournalDetail extends React.Component {
       if(e === "company"){
         let searchFrom =this.state.searchForm;
         searchFrom.map((item)=>{
-          if(item.id === "unit"){
-            item["listExtraParams"]={companyId:value[0].id}
-            item["disabled"]=false
-            return
-          }
           if(item.id === "item" ){
-            console.log(123123)
             let getParams = item["getParams"];
             console.log(getParams);
             getParams.companyId = value[0].id;
@@ -143,13 +137,10 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
       {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
-        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false,
-        listExtraParams:{"companyId": ''},
-        columnLabel: 'departmentName',columnValue: 'unitId'
+        labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false, columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'select', id:'item',method:'get', label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id',
-        getUrl:`${config.budgetUrl}/api/budget/journals/selectItemsByJournalTypeAndCompany`,getParams:{"journalTypeId":'',"companyId":''},
+      {type: 'list', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
+        labelKey:'itemName',valueKey:'id',disabled:false, listExtraParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
       {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
@@ -206,7 +197,7 @@ class NewBudgetJournalDetail extends React.Component {
         this.setState({
           journalTypeIdFlag:false,
         },()=>{
-          this.getUntilUrl();
+          this.getItemUrl();
         })
       }
       if(nextProps.params.id !== this.state.params.id){
@@ -225,13 +216,17 @@ class NewBudgetJournalDetail extends React.Component {
       this.setState({ params : {}});
   };
 
-  getUntilUrl(){
+  getItemUrl(){
+    console.log(1234);
     let searchForm = this.state.searchForm;
     searchForm = searchForm.map(searchItem => {
-      if(searchItem.id === "unit")
-        console.log(this.props.params.journalTypeId);
-      searchItem.getParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
-      return searchItem;
+      if(searchItem.id === "item"){
+          console.log(123);
+          console.log(searchItem.id)
+          console.log(this.props.params.journalTypeId);
+        searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
+        return searchItem;
+      }
     });
     console.log(searchForm);
     this.setState({ searchForm });
