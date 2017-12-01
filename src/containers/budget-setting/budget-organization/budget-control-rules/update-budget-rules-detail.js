@@ -54,7 +54,7 @@ class UpdateBudgetRulesDetail extends React.Component{
     }
   }
   componentWillMount() {
-    let organizationIdParams = {organizationId : this.props.organization.id};
+    let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let {lov, ruleParameterTypeArray, ruleParamsArray, summaryOrDetailArray, filtrateMethodArray,valueListMap} = this.state;
 
     let userSelectorItem = selectorData['user'];

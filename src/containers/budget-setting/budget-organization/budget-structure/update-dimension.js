@@ -83,6 +83,7 @@ class NewDimension extends React.Component{
 
   }
   componentWillReceiveProps(nextprops){
+    console.log(nextprops)
     if(nextprops.params.versionNumber !== this.state.dimension){
       let dimension = this.props.params;
       let extraParams = this.state.extraParams;
@@ -123,6 +124,7 @@ class NewDimension extends React.Component{
   };
 
   onCancel = () =>{
+    this.props.form.resetFields();
     this.props.close();
   };
 
