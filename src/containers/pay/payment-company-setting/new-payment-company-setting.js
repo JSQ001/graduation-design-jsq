@@ -21,8 +21,9 @@ class NewPaymentCompanySetting extends React.Component {
       isPut: false,
       loading: false,
       ducumentCategoryOptions:[],
+      ducumentTypeOptions:[],
       companyOptions:[],
-    
+
     };
 
 
@@ -55,7 +56,7 @@ class NewPaymentCompanySetting extends React.Component {
 
   getPaymentMethodCategory(){
     let ducumentCategoryOptions = [];
-    this.getSystemValueList(2016).then(res => {
+    this.getSystemValueList(2106).then(res => {
       res.data.values.map(data => {
         ducumentCategoryOptions.push({label: data.messageKey, value: data.code})
       });
@@ -112,6 +113,21 @@ class NewPaymentCompanySetting extends React.Component {
     }))
   }
 
+  handleDucumentCategory =(value)=>{
+    console.log(value);
+    let ducumentTypeOptions = [];
+    httpFetch.get(`${config.baseUrl}/api/expense/type/by/setOfBooks?setOfBooksId=${this.props.company.setOfBooksId}&roleType=${value}`).then((res)=>{
+      console.log(res.data);
+        res.data.map(data =>{
+          ducumentTypeOptions.push({label: data,value:String(data.id)})
+        })
+        this.setState({
+          ducumentTypeOptions
+        })
+      }
+    )
+  }
+
   render() {
     const {getFieldDecorator} = this.props.form;
     const {params, isEnabled, isPut} = this.state;
@@ -147,7 +163,7 @@ class NewPaymentCompanySetting extends React.Component {
             {getFieldDecorator('ducumentCategory', {
               rules: [{ required: true, message: '请选择' }],
             })(
-              <Select>
+              <Select onSelect={this.handleDucumentCategory}>
                 {this.state.ducumentCategoryOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
@@ -161,7 +177,7 @@ class NewPaymentCompanySetting extends React.Component {
 
             })(
               <Select>
-                {this.state.ducumentCategoryOptions.map((option)=>{
+                {this.state.ducumentTypeOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
               </Select>

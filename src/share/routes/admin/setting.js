@@ -19,8 +19,9 @@ import CompanyGroupDetail from 'containers/setting/company-group/company-group-d
 import DepartmentGroup from 'containers/setting/department-group/department-group'
 import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
-import PayRequisitionType from 'containers/setting/pay-requisition-type/pay-requisition-type.js'
-import PayRequisitionTypeDetail from 'containers/setting/pay-requisition-type/pay-requisition-type-detail.js'
+import PayRequisitionType from 'containers/setting/pay-requisition-type/pay-requisition-type'
+import PayRequisitionTypeDetail from 'containers/setting/pay-requisition-type/pay-requisition-type-detail'
+import PayRequisitionTypeAssignTransaction from 'containers/setting/pay-requisition-type/pay-requisition-type-assign-transaction'
 
 //新建部门组
 const newDepartmentGroup = {
@@ -217,13 +218,21 @@ const companyMaintain ={
   }
 };
 
-/*预付款单定义详情*/
+/*预付款单分配公司*/
 const payRequisitionTypeDetail ={
   key:'pay-requisition-type-detail',
   url:'/main/setting/pay-requisition-type/pay-requisition-type-detail/:requisitionTypeId',
   components:PayRequisitionTypeDetail,
   parent: 'pay-requisition-type'
 };
+
+/*预付款单分配现金事务*/
+const payRequisitionTypeAssignTransaction ={
+  key:'pay-requisition-type-assign-transaction',
+  url:'/main/setting/pay-requisition-type/pay-requisition-type-assign-transaction/:requisitionTypeId',
+  components:PayRequisitionTypeAssignTransaction,
+  parent: 'pay-requisition-type'
+}
 
 /*预付款单定义*/
 const payRequisitionType ={
@@ -232,7 +241,8 @@ const payRequisitionType ={
   components:PayRequisitionType,
   parent: 'setting',
   children:{
-    payRequisitionTypeDetail
+    payRequisitionTypeDetail,
+    payRequisitionTypeAssignTransaction
   }
 };
 

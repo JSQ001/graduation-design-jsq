@@ -46,7 +46,7 @@ class BudgetJournalDetail extends React.Component {
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
         {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'unitId',columnValue: 'departmentName'},//部门
-        {type: 'select', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},     //预算项目
+        {type: 'list', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},     //预算项目
         {type: 'select', id:'periodName',options: [], labelKey:'periodName',valueKey:'periodName',columnLabel:'periodName',columnValue:'periodName'}, //期间
         {type: 'value_list', id: 'periodQuarter', options: [],labelKey:'periodQuarter',columnLabel:'periodQuarter',columnValue:'periodQuarterName',value:'periodQuarter'}, //季度
         {type: 'select', id:'periodYear', options:[],labelKey:'periodYear',valueKey:'periodYear',columnLabel:'periodYear',columnValue:'periodYear'}, //年度
@@ -483,10 +483,19 @@ class BudgetJournalDetail extends React.Component {
 
   //提交单据
   handlePut=()=>{
+    let header =this.state. headerAndListData.dto;
     if(this.state.commitFlag) {
-      let header =this.state. headerAndListData.dto;
-      console.log(header);
-      httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
+       let header =this.state. headerAndListData.dto;
+        console.log(header);
+        httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${header.id}`).then((res)=>{
+            message.success("提交成功");
+            this.setState({
+            listData:[],
+          }).catch(e => {
+           message.error(e.response.data.message)
+          })
+        })
+ /*     httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");
         this.setState({
           listData:[],
@@ -495,7 +504,7 @@ class BudgetJournalDetail extends React.Component {
         this.context.router.push(path);
       }).catch(e => {
         message.error(e.response.data.message)
-      })
+      })*/
     }else {
       notification.open({
         message: '行信息不能为空！',
@@ -514,11 +523,10 @@ class BudgetJournalDetail extends React.Component {
           valuesData[item.id]=values[item.columnLabel];
       } else if (item.type === 'list' ){
           let result = [];
-          let itemData ={
-            "name":values[item.columnLabel],
-            "id":values[item.columnValue],
-            "key":values[item.columnValue]
-          }
+          let  itemData ={}
+          itemData[item.labelKey]=values[item.columnLabel];
+          itemData[item.valueKey]=values[item.columnValue];
+          itemData["key"]=values[item.columnValue];
           result.push(itemData);
           valuesData[item.id] = result;
           console.log(result);
