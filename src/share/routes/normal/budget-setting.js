@@ -5,8 +5,6 @@ import NewBudgetStructure from 'containers/budget-setting/budget-organization/bu
 import NewBudgetItem from 'containers/budget-setting/budget-organization/budget-item/new-budget-item'
 import BudgetItemDetail from 'containers/budget-setting/budget-organization/budget-item/budget-item-detail'
 import BudgetStructureDetail from 'containers/budget-setting/budget-organization/budget-structure/budget-structure-detail'
-import NewBudgetVersions from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'
-import BudgetVersionsDetail from 'containers/budget-setting/budget-organization/budget-versions/budget-versions-detail'
 import NewBudgetGroup from 'containers/budget-setting/budget-organization/budget-group/new-budget-group'
 import BudgetGroupDetail from 'containers/budget-setting/budget-organization/budget-group/budget-group-detail'
 
@@ -39,21 +37,6 @@ const budgetStructureDetail = {
   }
 };
 
-//新建预算版本
-const newBudgetVersions = {
-  key:'new-budget-versions',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/new-budget-versions',
-  components: NewBudgetVersions,
-  parent: 'budget-organization-detail'
-};
-
-//预算版本详情
-const budgetVersionsDetail = {
-  key:'budget-versions-detail',
-  url:'/main/budget-setting/budget-organization/budget-organization-detail/:id/budget-versions/budget-versions-detail/:versionId',
-  components:BudgetVersionsDetail,
-  parent: 'budget-organization-detail'
-};
 
 //新建预算项目组
 const newBudgetGroup = {
@@ -178,8 +161,6 @@ const budgetOrganization = {
   children: {
     newBudgetOrganization,
     budgetOrganizationDetail,
-    budgetVersionsDetail,
-    newBudgetVersions,
     newBudgetStructure,
     budgetStructureDetail,
     newBudgetGroup,

@@ -1,16 +1,15 @@
 
 
 .new-budget-versions{
-  .new-budget-versions-help{
-
+  .slide-frame.animated .slide-content {
+    padding: 0;
   }
-  .new-budget-versions-from{
-    background-color: #f7f7f7;
-    margin-top: 24px;
-    padding: 28px;
-    border-radius: 5px;
-    Button{
-      margin-right: 16px;
-    }
+  .ant-form.ant-form-horizontal {
+    margin-top: 30px;
+  }
+  .enabled-type {
+    position: relative;
+    top: 2px;
+    left: 10px;
   }
 }
