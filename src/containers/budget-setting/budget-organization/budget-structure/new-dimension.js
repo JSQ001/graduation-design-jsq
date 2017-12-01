@@ -267,7 +267,7 @@ class NewDimension extends React.Component{
                           labelKey="defaultDimValueCode"
                           valueKey="defaultDimValueId"
                           selectorItem={selectorItem}
-                          listExtraParams={{dimensionId: dimensionCode[0].dimensionId}}
+                          listExtraParams={{dimensionId: dimensionCode.length>0? dimensionCode[0].dimensionId : null}}
                           onChange={this.handleDimensionValue}/>
                     }
                   </div>
