@@ -16,9 +16,9 @@ class PayWorkbench extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nowStatus: 'Success',
+      nowStatus: 'Unpaid',
       tabs: [
-        {key: 'Unpaid', name:'未付款'},
+        {key: 'Unpaid', name:'未支付'},
         {key: 'Paying', name:'支付中'},
         {key: 'Fail', name:'退票或失败'},
         {key: 'Success', name:'支付成功'}
@@ -53,7 +53,7 @@ class PayWorkbench extends React.Component {
     const { tabs } = this.state;
     return (
       <div className="pay-workbench">
-        <Tabs onChange={this.onChangeTabs} defaultActiveKey="Success">
+        <Tabs onChange={this.onChangeTabs} defaultActiveKey="Unpaid">
           {tabs.map(tab => {
             return <TabPane tab={tab.name} key={tab.key}/>
           })}
