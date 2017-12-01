@@ -19,6 +19,8 @@ import CompanyGroupDetail from 'containers/setting/company-group/company-group-d
 import DepartmentGroup from 'containers/setting/department-group/department-group'
 import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
+import PayRequisitionType from 'containers/setting/pay-requisition-type/pay-requisition-type.js'
+import PayRequisitionTypeDetail from 'containers/setting/pay-requisition-type/pay-requisition-type-detail.js'
 
 //新建部门组
 const newDepartmentGroup = {
@@ -63,8 +65,6 @@ const companyGroupDetail = {
   components: CompanyGroupDetail,
   parent: 'company-group',
 };
-
-
 
 //公司组
 const companyGroup = {
@@ -217,10 +217,29 @@ const companyMaintain ={
   }
 };
 
+/*预付款单定义详情*/
+const payRequisitionTypeDetail ={
+  key:'pay-requisition-type-detail',
+  url:'/main/setting/pay-requisition-type/pay-requisition-type-detail/:requisitionTypeId',
+  components:PayRequisitionTypeDetail,
+  parent: 'pay-requisition-type'
+};
+
+/*预付款单定义*/
+const payRequisitionType ={
+  key:'pay-requisition-type',
+  url:'/main/setting/pay-requisition-type',
+  components:PayRequisitionType,
+  parent: 'setting',
+  children:{
+    payRequisitionTypeDetail
+  }
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,payRequisitionType],
   icon: 'setting',
   admin: true
 };
