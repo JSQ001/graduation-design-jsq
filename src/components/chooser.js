@@ -37,7 +37,6 @@ class Chooser extends React.Component {
    * @param nextProps
    */
   componentWillReceiveProps = (nextProps) => {
-    console.log(nextProps)
     if(nextProps.value){
       let lengthChange = nextProps.value.length !== this.state.value.length;
       let innerChange = false;
