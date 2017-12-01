@@ -95,7 +95,11 @@
   "menu.budget-journal-check-detail": "预算审批详情",
   "menu.payment-method":"付款方式",
   "menu.payment-company-setting":"付款公司配置",
-  "menu.pay-requisition-type-detail":"公司分配",
+  "menu.pay-requisition-type-detail":"预付款单定义详情",
   "menu.pay-requisition-type":"预付款单定义",
+  "menu.cash-flow-item":"现金流量项",
+  "menu.cash-transaction-class": "现金事务分类定义",
+  "menu.new-cash-transaction-class": "新建现金事务分类",
+  "menu.cash-transaction-class-detail": "现金事务分类详情",
   "menu.pay-requisition-type-assign-transaction":"现金事务分配"
 }

@@ -260,7 +260,7 @@ const selectorData = {
       {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
     ],
     columns: [
-      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
       {title: "公司类型", dataIndex: 'companyTypeName'}
     ],
@@ -349,7 +349,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-
   'cost_center_item': {
     title: '成本中心',
     url: `${config.baseUrl}/api/my/cost/center/items/`,
@@ -359,8 +358,8 @@ const selectorData = {
       {title: "成本中心名称", dataIndex: 'name'}
 
     ],
-  key: 'id'
-},
+    key: 'id'
+  },
   'journal_line_department':{
     title: "选择部门",
     url: `${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant`,
@@ -386,18 +385,19 @@ const selectorData = {
       {title:"描述",dataIndex:'description'}
     ],
     key: 'companyOID'
-  }, 'user_move_select_company': {
-    title: '选择公司',
-    url: `${config.baseUrl}/api/company/available`,
+  }, 
+  'cash_flow_item': {
+    title: '现金流量项',
+    url: `${config.payUrl}/api/cash/flow/items/query`,
     searchForm: [
-      {type: 'input', id: 'keyword', label: "公司代码/公司名称",defaultValue:''},
+      {type: 'input', id:'flowCode', label: '	现金流量项代码', defaultValue: ''},
+      {type: 'input', id:'description', label: '现金流量项名称', defaultValue: ''},
     ],
     columns: [
-      {title: "公司代码", dataIndex: 'companyCode'},
-      {title: "公司名称", dataIndex: 'name'},
-      {title:"描述",dataIndex:'description'}
+      {title: "现金流量项代码", dataIndex: 'flowCode'},
+      {title: "现金流量项名称", dataIndex: 'description'},
     ],
-    key: 'companyOID'
+    key: 'id'
   },
   'assign-transaction': {
     title: '分配现金事务',
@@ -415,7 +415,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-
   'journal_item': {
     title: '预算项目',
     url: `${config.budgetUrl}/api/budget/journals/selectItemsByJournalTypeAndCompany`,
@@ -429,9 +428,7 @@ const selectorData = {
 
     ],
     key: 'id'
-  },
-
-
+  }
 };
 
 export default selectorData;
