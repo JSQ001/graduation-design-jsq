@@ -560,13 +560,12 @@ class NewBudgetJournalDetail extends React.Component {
         data.map((item)=>{
           options.push({label: item.name, value: item.id, data:item})
         })
-
       })
-
       console.log(options);
-
+      console.log(item);
+      console.log(123);
       const searchFormItem=  {type: 'select_dimension', label:`${item.dimensionName}`, options:options,
-        labelKey:'name',valueKey:'id',defaultValue:dimensionList[dimensionListKey[3]],
+        labelKey:'name',valueKey:'id',defaultValue:`${item.defaultDimValueId}`,
         columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
       };
       searchFormItem["id"]="dimension"+priority,

@@ -23,11 +23,7 @@ class NewPaymentCompanySetting extends React.Component {
       ducumentCategoryOptions:[],
       ducumentTypeOptions:[],
       companyOptions:[],
-
     };
-
-
-
   }
 
   componentWillMount() {
@@ -49,7 +45,6 @@ class NewPaymentCompanySetting extends React.Component {
       })
       this.props.form.setFieldsValue(fromData);
     }
-
   }
 
 
@@ -118,12 +113,20 @@ class NewPaymentCompanySetting extends React.Component {
     let ducumentTypeOptions = [];
     httpFetch.get(`${config.baseUrl}/api/expense/type/by/setOfBooks?setOfBooksId=${this.props.company.setOfBooksId}&roleType=${value}`).then((res)=>{
       console.log(res.data);
-        res.data.map(data =>{
-          ducumentTypeOptions.push({label: data,value:String(data.id)})
+      console.log(33);
+      const data =res.data;
+       data.map(item =>{
+          ducumentTypeOptions.push({label: item.name,value:String(item.id)})
         })
+
         this.setState({
           ducumentTypeOptions
-        })
+        },()=>{
+           console.log(44)
+           console.log(this.state.ducumentCategoryOptions)
+          }
+
+        )
       }
     )
   }
@@ -174,7 +177,6 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"})}>
             {getFieldDecorator('ducumentType', {
               rules: [{}],
-
             })(
               <Select>
                 {this.state.ducumentTypeOptions.map((option)=>{
