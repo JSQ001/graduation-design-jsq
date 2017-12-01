@@ -107,7 +107,7 @@ class BudgetItemDetail extends React.Component{
     const {pagination} = this.state;
     httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
       response.data.map((item)=>{
-        item.id = item.key
+        item.key= item.id
       });
       if(response.status === 200){
         let pagination = this.state.pagination;

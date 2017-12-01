@@ -18,6 +18,20 @@ class Chooser extends React.Component {
     };
   }
 
+  componentWillMount(){
+   if(this.props.itemMap){
+     let value = [];
+     this.props.value.map((item)=>{
+       value.push({
+         key: item[this.props.valueKey],
+         label: item[this.props.labelKey],
+         value: this.props.value
+       })
+     });
+     this.setState({ value });
+   }
+  }
+
   /**
    * value为传入值
    * @param nextProps
