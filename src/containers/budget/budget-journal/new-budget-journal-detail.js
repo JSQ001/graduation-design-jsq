@@ -23,10 +23,12 @@ class NewBudgetJournalDetail extends React.Component {
       loading:false,
       searchForm:[],
       dimensionList:{},
+      dimensionDataLists:{},
       params:{},
       periodStrategyFlag:true,
       structureIdFlag:true,
       journalTypeIdFlag:true,
+      companyIdFlag:true,
       journalTypeId:null,
 
     };
@@ -56,7 +58,9 @@ class NewBudgetJournalDetail extends React.Component {
         let rate =eventData.attribute11;
         this.setState({ rate })
         this.props.form.setFieldsValue({
-          rate:eventData.attribute11
+          rate:eventData.attribute11,
+          amount:'',
+          functionalAmount:''
         });
         return;
       }
@@ -74,26 +78,31 @@ class NewBudgetJournalDetail extends React.Component {
   chooserChangeHandle(value,e){
     if(value.length>0){
       if(e === "company"){
-        let searchFrom =this.state.searchForm;
-        searchFrom.map((item)=>{
-          if(item.id === "item" ){
-            let listExtraParams = item["listExtraParams"];
-            console.log(listExtraParams);
-            listExtraParams.companyId = value[0].id;
-            item["listExtraParams"]=listExtraParams;
-            item["disable"]=false
-            console.log(item);
-            return
-          }
-        })
-        this.setState({
-          searchFrom:searchFrom
-        })
+        this.setItemCompanyId(value[0].id);
         this.props.form.setFieldsValue({
-          unit: ''
+          item: ''
         });
       }
     }
+  }
+
+  //给预算项目公司ID
+  setItemCompanyId(companyId){
+    let searchFrom =this.state.searchForm;
+    searchFrom.map((item)=>{
+      if(item.id === "item" ){
+        let listExtraParams = item["listExtraParams"];
+        console.log(listExtraParams);
+        listExtraParams.companyId = companyId;
+        item["listExtraParams"]=listExtraParams;
+        item["disable"]=false
+        console.log(item);
+        return
+      }
+    })
+    this.setState({
+      searchFrom:searchFrom
+    })
   }
 
   getStrategyControl=()=>{
@@ -174,10 +183,18 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if(nextProps.params && nextProps.params!=={} ){
+    if(nextProps.params && JSON.stringify(nextProps.params) !== "{}" ){
       if(nextProps.params.isNew === false){
         this.state.rate=nextProps.params.rate;
         rateData=nextProps.params.rate;
+        if(nextProps.params.companyId ){
+          console.log(nextProps.params.companyId);
+          this.setState({
+            companyIdFlag:false,
+          },()=>{
+            this.setItemCompanyId(nextProps.params.companyId);
+          })
+        }
       }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
@@ -205,7 +222,6 @@ class NewBudgetJournalDetail extends React.Component {
       if(nextProps.params.id !== this.state.params.id){
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
-          //this.setValues(nextProps.params);
           for(let name in params){
             let result = {};
             result[name] = nextProps.params[name];
@@ -390,7 +406,7 @@ class NewBudgetJournalDetail extends React.Component {
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label} colon={false}>
               {getFieldDecorator(item.id, {
-                initialValue:this.props.params[item.id],
+                initialValue:item.defaultValue,
                 rules: [{
                   required: item.isRequired,
                   message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
@@ -411,119 +427,110 @@ class NewBudgetJournalDetail extends React.Component {
       ...this.state.dimensionList
     };
     let oldData ={};
-    let dimensionDTO =[];
     if(!this.state.params.isNew){
       oldData = this.props.params.oldData;
     }
     e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    console.log(values);
-    let searchForm = [].concat(this.state.searchForm);
-    searchForm.map((item) => {
-      if(( item.type === 'select'  || item.type === 'select_dimension')) {
-        if( values[item.id]) {
-          const value =values[item.id];
-          if( typeof value === 'string'){
-            if (value.indexOf(`":"`) > 1) {
-              console.log("indexOf");
-              console.log(value.indexOf(`":"`));
-              const valueObject = JSON.parse(value);
-              valuesData[item.columnLabel] = valueObject[item.labelKey];
-              valuesData[item.columnValue] = valueObject[item.valueKey];
-              if(item.type === 'select_dimension'){
-                dimensionDTO.push({
-                  "dimensionId":item.dimensionId,
-                  "dimensionValueId":Number(valueObject[item.valueKey]),
-                })
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+      let searchForm = [].concat(this.state.searchForm);
+      searchForm.map((item) => {
+        if (( item.type === 'select' || item.type === 'select_dimension')) {
+          if (values[item.id]) {
+            const value = values[item.id];
+            if (typeof value === 'string') {
+              if (value.indexOf(`":"`) > 1) {
+                console.log("indexOf");
+                console.log(value.indexOf(`":"`));
+                const valueObject = JSON.parse(value);
+                valuesData[item.columnLabel] = valueObject[item.labelKey];
+                valuesData[item.columnValue] = valueObject[item.valueKey];
+                if (item.type == 'select_dimension') {
+                }
+                if (item.id === 'periodName') {
+                  valuesData["periodYear"] = valueObject["periodYear"];
+                  valuesData["periodQuarter"] = valueObject["quarterNum"];
+                }
+              } else {
+                if (item.type == 'select_dimension') {
+                  if (!this.props.params.isNew) {
+                    valuesData[item.columnLabel] = oldData[item.columnLabel];
+                    valuesData[item.columnValue] = oldData[item.columnValue];
+                  } else {
+                    console.log(this.state.dimensionDataLists);
+                    console.log(this.state.dimensionDataLists[item.id]);
+                    let name = (this.state.dimensionDataLists[item.id]).defaultDimValueName ? (this.state.dimensionDataLists[item.id]).defaultDimValueName : null;
+                    let value = (this.state.dimensionDataLists[item.id]).defaultDimValueId ? (this.state.dimensionDataLists[item.id]).defaultDimValueId : null;
+                    valuesData[item.columnLabel] = name;
+                    valuesData[item.columnValue] = value;
+                  }
+                } else {
+                  valuesData[item.columnLabel] = oldData[item.columnLabel];
+                  valuesData[item.columnValue] = oldData[item.columnValue];
+
+                }
               }
-              if(item.id === 'periodName'){
-                valuesData["periodYear"] = valueObject["periodYear"];
-                valuesData["periodQuarter"] = valueObject["quarterNum"];
-              }
-            } else {
-              if(item.type!='select_dimension'){
-                valuesData[item.columnLabel] = oldData[item.columnLabel];
-                valuesData[item.columnValue] = oldData[item.columnValue];
-              }else {
-                valuesData[item.columnLabel] = item.defindLable?item.defindLable:null;
-                valuesData[item.columnValue] = item.defindValue?item.defindValue:null;
-                dimensionDTO.push({
-                  "dimensionId":item.dimensionId,
-                  "dimensionValueId":null
-                })
-              }
+            } else if (typeof value === 'number') {
+              valuesData[item.columnLabel] = value;
             }
-          }else if (typeof value === 'number'){
-            valuesData[item.columnLabel]=value;
-          }
-        }else {
-          valuesData[item.columnLabel] =null;
-          valuesData[item.columnValue] =null;
-          if(item.type === "select_dimension"){
-            dimensionDTO.push({
-              "dimensionId":item.dimensionId,
-              "dimensionValueId":null
-            })
-          }
-        }
-      }
-      if( item.type === 'select_year'){
-        if(values[item.id]){
-          valuesData[item.columnValue] =values[item.id];
-          valuesData[item.columnLabel] =values[item.id];
-        }else {
-          valuesData[item.columnValue] =null;
-          valuesData[item.columnLabel] =null;
-        }
-      }
-      if(item.type === 'list'){
-        console.log(values[item.id]);
-        if(values[item.id]) {
-          if (values[item.id].length > 0) {
-            const value = values[item.id][0];
-            valuesData[item.columnLabel] = value[item.labelKey];
-            valuesData[item.columnValue] = value[item.valueKey];
           } else {
-            valuesData[item.columnLabel] = oldData[item.columnLabel];
-            valuesData[item.columnValue] = oldData[item.columnValue];
+            valuesData[item.columnLabel] = null;
+            valuesData[item.columnValue] = null;
+            if (item.type === "select_dimension") {
+
+            }
           }
-        }else {
-          valuesData[item.columnLabel] =null;
-          valuesData[item.columnValue] =null;
+        }
+        if (item.type === 'select_year') {
+          if (values[item.id]) {
+            valuesData[item.columnValue] = values[item.id];
+            valuesData[item.columnLabel] = values[item.id];
+          } else {
+            valuesData[item.columnValue] = null;
+            valuesData[item.columnLabel] = null;
+          }
+        }
+        if (item.type === 'list') {
+          console.log(values[item.id]);
+          if (values[item.id]) {
+            if (values[item.id].length > 0) {
+              const value = values[item.id][0];
+              valuesData[item.columnLabel] = value[item.labelKey];
+              valuesData[item.columnValue] = value[item.valueKey];
+            } else {
+              valuesData[item.columnLabel] = oldData[item.columnLabel];
+              valuesData[item.columnValue] = oldData[item.columnValue];
+            }
+          } else {
+            valuesData[item.columnLabel] = null;
+            valuesData[item.columnValue] = null;
+          }
+        }
+        if ((item.type === 'input' || item.type === 'inputNumber' )) {
+          if (values[item.id]) {
+            valuesData[item.id] = values[item.id];
+          }
+
+        }
+      });
+      let valuesDataClose = {};
+      if (this.props.params.isNew) {
+        valuesDataClose = {
+          ...valuesData,
+          versionNumber: 1,
+          isNew: true,
+        }
+      } else {
+        valuesDataClose = {
+          ...this.props.params.oldData,
+          ...valuesData,
+          isNew: false
         }
       }
-      if((item.type === 'input'|| item.type === 'inputNumber' )){
-        if(values[item.id]){
-          valuesData[item.id]=values[item.id];
-        }
-
+      this.props.close(valuesDataClose);
+      this.props.form.resetFields();
       }
-
-    });
-    console.log(valuesData);
-    console.log("valuesData");
-    console.log(this.props.params.isNew);
-    console.log(this.props.oldData);
-    let valuesDataClose ={};
-    if(this.props.params.isNew){
-      valuesDataClose={
-        ...valuesData,
-        versionNumber:1,
-        dimensionDTO:dimensionDTO,
-        isNew:true,
-      }
-    }else {
-      valuesDataClose={
-        ...this.props.params.oldData,
-        ...valuesData,
-        dimensionDTO:dimensionDTO,
-        isNew:false
-      }
-    }
-
-    console.log(valuesDataClose);
-    this.props.close(valuesDataClose);
-    this.props.form.resetFields();
+    })
   };
 
 
@@ -543,15 +550,20 @@ class NewBudgetJournalDetail extends React.Component {
     console.log("getSearchForm");
     let searchForm=this.state.searchForm;
     let dimensionList ={};
+    let dimensionDataLists ={};
     for(let i=0;i<dimension.length;i++){
       const item =dimension[i];
       const priority =i+1;
       //const priority = item.priority;
-      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimension"+priority+"ValueId","dimension"+priority+"ValueName"];
+      let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimension"+priority+"ValueId","dimension"+priority+"ValueName","dimension"+priority];
       dimensionList[dimensionListKey[0]]=item.dimensionId;
       dimensionList[dimensionListKey[1]]=item.dimensionName;
       dimensionList[dimensionListKey[2]]=item.defaultDimValueId?item.defaultDimValueId:null;
       dimensionList[dimensionListKey[3]]=item.defaultDimValueName?item.defaultDimValueName:null;
+      dimensionDataLists[dimensionListKey[4]]={
+        defaultDimValueId:item.defaultDimValueId?item.defaultDimValueId:null,
+        defaultDimValueName:item.defaultDimValueName?item.defaultDimValueName:null
+      }
       console.log(item);
       let options=[];
       httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/by/costcenterid?costCenterId=${item.dimensionId}`).then((res)=>{
@@ -561,12 +573,9 @@ class NewBudgetJournalDetail extends React.Component {
           options.push({label: item.name, value: item.id, data:item})
         })
       })
-      console.log(options);
-      console.log(item);
-      console.log(123);
-      const searchFormItem=  {type: 'select_dimension', label:`${item.dimensionName}`, options:options,
-        labelKey:'name',valueKey:'id',defaultValue:`${item.defaultDimValueId}`,
-        columnLabel:`dimensionValue${priority}Name`,columnValue:`dimensionValue${priority}Id`
+      const searchFormItem={type: 'select_dimension', label:`${item.dimensionName}`, options:options,
+        labelKey:'name',valueKey:'id',defaultValue:item.defaultDimValueName,
+        columnLabel:`dimension${priority}ValueName`,columnValue:`dimension${priority}ValueId`
       };
       searchFormItem["id"]="dimension"+priority,
         searchFormItem["dimensionId"]=item.id;
@@ -574,7 +583,7 @@ class NewBudgetJournalDetail extends React.Component {
         searchFormItem
       )
     }
-    this.setState({searchForm,dimensionList});
+    this.setState({searchForm,dimensionDataLists,dimensionList});
   }
 
   onCancel = () =>{

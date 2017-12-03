@@ -18,7 +18,7 @@ class NewPayRequisitionType extends React.Component {
     this.state = {
       params: {},
       setOfBookId:this.props.company.setOfBooksId,
-      isEnabled: true,
+      isEnabled:true,
       isPut: false,
       loading: false,
       paymentMethodCategoryOptions:[],
@@ -34,7 +34,9 @@ class NewPayRequisitionType extends React.Component {
 
   componentWillMount() {
     let params = this.props.params;
+    console.log()
     if(params && JSON.stringify(params) != "{}"){
+      console.log(111)
       this.setState({
         isEnabled:params.isEnabled,
         setOfBookId:params.setOfBookId
@@ -42,6 +44,7 @@ class NewPayRequisitionType extends React.Component {
 
       })
     }else {
+      console.log(222)
       this.setState({
         isEnabled:true,
         setOfBookId:this.props.company.setOfBooksId
@@ -82,6 +85,23 @@ class NewPayRequisitionType extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
+    let params = nextProps.params;
+    console.log()
+    if(params && JSON.stringify(params) != "{}"){
+      console.log(33)
+      this.setState({
+        isEnabled:params.isEnabled,
+        setOfBookId:params.setOfBookId
+      },()=>{
+
+      })
+    }else {
+      console.log(44)
+      this.setState({
+        isEnabled:true,
+        setOfBookId:this.props.company.setOfBooksId
+      })
+    }
   }
 
 
@@ -90,16 +110,14 @@ class NewPayRequisitionType extends React.Component {
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log(values);
       if (!err) {
         this.setState({loading: true});
         if (JSON.stringify(this.props.params) === "{}") {
           let toValue = {
             ...this.props.params,
             ...values,
-            "currencyCode":"RMB",
-            "autoApproveFlag":false,
           }
-          toValue.isEnabled =this.state.isEnabled;
           httpFetch.post(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`,toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
@@ -114,9 +132,7 @@ class NewPayRequisitionType extends React.Component {
           let toValue ={
             ...this.props.params,
             ...values,
-            isEnabled:this.state.isEnabled
           }
-          toValue.isEnabled = this.state.isEnabled;
           httpFetch.put(`${config.localUrl}/api/cash/setofbooks/pay/requisition/types`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
@@ -136,10 +152,12 @@ class NewPayRequisitionType extends React.Component {
     this.props.close();
   };
 
-  switchChange = () => {
-    this.setState((prevState) => ({
-      isEnabled: !prevState.isEnabled
-    }))
+  switchChange = (value) => {
+    console.log(value);
+    console.log(123);
+    this.setState({
+      isEnabled:value
+    })
   }
 
   render() {
@@ -150,8 +168,6 @@ class NewPayRequisitionType extends React.Component {
       wrapperCol: {span: 14, offset: 1},
     };
     return (
-
-
       <div className="new-payment-method">
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout} label="账套">
@@ -162,7 +178,7 @@ class NewPayRequisitionType extends React.Component {
               }],
               initialValue:this.state.setOfBookId
             })(
-              <Select>
+              <Select disabled={this.props.params.id ? true : false}>
                 {this.state.setOfBooksOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
@@ -177,7 +193,7 @@ class NewPayRequisitionType extends React.Component {
               }],
               initialValue:this.props.params.typeCode||''
             })(
-              <Input/>
+              <Input disabled={this.props.params.id ? true : false}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预付款单类型名称">
@@ -230,18 +246,14 @@ class NewPayRequisitionType extends React.Component {
           <FormItem {...formItemLayout}
                     label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
+              valuePropName: 'checked',
+              initialValue: this.state.isEnabled
             })(
-              <div>
-                <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}
-                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{
-                  marginLeft: 20,
-                  width: 100
-                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
-              </div>
+              <Switch checkedChildren={<Icon type="check"/>}
+                      unCheckedChildren={<Icon type="cross" />}
+                      onChange={this.switchChange}/>
             )}
           </FormItem>
-
           <div className="slide-footer">
             <Button type="primary" htmlType="submit"
                     loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>

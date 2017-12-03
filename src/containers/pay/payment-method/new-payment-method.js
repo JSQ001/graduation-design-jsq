@@ -73,7 +73,7 @@ class NewPaymentMethod extends React.Component {
 
 
 
-  //新建
+  //新建或者修改
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -145,16 +145,13 @@ class NewPaymentMethod extends React.Component {
           <FormItem {...formItemLayout}
                     label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
-
+              valuePropName: 'checked',
+              initialValue: this.state.isEnabled
             })(
-              <div>
-                <Switch defaultChecked={this.state.isEnabled===true?true:false} checkedChildren={<Icon type="check"/>}
-                        unCheckedChildren={<Icon type="cross"/>} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{
-                  marginLeft: 20,
-                  width: 100
-                }}>{ isEnabled ? this.props.intl.formatMessage({id: "common.enabled"}) : this.props.intl.formatMessage({id: "common.disabled"}) }</span>
-              </div>
+                <Switch defaultChecked={true} checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross" />}
+                        onChange={this.switchChange}
+                />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"})}>

@@ -32,18 +32,14 @@ class NewPaymentCompanySetting extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(this.props.params != nextProps.params && nextProps.params.length>0) {
+    if(this.props.params != nextProps.params && JSON.stringify(nextProps.params)!="{}" ){
       this.setState({
         params:nextProps.params,
-        isEnabled:nextProps.isEnabled
       })
-      let fromData ={};
-      const params = nextProps.params;
-      const searchFrom =this.state.searchFrom;
-      searchFrom.map((item)=>{
-        fromData[item.id] = params[item.id]
-      })
-      this.props.form.setFieldsValue(fromData);
+      if(this.props.params.ducumentCategory != nextProps.params.ducumentCategory){
+          this.getducumentType(nextProps.params.ducumentCategory);
+      }
+
     }
   }
 
@@ -79,6 +75,7 @@ class NewPaymentCompanySetting extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        if(JSON.stringify(this.props.params)==="{}"){
         this.setState({loading: true});
           let toValue = {
             ...values,
@@ -91,8 +88,25 @@ class NewPaymentCompanySetting extends React.Component {
             message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
           }).catch((e) => {
             this.setState({loading: false});
-            message.error(this.props.intl.formatMessage({id: "common.save.filed"}));
+            message.error(this.props.intl.formatMessage({id: "common.save.filed"})+e.required.data.message);
           })
+      }
+      }else {
+        this.setState({loading: true});
+        let toValue = {
+          ...this.props.params,
+          ...values,
+          setOfBooksId:this.props.company.setOfBooksId
+        }
+        httpFetch.put(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+          this.setState({loading: false});
+          this.props.form.resetFields();
+          this.props.close(true);
+          message.success("编辑成功");
+        }).catch((e) => {
+          this.setState({loading: false});
+          message.error(e.required.data.message);
+        })
       }
     });
   }
@@ -110,22 +124,30 @@ class NewPaymentCompanySetting extends React.Component {
 
   handleDucumentCategory =(value)=>{
     console.log(value);
+    this.props.form.setFieldsValue({
+      ducumentType:''
+    })
+    this.getducumentType(value);
+  }
+
+  //获取单据类别
+  getducumentType(value){
     let ducumentTypeOptions = [];
     httpFetch.get(`${config.baseUrl}/api/expense/type/by/setOfBooks?setOfBooksId=${this.props.company.setOfBooksId}&roleType=${value}`).then((res)=>{
-      console.log(res.data);
-      console.log(33);
-      const data =res.data;
-       data.map(item =>{
+        console.log(res.data);
+        console.log(33);
+        const data =res.data;
+        data.map(item =>{
           ducumentTypeOptions.push({label: item.name,value:String(item.id)})
         })
-
+        console.log(ducumentTypeOptions);
+        console.log(8888888888);
         this.setState({
-          ducumentTypeOptions
-        },()=>{
-           console.log(44)
-           console.log(this.state.ducumentCategoryOptions)
+            ducumentTypeOptions
+          },()=>{
+            console.log(44)
+            console.log(this.state.ducumentCategoryOptions)
           }
-
         )
       }
     )
@@ -145,7 +167,10 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem
             {...formItemLayout}  label="优先级"
           >
-            {getFieldDecorator('priorty', {  rules: [{ required: true, message: '请输入' }],initialValue: 1 })(
+            {getFieldDecorator('priorty', {
+              rules: [{ required: true, message: '请输入' }],
+
+            })(
               <InputNumber min={1} max={10} />
             )}
           </FormItem>
@@ -153,6 +178,7 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.company"})}>
             {getFieldDecorator('companyId', {
               rules: [{ required: true, message: '请选择' }],
+              initialValue:this.props.params.companyId||''
             })(
               <Select>
                 {this.state.companyOptions.map((option)=>{
@@ -165,6 +191,7 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"})}>
             {getFieldDecorator('ducumentCategory', {
               rules: [{ required: true, message: '请选择' }],
+              initialValue:this.props.params.ducumentCategory||''
             })(
               <Select onSelect={this.handleDucumentCategory}>
                 {this.state.ducumentCategoryOptions.map((option)=>{
@@ -176,7 +203,8 @@ class NewPaymentCompanySetting extends React.Component {
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"})}>
             {getFieldDecorator('ducumentType', {
-              rules: [{}],
+              rules: [{ required: true, message: '请选择' }],
+              initialValue:this.props.params.ducumentType||''
             })(
               <Select>
                 {this.state.ducumentTypeOptions.map((option)=>{
@@ -189,6 +217,7 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
             {getFieldDecorator('paymentCompanyId', {
               rules: [{ required: true, message: '请选择' }],
+              initialValue:this.props.params.paymentCompanyId||''
             })(
               <Select>
                 {this.state.companyOptions.map((option)=>{
