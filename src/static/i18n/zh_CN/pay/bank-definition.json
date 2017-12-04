@@ -21,6 +21,10 @@
   "bank.bankAddress": "银行地址",
   "bank.contactName": "联系人",
   "bank.phone": "联系人电话",
-  "bank.email": "联系人Email"
+  "bank.email": "联系人Email",
+  "bank.commonBank": "通用银行",
+  "bank.customBank": "自定义银行",
+  "bank.country": "国家",
+  "bank.address": "开户地"
 
 }
