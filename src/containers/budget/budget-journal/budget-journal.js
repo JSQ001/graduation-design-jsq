@@ -114,7 +114,7 @@ class BudgetJournal extends React.Component {
       loading:true,
     })
 
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?organizationId=${this.props.organization.id}&page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
       console.log(response.data);
       this.setState({
         data: response.data,

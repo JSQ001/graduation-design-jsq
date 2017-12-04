@@ -167,7 +167,7 @@ class NewBudgetJournalFrom extends React.Component {
     console.log(value);
 
     console.log(666);
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
+    httpFetch.get(`${config.liouliangUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       console.log(response.data);
       response.data.map((item)=>{
         item.key=item.id;

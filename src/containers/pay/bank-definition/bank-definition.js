@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Table, Badge, notification, Popover, Popconfirm  } from 'antd';
+import { Button, Table, Badge, notification, Popover, Popconfirm, Tabs  } from 'antd';
 
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
@@ -14,7 +14,7 @@ import menuRoute from 'share/menuRoute'
 import 'styles/pay/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
 import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
-
+const TabPane = Tabs.TabPane;
 let bankType = [];
 
 class BankDefinition extends React.Component{
@@ -24,19 +24,26 @@ class BankDefinition extends React.Component{
     this.state = {
       loading: true,
       data: [],
-      showSlideFrame: false,
-      nowBank:{},
-      slideFrameTitle: "",
+      label: "commonBank",
+      tabs: [
+        {key: 'commonBank', name: formatMessage({id:"bank.commonBank"})},  /*通用银行*/
+        {key: 'customBank', name: formatMessage({id:"bank.customBank"})}, /*自定义银行*/
+      ],
       searchParams: {
         bankCode: "",
         bankName: "",
-        bankType: ""
+        country: "",
+        address: ""
       },
-      newParams: {},
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
-        {type: 'select', options: bankType, id: 'bankType', label: formatMessage({id: 'bank.bankType'})}  /*银行类型*/
+        {type: 'select', id: 'country',options:[], labelKey: 'country',valueKey: 'id',
+          label: formatMessage({id: 'bank.country'}),  /*国家*/
+          listExtraParams:{organizationId: this.props.id},
+          getUrl: `${config.payUrl}/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale}
+        },
+        {type: 'input', id: 'address', label: formatMessage({id: 'bank.bankName'}) }, /*开户地*/
       ],
       pagination: {
         current: 1,
@@ -47,17 +54,14 @@ class BankDefinition extends React.Component{
         showQuickJumper:true,
       },
       columns: [
-        {          /*银行数字代码*/
-          title: formatMessage({id:"bank.digitalCode"}), key: "bankCodeLong", dataIndex: 'bankCodeLong'
+        {          /*银行代码*/
+          title: formatMessage({id:"bank.country"}), key: "country", dataIndex: 'country'
         },
-        {          /*银行字母代码*/
-          title: formatMessage({id:"bank.letterCode"}), key: "bankCodeString", dataIndex: 'bankCodeString'
+        {          /*银行代码*/
+          title: formatMessage({id:"bank.bankCode"}), key: "bankCode", dataIndex: 'bankCode'
         },
-        {          /*银行名称*/
-          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
-        },
-        {          /*银行类型*/
-          title: formatMessage({id:"bank.bankType"}), key: "bankType", dataIndex: 'bankType',
+        {
+          title: 'Swift Code', key: "Swift Code", dataIndex: 'swiftCode',
           render: recode => {
             let value = recode;
             bankType.map((item)=>{
@@ -68,33 +72,53 @@ class BankDefinition extends React.Component{
             return value
           }
         },
-        {          /*状态*/
-          title: formatMessage({id:"common.column.status"}), key: "isEnabled", dataIndex: 'isEnabled',
-          render: isEnabled => (
-            <Badge status={isEnabled ? 'success' : 'error'}
-                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
+        {          /*银行名称*/
+          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
         },
-        {          /*操作*/
-          title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
-          render: (text, record) => (
-            <span>
+        {          /*开户地*/
+          title: formatMessage({id:"bank.address"}), key: "address", dataIndex: 'address',
+        }
+      ],
+      operate:{          /*操作*/
+        title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
+        render: (text, record) => (
+          <span>
             <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id:"common.edit"})}</a>
             <span className="ant-divider" />
             <a href="#" onClick={(e) => this.goBranchBank(e, record)}>{formatMessage({id:"bank.branchInfo"})}</a>  {/*分行信息*/}
           </span>)
-        },
-      ]
+      },
     }
   }
 
   componentWillMount(){
-    this.getSystemValueList(2103).then((response)=>{
-      response.data.values.map((item)=>{
-        bankType.push({value:item.code, label:item.messageKey})
-      })
-    });
     this.getList();
   }
+
+  //Tabs点击
+  onChangeTabs = (key) => {
+    let {columns, operate,pagination} = this.state;
+    console.log(key)
+    console.log(this.props.language)
+    if(key === 'customBank'){
+      columns[5] = operate;
+    }else {
+      if(columns.length === 6){
+        columns.delete(operate)
+      }
+    }
+    pagination.page = 0;
+    pagination.pageSize = 10;
+    this.setState({
+      loading: true,
+      pagination,
+      data: [],
+      label: key,
+      columns: columns
+    },()=>{
+      this.getList()
+    });
+  };
 
   editItem = (e, record) => {
     e.preventDefault();
@@ -191,18 +215,31 @@ class BankDefinition extends React.Component{
   handleRowClick = (record, index, event) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('bank-definition', 'key').children.branchBankInformation.url.replace(':id', record.id));
   };
+  renderTabs(){
+    return (
+      this.state.tabs.map(tab => {
+        return <TabPane tab={tab.name} key={tab.key}/>
+      })
+    )
+  }
 
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading,data, searchForm, pagination, columns, showSlideFrame, nowBank, slideFrameTitle } = this.state;
+    const { loading,data, searchForm, pagination, columns, showSlideFrame, label, slideFrameTitle } = this.state;
 
     return(
       <div className="budget-bank-definition">
+        <Tabs onChange={this.onChangeTabs}>
+          {this.renderTabs()}
+        </Tabs>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
+            {label === "commonBank" ? null
+              :
+              <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>
+            }
           </div>
         </div>
         <Table
@@ -219,7 +256,7 @@ class BankDefinition extends React.Component{
                     content={CreateOrUpdateBank}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.setState({showSlideFrame : false})}
-                    params={nowBank}/>
+                    params={{}}/>
       </div>
     )
   }
@@ -232,7 +269,8 @@ BankDefinition.contextTypes = {
 function mapStateToProps(state) {
   return {
     organization: state.budget.organization,
-    company: state.login.company
+    company: state.login.company,
+    language: state.main.language,
   }
 }
 

@@ -206,7 +206,9 @@ class PayRequisitionType extends React.Component {
   };
 
   handleCloseNewSlide = (params) => {
-    this.getList();
+    if(params){
+      this.getList();
+    }
     this.setState({
       showSlideFrameNew: false
     })
@@ -235,9 +237,8 @@ class PayRequisitionType extends React.Component {
 
   }
 
-
   render() {
-    const {columns, data, pagination, searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
+    const {columns, data, pagination,searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
     return (
       <div className="payment-method">
         <div className="searchFrom">
@@ -269,7 +270,7 @@ class PayRequisitionType extends React.Component {
           />
         </div>
 
-        <SlideFrame title="新建公司付款配置"
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建预付款单定义":"编辑预付款单定义"}
                     show={showSlideFrameNew}
                     content={NewPayRequisitionType}
                     afterClose={this.handleCloseNewSlide}

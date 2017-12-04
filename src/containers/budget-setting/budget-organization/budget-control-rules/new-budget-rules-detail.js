@@ -46,6 +46,11 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillMount() {
     let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let userSelectorItem = selectorData['user'];
+    let itemSelectorItem = selectorData['budget_item'];
+    itemSelectorItem.searchForm[1].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    itemSelectorItem.searchForm[2].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
+
+    console.log(itemSelectorItem)
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -212,7 +217,7 @@ class NewBudgetRulesDetail extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.save.failed"})}, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.failed"})}, ${e.response.data.message}`);
             this.setState({loading: false});
           }
         })
@@ -341,6 +346,7 @@ class NewBudgetRulesDetail extends React.Component{
                           let temp = {};
                           if(lov.type === 'BGT_RULE_PARAMETER_DIM'){
                             temp = {
+                              type: 'BGT_RULE_PARAMETER_DIM',
                               listType: 'cost_center_item_by_id',
                               listExtraParams: {costCenterId: value},
                               codeKey: 'code'

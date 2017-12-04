@@ -95,7 +95,8 @@ class NewBudgetControlRules extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage("common.save.filed")},${e.response.data.validationErrors[0].message}`);
+            console.log(12323)
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -123,14 +124,17 @@ class NewBudgetControlRules extends React.Component{
     });
   };
 
-  handleSelect=(value)=>{
-    let value1 = this.props.form.getFieldValue("controlStrategy");
-    let controlStrategy = {
-      key: value.key,
-      label: value1.title,
-      title: value1.title
-    };
-    this.props.form.setFieldsValue({"controlStrategy": controlStrategy})
+  handleSelect=()=>{
+    let value = this.props.form.getFieldValue("controlStrategy");
+    console.log(value)
+    if(typeof value !== 'undefined'){
+      let controlStrategy = {
+        key: value.key,
+        label: value.title,
+        title: value.title
+      };
+      this.props.form.setFieldsValue({"controlStrategy": controlStrategy})
+    }
   };
 
 

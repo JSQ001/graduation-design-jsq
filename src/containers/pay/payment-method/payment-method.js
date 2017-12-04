@@ -70,16 +70,10 @@ class PaymentMethod extends React.Component {
         total: 0
       },
       searchParams: {
-        paymentMethodCategory: '',
         paymentMethodCode: '',
         description:'',
-        isEnabled:null,
-
       },
-      updateParams: {
-        paymentMethodCategory: '',
-        paymentMethodCode: '',
-      },
+      updateParams: {},
       showSlideFrameNew: false,
       showSlideFramePut: false,
       loading: true
@@ -95,7 +89,7 @@ class PaymentMethod extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCode}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -129,18 +123,20 @@ class PaymentMethod extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({
-      searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
-      }
+      updateParams: {
+        description: '',
+        paymentMethodCode: '',
+      },
     })
   }
 
   //搜索
   search = (result) => {
+    console.log(result);
+    console.log(12333333);
     let searchParams = {
-      itemTypeCode: result.itemTypeCode,
-      itemTypeName: result.itemTypeName
+      description: result.description,
+      paymentMethodCode: result.paymentMethodCode
     };
     this.setState({
       searchParams: searchParams,
@@ -232,7 +228,7 @@ class PaymentMethod extends React.Component {
           />
         </div>
 
-        <SlideFrame title="新建付款方式"
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款方式":"编辑付款方式"}
                     show={showSlideFrameNew}
                     content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}

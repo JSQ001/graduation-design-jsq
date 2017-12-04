@@ -17,7 +17,6 @@ class NewDimension extends React.Component{
     super(props);
     const { formatMessage} = this.props.intl;
     this.state = {
-      isEnabled: true,
       showSelectDimension: false,
       dimension:{},
       layoutPosition:[],
@@ -56,7 +55,6 @@ class NewDimension extends React.Component{
   componentWillMount(){
     let dimension = this.props.params;
     let extraParams = this.state.extraParams;
-    console.log(dimension)
     if(typeof dimension.id !== 'undefined'){
       extraParams = {dimensionId: dimension.dimensionId}
     }
@@ -83,8 +81,7 @@ class NewDimension extends React.Component{
 
   }
   componentWillReceiveProps(nextprops){
-    console.log(nextprops)
-    if(nextprops.params.versionNumber !== this.state.dimension){
+    if(nextprops.params.versionNumber !== this.state.dimension.versionNumber){
       let dimension = this.props.params;
       let extraParams = this.state.extraParams;
       if(typeof dimension.id !== 'undefined'){
@@ -125,12 +122,17 @@ class NewDimension extends React.Component{
 
   onCancel = () =>{
     this.props.form.resetFields();
+    this.setState({
+      dimension:{}
+    });
     this.props.close();
   };
 
   switchChange = () => {
+    let dimension = this.state.dimension;
+    dimension.isEnabled = !dimension.isEnabled;
     this.setState((prevState) => ({
-      isEnabled: !prevState.isEnabled
+      dimension
     }))
   };
 
@@ -180,6 +182,7 @@ class NewDimension extends React.Component{
     const {formatMessage} = this.props.intl;
     const { dimensionSelectorItem, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
     const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
+
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -195,8 +198,8 @@ class NewDimension extends React.Component{
                   initialValue: dimension.isEnabled
                 })(
                   <div>
-                    <Switch defaultChecked={dimension.isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.status.disable"}) }</span>
+                    <Switch defaultChecked={dimension.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
                   </div>
                 )}
               </FormItem>

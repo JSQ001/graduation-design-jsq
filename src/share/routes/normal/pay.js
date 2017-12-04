@@ -35,7 +35,7 @@ const payWorkbench = {
 //分行信息
 const branchBankInformation = {
   key:'branch-bank-information',
-  url:'/main/budget/bank-definition/branch-bank-information/:id',
+  url:'/main/pay/bank-definition/branch-bank-information/:id',
   components: BranchBankInformation,
   parent: 'bank-definition',
 };
@@ -43,7 +43,7 @@ const branchBankInformation = {
 //银行定义
 const bankDefinition = {
   key:'bank-definition',
-  url:'/main/budget/bank-definition',
+  url:'/main/pay/bank-definition',
   components: BankDefinition ,
   parent: 'budget',
   children: {

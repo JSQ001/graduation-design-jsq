@@ -53,7 +53,7 @@ class NewBudgetItem extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.errorCode}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
             this.setState({loading: false});
           }
         })

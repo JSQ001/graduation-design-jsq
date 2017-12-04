@@ -23,8 +23,6 @@ class CreateOrUpdateBank extends React.Component{
     super(props);
     this.state = {
       loading: false,
-      defaultStatus: true,
-      statusCode: this.props.intl.formatMessage({id:"common.enabled"}),
       isEnabled: true,
       bankTypeHelp: "",
       bank:{},
@@ -50,12 +48,6 @@ class CreateOrUpdateBank extends React.Component{
 
   componentWillReceiveProps(nextprops){
     console.log(nextprops.params);
-    this.setState({
-      bank: nextprops.params.bank,
-      isEditor: JSON.stringify(nextprops.params.bank) == "{}" ? false : true,
-      defaultStatus: JSON.stringify(nextprops.params.bank) == "{}" ? true : nextprops.params.bank.isEnabled,
-//      isEnabled: JSON.stringify(nextprops.params) == "{}" ? true : nextprops.params.isEnabled,
-    })
   }
 
   /**
@@ -64,44 +56,6 @@ class CreateOrUpdateBank extends React.Component{
    * @param value 输入的值
    */
   validateBankCode = (item,value,callback)=>{
-    if(item.field === "bankCodeLong"){
-      let re = /^[0-9]+$/;
-      if(!re.test(value)) {
-        this.props.form.setFieldsValue({"bankCodeLong":""});
-      }else {
-        httpFetch.get(`${config.payUrl}/api/cash/banks/query?bankCodeLong=${value}`).then((response)=>{
-          let flag = false;
-          response.data.map((item)=>{
-            if(item.bankCodeLong === value)
-              flag = true;
-          });
-          this.setState({                        /*该银行已存在*/
-            bankCodeLongHelp: flag ? this.props.intl.formatMessage({id:"bank.validateExist"}) : null,
-            bankCodeLongStatus: flag ? "error" : null,
-          })
-        })
-      }
-    }
-    if(item.field === "bankCodeString"){
-      let re = /^[a-z || A-Z]+$/;
-      if(!re.test(value)) {
-        this.props.form.setFieldsValue({"bankCodeString":""});
-      }
-      else{
-        httpFetch.get(`${config.payUrl}/api/cash/banks/query?bankCodeString=${value}`).then((response)=>{
-          let f = false;
-          response.data.map((item)=>{
-            if(item.bankCodeString === value)
-              f = true;
-          });
-          this.setState({               /*该银行已存在*/
-            bankCodeStringHelp: f ? this.props.intl.formatMessage({id:"bank.validateExist"}) : null,
-            bankCodeLStringStatus: f ? "error" : null,
-          })
-        })
-      }
-    }
-    callback()
   };
 
   handleCreate = ()=>{
@@ -186,28 +140,9 @@ class CreateOrUpdateBank extends React.Component{
       <div className="new-bank-definition">
         <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
           <FormItem {...formItemLayout}
-                    label={formatMessage({id:"common.column.status"})+" :"}>
-            {getFieldDecorator('isEnabled',{
-              initialValue: defaultStatus,
-              valuePropName: 'checked'
-            })(
-                <Switch checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />}
-                onChange={(value)=>{
-                  this.setState({
-                    flag: 'y',
-                    isEnabled: value
-                  })
-                }}
-                />
-              )}
-          </FormItem>
-          <span className="enabled-type" style={{marginLeft:15,width:100}}>{(this.state.flag === 'y'? this.state.isEnabled : defaultStatus ) ? "启用" : "禁用"}</span>
-          <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankCodeLong"})}
-            help={this.state.bankCodeLongHelp}
-            validateStatus={this.state.bankCodeLongStatus}>
-            {getFieldDecorator('bankCodeLong', {
-              initialValue: bank.bankCodeLong,
+            label={formatMessage({id:"bank.bankCode"})}>
+            {getFieldDecorator('bankCode', {
+              initialValue: bank.bankCode,
               rules: [
                 {
                   required: true,
@@ -222,19 +157,13 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankCodeString"})}
-            validateStatus={this.state.bankCodeLStringStatus}
-            help={this.state.bankCodeStringHelp}>
-            {getFieldDecorator('bankCodeString', {
-              initialValue: bank.bankCodeString,
+            label='Swift Code'>
+            {getFieldDecorator('Swift Code', {
+              initialValue: bank.swiftCode,
               rules: [{
                 required: true,
                 message: formatMessage({id:"common.please.select"})
-              },
-              {
-                validator:(item,value,callback)=>this.validateBankCode(item,value,callback)
-              }
-              ],
+              }],
             })(
               <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
@@ -254,23 +183,33 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.bankType"})}
+            label={formatMessage({id:"bank.country"})}
             help={bankTypeHelp}>
-            {getFieldDecorator('bankType', {
-              initialValue: bank.bankType,
+            {getFieldDecorator('country', {
+              initialValue: bank.country,
               rules: [
                 {
                   required: true,
                   message: formatMessage({id:"common.please.select"})
-                },
+                }
+              ],
+            })(
+              <Select placeholder={ formatMessage({id:"common.please.select"})}>
                 {
-                  validator: (item,value,callback)=>{
-                    console.log(value)
-                    this.setState({
-                      bankTypeHelp: value === "INTERNAL" ? formatMessage({id:"bank.innerBankInfo"}) : null
-                    });
-                    callback()
-                  }
+                  bankType.map((item)=><Option key={item.key}>{item.label}</Option>)
+                }
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout}
+                    label={formatMessage({id:"bank.address"})}
+                    help={bankTypeHelp}>
+            {getFieldDecorator('address', {
+              initialValue: bank.address,
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage({id:"common.please.select"})
                 }
               ],
             })(
