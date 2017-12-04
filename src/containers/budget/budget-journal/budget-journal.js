@@ -35,7 +35,11 @@ class BudgetJournal extends React.Component {
 
       columns: [
         {          /*预算日记账编号*/
-          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
+          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {          /*预算日记账类型*/
           title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',

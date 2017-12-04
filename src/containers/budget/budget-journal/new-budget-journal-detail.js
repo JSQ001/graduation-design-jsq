@@ -30,7 +30,6 @@ class NewBudgetJournalDetail extends React.Component {
       journalTypeIdFlag:true,
       companyIdFlag:true,
       journalTypeId:null,
-
     };
 
   }
@@ -185,11 +184,11 @@ class NewBudgetJournalDetail extends React.Component {
         labelKey:'attribute5',valueKey:'attribute4', getUrl:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`,
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
       {type: 'inputNumber', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
-        step:10.00, defaultValue:0, event:'amount'},  //金额
+        step:10, defaultValue:0, event:'amount'},  //金额
       {type: 'inputNumber', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
-        step:10.00, isRequired: true, defaultValue:0, disabled: true}, //本位金额
+        step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
       {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0,min:0}, //数量
       {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
     ];
@@ -615,7 +614,7 @@ class NewBudgetJournalDetail extends React.Component {
             </Row>
           </div>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"})}</Button>
             <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
           </div>
         </Form>

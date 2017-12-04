@@ -33,6 +33,7 @@ class BudgetJournalDetail extends React.Component {
       pageSize:10,
       page:0,
       total:0,
+      buttonLoading:false,
       fileList:[],
       selectorItem:{},
       selectedRowKeys:[],
@@ -486,7 +487,6 @@ class BudgetJournalDetail extends React.Component {
     let header =this.state. headerAndListData.dto;
     if(this.state.commitFlag) {
        let header =this.state. headerAndListData.dto;
-        console.log(header);
         httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${header.id}`).then((res)=>{
             message.success("提交成功");
             this.setState({
@@ -618,7 +618,7 @@ class BudgetJournalDetail extends React.Component {
           <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">
           <Button type="primary">提交</Button>
           </Popconfirm>
-          <Button  type="primary"  onClick={this.handleSaveJournal}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+          <Button  type="primary"  onClick={this.handleSaveJournal} loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
           <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="确定" cancelText="取消">
             <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>

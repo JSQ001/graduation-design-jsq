@@ -157,9 +157,7 @@ class BudgetJournalReCheckDetail extends React.Component {
   getDimensionByStructureId = (value) =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
       console.log(resp.data);
-
       this.getColumnsAndDimensionhandleData(resp.data);
-
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
@@ -172,7 +170,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       const item =dimensionList[i];
       let priority =i+1;
       columns.push(
-        {title:`${item.dimensionName}`, key:`dimensionValue${priority}Name`, dataIndex: `dimensionValue${priority}Name`,
+        {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
           render: recode => (
             <Popover content={recode}>
               {recode}

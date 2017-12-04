@@ -178,10 +178,11 @@ class BudgetJournalCheckDetail extends React.Component {
   //根据预算表的维度.获取维度Columuns
   getColumnsAndDimensionhandleData(dimensionList){
     let columns=this.state.columns;
-    for(let i=1;i<dimensionList.length;i++){
+    for(let i=0;i<dimensionList.length;i++){
       const item =dimensionList[i];
+      let priority =i+1;
       columns.push(
-        {title:`${item.dimensionName}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+        {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -193,7 +194,6 @@ class BudgetJournalCheckDetail extends React.Component {
       columns,
     })
   }
-
 
   //通过
   handlePass=()=>{
