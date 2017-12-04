@@ -1,9 +1,13 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker } from 'antd'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
+
+import moment from 'moment'
 
 class NewPayPlan extends React.Component{
   constructor(props) {
@@ -21,7 +25,21 @@ class NewPayPlan extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        values.headerId = this.props.params.id;
+        values.lineNumber = 1;
+        values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
+        let url = `${config.contractUrl}/contract/api/contract/line`;
+        this.setState({loading: true});
+        httpFetch.post(url, values).then(res => {
+          if (res.status === 200) {
+            this.props.close(true);
+            message.success('保存成功');
+            this.setState({ loading: false })
+          }
+        }).catch(e => {
+          this.setState({loading: false});
+          message.error(`保存失败, ${e.response.data.message}`);
+        })
       }
     })
   };
@@ -47,9 +65,7 @@ class NewPayPlan extends React.Component{
                   }],
                   initialValue: 'CNY'
                 })(
-                  <Select>
-                    <Option value="CNY">CNY</Option>
-                  </Select>
+                  <Input disabled/>
                 )}
               </FormItem>
             </Col>
@@ -73,7 +89,7 @@ class NewPayPlan extends React.Component{
                 required: true,
                 message: '请选择'
               }],
-              initialValue: ''
+              initialValue: 'EMPLOYEE'
             })(
               <Select></Select>
             )}
@@ -84,7 +100,7 @@ class NewPayPlan extends React.Component{
                 required: true,
                 message: '请输入'
               }],
-              initialValue: ''
+              initialValue: '911143733222408193'
             })(
               <Input />
             )}

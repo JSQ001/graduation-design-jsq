@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import moment from 'moment'
@@ -38,13 +38,15 @@ class ContractDetailCommon extends React.Component {
         {label: '支付明细', key: 'PayDETAIL'},
       ],
       columns: [
-        {title: '序号', dataIndex: 'index'},
-        {title: '币种', dataIndex: 'currency'},
-        {title: '计划金额', dataIndex: 'amount'},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => (index + 1)},
+        {title: '币种', dataIndex: 'currency', width: '7%'},
+        {title: '计划金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '合同方类型', dataIndex: 'partnerCategory'},
         {title: '合同方', dataIndex: 'partnerId'},
-        {title: '计划付款日期', dataIndex: 'dueDate'},
-        {title: '备注', dataIndex: 'remark'},
+        {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '备注', dataIndex: 'remark', render: value => {return (
+          value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
+        )}},
         {title: '操作', dataIndex: 'id'}
       ],
       data: [],
@@ -113,6 +115,12 @@ class ContractDetailCommon extends React.Component {
     )
   };
 
+  //关闭侧滑
+  handleCloseSlide = (params) => {
+    if(params) {
+      this.getPayInfo();
+    }
+  };
   //编辑
   edit = () => {
     this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
@@ -275,7 +283,9 @@ class ContractDetailCommon extends React.Component {
         <SlideFrame title="新建付款计划"
                     show={showSlideFrame}
                     content={NewPayPlan}
-                    onClose={() => this.showSlide(false)}/>
+                    params={{id: this.props.id}}
+                    onClose={() => this.showSlide(false)}
+                    afterClose={this.handleCloseSlide}/>
       </div>
     )
   }
