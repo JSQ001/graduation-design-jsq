@@ -95,7 +95,21 @@ class NewBudgetJournalDetail extends React.Component {
         console.log(listExtraParams);
         listExtraParams.companyId = companyId;
         item["listExtraParams"]=listExtraParams;
-        item["disable"]=false
+        item["disabled"]=false;
+        console.log(item);
+        return
+      }
+    })
+    this.setState({
+      searchFrom:searchFrom
+    })
+  }
+
+  setItemDisabled(){
+    let searchFrom =this.state.searchForm;
+    searchFrom.map((item)=>{
+      if(item.id === "item" ){
+        item["disabled"]=true;
         console.log(item);
         return
       }
@@ -151,7 +165,7 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
       {type: 'list', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
-        labelKey:'itemName',valueKey:'id',disabled:false,single:true, listExtraParams:{"journalTypeId":'',"companyId":''},
+        labelKey:'itemName',valueKey:'id',disabled:true,single:true, listExtraParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
       {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
@@ -195,7 +209,7 @@ class NewBudgetJournalDetail extends React.Component {
             this.setItemCompanyId(nextProps.params.companyId);
           })
         }
-      }
+      }else {}
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
         this.setState({
@@ -230,8 +244,9 @@ class NewBudgetJournalDetail extends React.Component {
         });
       }
     }
-    else
+    else{
       this.setState({ params : {}});
+    }
   };
 
   getItemUrl(){
