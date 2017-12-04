@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import moment from 'moment'
@@ -47,7 +47,13 @@ class ContractDetailCommon extends React.Component {
         {title: '备注', dataIndex: 'remark', render: value => {return (
           value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
         )}},
-        {title: '操作', dataIndex: 'id'}
+        {title: '操作', dataIndex: 'id', render: (text, record) => (
+          <span>
+            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <span className="ant-divider"/>
+            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
+          </span>)
+        }
       ],
       data: [],
       planAmount: 0,
@@ -55,6 +61,8 @@ class ContractDetailCommon extends React.Component {
         total: 0
       },
       showSlideFrame: false,
+      slideFrameTitle: '',
+      record: {}, //资金计划行信息
       NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
     }
   }
@@ -102,32 +110,69 @@ class ContractDetailCommon extends React.Component {
     this.setState({ topTapValue: tab })
   };
 
+  //侧滑
   showSlide = (flag) => {
     this.setState({ showSlideFrame: flag })
   };
 
   renderList = (title, value) => {
     return (
-      <div className="list-info">
-        <span className="title">{title}：</span>
-        <span className="content">{value}</span>
-      </div>
+      <Row className="list-info">
+        <Col span={6}>{title}：</Col>
+        <Col className="content" span={18}>{value}</Col>
+      </Row>
     )
   };
 
   //关闭侧滑
   handleCloseSlide = (params) => {
-    if(params) {
-      this.getPayInfo();
-    }
+    this.setState({
+      showSlideFrame: false
+    },() => {
+      params && this.getPayInfo();
+    })
   };
   //编辑
   edit = () => {
     this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
   };
 
+  //添加资金计划行
+  addItem = () => {
+    this.setState({
+      record: {},
+      slideFrameTitle: '新增付款计划'
+    },() => {
+      this.showSlide(true)
+    })
+  };
+
+  //编辑资金计划行
+  editItem = (e, record) => {
+    e.preventDefault();
+    this.setState({
+      record,
+      showSlideFrame: true,
+      slideFrameTitle: '编辑付款计划'
+    })
+  };
+
+  //删除资金计划行
+  deleteItem = (e, record) => {
+    e.preventDefault();
+    let url = `${config.contractUrl}/contract/api/contract/line/${record.id}`;
+    this.setState({ planLoading: true });
+    httpFetch.delete(url).then(() => {
+      message.success(`删除成功`);
+      this.getPayInfo()
+    }).catch(e => {
+      this.setState({ planLoading: false });
+      message.error(`删除失败，${e.response.data.message}`)
+    })
+  };
+
   render() {
-    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus } = this.state;
+    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
@@ -201,9 +246,11 @@ class ContractDetailCommon extends React.Component {
             <Col span={8}>{this.renderList('公司', headerData.companyId)}</Col>
             <Col span={8}>{this.renderList('有效期限',
               headerData.startDate || headerData.endDate ?
-                (headerData.startDate ? moment(headerData.startDate).format('YYYY-MM-DD') : '无'
-                  + ' - ' +
-                headerData.endDate ? moment(headerData.endDate).format('YYYY-MM-DD') : '无') : '-'
+                (
+                  (headerData.startDate ? moment(headerData.startDate).format('YYYY-MM-DD') : '无')
+                  + ' 至 ' +
+                  (headerData.endDate ? moment(headerData.endDate).format('YYYY-MM-DD') : '无')
+                ) : '-'
             )}</Col>
           </Row>
           <h3 className="margin-20-0">合同方信息</h3>
@@ -229,7 +276,7 @@ class ContractDetailCommon extends React.Component {
           <h3 className="sub-header-title">付款计划</h3>
           <div className="table-header">
             <div className="table-header-buttons">
-              {this.props.contractEdit && <Button type="primary" onClick={() => this.showSlide(true)}>添 加</Button>}
+              {this.props.contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
             </div>
             <Breadcrumb style={{marginBottom:'10px'}}>
               <Breadcrumb.Item>共 {pagination.total} 条数据</Breadcrumb.Item>
@@ -280,10 +327,10 @@ class ContractDetailCommon extends React.Component {
             return <TabPane tab={item.label} key={item.key}>{subContent[item.key]}</TabPane>
           })}
         </Tabs>}
-        <SlideFrame title="新建付款计划"
+        <SlideFrame title={slideFrameTitle}
                     show={showSlideFrame}
                     content={NewPayPlan}
-                    params={{id: this.props.id}}
+                    params={{id: this.props.id,currency: headerData.currency, record}}
                     onClose={() => this.showSlide(false)}
                     afterClose={this.handleCloseSlide}/>
       </div>
