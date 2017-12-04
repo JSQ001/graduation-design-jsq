@@ -61,7 +61,7 @@ class BudgetItemMap extends React.Component {
         },                            //操作
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
           <span>
-            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
+            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record,index) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
             {record.edit ?
               <a href="#" style={{marginLeft: 12}}
                 onClick={(e) => this.operateItem(e, record, index, false)} >{ formatMessage({id: "common.cancel" })}</a>
@@ -79,10 +79,10 @@ class BudgetItemMap extends React.Component {
   }
 
   //保存
-  saveItem = (e, record)=>{
+  saveItem = (e, record,index)=>{
     e.preventDefault();
     e.stopPropagation();
-    if(record.sourceType !=="" && typeof record.budgetItemId === 'undefined' && typeof record.sourceItemId === 'undefined') {
+    if(record.sourceType !=="" && typeof record.budgetItemId !== 'undefined' && typeof record.sourceItemId !== 'undefined') {
       httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`, [record]).then((response) => {
         message.success(`${this.props.intl.formatMessage({id: "common.save.success"}, {name: ""})}`);
         this.setState({
@@ -93,6 +93,13 @@ class BudgetItemMap extends React.Component {
           message.error(`${this.props.intl.formatMessage({id: "common.save.filed"})}, ${e.response.data.message}`)
         }
       })
+    }else {
+      if(typeof record.id === 'undefined'){
+        let params = this.state.params;
+        params.delete(params[index])
+        this.setState({params});
+        return
+      }
     }
   };
 
@@ -103,7 +110,7 @@ class BudgetItemMap extends React.Component {
     if(!flag){
       if(typeof record.id === 'undefined'){
         params.delete(params[index])
-        this.setState(params);
+        this.setState({params});
         return
       }
     }
@@ -137,14 +144,11 @@ class BudgetItemMap extends React.Component {
         url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
         searchForm: [
           {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
-          {type: 'switch', id: 'enabled', defaultValue: true, label: formatMessage({id:"common.column.status"})},
         ],
         columns: [
-          {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconName', width: '25%',
-            render: (value,index,record) =>{
-              <span>
-                <img src={record.iconURL} />
-              </span>
+          {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconURL', width: '25%',
+            render: (value) =>{
+                return <img src={value} />
             }
           },
           {title: formatMessage({id:"itemMap.expenseTypeName"}), dataIndex: 'name', width: '25%'},
@@ -163,7 +167,7 @@ class BudgetItemMap extends React.Component {
   //获取预算项目映射数据
   getList(){
     let params = this.state.searchParams;
-    let url = `http://192.168.1.195:9996/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let url = `${config.budgetUrl}/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -272,7 +276,7 @@ class BudgetItemMap extends React.Component {
                 valueKey='id'
                 itemMap={true}
                 selectorItem={paramValueMap[record.sourceType]}
-                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId}}
+                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId, enabled: true}}
                 value={record.detail}
                 single={true}/>
             );
@@ -324,6 +328,7 @@ class BudgetItemMap extends React.Component {
   };
 
   handleSave = () =>{
+    let params = this.state.params;
     httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`,params).then((response)=>{
       message.success(`${this.props.intl.formatMessage({id: "common.save.success"},{name:""})}`);
       this.setState({

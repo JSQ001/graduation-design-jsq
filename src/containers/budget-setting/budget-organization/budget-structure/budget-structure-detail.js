@@ -108,7 +108,7 @@ class BudgetStructureDetail extends React.Component{
             {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
               render: isEnabled => (
                 <Badge status={isEnabled ? 'success' : 'error'}
-                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+                       text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.disabled"})} />
               )}, //状态
         ]
       },

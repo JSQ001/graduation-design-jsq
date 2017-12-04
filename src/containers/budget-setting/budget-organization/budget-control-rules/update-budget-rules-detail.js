@@ -59,6 +59,11 @@ class UpdateBudgetRulesDetail extends React.Component{
 
     let userSelectorItem = selectorData['user'];
     userSelectorItem.key = 'employeeID';
+
+    let itemSelectorItem = selectorData['budget_item'];
+    itemSelectorItem.searchForm[1].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    itemSelectorItem.searchForm[2].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
+
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
         listType: 'budget_item_type',
