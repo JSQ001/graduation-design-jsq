@@ -45,7 +45,7 @@ class BudgetJournalDetail extends React.Component {
       infoDate:{},
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
-        {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'unitId',columnValue: 'departmentName'},//部门
+        {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'departmentName',columnValue: 'unitId'},//部门
         {type: 'list', id:'item',options: [],labelKey:'itemName',valueKey:'id',columnLabel: 'itemName',columnValue: 'itemId'},     //预算项目
         {type: 'select', id:'periodName',options: [], labelKey:'periodName',valueKey:'periodName',columnLabel:'periodName',columnValue:'periodName'}, //期间
         {type: 'value_list', id: 'periodQuarter', options: [],labelKey:'periodQuarter',columnLabel:'periodQuarter',columnValue:'periodQuarterName',value:'periodQuarter'}, //季度

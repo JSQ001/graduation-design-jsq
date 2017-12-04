@@ -132,17 +132,19 @@ class PaymentCompanySetting extends React.Component {
   clear = () => {
     this.setState({
       searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
-      }
+        companyCode: '',
+        companyName: '',
+        ducumentCategory:'',
+      },
     })
   }
 
   //搜索
   search = (result) => {
     let searchParams = {
-      itemTypeCode: result.itemTypeCode,
-      itemTypeName: result.itemTypeName
+        companyCode: result.companyCode,
+        companyName: result.companyName,
+        ducumentCategory:result.ducumentCategory,
     };
     this.setState({
       searchParams: searchParams,
@@ -161,14 +163,6 @@ class PaymentCompanySetting extends React.Component {
     })
   };
 
-
-  handleCloseUpdateSlide = (params) => {
-    this.getList();
-
-    this.setState({
-      showSlideFramePut: false
-    })
-  };
 
 
   showSlidePut = (flag) => {
@@ -235,7 +229,7 @@ class PaymentCompanySetting extends React.Component {
           />
         </div>
 
-        <SlideFrame title="新建公司付款配置"
+        <SlideFrame  title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款公司配置":"编辑付款公司配置"}
                     show={showSlideFrameNew}
                     content={NewPaymentCompanySetting}
                     afterClose={this.handleCloseNewSlide}
