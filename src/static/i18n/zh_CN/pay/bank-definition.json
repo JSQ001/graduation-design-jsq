@@ -25,6 +25,7 @@
   "bank.commonBank": "通用银行",
   "bank.customBank": "自定义银行",
   "bank.country": "国家",
-  "bank.address": "开户地"
+  "bank.address": "开户地",
+  "bank.detailAddress": "详细地址"
 
 }

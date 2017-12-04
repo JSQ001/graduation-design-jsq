@@ -50,7 +50,6 @@ class NewBudgetRulesDetail extends React.Component{
     itemSelectorItem.searchForm[1].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
     itemSelectorItem.searchForm[2].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
 
-    console.log(itemSelectorItem)
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -169,11 +168,10 @@ class NewBudgetRulesDetail extends React.Component{
     httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
       response.data.map((item)=>{
         let option = {
-          id: item.id,
+          id: item.code !== null ? item.code : item.id,
           value: item.name,
-          label: item.name
         };
-        array.addIfNotExist(option)
+        array.addIfNotExist(option);
         this.setState({
           array
         })

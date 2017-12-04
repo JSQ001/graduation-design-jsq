@@ -11,6 +11,7 @@ import debounce from 'lodash.debounce';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
+import CitySelector from 'components/city-selector'
 import menuRoute from 'share/menuRoute'
 import 'styles/pay/bank-definition/createOrUpdate-bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
@@ -27,22 +28,30 @@ class CreateOrUpdateBank extends React.Component{
       bankTypeHelp: "",
       bank:{},
       isEditor: false,
-      bankType:[],
+      countryCode:null,
+      country:[],
     };
     this.validateBankCode = debounce(this.validateBankCode,1000)
   }
 
   componentWillMount(){
     console.log(this.props)
-    let bankType = [];
-    this.getSystemValueList(2103).then((response)=>{
-      response.data.values.map((item)=>{
-        bankType.push({key:item.code, label:item.messageKey})
+    //获取国家
+    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/county?language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+      console.log(response)
+      let country = [];
+      response.data.map((item)=>{
+        let option = {
+          label: item.country,
+          key: item.code
+        }
+        country.push(option)
+      });
+      this.setState({
+        country
       })
     });
-    this.setState({
-      bankType: bankType
-    })
+
   }
 
 
@@ -97,8 +106,15 @@ class CreateOrUpdateBank extends React.Component{
       }
       this.setState({loading: false});
     })
+  };
 
 
+  //选择国家
+  countryChange = (value)=>{
+    console.log(value)
+    this.setState({
+      countryCode: value
+    })
   };
 
   handleSubmit = (e)=>{
@@ -127,15 +143,13 @@ class CreateOrUpdateBank extends React.Component{
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
 
-    const { defaultStatus, loading, bankTypeHelp, bank, bankType, isEditor} = this.state;
+    const { defaultStatus, loading, bankTypeHelp, bank, country, countryCode, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
 
-    console.log(this.state.defaultStatus)
-
-    const bankTypeOptions = bankType.map((item)=><Option key={item.id}>{item.value}</Option>)
+    const bankTypeOptions = country.map((item)=><Option key={item.id}>{item.value}</Option>)
     return(
       <div className="new-bank-definition">
         <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
@@ -183,7 +197,7 @@ class CreateOrUpdateBank extends React.Component{
             )}
           </FormItem>
           <FormItem {...formItemLayout}
-            label={formatMessage({id:"bank.country"})}
+            label={formatMessage({id:"bank.country"})} //国家
             help={bankTypeHelp}>
             {getFieldDecorator('country', {
               initialValue: bank.country,
@@ -194,9 +208,9 @@ class CreateOrUpdateBank extends React.Component{
                 }
               ],
             })(
-              <Select placeholder={ formatMessage({id:"common.please.select"})}>
+              <Select onChange={this.countryChange} placeholder={ formatMessage({id:"common.please.select"})}>
                 {
-                  bankType.map((item)=><Option key={item.key}>{item.label}</Option>)
+                  country.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
@@ -213,9 +227,24 @@ class CreateOrUpdateBank extends React.Component{
                 }
               ],
             })(
+             <CitySelector countryCode={countryCode}/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout}
+                    label={formatMessage({id:"bank.detailAddress"})}
+                    help={bankTypeHelp}>
+            {getFieldDecorator('address', {
+              initialValue: bank.address,
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage({id:"common.please.select"})
+                }
+              ],
+            })(
               <Select placeholder={ formatMessage({id:"common.please.select"})}>
                 {
-                  bankType.map((item)=><Option key={item.key}>{item.label}</Option>)
+                  country.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
               </Select>
             )}
@@ -233,7 +262,8 @@ class CreateOrUpdateBank extends React.Component{
 function mapStateToProps(state) {
   return {
     organization: state.budget.organization,
-    company: state.login.company
+    company: state.login.company,
+    language: state.main.language,
   }
 }
 const WrappedCreateOrUpdateBank = Form.create()(CreateOrUpdateBank);

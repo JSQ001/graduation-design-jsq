@@ -29,6 +29,7 @@ class BankDefinition extends React.Component{
         {key: 'commonBank', name: formatMessage({id:"bank.commonBank"})},  /*通用银行*/
         {key: 'customBank', name: formatMessage({id:"bank.customBank"})}, /*自定义银行*/
       ],
+      address:{},
       searchParams: {
         bankCode: "",
         bankName: "",
@@ -38,12 +39,12 @@ class BankDefinition extends React.Component{
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
-        {type: 'select', id: 'country',options:[], labelKey: 'country',valueKey: 'id',
+        {type: 'select', id: 'country',options:[], labelKey: 'country',valueKey: 'code',
           label: formatMessage({id: 'bank.country'}),  /*国家*/
-          listExtraParams:{organizationId: this.props.id},
-          getUrl: `${config.payUrl}/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale}
+          event:'COUNTRY_CHANGE',
+          getUrl: `http://192.168.1.77:13001/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
         },
-        {type: 'input', id: 'address', label: formatMessage({id: 'bank.bankName'}) }, /*开户地*/
+        //{type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
       ],
       pagination: {
         current: 1,
@@ -90,6 +91,59 @@ class BankDefinition extends React.Component{
       },
     }
   }
+
+  handleEvent =(event,value)=>{
+    let { searchForm, address} = this.state;
+    console.log(value)
+    console.log(event)
+    switch (event) {
+      case 'COUNTRY_CHANGE':
+        let add = {};
+        let addressOptions = [];
+        add.country = value;
+        httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/state?code=${value}`).then((response)=>{
+          response.data.map((item)=>{
+            let options = {
+              value: item.code,
+              label: item.state,
+              children: []
+            };
+           addressOptions.push(options)
+          });
+          searchForm[3].options = addressOptions;
+            this.setState({
+            address:add
+,            searchForm
+          })
+        });
+        break;
+      case 'ADDRESS_CHANGE':
+        address.state = value;
+        httpFetch.get(`http://192.168.1.77:13001//location-service/api/localization/query/city?code=${value}`).then((response)=>{
+          console.log(response.data)
+          let cityOptions = [];
+          searchForm[3].options.map((item)=>{
+            if(value[0] === item.value){
+              console.log(item)
+              response.data.map((item)=>{
+                let options = {
+                  value: item.code,
+                  label: item.city,
+                  children: []
+                };
+                cityOptions.push(options);
+              });
+              item.children = cityOptions;
+            }
+          });
+          console.log(searchForm)
+          this.setState({
+            address,
+            searchForm
+          })
+        })
+    }
+  };
 
   componentWillMount(){
     this.getList();
@@ -144,10 +198,11 @@ class BankDefinition extends React.Component{
 
   //获取公司下的银行数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.payUrl}/api/cash/banks/query?page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    let {pagination, searchParams, label } = this.state;
+    let bankUrl = this.state.label === 'commonBank' ? '/api/cash/bank/user/defineds/query' : '/api/cash/bank/datas/query';
+    let url = `${config.payUrl}${bankUrl}?page=${pagination.page}&size=${pagination.pageSize}`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
     httpFetch.get(url).then((response)=>{
       if(response.status === 200){
@@ -155,23 +210,21 @@ class BankDefinition extends React.Component{
         response.data.map((item)=>{
           item.key = item.id;
         });
+        let pagination = this.state.pagination;
+        pagination.total = Number(response.headers['x-total-count']);
+        pagination.page = 0;
+        pagination.pageSize = 10;
         this.setState({
           loading: false,
           data: response.data,
-          pagination: {
-            total: Number(response.headers['x-total-count']),
-            current: this.state.pagination.current,
-            page: this.state.pagination.page,
-            pageSize:this.state.pagination.pageSize,
-            showSizeChanger:true,
-            showQuickJumper:true,
-          },
+          pagination
         });
       }
     })
   }
 
   handleSearch = (values) =>{
+    console.log(values)
     let searchParams = {
       bankName: values.bankName,
       bankCode: values.bankCode,
@@ -232,7 +285,7 @@ class BankDefinition extends React.Component{
         <Tabs onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
-        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
+        <SearchArea searchForm={searchForm} eventHandle={this.handleEvent} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">

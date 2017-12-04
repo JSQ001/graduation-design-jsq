@@ -88,6 +88,7 @@ class NewDimension extends React.Component{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
+            this.onCancel();
             message.success(`${this.props.intl.formatMessage({id:"common.save.success"},{name: res.data.id})}`);
           }
         }).catch((e)=>{

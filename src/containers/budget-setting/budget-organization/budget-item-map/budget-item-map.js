@@ -148,7 +148,7 @@ class BudgetItemMap extends React.Component {
         columns: [
           {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconURL', width: '25%',
             render: (value) =>{
-                return <img src={value} />
+                return <img src={value} height="20" width="20"/>
             }
           },
           {title: formatMessage({id:"itemMap.expenseTypeName"}), dataIndex: 'name', width: '25%'},
@@ -177,7 +177,7 @@ class BudgetItemMap extends React.Component {
         item.key = paramsKey++;
         item.edit = false;
         item.item = [{id: item.budgetItemId, itemName: item.budgetItemName}];
-        item.detail = [{id: item.sourceItemId, sourceItemName: item.sourceItemName}]
+        item.detail = [{id: item.sourceItemId, name: item.sourceItemName}]
       });
       let pagination = this.state.pagination;
       pagination.total = Number(response.headers['x-total-count']);
@@ -361,6 +361,7 @@ class BudgetItemMap extends React.Component {
             dataSource={params}
             columns={columns}
             loading={loading}
+            onChange={this.onChangePager}
             pagination={pagination}
             size="middle"/>
         </Form>
