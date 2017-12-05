@@ -21,6 +21,7 @@ import paymentMethod from 'static/i18n/zh_CN/pay/payment-method.json'
 import paymentCompanySetting from 'static/i18n/zh_CN/pay/payment-company-setting.json'
 import cashFlowItem from 'static/i18n/zh_CN/pay/cash-flow-item.json'
 import cashTransactionClass from 'static/i18n/zh_CN/pay/cash-transaction-class.json'
+import subjectSheet from 'static/i18n/zh_CN/setting/subject-sheet.json'
 
 const i18nList = [
   common,  //公用
@@ -45,8 +46,8 @@ const i18nList = [
   paymentMethod,  //付款方式定义
   paymentCompanySetting, //付款公司配置
   cashFlowItem,  //现金流量项
-  cashTransactionClass   //现金事物
-
+  cashTransactionClass,   //现金事物
+  subjectSheet    //科目表
 ];
 
 let result = {};
