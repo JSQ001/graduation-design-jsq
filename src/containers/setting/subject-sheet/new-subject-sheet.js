@@ -22,18 +22,19 @@ class NewSubjectSheet extends React.Component {
         };
     }
 
-    // componentWillMount() {
-    //     let params = this.props.params;
-    //     if (params && JSON.stringify(params) != "{}") {
-    //         this.setState({
-    //             isDisabled: true,
-    //         })
-    //     } else {
-    //         this.setState({
-    //             isDisabled: false,
-    //         })
-    //     }
-    // }
+    componentWillMount() {
+        let params = this.props.params;
+        console.log(params);
+        // if (params && JSON.stringify(params) != "{}") {
+        //     this.setState({
+        //         isDisabled: true,
+        //     })
+        // } else {
+        //     this.setState({
+        //         isDisabled: false,
+        //     })
+        // }
+    }
 
     //新建或编辑
     handleSave = (e) => {
@@ -114,9 +115,9 @@ class NewSubjectSheet extends React.Component {
                     </FormItem>
                     <FormItem {...formItemLayout} label={this.props.intl.formatMessage({ id: 'common.column.status' })}>
                         {getFieldDecorator('enabled', {
-                            initialValue: true
+                            initialValue: this.props.params.id ? this.props.params.enabled : true
                         })(
-                            <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
+                            <Switch defaultChecked={this.props.params.id ? this.props.params.enabled : true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
                         )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('enabled') ? this.props.intl.formatMessage({ id: "common.status.enable" }) : this.props.intl.formatMessage({ id: "common.status.disable" })}
                     </FormItem>
                     <div className="slide-footer">
