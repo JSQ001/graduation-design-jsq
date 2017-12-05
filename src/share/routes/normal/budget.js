@@ -9,6 +9,10 @@ import BudgetJournalReCheckDetail from 'containers/budget/budget-journal-re-chec
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
 import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
 
+import BudgetOccupancy from 'containers/budget/budget-occupancy/budget-occupancy'
+import NewBudgetOccupancy from 'containers/budget/budget-occupancy/new-budget-occupancy'
+import ExportDetail from 'containers/budget/budget-occupancy/export-detail'
+
 //新建预算日记账
 const newBudgetJournal={
   key:'new-budget-journal',
@@ -84,10 +88,37 @@ const budgetBalance = {
   }
 };
 
+const exportDetail = {
+  key: 'export-detail',
+  url: '/main/budget/budget-occupancy/export-detail',
+  components: ExportDetail,
+  parent: 'budgetOccupancy'
+};
+
+//新建预算占用调整
+const newBudgetOccupancy = {
+  key: 'new-budget-occupancy',
+  url: '/main/budget/budget-occupancy/new-budget-occupancy',
+  components: NewBudgetOccupancy,
+  parent: 'budgetOccupancy'
+};
+
+//预算占用调整
+const budgetOccupancy = {
+  key: 'budget-occupancy',
+  url: '/main/budget/budget-occupancy',
+  components: BudgetOccupancy,
+  parent: 'budget',
+  children: {
+    newBudgetOccupancy,
+    exportDetail
+  }
+};
+
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetJournal, budgetBalance,budgetJournalReCheck],
+  subMenu: [budgetJournal, budgetBalance,budgetJournalReCheck,budgetOccupancy],
   icon: 'tags'
 };
 
