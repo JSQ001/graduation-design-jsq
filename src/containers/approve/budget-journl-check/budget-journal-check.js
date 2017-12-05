@@ -265,7 +265,7 @@ import { Form, Tabs, Table, message } from 'antd'
 const TabPane = Tabs.TabPane;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-
+import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area'
 
 class BudgetJournalCheck extends React.Component{
@@ -296,6 +296,7 @@ class BudgetJournalCheck extends React.Component{
         {title: '金额', dataIndex: 'amount'},
         {title: '状态', dataIndex: 'status'},
       ],
+      budgetJournalDetailCheckDetailPage: menuRoute.getRouteItem('budget-journal-check-detail','key'),    //预算日记账复核详情
       unJournalData: [],
       journalData: [],
       unJournalPagination: {
@@ -402,7 +403,7 @@ class BudgetJournalCheck extends React.Component{
   render() {
     const { loading1, loading2, SearchForm, columns, unJournalData, journalData, unJournalPagination, journalPagination } = this.state;
     return (
-      <div className="approve-contract">
+      <div className="budget-journal">
         <Tabs onChange={this.handleTabsChange}>
           <TabPane tab="未审批" key="unapproved">
             <SearchArea searchForm={SearchForm}
