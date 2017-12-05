@@ -272,7 +272,7 @@ class NewContract extends React.Component{
                         })(
                           <Select placeholder="请选择">
                             {currencyOptions.map((option) => {
-                              return <Option key={option.otherCurrency}>{option.otherCurrency}</Option>
+                              return <Option key={option.currency}>{option.currency}</Option>
                             })}
                           </Select>
                         )}
