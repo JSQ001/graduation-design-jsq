@@ -95,11 +95,15 @@
   "menu.budget-journal-check-detail": "Budget Journal Check Detail",
   "menu.payment-method":"Payment Method",
   "menu.payment-company-setting":"Payment Company Setting",
-  "menu.pay-requisition-type-detail":"Pay Requisition Type Detail",
-  "menu.pay-requisition-type":"Pay Requisition Type",
+  "menu.pre-payment-type-detail":"Pay Requisition Type Detail",
+  "menu.pre-payment-type":"Pay Requisition Type",
   "menu.cash-flow-item":"Cash flow item",
   "menu.cash-transaction-class": "Cash transaction class",
   "menu.new-cash-transaction-class": "New cash transaction class",
   "menu.cash-transaction-class-detail": "Cash transaction class detail",
-  "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction"
+  "menu.pre-payment-type-assign-transaction":"Pay Requisition Type Assign Transaction",
+  "menu.pre-payment":"Previous Payment",
+  "menu.me-pre-payment":"Me Previous Payment",
+  "menu.new-pre-payment":"New Previous Payment",
+  "menu.pre-payment-detail":"Previous Payment Detail"
 }

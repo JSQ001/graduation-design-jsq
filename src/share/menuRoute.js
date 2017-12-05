@@ -24,6 +24,7 @@ import budget from 'share/routes/normal/budget'  //预算
 import pay from 'share/routes/normal/pay'  //支付
 import contract from 'share/routes/normal/contract'  //合同
 import approve from 'share/routes/normal/approve'  //审批
+import prePayment from 'share/routes/normal/pre-payment'  //预付款
 
 //管理员模式下菜单
 import dashboardAdmin from 'share/routes/admin/dashboard-admin'  //管理员仪表盘
@@ -55,6 +56,7 @@ const menu = [
   budget,  //预算
   pay,  //支付
   contract, //合同
+  prePayment, //预付款
   approve, //审批
   /** 以下是管理员模式下的菜单 **/
   dashboardAdmin,  //管理员仪表盘
