@@ -1,11 +1,13 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Tabs, Table, message } from 'antd'
+import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 
 import SearchArea from 'components/search-area'
+import moment from 'moment'
 
 class Contract extends React.Component{
   constructor(props) {
@@ -13,32 +15,34 @@ class Contract extends React.Component{
     this.state = {
       loading1: false,
       loading2: false,
+      contractStatus: {
+        CANCEL: {label: '取消', state: ''},
+        CONFIRM: {label: '确认', state: ''},
+        FINISH: {label: '完成', state: ''},
+        GENERATE: {label: '新建', state: ''},
+        HOLD: {label: '暂挂', state: ''},
+        REJECTED: {label: '拒绝', state: ''},
+        SUBMITTED: {label: '提交', state: ''},
+      },
       SearchForm: [
-        {type: 'input', id: 'contractNumber', label: '合同编号'},
-        {type: 'input', id: 'contractName', label: '合同名称'},
+        {type: 'input', id: 'contractNumber', label: '申请人'},
         {type: 'items', id: 'price', items: [
-          {type: 'input', id: 'amountBegin', label: '合同金额从'},
-          {type: 'input', id: 'amountEnd', label: '合同金额至'}
+          {type: 'date', id: 'amountBegin', label: '提交时间从'},
+          {type: 'date', id: 'amountEnd', label: '提交时间至'}
         ]},
-        {type: 'items', id: 'signDate', items: [
-          {type: 'date', id: 'signDateStart', label: '签订日期从'},
-          {type: 'date', id: 'signDateEnd', label: '签订日期至'}
-        ]},
-        {type: 'input', id: 'companyId', label: '公司'},
-        {type: 'input', id: 'contractTypeId', label: '合同类型'},
-        {type: 'value_list', id: 'partnerCategory', label: '合同方类型', valueListCode: 2107, options: []},
-        {type: 'input', id: 'partnerId', label: '合同方'},
-        {type: 'input', id: 'employeeId', label: '创建人'},
+        {type: 'input', id: 'companyId', label: '类型'},
+        {type: 'input', id: 'contractTypeId', label: '金额'},
+        {type: 'input', id: 'partnerId', label: '状态'},
       ],
       columns: [
         {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
         {title: '申请人', dataIndex: 'companyId'},
-        {title: '提交时间', dataIndex: 'contractTypeId'},
+        {title: '提交时间', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '类型', dataIndex: 'contractTypeName'},
-        {title: '报销单号', dataIndex: 'signDate'},
+        {title: '报销单号', dataIndex: 'contractNumber', width: '18%'},
         {title: '币种', dataIndex: 'currency'},
-        {title: '金额', dataIndex: 'amount'},
-        {title: '状态', dataIndex: 'status'},
+        {title: '金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '状态', dataIndex: 'status', width: '7%', render: value => <Badge status="success" text={this.state.contractStatus[value].label}/>},
       ],
       unapprovedData: [],
       approvedData: [],
@@ -52,6 +56,7 @@ class Contract extends React.Component{
       unapprovedPageSize: 10,
       approvedPage: 0,
       approvedPageSize: 10,
+      ContractDetail: menuRoute.getRouteItem('approve-contract-detail', 'key'), //合同详情
     }
   }
 
@@ -64,6 +69,7 @@ class Contract extends React.Component{
     });
   }
 
+  //获取未审批列表
   getUnapprovedList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
     let unapprovedUrl = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
@@ -87,6 +93,7 @@ class Contract extends React.Component{
     })
   };
 
+  //获取审批列表
   getApprovedList = (resolve, reject) => {
     const { approvedPage, approvedPageSize } = this.state;
     let approvedUrl = `${config.contractUrl}/contract/api/contract/header/confirmEd/query?page=${approvedPage}&size=${approvedPageSize}`;
@@ -110,6 +117,7 @@ class Contract extends React.Component{
     })
   };
 
+  //未审批点击页码
   onUnapprovedChangePaper = (page) => {
     if (page - 1 !== this.state.page) {
       this.setState({ unapprovedPage: page - 1 }, () => {
@@ -118,6 +126,7 @@ class Contract extends React.Component{
     }
   };
 
+  //审批点击页码
   onApprovedChangePaper = (page) => {
     if (page - 1 !== this.state.page) {
       this.setState({ approvedPage: page - 1 }, () => {
@@ -126,12 +135,19 @@ class Contract extends React.Component{
     }
   };
 
+  //未审批搜索
   unapprovedSearch = (values) => {
     console.log(values)
   };
 
+  //审批搜索
   approvedSearch = (values) => {
     console.log(values)
+  };
+
+  //进入合同详情页
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.ContractDetail.url.replace(':id', record.id))
   };
 
   render() {
@@ -150,6 +166,7 @@ class Contract extends React.Component{
                    dataSource={unapprovedData}
                    padination={unapprovedPagination}
                    loading={loading1}
+                   onRowClick={this.handleRowClick}
                    bordered
                    size="middle"/>
           </TabPane>
@@ -164,6 +181,7 @@ class Contract extends React.Component{
                    dataSource={approvedData}
                    padination={approvedPagination}
                    loading={loading2}
+                   onRowClick={this.handleRowClick}
                    bordered
                    size="middle"/>
           </TabPane>
@@ -172,6 +190,10 @@ class Contract extends React.Component{
     )
   }
 }
+
+Contract.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedContract = Form.create()(injectIntl(Contract));
 
