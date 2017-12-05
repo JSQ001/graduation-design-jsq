@@ -14,6 +14,7 @@ import 'styles/dashboard.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import DefaultBackground from 'images/default.png'
+import DefaultBackground2 from 'images/default2.jpg'
 
 const visitData = [];
 const beginDay = new Date().getTime();
@@ -71,8 +72,11 @@ class Dashboard extends React.Component{
     //   }
     //   this.setState({ carousels: res.data })
     // })
-    this.setState({ imgStyle: [{height: 200, width: '100%'}] });
-    this.setState({ carousels: [{attachmentDTO:{fileURL: DefaultBackground}, title: '标题'}] })
+    this.setState({ imgStyle: [{height: 200, width: '100%'},{height: 200, width: '100%'}] });
+    this.setState({ carousels: [
+      {attachmentDTO:{fileURL: DefaultBackground}, title: '汇联易后台', id: 1},
+      {attachmentDTO:{fileURL: DefaultBackground2}, title: '哦！在这停顿', id: 2}
+    ]})
   }
 
   render() {
