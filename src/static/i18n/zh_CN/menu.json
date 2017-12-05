@@ -97,10 +97,15 @@
   "menu.payment-company-setting":"付款公司配置",
   "menu.pay-requisition-type-detail":"预付款单定义详情",
   "menu.pay-requisition-type":"预付款单定义",
+  "menu.budget-occupancy":"预算占用调整",
+  "menu.new-budget-occupancy":"预算占用调整新建",
+  "menu.export-detail":"导入详情",
   "menu.cash-flow-item":"现金流量项",
   "menu.cash-transaction-class": "现金事务分类定义",
   "menu.new-cash-transaction-class": "新建现金事务分类",
   "menu.cash-transaction-class-detail": "现金事务分类详情",
   "menu.pay-requisition-type-assign-transaction":"现金事务分配",
-  "menu.subject-sheet": "科目表定义"
+  "menu.subject-sheet": "科目表定义",
+  "menu.receipt-type-setting": "单据类型设置",
+  "menu.pre-payment-type": "预付款类型定义"
 }
