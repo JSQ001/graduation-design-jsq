@@ -2,7 +2,6 @@
   .ant-card{
     margin-bottom: 10px;
     .ant-card-body{
-      height: 150px;
       padding: 0;
       .card-title{
         position: relative;
@@ -19,17 +18,15 @@
       .card-content{
         width: 100%;
         position: relative;
-        height: 100%;
-        .no-content{
+        height: calc(100% - 50px);
+        .charts{
+          box-sizing: border-box;
           text-align: center;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          -webkit-transform: translate(-50%, -50%);
-          -moz-transform: translate(-50%, -50%);
-          -ms-transform: translate(-50%, -50%);
-          -o-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+          padding: 20px;
+        }
+        .no-content{
+          margin-top: 20px;
+          text-align: center;
           color: #CCCCCC;
           i{
             font-size: 40px;
@@ -119,7 +116,7 @@
         position: absolute;
         width: 100%;
         left: 0;
-        bottom: 0;
+        bottom: 10px;
         background: rgba(0, 0, 0, 0.6);
         height: 30px;
         line-height: 30px;
