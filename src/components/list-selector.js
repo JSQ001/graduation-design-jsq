@@ -155,6 +155,7 @@ class ListSelector extends React.Component {
    * @param nextProps 下一阶段的props
    */
   componentWillReceiveProps = (nextProps) => {
+    this.setState({page: 0});
     if(nextProps.selectedData && nextProps.selectedData.length > 0)
       this.setState({ selectedData : nextProps.selectedData });
     else
