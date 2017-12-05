@@ -10,9 +10,13 @@ import 'styles/common.scss'
 import 'static/animate.css'
 
 import config from 'config'
+import 'ant-design-pro/dist/ant-design-pro.css';
 
 import configureStore from 'stores';
 const store = configureStore.reduxStore();
+import { LocaleProvider } from 'antd';
+import zhCN from 'antd/lib/locale-provider/zh_CN';
+
 
 /**
  *          ___   ___    ________   ___        ________    _________   _______
@@ -31,7 +35,9 @@ const store = configureStore.reduxStore();
 ReactDOM.render(
   <AppContainer warnings={false}>
     <Provider store={store}>
-      <App/>
+      <LocaleProvider locale={zhCN}>
+        <App/>
+      </LocaleProvider>
     </Provider>
   </AppContainer>,
   document.getElementById('app')

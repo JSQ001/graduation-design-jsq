@@ -13,6 +13,7 @@ import 'styles/main.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
+import { setUserOrganization } from 'actions/login'
 import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import { setCodingRuleObjectId } from "actions/setting";
@@ -25,6 +26,7 @@ import en from 'share/i18n/en_US'
 import zh from 'share/i18n/zh_CN'
 
 import LogoImg from 'images/logo.png'
+import UserImg from 'images/user.png'
 
 class Main extends React.Component{
   constructor(props) {
@@ -168,16 +170,22 @@ class Main extends React.Component{
         this.setState({check: true});
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
-    } else if(path.indexOf('/budget/') > -1 && !this.props.userOrganization.id && this.props.userOrganization.message) {  //预算组织的默认检查
-      let modalData = {
-        content: this.props.userOrganization.message,
-        onOk: () => {
-          this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
-          this.setState({check: true});
-        },
-        okText: '现在去设置'
-      };
-      Modal.error(modalData);
+    } else if(path.indexOf('/budget/') > -1) {   //预算组织的默认检查
+      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((response)=>{
+        this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
+        this.setState({check: true});
+      }).catch(e => {
+        this.props.dispatch(setUserOrganization({message: e.response ? e.response.data.message : 'error'}));
+        let modalData = {
+          content: e.response.data.message,
+          onOk: () => {
+            this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
+            this.setState({check: true});
+          },
+          okText: '现在去设置'
+        };
+        Modal.error(modalData);
+      })
     } else {
       this.setState({check: true});
     }
@@ -282,7 +290,7 @@ class Main extends React.Component{
                 {this.props.intl.formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
-                <img src={this.props.user.filePath ? this.props.user.filePath : '../images/user.png'}/>
+                <img src={this.props.user.filePath ? this.props.user.filePath : UserImg}/>
               </div>
             </div>
             {this.renderBreadcrumb()}
