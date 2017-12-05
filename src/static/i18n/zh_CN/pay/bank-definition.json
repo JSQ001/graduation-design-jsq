@@ -15,8 +15,6 @@
   "bank.bankCodeLong": "银行代码（数字）",
   "bank.bankCodeString": "银行代码（字母）",
   "bank.innerBankInfo": "供企业内部部门之间结算使用，非真实的银行",
-  "bank.createBranchBank": "新建分行",
-  "bank.updateBranchBank": "编辑分行",
   "bank.parentBank": "所属银行",
   "bank.bankAddress": "银行地址",
   "bank.contactName": "联系人",

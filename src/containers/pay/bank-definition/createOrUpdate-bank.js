@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Form, Input, Switch, Icon, Select, message } from 'antd';
+import { Button, Form, Input, Switch, Icon, Select, message, Cascader } from 'antd';
 import debounce from 'lodash.debounce';
 
 import SearchArea from 'components/search-area.js';
@@ -28,14 +28,16 @@ class CreateOrUpdateBank extends React.Component{
       bankTypeHelp: "",
       bank:{},
       isEditor: false,
-      countryCode:null,
+      countryCode: 'CHN000000000-中国',//默认国家是中国
       country:[],
+      address:[],
+
     };
-    this.validateBankCode = debounce(this.validateBankCode,1000)
   }
 
   componentWillMount(){
     console.log(this.props)
+    let params = this.props.params;
     //获取国家
     httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/county?language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       console.log(response)
@@ -43,43 +45,66 @@ class CreateOrUpdateBank extends React.Component{
       response.data.map((item)=>{
         let option = {
           label: item.country,
-          key: item.code
-        }
+          key: item.code+ "-"+item.country
+        };
         country.push(option)
       });
       this.setState({
         country
       })
     });
+    if(typeof params.id !== 'undefined'){
+      this.setState({
+        address: params.accountAddress,
+        bank: params
+      })
+    }
 
+
+    /*//国家默认是中国,获取省份地区
+    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${this.state.countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+      console.log(response.data)
+      this.setState({
+        address: response.data
+      })
+    });*/
   }
 
 
   componentWillReceiveProps(nextprops){
     console.log(nextprops.params);
+    if(typeof nextprops.params.id === 'undefined'){
+      this.setState({
+        isEditor: false,
+        address: nextprops.params.accountAddress
+      })
+    }
   }
-
-  /**
-   * 验证银行（数字/字母）代码,不可重复,数字代码只能包含数字，字母代码只能包含字母，否则清空
-   * @param item 输入项
-   * @param value 输入的值
-   */
-  validateBankCode = (item,value,callback)=>{
-  };
 
   handleCreate = ()=>{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values)
-        httpFetch.post(`${config.payUrl}/api/cash/banks`,values).then((response)=>{
+        values.countryCode = values.country.split("-")[0];
+        values.countryName = values.country.split("-")[1];
+        values.provinceCode = values.accountAddress[0].split("-")[0];
+        values.provinceName = values.accountAddress[0].split("-")[1];
+        values.cityCode = values.accountAddress[1].split("-")[0];
+        values.cityName = values.accountAddress[1].split("-")[1];
+        if(typeof values.accountAddress[2] !== 'undefined'){
+          values.districtCode = values.accountAddress[2].split("-")[0];
+          values.districtName = values.accountAddress[2].split("-")[1];
+        }
+        httpFetch.post(`${config.payUrl}/api/cash/bank/user/defineds`,values).then((response)=>{
           message.success(this.props.intl.formatMessage({id:"common.create.success"},{name:values.bankName}));
-          this.props.close(true);
+          this.props.close(response.data);
+          this.props.form.resetFields();
           this.setState({
             loading: false
           })
         }).catch((e)=>{
           if(e.response){
-            message.error(`${this.props.intl.formatMessage({id:"common.create.filed"})}, ${e.response.data.validationErrors[0].message}`);
+            message.error(`${this.props.intl.formatMessage({id:"common.create.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});
         })
@@ -93,7 +118,7 @@ class CreateOrUpdateBank extends React.Component{
     if(values.bankName === ""){
       return
     }
-    httpFetch.put(`${config.payUrl}/api/cash/banks`,values).then((response)=>{
+    httpFetch.put(`${config.payUrl}api/cash/bank/user/defineds`,values).then((response)=>{
       console.log(response)
       message.success(this.props.intl.formatMessage({id:"common.save.success"},{name:values.bankName}));
       this.setState({
@@ -108,13 +133,16 @@ class CreateOrUpdateBank extends React.Component{
     })
   };
 
-
   //选择国家
   countryChange = (value)=>{
     console.log(value)
-    this.setState({
-      countryCode: value
-    })
+    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${value.split("-")[0]}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+      console.log(response.data)
+      this.setState({
+        countryCode: value,
+        address: response.data
+      })
+    });
   };
 
   handleSubmit = (e)=>{
@@ -143,7 +171,7 @@ class CreateOrUpdateBank extends React.Component{
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
 
-    const { defaultStatus, loading, bankTypeHelp, bank, country, countryCode, isEditor} = this.state;
+    const { defaultStatus, loading, bankTypeHelp, bank, country, countryCode,address, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -161,9 +189,6 @@ class CreateOrUpdateBank extends React.Component{
                 {
                   required: true,
                   message: formatMessage({id:"common.please.enter"})
-                },
-                {
-                  validator:(item,value,callback)=>this.validateBankCode(item,value,callback)
                 }
               ],
             })(
@@ -172,7 +197,7 @@ class CreateOrUpdateBank extends React.Component{
           </FormItem>
           <FormItem {...formItemLayout}
             label='Swift Code'>
-            {getFieldDecorator('Swift Code', {
+            {getFieldDecorator('swiftCode', {
               initialValue: bank.swiftCode,
               rules: [{
                 required: true,
@@ -200,15 +225,20 @@ class CreateOrUpdateBank extends React.Component{
             label={formatMessage({id:"bank.country"})} //国家
             help={bankTypeHelp}>
             {getFieldDecorator('country', {
-              initialValue: bank.country,
+              initialValue: countryCode,
               rules: [
                 {
                   required: true,
                   message: formatMessage({id:"common.please.select"})
+                },
+                {
+                  validator:(item,value,callback)=>{
+                    callback()
+                  }
                 }
               ],
             })(
-              <Select onChange={this.countryChange} placeholder={ formatMessage({id:"common.please.select"})}>
+              <Select onChange={this.countryChange} allowClear placeholder={ formatMessage({id:"common.please.select"})}>
                 {
                   country.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }
@@ -218,8 +248,8 @@ class CreateOrUpdateBank extends React.Component{
           <FormItem {...formItemLayout}
                     label={formatMessage({id:"bank.address"})}
                     help={bankTypeHelp}>
-            {getFieldDecorator('address', {
-              initialValue: bank.address,
+            {getFieldDecorator('accountAddress', {
+              initialValue: bank.accountAddress,
               rules: [
                 {
                   required: true,
@@ -227,7 +257,9 @@ class CreateOrUpdateBank extends React.Component{
                 }
               ],
             })(
-             <CitySelector countryCode={countryCode}/>
+             <Cascader  placeholder={ formatMessage({id:"common.please.select"})}
+                        showSearch
+                  options={address}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout}
@@ -238,15 +270,11 @@ class CreateOrUpdateBank extends React.Component{
               rules: [
                 {
                   required: true,
-                  message: formatMessage({id:"common.please.select"})
+                  message: formatMessage({id:"common.please.enter"})
                 }
               ],
             })(
-              <Select placeholder={ formatMessage({id:"common.please.select"})}>
-                {
-                  country.map((item)=><Option key={item.key}>{item.label}</Option>)
-                }
-              </Select>
+              <Input placeholder={ formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
           <div className="slide-footer">

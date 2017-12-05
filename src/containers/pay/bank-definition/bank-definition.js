@@ -10,7 +10,6 @@ import { Button, Table, Badge, notification, Popover, Popconfirm, Tabs  } from '
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
 import 'styles/pay/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
 import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
@@ -24,12 +23,18 @@ class BankDefinition extends React.Component{
     this.state = {
       loading: true,
       data: [],
-      label: "commonBank",
+      label: "customBank",
+      countryCode: 'CHN000000000',
+      accountAddress:[],
+      slideFrame:{
+        title: "",
+        visible: false,
+        params: {}
+      },
       tabs: [
-        {key: 'commonBank', name: formatMessage({id:"bank.commonBank"})},  /*通用银行*/
         {key: 'customBank', name: formatMessage({id:"bank.customBank"})}, /*自定义银行*/
+        {key: 'commonBank', name: formatMessage({id:"bank.commonBank"})},  /*通用银行*/
       ],
-      address:{},
       searchParams: {
         bankCode: "",
         bankName: "",
@@ -42,9 +47,10 @@ class BankDefinition extends React.Component{
         {type: 'select', id: 'country',options:[], labelKey: 'country',valueKey: 'code',
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
+          defaultValue:'中国',
           getUrl: `http://192.168.1.77:13001/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
         },
-        //{type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
+        {type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
       ],
       pagination: {
         current: 1,
@@ -55,30 +61,32 @@ class BankDefinition extends React.Component{
         showQuickJumper:true,
       },
       columns: [
-        {          /*银行代码*/
-          title: formatMessage({id:"bank.country"}), key: "country", dataIndex: 'country'
+        {          /*国家*/
+          title: formatMessage({id:"bank.country"}), key: "countryName", dataIndex: 'countryName'
         },
         {          /*银行代码*/
           title: formatMessage({id:"bank.bankCode"}), key: "bankCode", dataIndex: 'bankCode'
         },
         {
-          title: 'Swift Code', key: "Swift Code", dataIndex: 'swiftCode',
-          render: recode => {
-            let value = recode;
-            bankType.map((item)=>{
-              if(item.value === recode){
-                value = item.label
-              }
-            });
-            return value
-          }
+          title: 'Swift Code', key: "Swift Code", dataIndex: 'swiftCode'
         },
         {          /*银行名称*/
-          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName'
+          title: formatMessage({id:"bank.bankName"}), key: "bankName", dataIndex: 'bankName',
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
         {          /*开户地*/
-          title: formatMessage({id:"bank.address"}), key: "address", dataIndex: 'address',
-        }
+          title: formatMessage({id:"bank.address"}), key: "accountAddress", dataIndex: 'accountAddress',
+          render:(value,record,index)=>
+            <span>
+              <Popover placement="topLeft" content={record.provinceName+record.cityName+record.districtName }>
+              {record.provinceName+record.cityName+record.districtName}
+              </Popover>
+            </span>
+        },
+        {          /*详细地址*/
+          title: formatMessage({id:"bank.detailAddress"}), key: "address", dataIndex: 'address',
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
+        },
       ],
       operate:{          /*操作*/
         title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
@@ -118,35 +126,19 @@ class BankDefinition extends React.Component{
         });
         break;
       case 'ADDRESS_CHANGE':
-        address.state = value;
-        httpFetch.get(`http://192.168.1.77:13001//location-service/api/localization/query/city?code=${value}`).then((response)=>{
-          console.log(response.data)
-          let cityOptions = [];
-          searchForm[3].options.map((item)=>{
-            if(value[0] === item.value){
-              console.log(item)
-              response.data.map((item)=>{
-                let options = {
-                  value: item.code,
-                  label: item.city,
-                  children: []
-                };
-                cityOptions.push(options);
-              });
-              item.children = cityOptions;
-            }
-          });
-          console.log(searchForm)
-          this.setState({
-            address,
-            searchForm
-          })
-        })
-    }
+     }
   };
 
   componentWillMount(){
-    this.getList();
+    let  searchForm = this.state.searchForm;
+    //国家默认是中国，查询出中国的省市
+    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${this.state.countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+      searchForm[3].options = response.data;
+      this.setState({
+        accountAddress: response.data,
+        searchForm,
+      },this.getList())
+    });
   }
 
   //Tabs点击
@@ -184,22 +176,32 @@ class BankDefinition extends React.Component{
     })
   };
 
-  goBranchBank = (e, record) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('bank-definition', 'key').children.branchBankInformation.url.replace(':id', record.id));
+  handleCreate = ()=>{
+    let slideFrame = {};
+    slideFrame.title = this.props.intl.formatMessage({id:"bank.createBank"});  //新建银行
+    slideFrame.visible = true;
+    slideFrame.params = {accountAddress: this.state.accountAddress};
+    this.setState({
+      slideFrame
+    });
   };
 
-  handleCreate = ()=>{
+  handleUpdate = (record,index) =>{
+    console.log(record)
+    let slideFrame = {};
+    slideFrame.title = this.props.intl.formatMessage({id:"bank.editorBank"}); //编辑银行
+    slideFrame.visible = true;
+    record.accountAddress = this.state.accountAddress;
+    slideFrame.params = record;
     this.setState({
-      showSlideFrame: true,
-      slideFrameTitle: this.props.intl.formatMessage({id:"bank.createBank"}),  //新建银行
-      nowBank: {bank:{}}
-    });
+      slideFrame
+    })
   };
 
   //获取公司下的银行数据
   getList(){
     let {pagination, searchParams, label } = this.state;
-    let bankUrl = this.state.label === 'commonBank' ? '/api/cash/bank/user/defineds/query' : '/api/cash/bank/datas/query';
+    let bankUrl = this.state.label === 'customBank' ? '/api/cash/bank/user/defineds/query' : '/api/cash/bank/datas/query';
     let url = `${config.payUrl}${bankUrl}?page=${pagination.page}&size=${pagination.pageSize}`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
@@ -225,11 +227,13 @@ class BankDefinition extends React.Component{
 
   handleSearch = (values) =>{
     console.log(values)
+
     let searchParams = {
-      bankName: values.bankName,
       bankCode: values.bankCode,
-      bankType: values.bankType
+      bankName: values.bankName,
+      country: values.country === '中国'  ? 'CHN000000000' : values.country
     };
+    console.log(searchParams)
     this.setState({
       searchParams:searchParams,
       loading: true,
@@ -240,17 +244,20 @@ class BankDefinition extends React.Component{
   };
 
   handleCloseSlide = (params) => {
+    console.log(params)
+
     if(params) {
       this.getList();
     }
     this.setState({
-      showSlideFrame: false
+      slideFrame: {
+        visible: false
+      }
     })
   };
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
-    console.log(pagination)
     this.setState({
       pagination:{
         current: pagination.current,
@@ -264,10 +271,6 @@ class BankDefinition extends React.Component{
     })
   };
 
-  //点击行，银行分行页面
-  handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('bank-definition', 'key').children.branchBankInformation.url.replace(':id', record.id));
-  };
   renderTabs(){
     return (
       this.state.tabs.map(tab => {
@@ -278,7 +281,7 @@ class BankDefinition extends React.Component{
 
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading,data, searchForm, pagination, columns, showSlideFrame, label, slideFrameTitle } = this.state;
+    const { loading,data, searchForm, pagination, columns, label, slideFrame } = this.state;
 
     return(
       <div className="budget-bank-definition">
@@ -291,25 +294,25 @@ class BankDefinition extends React.Component{
           <div className="table-header-buttons">
             {label === "commonBank" ? null
               :
-              <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>
+              <Button type="primary" disabled={loading} onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>
             }
           </div>
         </div>
         <Table
             dataSource={data}
-            loading={false}
+            loading={loading}
             pagination={pagination}
             onChange={this.onChangePager}
             columns={columns}
-            onRowClick={this.handleRowClick}
+            onRowClick={this.handleUpdate}
             size="middle"
             bordered/>
-        <SlideFrame title={slideFrameTitle}
-                    show={showSlideFrame}
+        <SlideFrame title={slideFrame.title}
+                    show={slideFrame.visible}
                     content={CreateOrUpdateBank}
                     afterClose={this.handleCloseSlide}
-                    onClose={() => this.setState({showSlideFrame : false})}
-                    params={{}}/>
+                    onClose={() => this.setState({slideFrame : {visible:false}})}
+                    params={slideFrame.params}/>
       </div>
     )
   }
