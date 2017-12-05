@@ -25,21 +25,20 @@ class Contract extends React.Component{
         SUBMITTED: {label: '提交', state: ''},
       },
       SearchForm: [
-        {type: 'input', id: 'contractNumber', label: '申请人'},
-        {type: 'items', id: 'price', items: [
-          {type: 'date', id: 'amountBegin', label: '提交时间从'},
-          {type: 'date', id: 'amountEnd', label: '提交时间至'}
+        {type: 'input', id: 'contractNumber', label: '合同编号'},
+        {type: 'input', id: 'companyId', label: '申请人姓名/工号'},
+        {type: 'input', id: 'contractTypeName', label: '合同类型'},
+        {type: 'items', id: 'createdDate', items: [
+          {type: 'date', id: 'createdDateBegin', label: '提交时间从'},
+          {type: 'date', id: 'createdDateEnd', label: '提交时间至'}
         ]},
-        {type: 'input', id: 'companyId', label: '类型'},
-        {type: 'input', id: 'contractTypeId', label: '金额'},
-        {type: 'input', id: 'partnerId', label: '状态'},
       ],
       columns: [
         {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
         {title: '申请人', dataIndex: 'companyId'},
         {title: '提交时间', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '类型', dataIndex: 'contractTypeName'},
-        {title: '报销单号', dataIndex: 'contractNumber', width: '18%'},
+        {title: '合同类型', dataIndex: 'contractTypeName'},
+        {title: '合同编号', dataIndex: 'contractNumber', width: '18%'},
         {title: '币种', dataIndex: 'currency'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '状态', dataIndex: 'status', width: '7%', render: value => <Badge status="success" text={this.state.contractStatus[value].label}/>},

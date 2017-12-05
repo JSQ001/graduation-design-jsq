@@ -5,7 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import moment from 'moment'
 
-import { Radio, Table, Breadcrumb, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message } from 'antd'
+import { Radio, Table, Breadcrumb, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Row, Col, Tooltip } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -21,21 +21,22 @@ class PayUnpaid extends React.Component {
     this.state = {
       radioValue: 'online',
       editCellError: false,
+      searchParams: {},
       searchForm: [
-        {type: 'input', id: 'receiptNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})}, //单据编号
-        {type: 'select', id: 'receiptType', label: formatMessage({id: "payWorkbench.receiptType"}), options: []}, //单据类型
-        {type: 'select', id: 'applicant', label: formatMessage({id: "payWorkbench.applicant"}), options: []}, //申请人
+        {type: 'input', id: 'documentNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})}, //单据编号
+        {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "payWorkbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
+        {type: 'select', id: 'employeeId', label: formatMessage({id: "payWorkbench.applicant"}), options: []}, //申请人
         {type: 'items', id: 'dateRange', items: [
-          {type: 'date', id: 'dateFrom', label: formatMessage({id: "payWorkbench.dateFrom"})}, //申请日期从
-          {type: 'date', id: 'dateTo', label: formatMessage({id: "payWorkbench.dateTo"})} //申请日期至
+          {type: 'date', id: 'requisitionDateFrom', label: formatMessage({id: "payWorkbench.dateFrom"})}, //申请日期从
+          {type: 'date', id: 'requisitionDateTo', label: formatMessage({id: "payWorkbench.dateTo"})} //申请日期至
         ]},
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})}, //总金额从
-          {type: 'input', id: 'mountTo', label: formatMessage({id: "payWorkbench.mountTo"})} //总金额至
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})}, //总金额从
+          {type: 'input', id: 'amountTo', label: formatMessage({id: "payWorkbench.mountTo"})} //总金额至
         ]},
-        {type: 'items', id: 'payee', label: formatMessage({id: "payWorkbench.payee"}), items: [
+        {type: 'items', id: 'partner', label: formatMessage({id: "payWorkbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
-          {type: 'select', id: 'partnerName', label: '收款方', options: []}  //收款方
+          {type: 'select', id: 'partnerId', label: '收款方', options: []}  //收款方
         ]}
       ],
       columns: [
@@ -43,26 +44,50 @@ class PayUnpaid extends React.Component {
           return (
             <Breadcrumb separator="|">
               <Breadcrumb.Item><a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a></Breadcrumb.Item>
-              <Breadcrumb.Item>{record.documentCategory}</Breadcrumb.Item>
+              <Breadcrumb.Item>{record.documentCategoryName}</Breadcrumb.Item>
             </Breadcrumb>
           )}
         },
-        {title: '工号 | 申请人', dataIndex: 'employeeName'},
+        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
+          return (
+            <Breadcrumb separator="|">
+              <Breadcrumb.Item>{record.employeeId}</Breadcrumb.Item>
+              <Breadcrumb.Item>{value}</Breadcrumb.Item>
+            </Breadcrumb>
+          )}
+        },
         {title: '申请日期', dataIndex: 'requisitionDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '总金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '可支付金额', dataIndex: 'payableAmount', render: this.filterMoney},
+        {title: '可支付金额', dataIndex: 'payableAmount', render: (value, record) => {return(
+          value !== record.amount ? this.filterMoney(value) :
+            <Row>
+              <Col span={5}>
+                <Tooltip title="可支付金额不等于总金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
+              </Col>
+              <Col span={18} offset={1}>
+                {this.filterMoney(value)}
+              </Col>
+            </Row>
+        )}},
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => {
           return (
-            <EditableCell type="number"
-                          value={value}
-                          message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
-                          onChangeError={this.state.editCellError}
-                          onChange={(editValue) => this.editCurrentPay(editValue, record)} />
+            <Row>
+              <Col span={5}>
+                <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
+              </Col>
+              <Col span={18} offset={1}>
+                <EditableCell type="number"
+                              value={value}
+                              message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
+                              onChangeError={this.state.editCellError}
+                              onChange={(editValue) => this.editCurrentPay(editValue, record)} />
+              </Col>
+            </Row>
           )}
         },
-        {title: '付款方式', dataIndex: 'paymentMethodCategory'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '付款方式', dataIndex: 'paymentMethodCategoryName'},
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
           return (
             <Breadcrumb separator="|">
               <Breadcrumb.Item>{value}</Breadcrumb.Item>
@@ -76,7 +101,7 @@ class PayUnpaid extends React.Component {
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
-        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>}
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>}
       ],
 
       /* 线上 */
@@ -92,6 +117,7 @@ class PayUnpaid extends React.Component {
       onlineError: null,              //错误
       payOnlineAble: false,           //支付按钮是否可用
       onlineCash: [],                 //总金额
+      payWayOptions: [],
 
       /* 线下 */
       offlineLoading: false,
@@ -129,6 +155,10 @@ class PayUnpaid extends React.Component {
   }
 
   componentWillMount() {
+    this.getList();
+  }
+
+  getList = () => {
     this.getOnlineCash();
     this.getOfflineCash();
     this.getFileCash();
@@ -139,11 +169,13 @@ class PayUnpaid extends React.Component {
     }).catch(() => {
       message.error('数据加载失败，请重试')
     });
-  }
+  };
 
   //搜索
   search = (result) => {
-    console.log(result)
+    this.setState({ searchParams: result },() => {
+      this.getList()
+    })
   };
 
   //清空搜索区域
@@ -170,31 +202,37 @@ class PayUnpaid extends React.Component {
 
   //线上
   getOnlineCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=ONLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ onlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //线下
   getOfflineCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=OFFLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ offlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //落地文件
   getFileCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=EBANK_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ fileCash: res.data })
-    }).catch(() => {
-
     })
   };
 
@@ -202,8 +240,11 @@ class PayUnpaid extends React.Component {
 
   //线上
   getOnlineList = (resolve, reject) => {
-    const { onlinePage, onlinePageSize } = this.state;
+    const { onlinePage, onlinePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ onlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -224,8 +265,11 @@ class PayUnpaid extends React.Component {
 
   //线下
   getOfflineList = (resolve, reject) => {
-    const { offlinePage, offlinePageSize } = this.state;
+    const { offlinePage, offlinePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ offlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -246,8 +290,11 @@ class PayUnpaid extends React.Component {
 
   //落地文件
   getFileList = (resolve, reject) => {
-    const { filePage, filePageSize } = this.state;
+    const { filePage, filePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ fileLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -402,7 +449,7 @@ class PayUnpaid extends React.Component {
         {onlineCash.map((item, index) => {
           return (
             <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
               <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
             </Breadcrumb>
           )
@@ -455,7 +502,7 @@ class PayUnpaid extends React.Component {
         {offlineCash.map((item, index) => {
           return (
             <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
               <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
             </Breadcrumb>
           )
@@ -508,7 +555,7 @@ class PayUnpaid extends React.Component {
         {fileCash.map((item, index) => {
           return (
             <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
               <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
             </Breadcrumb>
           )
@@ -551,7 +598,7 @@ class PayUnpaid extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, payModalVisible, radioValue } = this.state;
+    const { searchForm, payModalVisible, radioValue, payWayOptions } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -602,7 +649,11 @@ class PayUnpaid extends React.Component {
                   required: true,
                   message: '请选择'
                 }]})(
-                <Select placeholder="请选择"></Select>
+                <Select placeholder="请选择">
+                  {payWayOptions.map(option => {
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
               )}
             </FormItem>
             <FormItem  {...formItemLayout} label="汇率">
