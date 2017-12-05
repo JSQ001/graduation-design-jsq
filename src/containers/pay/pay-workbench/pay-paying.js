@@ -62,6 +62,7 @@ class PayPaying extends React.Component {
         {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>},
         {title: '操作', dataIndex: 'id'}
       ],
+
       /* 线上 */
       onlineLoading: false,
       onlineData: [],
@@ -70,6 +71,8 @@ class PayPaying extends React.Component {
       onlinePagination: {
         total: 0
       },
+      onlineCash: [],  //总金额
+
       /* 落地文件 */
       fileLoading: false,
       fileData: [],
@@ -78,10 +81,13 @@ class PayPaying extends React.Component {
       filePagination: {
         total: 0
       },
+      fileCash: [],  //总金额
     };
   }
 
   componentWillMount() {
+    this.getOnlineCash();
+    this.getFileCash();
     return new Promise((resolve, reject) => {
       this.getOnlineList(resolve, reject);
       this.getFileList(resolve, reject)
@@ -90,10 +96,49 @@ class PayPaying extends React.Component {
     });
   }
 
-  //线上 - 获取列表
+  search = (values) => {
+    console.log(values);
+    this.setState({ searchParams: values }, () => {
+      this.getOnlineList();
+      this.getFileList()
+    })
+  };
+
+  clear = () => {
+
+  };
+
+  //查看支付流水详情
+  checkPaymentDetail = () => {};
+
+  /*********************** 获取总金额 ***********************/
+
+  //线上
+  getOnlineCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=ONLINE_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ onlineCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  //落地文件
+  getFileCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=EBANK_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ fileCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  /************************ 获取列表 ************************/
+
+  //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
@@ -115,10 +160,10 @@ class PayPaying extends React.Component {
     })
   };
 
-  //落地文件 - 获取列表
+  //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
@@ -140,22 +185,8 @@ class PayPaying extends React.Component {
     })
   };
 
-  search = (values) => {
-    console.log(values);
-    this.setState({ searchParams: values }, () => {
-      this.getOnlineList();
-      this.getFileList()
-    })
-  };
-
-  clear = () => {
-
-  };
-
-  //查看支付流水详情
-  checkPaymentDetail = () => {};
-
-  //线上 - 修改每页显示数量
+  /************************** 线上 **************************/
+  // 修改每页显示数量
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -163,7 +194,9 @@ class PayPaying extends React.Component {
     })
   };
 
-  //落地文件 - 修改每页显示数量
+  /************************ 落地文件 ************************/
+
+  //修改每页显示数量
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
@@ -171,17 +204,24 @@ class PayPaying extends React.Component {
     })
   };
 
-  //线上 - 内容渲染
+  /************************ 内容渲染 ************************/
+
+  //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>等待付款结果</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        支付中
+        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="paying-online">
@@ -207,17 +247,22 @@ class PayPaying extends React.Component {
     )
   };
 
-  //落地文件 - 内容渲染
+  //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>等待付款结果</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        支付中
+        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="paying-file">
@@ -241,6 +286,8 @@ class PayPaying extends React.Component {
       </div>
     )
   };
+
+  /************************* End *************************/
 
   render(){
     const { radioValue, searchForm } = this.state;

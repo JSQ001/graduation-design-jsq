@@ -91,6 +91,7 @@ class PayUnpaid extends React.Component {
       onlineNotice: null,             //提示
       onlineError: null,              //错误
       payOnlineAble: false,           //支付按钮是否可用
+      onlineCash: [],                 //总金额
 
       /* 线下 */
       offlineLoading: false,
@@ -104,6 +105,7 @@ class PayUnpaid extends React.Component {
       offlineNotice: null,            //提示
       offlineError: null,             //错误
       payOfflineAble: false,          //支付按钮是否可用
+      offlineCash: [],                //总金额
 
       /* 落地文件 */
       fileLoading: false,
@@ -117,6 +119,7 @@ class PayUnpaid extends React.Component {
       fileNotice: null,               //提示
       fileError: null,                //错误
       payFileAble: false,             //支付按钮是否可用
+      fileCash: [],                   //总金额
 
       payModalVisible: false,
       confirmSuccessDate: null,
@@ -126,10 +129,13 @@ class PayUnpaid extends React.Component {
   }
 
   componentWillMount() {
+    this.getOnlineCash();
+    this.getOfflineCash();
+    this.getFileCash();
     return new Promise((resolve, reject) => {
       this.getOnlineList(resolve, reject);
       this.getOfflineList(resolve, reject);
-      this.getFileList(resolve, reject)
+      this.getFileList(resolve, reject);
     }).catch(() => {
       message.error('数据加载失败，请重试')
     });
@@ -160,9 +166,41 @@ class PayUnpaid extends React.Component {
     this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
   };
 
+  /*********************** 获取总金额 ***********************/
+
+  //线上
+  getOnlineCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=ONLINE_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ onlineCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  //线下
+  getOfflineCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=OFFLINE_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ offlineCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  //落地文件
+  getFileCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=EBANK_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ fileCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
   /************************ 获取列表 ************************/
 
-  //线上 - 获取列表
+  //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
@@ -184,7 +222,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //线下 - 获取列表
+  //线下
   getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
@@ -206,7 +244,7 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //落地文件 - 获取列表
+  //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
@@ -352,19 +390,24 @@ class PayUnpaid extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineNotice, onlineError } = this.state;
+    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineNotice, onlineError, onlineCash } = this.state;
     const rowSelection = {
       onSelect: this.onOnlineSelectRow,
       onSelectAll: this.onOnlineSelectAllRow
     };
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>{this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="unpaid-online">
@@ -400,19 +443,24 @@ class PayUnpaid extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineNotice, offlineError, payOfflineAble } = this.state;
+    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineNotice, offlineError, payOfflineAble, offlineCash } = this.state;
     const rowSelection = {
       onSelect: this.onOnlineSelectRow,
       onSelectAll: this.onOnlineSelectAllRow
     };
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>{this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {offlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {offlineCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="unpaid-offline">
@@ -448,19 +496,24 @@ class PayUnpaid extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { fileLoading, columns, fileData, filePageSize, filePagination, fileNotice, fileError, payFileAble } = this.state;
+    const { fileLoading, columns, fileData, filePageSize, filePagination, fileNotice, fileError, payFileAble, fileCash } = this.state;
     const rowSelection = {
       onSelect: this.onOnlineSelectRow,
       onSelectAll: this.onOnlineSelectAllRow
     };
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>{this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="unpaid-file">

@@ -1,10 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message } from 'antd'
+import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
-const { RangePicker } = DatePicker;
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
@@ -18,6 +17,7 @@ class NewContract extends React.Component{
     super(props);
     this.state = {
       loading: false,
+      pageLoading: false,
       user: {},
       contractTypeDisabled: true,
       setOfBooksId: null,
@@ -39,13 +39,14 @@ class NewContract extends React.Component{
 
   componentWillMount() {
     Number(this.props.params.id) && this.getInfo(); //合同编辑
+
     this.setState({ user: this.props.user });
     this.getSystemValueList(2107).then(res => { //合同方类型
-      let partnerCategoryOptions = res.data.values;
+      let partnerCategoryOptions = res.data.values || [];
       this.setState({ partnerCategoryOptions })
     });
     this.getSystemValueList(2202).then(res => { //合同大类
-      let contractCategoryOptions = res.data.values;
+      let contractCategoryOptions = res.data.values || [];
       this.setState({ contractCategoryOptions })
     });
     this.service.getCurrencyList().then((res) => {  //币种
@@ -64,13 +65,16 @@ class NewContract extends React.Component{
   //获取合同信息
   getInfo = () => {
     let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
+    this.setState({ pageLoading: true });
     httpFetch.get(url).then(res => {
       this.setState({
         data: res.data,
-        isNew: false
+        isNew: false,
+        pageLoading: false,
+        contractTypeDisabled: false
+      }, () => {
+        this.getContractType(this.state.data.contractTypeId);
       })
-    }).catch(() => {
-      message.error('数据加载失败，请重试')
     })
   };
 
@@ -79,14 +83,16 @@ class NewContract extends React.Component{
     this.setState({ uploadOIDs: OIDs })
   };
 
+  //保存
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.attachmentOID = this.state.uploadOIDs;
         values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
-        values.rangePicker && (values.startDate = values.rangePicker[0].format('YYYY-MM-DD'));
-        values.rangePicker && (values.endDate = values.rangePicker[1].format('YYYY-MM-DD'));
+        values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
+        values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
+        values.contractTypeId = values.contractTypeId[0].id;
         this.setState({ loading: true });
         let url = `${config.contractUrl}/contract/api/contract/header`;
         httpFetch.post(url, values).then(res => {
@@ -96,261 +102,307 @@ class NewContract extends React.Component{
             this.context.router.push(this.state.contractDetail.url.replace(':id', res.data.id));
           }
         }).catch(e => {
-          message.error(`保存失败，${e.response.data.message}`)
+          message.error(`保存失败，${e.response.data.message}`);
+          this.setState({ loading: false })
         })
       }
     })
   };
 
+  //更新
+  handleUpdate = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log(values);
+      if (!err) {
+
+      }
+    })
+  };
+
+  //取消
   onCancel = () => {
     this.context.router.push(this.state.myContract.url);
+  };
+
+  //获取合同类型
+  getContractType = (value) => {
+    let selectorItem = {
+      title: "合同类型",
+      url: `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company`,
+      searchForm: [
+        {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
+        {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
+        {type: 'input', id: 'contractCategory', label: '合同大类'}
+      ],
+      columns: [
+        {title: '合同类型代码', dataIndex: 'contractTypeCode'},
+        {title: '合同类型名称', dataIndex: 'contractTypeName'},
+        {title: '合同大类', dataIndex: 'contractCategoryName'},
+      ],
+      key: 'id'
+    };
+    this.setState({
+      selectorItem,
+      extraParams: value
+    })
   };
 
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
-      let selectorItem = {
-        title: "合同类型",
-        url: `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company`,
-        searchForm: [
-          {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
-          {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
-          {type: 'input', id: 'contractCategory', label: '合同大类'}
-        ],
-        columns: [
-          {title: '合同类型代码', dataIndex: 'contractTypeCode'},
-          {title: '合同类型名称', dataIndex: 'contractTypeName'},
-          {title: '合同大类', dataIndex: 'contractCategoryName'},
-        ],
-        key: 'id'
-      };
-      this.setState({
-        selectorItem,
-        extraParams: value,
-        contractTypeDisabled: false
-      })
+      this.getContractType(value);
+      this.setState({ contractTypeDisabled: false })
     }
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
-        <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
-          <Row>
-            <Col span={7}>
-              <div style={{lineHeight: '32px'}}>合同编号:</div>
-              <Input value={isNew ? '-' : data.id} disabled />
-            </Col>
-            <Col span={7} offset={1}>
-              <div style={{lineHeight: '32px'}}>创建人:</div>
-              <Input value={user.fullName} disabled />
-            </Col>
-            <Col span={7} offset={1}>
-              <div style={{lineHeight: '32px'}}>创建日期:</div>
-              <Input value={isNew ? moment(data.createdDate).format('YYYY-MM-DD') : new Date().format('yyyy-MM-dd')} disabled />
-            </Col>
-          </Row>
-        </Card>
-        <Form onSubmit={this.handleSave}>
-          <Card title="合同信息" noHovering style={{marginBottom:'20px'}}>
-            <Row>
-              <Col span={15}>
-                <FormItem label="合同名称">
-                  {getFieldDecorator('contractName', {
-                    rules: [{
-                      required: true,
-                      message: '请输入'
-                    }],
-                    initialValue: isNew ? '' : data.contractName
-                  })(
-                    <Input placeholder="请输入"/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={7} offset={1}>
-                <FormItem label="签署日期">
-                  {getFieldDecorator('signDate', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                    initialValue: isNew ? undefined : moment(data.signDate)
-                  })(
-                    <DatePicker style={{width:'100%'}}/>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
+        <Spin spinning={pageLoading}>
+          <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
             <Row>
               <Col span={7}>
-                <FormItem label="公司">
-                  {getFieldDecorator('companyId', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                    initialValue: isNew ? undefined : data.companyId
-                  })(
-                    <Select placeholder="请选择" onChange={this.handleCompanyId}>
-                      {companyIdOptions.map((option) => {
-                        return <Option key={option.id}>{option.name}</Option>
-                      })}
-                    </Select>
-                  )}
-                </FormItem>
+                <div style={{lineHeight: '32px'}}>合同编号:</div>
+                <Input value={isNew ? '-' : data.id} disabled />
               </Col>
               <Col span={7} offset={1}>
-                <FormItem label="合同类型（请先选择公司）">
-                  {getFieldDecorator('contractTypeId', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                    initialValue: isNew ? undefined : data.contractTypeId
-                  })(
-                    <Chooser disabled={isNew ? contractTypeDisabled : false}
-                             selectorItem={selectorItem}
-                             listExtraParams={{companyId: extraParams}}
-                             valueKey="contractTypeCode"
-                             labelKey="contractTypeName"
-                             single/>
-                  )}
-                </FormItem>
+                <div style={{lineHeight: '32px'}}>创建人:</div>
+                <Input value={user.fullName} disabled />
               </Col>
               <Col span={7} offset={1}>
-                <FormItem label="合同大类">
-                  {getFieldDecorator('contractCategory', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                    initialValue: isNew ? '' : data.contractCategory
-                  })(
-                    <Select placeholder="请选择">
-                      {contractCategoryOptions.map(option => {
-                        return <Option key={option.value}>{option.messageKey}</Option>
-                      })}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={7}>
-                <Row>
-                  <Col span={7}>
-                    <FormItem label="合同金额">
-                      {getFieldDecorator('currency')(
-                        <Select placeholder="请选择">
-                          {currencyOptions.map((option) => {
-                            return <Option key={option.otherCurrency}>{option.otherCurrency}</Option>
-                          })}
-                        </Select>
-                      )}
-                    </FormItem>
-                  </Col>
-                  <Col span={16} offset={1}>
-                    <FormItem label=" " colon={false}>
-                      {getFieldDecorator('amount')(
-                        <InputNumber placeholder="请输入" style={{width: '100%'}}/>
-                      )}
-                    </FormItem>
-                  </Col>
-                </Row>
-              </Col>
-              <Col span={7} offset={1}>
-                <FormItem label="有效期限">
-                  {getFieldDecorator('rangePicker')(
-                    <RangePicker placeholder={['请选择', '请选择']} style={{width:'100%'}}/>
-                  )}
-                </FormItem>
+                <div style={{lineHeight: '32px'}}>创建日期:</div>
+                <Input value={isNew ? moment(data.createdDate).format('YYYY-MM-DD') : new Date().format('yyyy-MM-dd')} disabled />
               </Col>
             </Row>
           </Card>
-          <Card title="合同方信息" noHovering style={{marginBottom:'20px'}}>
-            <Row>
-              <Col span={7}>
-                <FormItem label="合同方类型">
-                  {getFieldDecorator('partnerCategory', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                    initialValue: partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : ''
-                  })(
-                    <Select placeholder="请选择">
-                      {partnerCategoryOptions.map((option) => {
-                        return <Option key={option.value}>{option.messageKey}</Option>
-                      })}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={7} offset={1}>
-                <FormItem label="合同方">
-                  {getFieldDecorator('partnerId', {
-                    rules: [{
-                      required: true,
-                      message: '请选择'
-                    }],
-                  })(
-                    <Select placeholder="请选择">
-                      <Option key="911143733222408193">lucky</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
-            <Row>
-              <Col span={7}>
-                <FormItem>
-                  {getFieldDecorator('attachmentOID')(
-                    <Upload attachmentType="CONTRACT"
-                            fileNum={9}
-                            uploadHandle={this.handleUpload}/>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Card title="其他信息" noHovering>
-            <Row>
-              <Col span={7}>
-                <FormItem label="责任部门">
-                  {getFieldDecorator('unitId')(
-                    <Input placeholder="请输入"/>
-                  )}
-                </FormItem>
-              </Col>
-              <Col span={7} offset={1}>
-                <FormItem label="责任人">
-                  {getFieldDecorator('employeeId')(
-                    <Input placeholder="请输入"/>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={15}>
-                <FormItem label="备注">
-                  {getFieldDecorator('remark')(
-                    <Input placeholder="请输入"/>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
-          </Card>
-          <Affix offsetBottom={0}
-                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
-                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-            <Button type="primary" htmlType="submit" loading={loading} style={{margin:'0 20px'}}>下一步</Button>
-            <Button onClick={this.onCancel}>取消</Button>
-          </Affix>
-        </Form>
+          <Form onSubmit={isNew ? this.handleSave : this.handleUpdate}>
+            <Card title="合同信息" noHovering style={{marginBottom:'20px'}}>
+              <Row>
+                <Col span={15}>
+                  <FormItem label="合同名称">
+                    {getFieldDecorator('contractName', {
+                      rules: [{
+                        required: true,
+                        message: '请输入'
+                      }],
+                      initialValue: isNew ? '' : data.contractName
+                    })(
+                      <Input placeholder="请输入"/>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="签署日期">
+                    {getFieldDecorator('signDate', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? undefined : moment(data.signDate)
+                    })(
+                      <DatePicker style={{width:'100%'}}/>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={7}>
+                  <FormItem label="公司">
+                    {getFieldDecorator('companyId', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? undefined : data.companyId
+                    })(
+                      <Select placeholder="请选择" onChange={this.handleCompanyId}>
+                        {companyIdOptions.map((option) => {
+                          return <Option key={option.id}>{option.name}</Option>
+                        })}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="合同类型（请先选择公司）">
+                    {getFieldDecorator('contractTypeId', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? undefined : [data.contractTypeId]
+                    })(
+                      <Chooser disabled={isNew ? contractTypeDisabled : false}
+                               selectorItem={selectorItem}
+                               listExtraParams={{companyId: extraParams}}
+                               valueKey="contractTypeCode"
+                               labelKey="contractTypeName"
+                               single/>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="合同大类">
+                    {getFieldDecorator('contractCategory', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? undefined : data.contractCategory
+                    })(
+                      <Select placeholder="请选择">
+                        {contractCategoryOptions.map(option => {
+                          return <Option key={option.value}>{option.messageKey}</Option>
+                        })}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={7}>
+                  <Row>
+                    <Col span={7}>
+                      <FormItem label="合同金额">
+                        {getFieldDecorator('currency', {
+                          initialValue: isNew ? 'CNY' : data.currency
+                        })(
+                          <Select placeholder="请选择">
+                            {currencyOptions.map((option) => {
+                              return <Option key={option.currency}>{option.currency}</Option>
+                            })}
+                          </Select>
+                        )}
+                      </FormItem>
+                    </Col>
+                    <Col span={16} offset={1}>
+                      <FormItem label=" " colon={false}>
+                        {getFieldDecorator('amount', {
+                          initialValue: isNew ? undefined : data.amount
+                        })(
+                          <InputNumber placeholder="请输入" style={{width: '100%'}}/>
+                        )}
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={7} offset={1}>
+                  <Row>
+                    <Col span={11}>
+                      <FormItem label="有效期限">
+                        {getFieldDecorator('startDate', {
+                          initialValue: isNew ? undefined : (data.startDate ? moment(data.startDate) : undefined)
+                        })(
+                          <DatePicker placeholder="有效期限从"/>
+                        )}
+                      </FormItem>
+                    </Col>
+                    <Col span={12} offset={1}>
+                      <FormItem label=" " colon={false}>
+                        {getFieldDecorator('endDate', {
+                          initialValue: isNew ? undefined : (data.endDate ? moment(data.endDate) : undefined)
+                        })(
+                          <DatePicker placeholder="有效期限至"/>
+                        )}
+                      </FormItem>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Card>
+            <Card title="合同方信息" noHovering style={{marginBottom:'20px'}}>
+              <Row>
+                <Col span={7}>
+                  <FormItem label="合同方类型">
+                    {getFieldDecorator('partnerCategory', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? (partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : '') : data.partnerCategory
+                    })(
+                      <Select placeholder="请选择">
+                        {partnerCategoryOptions.map((option) => {
+                          return <Option key={option.value}>{option.messageKey}</Option>
+                        })}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="合同方">
+                    {getFieldDecorator('partnerId', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                      initialValue: isNew ? undefined : data.partnerId
+                    })(
+                      <Select placeholder="请选择">
+                        <Option key="911143733222408193">lucky</Option>
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+            </Card>
+            <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
+              <Row>
+                <Col span={7}>
+                  <FormItem>
+                    {getFieldDecorator('attachmentOID')(
+                      <Upload attachmentType="CONTRACT"
+                              fileNum={9}
+                              uploadHandle={this.handleUpload}/>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+            </Card>
+            <Card title="其他信息" noHovering>
+              <Row>
+                <Col span={7}>
+                  <FormItem label="责任部门">
+                    {getFieldDecorator('unitId', {
+                      initialValue: isNew ? undefined : data.unitId
+                    })(
+                      <Input placeholder="请输入"/>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="责任人">
+                    {getFieldDecorator('employeeId', {
+                      initialValue: isNew ? undefined : data.employeeId
+                    })(
+                      <Input placeholder="请输入"/>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={15}>
+                  <FormItem label="备注">
+                    {getFieldDecorator('remark', {
+                      initialValue: isNew ? undefined : data.remark
+                    })(
+                      <Input placeholder="请输入"/>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
+            </Card>
+            <Affix offsetBottom={0}
+                   style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                     boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
+              <Button type="primary" htmlType="submit" loading={loading} style={{margin:'0 20px'}}>下一步</Button>
+              <Button onClick={this.onCancel}>取消</Button>
+            </Affix>
+          </Form>
+        </Spin>
       </div>
     )
   }

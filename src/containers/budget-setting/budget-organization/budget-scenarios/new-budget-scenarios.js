@@ -35,7 +35,6 @@ class NewBudgetScenarios extends React.Component{
         }
         this.setState({loading: true});
         httpFetch.post(`${config.budgetUrl}/api/budget/scenarios`, values).then((res)=>{
-          console.log(res);
           this.setState({loading: false});
           if(res.status === 200){
             this.props.close(true);

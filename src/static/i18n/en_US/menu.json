@@ -97,11 +97,15 @@
   "menu.payment-company-setting":"Payment Company Setting",
   "menu.pay-requisition-type-detail":"Pay Requisition Type Detail",
   "menu.pay-requisition-type":"Pay Requisition Type",
+  "menu.budget-occupancy":"Budget Adjustment",
+  "menu.new-budget-occupancy":"Budget Adjustment New",
+  "menu.export-detail":"Export Detail",
   "menu.cash-flow-item":"Cash flow item",
   "menu.cash-transaction-class": "Cash transaction class",
   "menu.new-cash-transaction-class": "New cash transaction class",
   "menu.cash-transaction-class-detail": "Cash transaction class detail",
   "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction",
+  "menu.subject-sheet": "sheet of subjects",
   "menu.receipt-type-setting": "Receipt Type Setting",
   "menu.pre-payment-type": "Pre payment type"
 }
