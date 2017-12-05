@@ -104,5 +104,7 @@
   "menu.cash-transaction-class": "现金事务分类定义",
   "menu.new-cash-transaction-class": "新建现金事务分类",
   "menu.cash-transaction-class-detail": "现金事务分类详情",
-  "menu.pay-requisition-type-assign-transaction":"现金事务分配"
+  "menu.pay-requisition-type-assign-transaction":"现金事务分配",
+  "menu.receipt-type-setting": "单据类型设置",
+  "menu.pre-payment-type": "预付款类型定义"
 }

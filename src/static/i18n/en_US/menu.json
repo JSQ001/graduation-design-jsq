@@ -104,5 +104,7 @@
   "menu.cash-transaction-class": "Cash transaction class",
   "menu.new-cash-transaction-class": "New cash transaction class",
   "menu.cash-transaction-class-detail": "Cash transaction class detail",
-  "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction"
+  "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction",
+  "menu.receipt-type-setting": "Receipt Type Setting",
+  "menu.pre-payment-type": "Pre payment type"
 }

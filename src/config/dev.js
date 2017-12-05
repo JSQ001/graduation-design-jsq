@@ -8,7 +8,8 @@ const config = {
   payUrl: 'http://rjfin.haasgz.hand-china.com:30498/payment',
   contractUrl: 'http://rjfin.haasgz.hand-china.com:30498',
   localUrl:'http://localhost:9998',
-  liouliangUrl:'http://192.168.1.195:9996'
+  liouliangUrl:'http://192.168.1.195:9996',
+  prePaymentUrl: "http://rjfin.haasgz.hand-china.com:30498/prepayment",
 
 };
 
