@@ -73,7 +73,7 @@ class BudgetBalanceResult extends React.Component {
         condition: {
           companyNumber: companyNumber,
           version: res.data.versionName,
-          type: res.data.amountQuarterFlag,
+          type: res.data.amountQuarterFlagName,
           budgetStructure: res.data.structureName,
           budgetScenarios: res.data.scenarioName
         }
@@ -102,7 +102,6 @@ class BudgetBalanceResult extends React.Component {
   };
 
   showSlideFrame = (record, type) => {
-
     this.setState({
       showSlideFrameFlag: true,
       slideFrameParam: {

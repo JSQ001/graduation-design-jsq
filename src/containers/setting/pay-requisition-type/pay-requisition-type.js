@@ -238,7 +238,7 @@ class PayRequisitionType extends React.Component {
   }
 
   render() {
-    const {columns, data, pagination,searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
+    const {columns, data, pagination,searchForm, showSlideFramePut,showSlideFrameNew, loading, updateParams, isPut} = this.state
     return (
       <div className="payment-method">
         <div className="searchFrom">

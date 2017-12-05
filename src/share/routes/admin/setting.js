@@ -22,6 +22,8 @@ import NewDepartmentGroup from 'containers/setting/department-group/new-departme
 import PayRequisitionType from 'containers/setting/pay-requisition-type/pay-requisition-type'
 import PayRequisitionTypeDetail from 'containers/setting/pay-requisition-type/pay-requisition-type-detail'
 import PayRequisitionTypeAssignTransaction from 'containers/setting/pay-requisition-type/pay-requisition-type-assign-transaction'
+import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
+import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 
 //新建部门组
 const newDepartmentGroup = {
@@ -246,10 +248,18 @@ const payRequisitionType ={
   }
 };
 
+/*科目表定义*/
+const subjectSheet = {
+  key: 'subject-sheet',
+  url: '/main/setting/subject-sheet',
+  components: SubjectSheet,
+  parent: 'setting'
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,payRequisitionType],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup, payRequisitionType, subjectSheet],
   icon: 'setting',
   admin: true
 };

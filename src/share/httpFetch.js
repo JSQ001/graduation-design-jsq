@@ -69,7 +69,7 @@ const httpFetch = {
    */
   getInfo: function(){
     return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration(),this.getOrganization()])
+      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration()])
     })
   },
 
@@ -94,14 +94,6 @@ const httpFetch = {
   getProfile: function(){
     return this.get(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
       configureStore.store.dispatch(setProfile(response.data));
-    })
-  },
-
-  getOrganization: function(){
-    return this.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((response)=>{
-      configureStore.store.dispatch(setUserOrganization(response.data));
-    }).catch(e => {
-      configureStore.store.dispatch(setUserOrganization({message: e.response ? e.response.data.message : 'error'}));
     })
   },
 
