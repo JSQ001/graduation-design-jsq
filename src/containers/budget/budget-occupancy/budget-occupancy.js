@@ -1,6 +1,8 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
 import { Form, Button, Table } from 'antd'
 
 import SearchArea from 'components/search-area'
@@ -12,7 +14,7 @@ class BudgetOccupancy extends React.Component{
       loading: false,
       searchForm: [
         {type: 'input', id: 'num', label: '导入批次号'},
-        {type: 'select', id: 'people', label: '创建人', options: []},
+        {type: 'select', id: 'people', label: '创建人', options: [], getUrl: `${config.budgetUrl}/api/budget/reserve/adjust/getEmployee`, method: 'get'},
         {type: 'items', id: 'rangeDate', items: [
           {type: 'date', id: 'dateFrom', label: '导入日期从'},
           {type: 'date', id: 'dateTo', label: '导入日期至'}
@@ -34,6 +36,18 @@ class BudgetOccupancy extends React.Component{
       newBudgetOccupancy:  menuRoute.getRouteItem('new-budget-occupancy','key'),    //新建预算占用调整
     }
   }
+
+  componentWillMount() {
+    this.getList()
+  }
+
+  getList = () => {
+    const { page, pageSize } = this.state;
+    let url = `${config.budgetUrl}/api/budget/reserve/adjust?page=${page}&size=${pageSize}&batchNumber=123&employeeId=123&createDateFrom=&createDateTo=`;
+    httpFetch.get(url).then(res => {
+
+    })
+  };
 
   search = (values) => {
     console.log(values)
