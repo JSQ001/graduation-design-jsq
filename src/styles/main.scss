@@ -7,6 +7,8 @@
     left: 0;
     top: 0;
     height: 100vh;
+    overflow-x: hidden;
+    box-shadow: 0 0 10px 1px #000000;
     .company-name{
       height: 64px;
       line-height: 64px;
@@ -17,6 +19,23 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+    }
+    .menu-container{
+      display: inline-block;
+      height: calc(100vh - 112px);
+      overflow-y: auto;
+      width: calc(100% + 18px);
+      ul.ant-menu.ant-menu-root{
+        list-style-type: none;
+        padding-right: 18px;
+        display: inline-block;
+      }
+      ul.ant-menu, ul.ant-menu-submenu{
+        li.ant-menu-item a, div.ant-menu-submenu-title{
+          font-size: 12px;
+          font-weight: normal;
+        }
+      }
     }
   }
   .content-layout{
