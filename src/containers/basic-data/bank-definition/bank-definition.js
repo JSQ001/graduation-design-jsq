@@ -5,14 +5,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Table, Badge, notification, Popover, Popconfirm, Tabs  } from 'antd';
+import { Button, Table, Badge, notification, Popover, Popconfirm, Tabs, message  } from 'antd';
 
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import 'styles/pay/bank-definition/bank-definition.scss'
+import 'styles/basic-data/bank-definition/bank-definition.scss'
 import SlideFrame from 'components/slide-frame'
-import CreateOrUpdateBank from 'containers/pay/bank-definition/createOrUpdate-bank'
+import CreateOrUpdateBank from 'containers/basic-data/bank-definition/createOrUpdate-bank'
 const TabPane = Tabs.TabPane;
 let bankType = [];
 
@@ -38,13 +38,13 @@ class BankDefinition extends React.Component{
       searchParams: {
         bankCode: "",
         bankName: "",
-        country: "",
+        countryName: "",
         address: ""
       },
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
-        {type: 'select', id: 'country',options:[], labelKey: 'country',valueKey: 'code',
+        {type: 'select', id: 'countryName',options:[], labelKey: 'country',valueKey: 'country',
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
           defaultValue:'中国',
@@ -88,22 +88,48 @@ class BankDefinition extends React.Component{
           render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
       ],
-      operate:{          /*操作*/
-        title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
-        render: (text, record) => (
-          <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id:"common.edit"})}</a>
-            <span className="ant-divider" />
-            <a href="#" onClick={(e) => this.goBranchBank(e, record)}>{formatMessage({id:"bank.branchInfo"})}</a>  {/*分行信息*/}
-          </span>)
-      },
+      operate:[
+        {           /*状态*/
+          title: formatMessage({id:"common.column.status"}),
+          key: 'status',
+          width: '10%',
+          dataIndex: 'isEnabled',
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          )
+        },
+        {          /*操作*/
+          title: formatMessage({id:"common.operation"}), key: "operation", dataIndex: 'operation',
+          render: (text, record) => (
+            <span>
+              <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id:"common.edit"})}</a>
+              <span className="ant-divider" />
+              <Popconfirm onConfirm={(e) => this.deleteItem(e,record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+                <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
+              </Popconfirm>
+            </span>)
+        }
+      ],
     }
   }
 
+  deleteItem = (e,record) => {
+    //this.setState({loading: true});
+    httpFetch.delete(`${config.payUrl}/api/cash/bank/user/defineds`,[record.id]).then(response => {
+      if(response.status === 200){
+        message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.name})); // name删除成功
+        this.getList()
+      }
+    }).catch((e)=>{
+      if(e.response){
+        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+      }
+    })
+  };
+
   handleEvent =(event,value)=>{
     let { searchForm, address} = this.state;
-    console.log(value)
-    console.log(event)
     switch (event) {
       case 'COUNTRY_CHANGE':
         let add = {};
@@ -120,7 +146,7 @@ class BankDefinition extends React.Component{
           });
           searchForm[3].options = addressOptions;
             this.setState({
-            address:add
+             address:add
 ,            searchForm
           })
         });
@@ -130,7 +156,10 @@ class BankDefinition extends React.Component{
   };
 
   componentWillMount(){
-    let  searchForm = this.state.searchForm;
+    let {searchForm, columns, operate} = this.state;
+    this.setState({
+      columns: columns.concat(operate)
+    });
     //国家默认是中国，查询出中国的省市
     httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${this.state.countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       searchForm[3].options = response.data;
@@ -144,14 +173,10 @@ class BankDefinition extends React.Component{
   //Tabs点击
   onChangeTabs = (key) => {
     let {columns, operate,pagination} = this.state;
-    console.log(key)
-    console.log(this.props.language)
     if(key === 'customBank'){
-      columns[5] = operate;
+      columns = columns.concat(operate)
     }else {
-      if(columns.length === 6){
-        columns.delete(operate)
-      }
+      columns = columns.splice(0,5)
     }
     pagination.page = 0;
     pagination.pageSize = 10;
@@ -169,10 +194,15 @@ class BankDefinition extends React.Component{
   editItem = (e, record) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log(record)
+
+    let slideFrame = {};
+    slideFrame.title = this.props.intl.formatMessage({id:"bank.editorBank"}); //编辑银行
+    slideFrame.visible = true;
+    record.addressDetail = this.state.accountAddress;
+    slideFrame.params = record;
     this.setState({
-      showSlideFrame: true,
-      slideFrameTitle: this.props.intl.formatMessage({id:"bank.editorBank"}), /*编辑银行*/
-      nowBank: {bank: record},
+      slideFrame
     })
   };
 
@@ -187,15 +217,16 @@ class BankDefinition extends React.Component{
   };
 
   handleUpdate = (record,index) =>{
-    console.log(record)
-    let slideFrame = {};
-    slideFrame.title = this.props.intl.formatMessage({id:"bank.editorBank"}); //编辑银行
-    slideFrame.visible = true;
-    record.addressDetail = this.state.accountAddress;
-    slideFrame.params = record;
-    this.setState({
-      slideFrame
-    })
+    if(this.state.label === 'customBank'){
+      let slideFrame = {};
+      slideFrame.title = this.props.intl.formatMessage({id:"bank.editorBank"}); //编辑银行
+      slideFrame.visible = true;
+      record.addressDetail = this.state.accountAddress;
+      slideFrame.params = record;
+      this.setState({
+        slideFrame
+      })
+    }
   };
 
   //获取公司下的银行数据
@@ -208,7 +239,6 @@ class BankDefinition extends React.Component{
     }
     httpFetch.get(url).then((response)=>{
       if(response.status === 200){
-        console.log(response);
         response.data.map((item)=>{
           item.key = item.id;
         });
@@ -226,14 +256,11 @@ class BankDefinition extends React.Component{
   }
 
   handleSearch = (values) =>{
-    console.log(values)
-
     let searchParams = {
       bankCode: values.bankCode,
       bankName: values.bankName,
-      country: values.country === '中国'  ? 'CHN000000000' : values.country
+      country: values.countryName
     };
-    console.log(searchParams)
     this.setState({
       searchParams:searchParams,
       loading: true,
@@ -244,8 +271,6 @@ class BankDefinition extends React.Component{
   };
 
   handleCloseSlide = (params) => {
-    console.log(params)
-
     if(params) {
       this.getList();
     }
@@ -274,7 +299,7 @@ class BankDefinition extends React.Component{
   renderTabs(){
     return (
       this.state.tabs.map(tab => {
-        return <TabPane tab={tab.name} key={tab.key}/>
+        return <TabPane  tab={tab.name} key={tab.key}/>
       })
     )
   }
