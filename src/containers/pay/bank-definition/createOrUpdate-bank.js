@@ -54,8 +54,13 @@ class CreateOrUpdateBank extends React.Component{
       })
     });
     if(typeof params.id !== 'undefined'){
+      let accountAddress = [];
+      accountAddress.push(params.provinceCode);
+      accountAddress.push(params.cityCode);
+      accountAddress.push(params.districtCode);
+      params.accountAddress = accountAddress;
       this.setState({
-        address: params.accountAddress,
+        address: params.addressDetail,
         bank: params
       })
     }
@@ -76,7 +81,7 @@ class CreateOrUpdateBank extends React.Component{
     if(typeof nextprops.params.id === 'undefined'){
       this.setState({
         isEditor: false,
-        address: nextprops.params.accountAddress
+        address: nextprops.params.addressDetail
       })
     }
   }

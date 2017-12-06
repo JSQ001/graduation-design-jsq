@@ -180,7 +180,7 @@ class BankDefinition extends React.Component{
     let slideFrame = {};
     slideFrame.title = this.props.intl.formatMessage({id:"bank.createBank"});  //新建银行
     slideFrame.visible = true;
-    slideFrame.params = {accountAddress: this.state.accountAddress};
+    slideFrame.params = {addressDetail: this.state.accountAddress};
     this.setState({
       slideFrame
     });
@@ -191,7 +191,7 @@ class BankDefinition extends React.Component{
     let slideFrame = {};
     slideFrame.title = this.props.intl.formatMessage({id:"bank.editorBank"}); //编辑银行
     slideFrame.visible = true;
-    record.accountAddress = this.state.accountAddress;
+    record.addressDetail = this.state.accountAddress;
     slideFrame.params = record;
     this.setState({
       slideFrame

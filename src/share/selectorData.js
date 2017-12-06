@@ -283,7 +283,7 @@ const selectorData = {
   },
   'department':{
     title: "部门",
-    url: `http://192.168.1.195:9083/api/DepartmentGroup/selectDept/enabled`,
+    url: `${config.baseUrl}/api/DepartmentGroup/selectDept/enabled`,
     searchForm: [
       {type: 'input', id: 'deptCode', label: '部门号', defaultValue: ''},
       {type: 'input', id: 'name', label: '部门名称', defaultValue: ''},
@@ -296,7 +296,7 @@ const selectorData = {
   },
   'department_group': {
     title: "部门组",
-    url: `http://192.168.1.195:9083/api/DepartmentGroup/selectByInputAndEnabled`,
+    url: `${config.baseUrl}/DepartmentGroup/selectByInputAndEnabled`,
     searchForm: [
       {type: 'input', id: 'deptGroupCode', label: '部门组代码', defaultValue: ''},
       {type: 'input', id: 'description', label: '部门组描述', defaultValue: ''},
