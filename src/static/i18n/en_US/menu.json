@@ -46,7 +46,6 @@
   "menu.agency-setting": "Agency Setting",
   "menu.new-agency": "New Agency",
   "menu.bank-definition": "Bank Definition",
-  "menu.branch-bank-information": "Branch Bank Information",
   "menu.security-setting": "Security Setting",
   "menu.callback-setting": "The Callback Is Set",
   "menu.finance-setting":"Finance Setting",
@@ -112,5 +111,8 @@
   "menu.me-pre-payment":"Me Previous Payment",
   "menu.new-pre-payment":"New Previous Payment",
   "menu.pre-payment-detail":"Previous Payment Detail",
+  "menu.basic-data": "Basic data",
+  "menu.check-center": "Check for the center",
   "menu.pay-setting":"Pay Setting"
+
 }

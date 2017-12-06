@@ -1,8 +1,6 @@
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 
-import BankDefinition from 'containers/pay/bank-definition/bank-definition'
-import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
 
 //支付流水详情
 const paymentDetail = {

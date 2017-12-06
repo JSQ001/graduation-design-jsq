@@ -29,6 +29,7 @@ import prePayment from 'share/routes/normal/pre-payment'  //预付款
 //管理员模式下菜单
 import dashboardAdmin from 'share/routes/admin/dashboard-admin'  //管理员仪表盘
 import setting from 'share/routes/admin/setting'  //基础设置
+import basicData from 'share/routes/admin/basic-data' //基础数据
 import financeSetting from 'share/routes/admin/finance-setting'  //财务设置
 import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
 import receiptTypeSetting from 'share/routes/admin/receipt-type-setting'  //单据类型设置
@@ -67,6 +68,7 @@ const menu = [
   financeSetting,  //财务设置
   approveSetting,  //审批设置
   receiptTypeSetting,  //单据类型设置
+  basicData,      //基础数据
   paySetting,   //支付设置
 
 ];

@@ -10,7 +10,7 @@ import budgetVersion from 'static/i18n/zh_CN/budget-setting/budget-organization/
 import budgetItemType from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/zh_CN/budget-journal/budget-journal.json'
 import agencySetting from 'static/i18n/zh_CN/approve-setting/agency-setting.json'
-import bankDefinition from 'static/i18n/zh_CN/pay/bank-definition.json'
+import bankDefinition from 'static/i18n/zh_CN/basic-data/bank-definition.json'
 import securitySetting from 'static/i18n/zh_CN/setting/security-setting.json'
 import accountPeriodDefine from 'static/i18n/zh_CN/finance-setting/account-period-define.json'
 import accountPeriodControl from 'static/i18n/zh_CN/finance-setting/account-period-control.json'
