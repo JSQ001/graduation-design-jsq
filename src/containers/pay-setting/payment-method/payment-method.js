@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/11/25.
+ */
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
@@ -9,29 +12,46 @@ import httpFetch from 'share/httpFetch'
 
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
+
+import WrappedPaymentMethod from 'containers/pay/payment-method/new-payment-method'
 import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
-import 'styles/budget-setting/budget-organization/buget-item-type/budget-item-type.scss'
+import 'styles/pay/payment-method/payment-method.scss'
 
 
-class BudgetItemType extends React.Component {
+class PaymentMethod extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
       columns: [
-        {
-          title: this.props.intl.formatMessage({id: "budget.itemTypeCode"}),
-          dataIndex: 'itemTypeCode',
-          key: 'itemTypeCode',
+        {/*付款方式类型*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
+          dataIndex: 'paymentMethodCategory',
+          key: 'paymentMethodCategory',
+          render(recode){
+            if(recode === "ONLINE_PAYMENT"){
+              return "线上"
+            }else if(recode === "OFFLINE_PAYMENT"){
+              return "线下"
+            }else if(recode === "EBANK_PAYMENT"){
+              return "落地文件"
+            }
+          }
         },
-        {
-          title: this.props.intl.formatMessage({id: "budget.itemTypeName"}),
-          dataIndex: 'itemTypeName',
-          key: 'itemTypeName',
+        {/*付款方式代码*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
+          dataIndex: 'paymentMethodCode',
+          key: 'paymentMethodCode',
         },
-        {
+        {/*付款方式名称*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.description"}),
+          dataIndex: 'description',
+          key: 'description',
+        },
+
+        {/*状态*/
           title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
           dataIndex: 'isEnabled',
           key: 'isEnabled',
@@ -41,8 +61,8 @@ class BudgetItemType extends React.Component {
         },
       ],
       searchForm: [
-        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id: "budget.itemTypeCode"})},
-        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id: "budget.itemTypeName"})},
+        {type: 'input', id: 'paymentMethodCode', label: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})},
+        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: "paymentMethod.description"})},
       ],
       pageSize: 10,
       page: 0,
@@ -50,13 +70,10 @@ class BudgetItemType extends React.Component {
         total: 0
       },
       searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
+        paymentMethodCode: '',
+        description:'',
       },
-      updateParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
-      },
+      updateParams: {},
       showSlideFrameNew: false,
       showSlideFramePut: false,
       loading: true
@@ -72,7 +89,7 @@ class BudgetItemType extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.budgetUrl}/api/budget/itemType/query?organizationId=${this.props.organization.id}&size=${this.state.pageSize}&page=${this.state.page}&itemTypeCode=${this.state.searchParams.itemTypeCode || ''}&itemTypeName=${this.state.searchParams.itemTypeName || ''}`;
+    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCode}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -106,18 +123,20 @@ class BudgetItemType extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({
-      searchParams: {
-        itemTypeCode: '',
-        itemTypeName: '',
-      }
+      updateParams: {
+        description: '',
+        paymentMethodCode: '',
+      },
     })
   }
 
   //搜索
   search = (result) => {
+    console.log(result);
+    console.log(12333333);
     let searchParams = {
-      itemTypeCode: result.itemTypeCode,
-      itemTypeName: result.itemTypeName
+      description: result.description,
+      paymentMethodCode: result.paymentMethodCode
     };
     this.setState({
       searchParams: searchParams,
@@ -170,7 +189,7 @@ class BudgetItemType extends React.Component {
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -179,14 +198,14 @@ class BudgetItemType extends React.Component {
   render() {
     const {columns, data, pagination, searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
     return (
-      <div className="versionsDefine">
+      <div className="payment-method">
         <div className="searchFrom">
           <SearchArea
-        searchForm={searchForm}
-        submitHandle={this.search}
-        clearHandle={this.clear}
-        eventHandle={this.searchEventHandle}/>
-      </div>
+            searchForm={searchForm}
+            submitHandle={this.search}
+            clearHandle={this.clear}
+            eventHandle={this.searchEventHandle}/>
+        </div>
 
         <div className="table-header">
           <div
@@ -204,19 +223,17 @@ class BudgetItemType extends React.Component {
             pagination={pagination}
             loading={loading}
             bordered
-            onRow={record => ({
-              onClick: () => this.putItemTypeShowSlide(record)
-            })}
+            onRowClick={this.putItemTypeShowSlide}
             size="middle"
           />
         </div>
 
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.newItemType"})}
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款方式":"编辑付款方式"}
                     show={showSlideFrameNew}
-                    content={WrappedNewBudgetItemType}
+                    content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
 
         <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
                     show={showSlideFramePut}
@@ -232,10 +249,9 @@ class BudgetItemType extends React.Component {
 
 }
 
-function mapStateToProps(state) {
+function mapStateToProps() {
   return {
-    organization: state.budget.organization
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(BudgetItemType));
+export default connect(mapStateToProps)(injectIntl(PaymentMethod));

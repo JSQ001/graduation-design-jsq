@@ -592,7 +592,9 @@ class BudgetJournalDetail extends React.Component {
                  bordered
                  size="middle"
                  scroll={{ x: '200%' }}
-                 onRowClick={this.handlePutData}
+                 onRow={record => ({
+                   onClick: () => this.handlePutData(record)
+                 })}
                  rowSelection={rowSelection}
                  loading={loading}
           />

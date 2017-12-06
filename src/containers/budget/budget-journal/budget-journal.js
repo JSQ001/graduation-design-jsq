@@ -194,7 +194,9 @@ class BudgetJournal extends React.Component {
           pagination={pagination}
           size="middle"
           bordered
-          onRowClick={this.HandleRowClick}
+          onRow={record => ({
+            onClick: () => this.HandleRowClick(record)
+          })}
         />
       </div>
     )

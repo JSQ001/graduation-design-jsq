@@ -177,10 +177,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //根据预算日记账类型，获得预算表
   getStructure(value) {
-    console.log(value);
-
-    console.log(666);
-    httpFetch.get(`${config.liouliangUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       console.log(response.data);
       response.data.map((item)=>{
         item.key=item.id;
