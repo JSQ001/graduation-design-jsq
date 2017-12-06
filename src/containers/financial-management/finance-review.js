@@ -310,7 +310,7 @@ class FinanceReview extends React.Component {
                dataSource={data}
                bordered
                pagination={pagination}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({onClick: () => this.handleRowClick(record)})}
                loading={loading}
                size="middle"
                rowKey={nowType === 'INVOICE' ? 'expenseReportOID' : 'applicationOID'}/>
