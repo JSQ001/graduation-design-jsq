@@ -4,7 +4,7 @@
 import React from 'react'
 import { injectIntl, FormattedMessage } from 'react-intl';
 
-import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch  } from 'antd';
+import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch,Cascader  } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -379,10 +379,12 @@ class SearchArea extends React.Component{
       }
       //选择组件
       case 'select':{
+        console.log(item)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
                   allowClear
+                  showSearch
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
@@ -390,6 +392,19 @@ class SearchArea extends React.Component{
               return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
+        )
+      }
+      //级联选择
+      case 'cascader':{
+        console.log(item)
+        return (
+          <Cascader placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  options={item.options}
+                  allowClear
+                  showSearch
+                  disabled={item.disabled}>
+          </Cascader>
         )
       }
       //值列表选择组件

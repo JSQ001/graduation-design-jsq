@@ -283,9 +283,9 @@ const selectorData = {
   },
   'department':{
     title: "部门",
-    url: `${config.baseUrl}/api/DepartmentGroup/selectDepartmentByTenantId`,
+    url: `${config.baseUrl}/api/DepartmentGroup/selectDept/enabled`,
     searchForm: [
-      {type: 'input', id: 'custDeptNumber', label: '部门号', defaultValue: ''},
+      {type: 'input', id: 'deptCode', label: '部门号', defaultValue: ''},
       {type: 'input', id: 'name', label: '部门名称', defaultValue: ''},
     ],
     columns: [
@@ -296,7 +296,7 @@ const selectorData = {
   },
   'department_group': {
     title: "部门组",
-    url: `${config.baseUrl}/api/DepartmentGroup/selectByInput`,
+    url: `${config.baseUrl}/DepartmentGroup/selectByInputAndEnabled`,
     searchForm: [
       {type: 'input', id: 'deptGroupCode', label: '部门组代码', defaultValue: ''},
       {type: 'input', id: 'description', label: '部门组描述', defaultValue: ''},
@@ -385,7 +385,7 @@ const selectorData = {
       {title:"描述",dataIndex:'description'}
     ],
     key: 'companyOID'
-  }, 
+  },
   'cash_flow_item': {
     title: '现金流量项',
     url: `${config.payUrl}/api/cash/flow/items/query`,

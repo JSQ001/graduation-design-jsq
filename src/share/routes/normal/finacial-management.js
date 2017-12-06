@@ -4,6 +4,7 @@ import FinanceReview from 'containers/financial-management/finance-review'
 import FinanceView from 'containers/financial-management/finance-view'
 import ExpenseReportDetail from 'containers/expense-report/expense-report-detail'
 import LoanRequestDetail from 'containers/request/loan-request-detail'
+import CheckCenter from 'containers/financial-management/check-center'
 
 //报销单详情
 const expenseReportDetailReview = {
@@ -56,10 +57,18 @@ const financeView = {
   parent: 'financial-management'
 };
 
+//对账中心
+const checkCenter = {
+  key: 'check-center',
+  url: '/main/financial-management/check-center',
+  components: CheckCenter,
+  parent: 'financial-management'
+};
+
 //财务管理
 const financialManagement = {
   key:'financial-management',
-  subMenu: [financeReview, confirmPayment, paymentBatch, financeView],
+  subMenu: [financeReview, confirmPayment, paymentBatch, financeView, checkCenter],
   icon: 'pay-circle-o'
 };
 

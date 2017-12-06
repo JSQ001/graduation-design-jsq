@@ -170,10 +170,11 @@ class BudgetJournalDetailSubmit extends React.Component {
   //根据预算表的维度.获取维度Columuns
   getColumnsAndDimensionhandleData(dimensionList){
     let columns=this.state.columns;
-    for(let i=1;i<dimensionList.length;i++){
+    for(let i=0;i<dimensionList.length;i++){
       const item =dimensionList[i];
+      const priority = item.sequenceNumber;
       columns.push(
-        {title:`${item.dimensionName}`, key:`dimensionValue${i}Name`, dataIndex: `dimensionValue${i}Name`,
+        {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -355,12 +356,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
             <Collapse.Panel header="审批历史" key="1">
-              <div>预算</div>
-              <Steps direction="vertical" size="small" >
-                <Step title="Finished" description="This is a description." />
-                <Step title="In Progress" description="This is a description." />
-                <Step title="Waiting" description="This is a description." icon={<Icon  type="smile-o"/>} />
-              </Steps>
+
             </Collapse.Panel>
 
           </Collapse>

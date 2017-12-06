@@ -30,7 +30,6 @@ class NewBudgetJournalDetail extends React.Component {
       journalTypeIdFlag:true,
       companyIdFlag:true,
       journalTypeId:null,
-
     };
 
   }
@@ -185,12 +184,12 @@ class NewBudgetJournalDetail extends React.Component {
         labelKey:'attribute5',valueKey:'attribute4', getUrl:`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`,
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'input', id:'rate', label:  this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
       {type: 'inputNumber', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
-        step:10.00, defaultValue:0, event:'amount'},  //金额
+        step:10, defaultValue:0, event:'amount'},  //金额
       {type: 'inputNumber', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
-        step:10.00, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0}, //数量
+        step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
+      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0,min:0}, //数量
       {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
     ];
     this.setState({ searchForm })
@@ -403,7 +402,7 @@ class NewBudgetJournalDetail extends React.Component {
       //switch状态切换组件
       //数字选择InputNumber
       case 'inputNumber':{
-        return <InputNumber disabled={item.disabled}  min={0} step={item.step} precision={item.precision} onChange={handle} style={{width:200}}/>
+        return <InputNumber disabled={item.disabled}  min={item.min?item.min:-Infinity} step={item.step} precision={item.precision} onChange={handle} style={{width:200}}/>
       }
     }
   }
@@ -554,7 +553,9 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
+      console.log(77777);
       console.log(resp.data);
+      console.log(77777);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
@@ -568,8 +569,7 @@ class NewBudgetJournalDetail extends React.Component {
     let dimensionDataLists ={};
     for(let i=0;i<dimension.length;i++){
       const item =dimension[i];
-      const priority =i+1;
-      //const priority = item.priority;
+      const priority = item.sequenceNumber;
       let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimension"+priority+"ValueId","dimension"+priority+"ValueName","dimension"+priority];
       dimensionList[dimensionListKey[0]]=item.dimensionId;
       dimensionList[dimensionListKey[1]]=item.dimensionName;
@@ -615,7 +615,7 @@ class NewBudgetJournalDetail extends React.Component {
             </Row>
           </div>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+            <Button type="primary" htmlType="submit">{this.props.intl.formatMessage({id:"common.save"})}</Button>
             <Button onClick={this.onCancel}>{this.props.intl.formatMessage({id:"common.cancel"})}</Button>
           </div>
         </Form>
