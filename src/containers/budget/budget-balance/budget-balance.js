@@ -116,7 +116,7 @@ class BudgetBalance extends React.Component {
         {type: 'value_list', id: 'quarterLowerLimit', label: '季度从', options: [], valueListCode: 2021, disabled: true},
         {type: 'value_list', id: 'quarterUpperLimit', label: '季度到', options: [], valueListCode: 2021, disabled: true}
       ]},
-      {type: 'value_list', id:'amountQuarterFlag', label: '金额/数量', isRequired: true, options: [], valueListCode: 2019}
+      {type: 'value_list', id:'amountQuarterFlag', label: '金额 / 数量', isRequired: true, options: [], valueListCode: 2019}
     ];
 
     let itemSelectorItem = selectorData['budget_item'];
@@ -156,10 +156,12 @@ class BudgetBalance extends React.Component {
         labelKey: 'currencyName',
         valueKey: 'currency',
         codeKey: undefined,
-        listExtraParams: {},
+        listExtraParams: {
+          roleType: 'TENANT',
+          language: 'chineseName'
+        },
         selectorItem: undefined
       },
-
       'COMPANY': {
         listType: 'company',
         labelKey: 'name',
@@ -382,7 +384,7 @@ class BudgetBalance extends React.Component {
         values.id = this.state.condition.id;
         values.versionNumber = this.state.condition.versionNumber;
       }
-      httpFetch[method](`${config.budgetUrl}/api/budget/balance/query/header`, values).then(res => {
+      httpFetch[method](`${config.budgetUrl}/api/budget/balance/query/header`, values).then(() => {
         message.success('保存成功');
         this.setState({ showSaveModal: false, saving: false});
       }).catch(e => {
@@ -473,10 +475,10 @@ class BudgetBalance extends React.Component {
         yearLimit: condition.yearLimit,
         periodLowerLimit: condition.periodLowerLimit ? {value: condition.periodLowerLimit, label: condition.periodLowerLimit} : null,
         periodUpperLimit: condition.periodUpperLimit ? {value: condition.periodUpperLimit, label: condition.periodUpperLimit} : null,
-        periodSummaryFlag: condition.periodSummaryFlag ? {value: condition.periodSummaryFlag, label: condition.periodSummaryFlag} : null,
+        periodSummaryFlag: {value: (condition.periodSummaryFlag + '').toUpperCase(), label: condition.periodSummaryFlag ? '汇总' : '不汇总' },
         quarterLowerLimit: condition.quarterLowerLimit ? {value: condition.quarterLowerLimit, label: condition.quarterLowerLimit} : null,
         quarterUpperLimit: condition.quarterUpperLimit ? {value: condition.quarterUpperLimit, label: condition.quarterUpperLimit} : null,
-        amountQuarterFlag: {value: condition.amountQuarterFlag, label: condition.amountQuarterFlag}
+        amountQuarterFlag: {value: condition.amountQuarterFlag, label: condition.amountQuarterFlagName}
       });
       this.setState({ structureId: condition.structureId }, () => {this.setFieldsByStructureId()});
       //设置下方列表内的值
@@ -523,7 +525,7 @@ class BudgetBalance extends React.Component {
       this.getSystemValueList(item.valueListCode).then(res => {
         let options = [];
         res.data.values.map(data => {
-          options.push({label: data.messageKey, value: data.code, data: data})
+          options.push({label: data.messageKey, key: data.code, value: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -650,16 +652,16 @@ class BudgetBalance extends React.Component {
 
   onChangeSelect = (item, value, index) => {
     let valueWillSet = {};
-    let searchForm = this.state.searchForm;
+    let { searchForm }  = this.state;
     if(index !== undefined){
       searchForm[index].items = searchForm[index].items.map(searchItem => {
         if(searchItem.id === item.id){
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.value;
-            dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            dataOption[item.type === 'value_list' ? 'code' : item.valueKey] = value.value;
+            dataOption[item.type === 'value_list' ? 'messageKey' : item.labelKey] = value.label;
+            searchItem.options = [{label: value.label, key: value.value, value: dataOption, temp: true}];
           }
         }
         return searchItem;
@@ -670,9 +672,9 @@ class BudgetBalance extends React.Component {
           valueWillSet[searchItem.id] = value.value + '';
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
-            dataOption[item.valueKey] = value.value;
-            dataOption[item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, key: value.value, value: dataOption, temp: true})
+            dataOption[item.type === 'value_list' ? 'code' : item.valueKey] = value.value;
+            dataOption[item.type === 'value_list' ? 'messageKey' : item.labelKey] = value.label;
+            searchItem.options = [{label: value.label, key: value.value, value: dataOption, temp: true}];
           }
         }
         return searchItem;
@@ -714,7 +716,7 @@ class BudgetBalance extends React.Component {
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={'' + option.key} title={option.value ? JSON.stringify(option.value) : ''}>{option.label}</Option>
             })}
           </Select>
         )

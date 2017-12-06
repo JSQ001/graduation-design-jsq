@@ -6,12 +6,12 @@ import BudgetJournalDetailSubmit from 'containers/budget/budget-journal/budget-j
 import BudgetJournalReCheck from 'containers/budget/budget-journal-re-check/budget-journal-re-check'
 import BudgetJournalReCheckDetail from 'containers/budget/budget-journal-re-check/budget-journal-re-check-detail'
 
-import BudgetJournalCheck from 'containers/budget/budget-journl-check/budget-journal-check'
-import BudgetJournalCheckDetail from 'containers/budget/budget-journl-check/budget-journal-check-detail'
-
-
 import BudgetBalance from 'containers/budget/budget-balance/budget-balance'
 import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance-result'
+
+import BudgetOccupancy from 'containers/budget/budget-occupancy/budget-occupancy'
+import NewBudgetOccupancy from 'containers/budget/budget-occupancy/new-budget-occupancy'
+import ExportDetail from 'containers/budget/budget-occupancy/export-detail'
 
 //新建预算日记账
 const newBudgetJournal={
@@ -70,25 +70,6 @@ const budgetJournalReCheck = {
 };
 
 
-//预算日记账审核详情
-const budgetJournalCheckDetail={
-  key:'budget-journal-check-detail',
-  url:'/main/budget/budget-journal-check/budget-journal-check-detail/:journalCode',
-  components:BudgetJournalCheckDetail,
-  parent:'budget-journal-check'
-
-}
-
-
-//预算日记账审核
-const budgetJournalCheck = {
-  key:'budget-journal-check',
-  url:'/main/budget/budget-journal-check',
-  components: BudgetJournalCheck,
-  parent: 'budget',
-  children: {budgetJournalCheckDetail}
-};
-
 const budgetBalanceResult = {
   key: 'budget-balance-result',
   url:'/main/budget/budget-balance/budget-balance-result/:id',
@@ -107,10 +88,37 @@ const budgetBalance = {
   }
 };
 
+const exportDetail = {
+  key: 'export-detail',
+  url: '/main/budget/budget-occupancy/export-detail',
+  components: ExportDetail,
+  parent: 'budgetOccupancy'
+};
+
+//新建预算占用调整
+const newBudgetOccupancy = {
+  key: 'new-budget-occupancy',
+  url: '/main/budget/budget-occupancy/new-budget-occupancy',
+  components: NewBudgetOccupancy,
+  parent: 'budgetOccupancy'
+};
+
+//预算占用调整
+const budgetOccupancy = {
+  key: 'budget-occupancy',
+  url: '/main/budget/budget-occupancy',
+  components: BudgetOccupancy,
+  parent: 'budget',
+  children: {
+    newBudgetOccupancy,
+    exportDetail
+  }
+};
+
 //预算
 const budget = {
   key:'budget',
-  subMenu: [budgetJournal, budgetBalance,budgetJournalReCheck,budgetJournalCheck],
+  subMenu: [budgetJournal, budgetBalance,budgetJournalReCheck,budgetOccupancy],
   icon: 'tags'
 };
 

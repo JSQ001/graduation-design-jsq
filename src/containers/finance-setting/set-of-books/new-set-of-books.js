@@ -148,7 +148,7 @@ class NewSetOfBooks extends React.Component {
             })(
               <Select  onFocus={this.getCurrencyList} disabled={!!params.setOfBooksId} notFoundContent={<Spin size="small" />}>
                 {currencyOptions.map(item => {
-                  return <Option value={item.otherCurrency} key={item.id}>{item.otherCurrency}</Option>
+                  return <Option value={item.currency} key={item.currency}>{item.currency}</Option>
                 })}
               </Select>
             )}

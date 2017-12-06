@@ -1,7 +1,9 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import { Form, Affix, Button, Row, Col, Input, Popover, Tag } from 'antd'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Form, Affix, Button, Row, Col, Input, Popover, Tag, message } from 'antd'
 const FormItem = Form.Item;
 const { CheckableTag } = Tag;
 
@@ -12,7 +14,8 @@ class ContractDetail extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      passLoading: false,
+      rejectLoading: false,
       approveType: '',  //审批类型：通过 or 驳回
       inputError: false,
       errorMessage: '请输入驳回审批意见',
@@ -43,10 +46,37 @@ class ContractDetail extends React.Component{
     if (this.state.inputError) return;
     let params = this.props.form.getFieldsValue();
     if (this.state.approveType === 'pass') {  //通过
-
+      let url = `${config.contractUrl}/contract/api/contract/header/confirm/${this.props.params.id}`;
+      params.id = this.props.params.id;
+      params.reason = params.reason || '';
+      this.setState({ passLoading: true });
+      httpFetch.put(url, params).then(res => {
+        if (res.status === 200) {
+          this.setState({ passLoading: false });
+          message.success('提交审批成功');
+          this.goBack()
+        }
+      }).catch(e => {
+        this.setState({ passLoading: false });
+        message.error(`提交审批失败，${e.response.data.message}`)
+      })
     } else {  //驳回
-      if (params.approvalOpinion) {
-        this.setState({ inputError: false })
+      if (params.reason) {
+        this.setState({ inputError: false });
+        let url = `${config.contractUrl}/contract/api/contract/header/rejected/${this.props.params.id}?reason=${params.reason}`;
+        params.id = this.props.params.id;
+        console.log(params);
+        this.setState({ rejectLoading: true });
+        httpFetch.put(url, params).then(res => {
+          if (res.status === 200) {
+            this.setState({ rejectLoading: false });
+            message.success('提交审批成功');
+            this.goBack()
+          }
+        }).catch(e => {
+          this.setState({ rejectLoading: false });
+          message.error(`提交审批失败，${e.response.data.message}`)
+        })
       } else {
         this.setState({
           inputError: true,
@@ -56,9 +86,9 @@ class ContractDetail extends React.Component{
     }
   };
 
-  //通过 ／ 驳回 按钮
+  //通过／驳回 按钮
   handleBtnClick = (type) => {
-    this.setState({ approveType: type })
+    this.setState({ approveType: type });
   };
 
   //审批意见输入
@@ -81,8 +111,8 @@ class ContractDetail extends React.Component{
     let tags = this.state.tags;
     let fastReplyChosen = this.state.fastReplyChosen;
     let fastReplyChosenValue = [];
-    if (getFieldsValue().approvalOpinion) {
-      fastReplyChosenValue.push(getFieldsValue().approvalOpinion);
+    if (getFieldsValue().reason) {
+      fastReplyChosenValue.push(getFieldsValue().reason);
       fastReplyChosenValue = fastReplyChosenValue[0].split('，')
     }
     tags.map(item => {
@@ -92,7 +122,7 @@ class ContractDetail extends React.Component{
         checked ? fastReplyChosenValue.push(item.label) : fastReplyChosenValue.delete(item.label)
       }
     });
-    setFieldsValue({ approvalOpinion: fastReplyChosenValue.join('，') });
+    setFieldsValue({ reason: fastReplyChosenValue.join('，') });
     this.setState({
       tags,
       fastReplyChosen,
@@ -128,7 +158,7 @@ class ContractDetail extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, inputError, errorMessage, tags, fastReplyEdit, inputVisible, inputValue } = this.state;
+    const { passLoading, rejectLoading, inputError, errorMessage, tags, fastReplyEdit, inputVisible, inputValue } = this.state;
     const formItemLayout = {
       labelCol: { span: 3 },
       wrapperCol: { span: 21 }
@@ -169,7 +199,7 @@ class ContractDetail extends React.Component{
     );
     return (
       <div className="contract-detail background-transparent">
-        <ContractDetailCommon />
+        <ContractDetailCommon id={this.props.params.id} />
         <Affix offsetBottom={0} className="bottom-bar" style={{height:'80px',lineHeight:'80px'}}>
           <Row>
             <Col span={18}>
@@ -186,7 +216,7 @@ class ContractDetail extends React.Component{
                                  content={fastReplyContent}
                                  getPopupContainer={() => document.getElementsByClassName('contract-detail')[0]}
                                  overlayStyle={{width:'49%', maxHeight:'140px'}}>
-                          {getFieldDecorator('approvalOpinion')(
+                          {getFieldDecorator('reason')(
                             <Input placeholder="请输入，最多200个字符" onChange={this.onChange}/>
                           )}
                         </Popover>
@@ -194,11 +224,12 @@ class ContractDetail extends React.Component{
                   </Col>
                   <Col span={6}>
                     <Button type="primary"
-                            loading={loading}
+                            loading={passLoading}
                             htmlType="submit"
                             onClick={() => this.handleBtnClick('pass')}
                             style={{margin:'0 10px'}}>通 过</Button>
-                    <Button htmlType="submit"
+                    <Button loading={rejectLoading}
+                            htmlType="submit"
                             onClick={() => this.handleBtnClick('reject')}
                             style={{color:'#fff', backgroundColor:'#f04134', borderColor:'#f04134'}}>驳 回</Button>
                   </Col>

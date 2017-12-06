@@ -63,6 +63,8 @@ class PayFail extends React.Component {
       onlinePagination: {
         total: 0
       },
+      onlineCash: [],  //总金额
+
       /* 落地文件 */
       fileLoading: false,
       fileData: [],
@@ -71,10 +73,13 @@ class PayFail extends React.Component {
       filePagination: {
         total: 0
       },
+      fileCash: [],  //总金额
     };
   }
 
   componentWillMount() {
+    this.getOnlineCash();
+    this.getFileCash();
     return new Promise((resolve, reject) => {
       this.getOnlineList(resolve, reject);
       this.getFileList(resolve, reject)
@@ -83,10 +88,42 @@ class PayFail extends React.Component {
     });
   }
 
-  //线上 - 获取列表
+  search = () => {
+
+  };
+
+  clear = () => {
+
+  };
+
+  /*********************** 获取总金额 ***********************/
+
+    //线上
+  getOnlineCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=ONLINE_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ onlineCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  //落地文件
+  getFileCash = () => {
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=EBANK_PAYMENT`;
+    httpFetch.get(url).then(res => {
+      this.setState({ fileCash: res.data })
+    }).catch(() => {
+
+    })
+  };
+
+  /************************ 获取列表 ************************/
+
+  //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund/query?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
@@ -108,10 +145,10 @@ class PayFail extends React.Component {
     })
   };
 
-  //落地文件 - 获取列表
+  //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund/query?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
@@ -133,21 +170,15 @@ class PayFail extends React.Component {
     })
   };
 
-  search = () => {
+  /************************** 线上 **************************/
 
-  };
-
-  clear = () => {
-
-  };
-
-  //线上 - 选择/取消选择某行的回调
+  //选择/取消选择某行的回调
   onOnlineSelectRow = () => {};
 
-  //线上 - 选择/取消选择所有行的回调
+  //选择/取消选择所有行的回调
   onOnlineSelectAllRow = () => {};
 
-  //线上 - 修改每页显示数量
+  //修改每页显示数量
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -155,13 +186,15 @@ class PayFail extends React.Component {
     })
   };
 
-  //落地文件 - 选择/取消选择某行的回调
+  /************************ 落地文件 ************************/
+
+  //选择/取消选择某行的回调
   onFileSelectRow = () => {};
 
-  //落地文件 - 选择/取消选择所有行的回调
+  //选择/取消选择所有行的回调
   onFileSelectAllRow = () => {};
 
-  //落地文件 - 修改每页显示数量
+  //修改每页显示数量
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
@@ -169,21 +202,28 @@ class PayFail extends React.Component {
     })
   };
 
-  //线上 - 内容渲染
+  /************************ 内容渲染 ************************/
+
+  //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
     const rowSelection = {
       onSelect: this.onOnlineSelectRow,
       onSelectAll: this.onOnlineSelectAllRow
     };
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>等待付款结果</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        退票或失败
+        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="fail-online">
@@ -209,21 +249,26 @@ class PayFail extends React.Component {
     )
   };
 
-  //落地文件 - 内容渲染
+  //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
     const rowSelection = {
       onSelect: this.onFileSelectRow,
       onSelectAll: this.onFileSelectAllRow
     };
     const tableTitle = (
-      <Breadcrumb separator="|">
-        <Breadcrumb.Item>等待付款结果</Breadcrumb.Item>
-        <Breadcrumb.Item>金额：CNY <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">50,000笔</span></Breadcrumb.Item>
-        <Breadcrumb.Item>金额：USD <span className="num-style">250,000.00</span></Breadcrumb.Item>
-        <Breadcrumb.Item>单据数：<span className="num-style">100笔</span></Breadcrumb.Item>
-      </Breadcrumb>
+      <div>
+        退票或失败
+        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.map((item, index) => {
+          return (
+            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
+              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
+              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
+            </Breadcrumb>
+          )
+        })}
+      </div>
     );
     return (
       <div className="fail-file">
@@ -248,6 +293,8 @@ class PayFail extends React.Component {
       </div>
     )
   };
+
+  /************************* End *************************/
 
   render(){
     const { searchForm, radioValue } = this.state;

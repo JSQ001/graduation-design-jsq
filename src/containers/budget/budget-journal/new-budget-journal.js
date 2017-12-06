@@ -19,6 +19,7 @@ class NewBudgetJournalFrom extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading:false,
       budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail', 'key'),    //预算日记账详情
       budgetJournalPage: menuRoute.getRouteItem('budget-journal', 'key'),    //预算日记账
       idSelectJournal: false,
@@ -100,10 +101,22 @@ class NewBudgetJournalFrom extends React.Component {
 
   //保存日记账头
   saveHeard = (value) => {
+    this.setState({
+      loading:true,
+    })
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`, value).then((response) => {
       let path = this.state.budgetJournalDetailPage.url.replace(":journalCode", response.data.dto.journalCode);
       this.context.router.push(path);
+      this.setState({
+        loading:false,
+      })
+    }).catch(e => {
+      message.error(e.response.data.message)
+      this.setState({
+        loading:false,
+      })
     })
+
   };
 
 
@@ -178,7 +191,7 @@ class NewBudgetJournalFrom extends React.Component {
           console.log(this.state.structureGroup);
         }
       )
-    })
+    }).catch(e => {message.error(e.response.data.message)})
     let structureId = null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
       console.log(response.data);
@@ -190,7 +203,7 @@ class NewBudgetJournalFrom extends React.Component {
             "periodStrategy":response.data.periodStrategy
           })
         }
-    })
+    }).catch(e => {message.error(e.response.data.message)})
 
     this.getFormOid(value);
 

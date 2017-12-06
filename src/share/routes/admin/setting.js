@@ -19,9 +19,9 @@ import CompanyGroupDetail from 'containers/setting/company-group/company-group-d
 import DepartmentGroup from 'containers/setting/department-group/department-group'
 import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
-import PayRequisitionType from 'containers/setting/pay-requisition-type/pay-requisition-type'
-import PayRequisitionTypeDetail from 'containers/setting/pay-requisition-type/pay-requisition-type-detail'
-import PayRequisitionTypeAssignTransaction from 'containers/setting/pay-requisition-type/pay-requisition-type-assign-transaction'
+import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
+import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
+
 
 //新建部门组
 const newDepartmentGroup = {
@@ -218,38 +218,19 @@ const companyMaintain ={
   }
 };
 
-/*预付款单分配公司*/
-const payRequisitionTypeDetail ={
-  key:'pay-requisition-type-detail',
-  url:'/main/setting/pay-requisition-type/pay-requisition-type-detail/:requisitionTypeId',
-  components:PayRequisitionTypeDetail,
-  parent: 'pay-requisition-type'
-};
 
-/*预付款单分配现金事务*/
-const payRequisitionTypeAssignTransaction ={
-  key:'pay-requisition-type-assign-transaction',
-  url:'/main/setting/pay-requisition-type/pay-requisition-type-assign-transaction/:requisitionTypeId',
-  components:PayRequisitionTypeAssignTransaction,
-  parent: 'pay-requisition-type'
-}
-
-/*预付款单定义*/
-const payRequisitionType ={
-  key:'pay-requisition-type',
-  url:'/main/setting/pay-requisition-type',
-  components:PayRequisitionType,
-  parent: 'setting',
-  children:{
-    payRequisitionTypeDetail,
-    payRequisitionTypeAssignTransaction
-  }
+/*科目表定义*/
+const subjectSheet = {
+  key: 'subject-sheet',
+  url: '/main/setting/subject-sheet',
+  components: SubjectSheet,
+  parent: 'setting'
 };
 
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,payRequisitionType],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,subjectSheet],
   icon: 'setting',
   admin: true
 };
