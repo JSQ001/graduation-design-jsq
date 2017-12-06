@@ -20,6 +20,7 @@ import DepartmentGroup from 'containers/setting/department-group/department-grou
 import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
 import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
+import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 
 
 //新建部门组
