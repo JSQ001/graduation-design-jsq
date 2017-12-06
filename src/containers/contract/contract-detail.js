@@ -36,7 +36,7 @@ class ContractDetail extends React.Component {
 
   //删除
   onDelete = () => {
-    let url = `${config.contractUrl}/api/contract/header/${this.props.params.id}`;
+    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
     this.setState({ dLoading: true });
     httpFetch.delete(url, {id: this.props.params.id}).then(res => {
       if (res.status === 200) {

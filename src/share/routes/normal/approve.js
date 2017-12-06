@@ -7,7 +7,7 @@ import BudgetJournalCheckDetail from 'containers/approve/budget-journl-check/bud
 //审批合同
 const contractDetail = {
   key:'approve-contract-detail',
-  url:'/main/approve/approve-contract/approve-contract-detail',
+  url:'/main/approve/approve-contract/approve-contract-detail/:id',
   components: ApproveContractDetail ,
   parent: 'approve-contract'
 };

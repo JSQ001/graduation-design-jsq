@@ -46,14 +46,7 @@ class ContractDetailCommon extends React.Component {
         {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '备注', dataIndex: 'remark', render: value => {return (
           value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
-        )}},
-        {title: '操作', dataIndex: 'id', render: (text, record) => (
-          <span>
-            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
-            <span className="ant-divider"/>
-            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
-          </span>)
-        }
+        )}}
       ],
       data: [],
       planAmount: 0,
@@ -68,6 +61,19 @@ class ContractDetailCommon extends React.Component {
   }
 
   componentWillMount() {
+    if (this.props.contractEdit) {
+      let columns = this.state.columns;
+      columns.push(
+        {title: '操作', dataIndex: 'id', render: (text, record) => (
+          <span>
+            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <span className="ant-divider"/>
+            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
+          </span>)
+        }
+      );
+      this.setState({ columns })
+    }
     this.getInfo();
     this.getPayInfo()
   }
@@ -201,7 +207,7 @@ class ContractDetailCommon extends React.Component {
     );
     let contractHistory = (
       <div>
-        <Timeline>
+        <Timeline style={{marginTop:20}}>
           <Timeline.Item color="grey">
             <p>
               <span style={{fontWeight:'bold'}}>等待审批</span>

@@ -97,7 +97,7 @@ class NewStrategyControlDetail extends React.Component{
         this.setState({loading: true});
         values.controlStrategyDetailId = this.props.params.newParams.strategyControlId;
         values.value = Number(values.value).toFixed(4);
-        values.operator = values.operator ? values.operator: "DIVIDE";
+        values.manner === 'PERCENTAGE' && (values.operator = "MULTIPLY");
         httpFetch.post(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           this.setState({loading: false});
           if(res.status === 200){
@@ -124,7 +124,7 @@ class NewStrategyControlDetail extends React.Component{
         values.controlStrategyDetailId = this.props.params.strategyControlId;
         values.versionNumber = this.state.updateParams.versionNumber++;
         values.value = Number(values.value).toFixed(4);
-        console.log(values);
+        values.manner === 'PERCENTAGE' && (values.operator = "MULTIPLY");
         this.setState({loading: true});
         httpFetch.put(`${config.budgetUrl}/api/budget/control/strategy/mp/conds`, values).then((res)=>{
           if(res.status === 200){
