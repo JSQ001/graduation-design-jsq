@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/12/4.
+ */
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
@@ -5,10 +8,10 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { Form, Affix, Button, message } from 'antd'
 
-import ContractDetailCommon from 'containers/contract/contract-detail-common'
-import 'styles/contract/contract-detail.scss'
+import PrePaymentCommon  from 'containers/pre-payment/my-pre-payment/pre-payment-common'
+import 'styles/pre-payment/my-pre-payment/pre-payment-detail.scss'
 
-class ContractDetail extends React.Component {
+class PrePaymentDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +39,7 @@ class ContractDetail extends React.Component {
 
   //删除
   onDelete = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
+    let url = `${config.contractUrl}/api/contract/header/${this.props.params.id}`;
     this.setState({ dLoading: true });
     httpFetch.delete(url, {id: this.props.params.id}).then(res => {
       if (res.status === 200) {
@@ -58,12 +61,12 @@ class ContractDetail extends React.Component {
   render() {
     const { loading, dLoading } = this.state;
     return (
-      <div className="contract-detail background-transparent">
-        <ContractDetailCommon contractEdit={true} id={this.props.params.id} />
+      <div className="pre-payment-detail background-transparent">
+        <PrePaymentCommon contractEdit={true} id={this.props.params.id} />
         <Affix offsetBottom={0} className="bottom-bar">
           <Button type="primary" onClick={this.onSubmit} loading={loading} style={{margin:'0 20px'}}>提 交</Button>
           <Button onClick={this.onCancel}>保 存</Button>
-          <Button style={{marginLeft:'50px'}} onClick={this.onDelete} loading={dLoading}>删除该合同</Button>
+          <Button style={{marginLeft:'50px'}} onClick={this.onDelete} loading={dLoading}>删除</Button>
           <Button style={{marginLeft:'20px'}} onClick={this.onCancel}>返 回</Button>
         </Affix>
       </div>
@@ -71,10 +74,10 @@ class ContractDetail extends React.Component {
   }
 }
 
-ContractDetail.contextTypes = {
+PrePaymentDetail.contextTypes = {
   router: React.PropTypes.object
 };
 
-const wrappedContractDetail = Form.create()(injectIntl(ContractDetail));
+const wrappedPrePaymentDetail = Form.create()(injectIntl(PrePaymentDetail));
 
-export default wrappedContractDetail;
+export default wrappedPrePaymentDetail;

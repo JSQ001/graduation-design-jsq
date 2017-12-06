@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/12/4.
+ */
 import React from 'react'
 import {connect} from 'react-redux'
 import { injectIntl } from 'react-intl'
@@ -12,7 +15,7 @@ import moment from 'moment'
 import Upload from 'components/upload'
 import Chooser from 'components/chooser'
 
-class NewContract extends React.Component{
+class MyNewPrePayment extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -162,10 +165,10 @@ class NewContract extends React.Component{
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Spin spinning={pageLoading}>
-          <Card title="基本信息" hoverable={false} style={{marginBottom:'20px'}}>
+          <Card title="单据信息" noHovering style={{marginBottom:'20px'}}>
             <Row>
               <Col span={7}>
-                <div style={{lineHeight: '32px'}}>合同编号:</div>
+                <div style={{lineHeight: '32px'}}>单据编号:</div>
                 <Input value={isNew ? '-' : data.id} disabled />
               </Col>
               <Col span={7} offset={1}>
@@ -179,23 +182,10 @@ class NewContract extends React.Component{
             </Row>
           </Card>
           <Form onSubmit={isNew ? this.handleSave : this.handleUpdate}>
-            <Card title="合同信息" hoverable={false} style={{marginBottom:'20px'}}>
+            <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
               <Row>
-                <Col span={15}>
-                  <FormItem label="合同名称">
-                    {getFieldDecorator('contractName', {
-                      rules: [{
-                        required: true,
-                        message: '请输入'
-                      }],
-                      initialValue: isNew ? '' : data.contractName
-                    })(
-                      <Input placeholder="请输入"/>
-                    )}
-                  </FormItem>
-                </Col>
                 <Col span={7} offset={1}>
-                  <FormItem label="签署日期">
+                  <FormItem label="申请日期">
                     {getFieldDecorator('signDate', {
                       rules: [{
                         required: true,
@@ -207,9 +197,7 @@ class NewContract extends React.Component{
                     )}
                   </FormItem>
                 </Col>
-              </Row>
-              <Row>
-                <Col span={7}>
+                <Col span={7} offset={1}>
                   <FormItem label="公司">
                     {getFieldDecorator('companyId', {
                       rules: [{
@@ -227,7 +215,7 @@ class NewContract extends React.Component{
                   </FormItem>
                 </Col>
                 <Col span={7} offset={1}>
-                  <FormItem label="合同类型（请先选择公司）">
+                  <FormItem label="申请人">
                     {getFieldDecorator('contractTypeId', {
                       rules: [{
                         required: true,
@@ -244,8 +232,10 @@ class NewContract extends React.Component{
                     )}
                   </FormItem>
                 </Col>
+              </Row>
+              <Row>
                 <Col span={7} offset={1}>
-                  <FormItem label="合同大类">
+                  <FormItem label="部门">
                     {getFieldDecorator('contractCategory', {
                       rules: [{
                         required: true,
@@ -261,95 +251,22 @@ class NewContract extends React.Component{
                     )}
                   </FormItem>
                 </Col>
-              </Row>
-              <Row>
-                <Col span={7}>
-                  <Row>
-                    <Col span={7}>
-                      <FormItem label="合同金额">
-                        {getFieldDecorator('currency', {
-                          initialValue: isNew ? 'CNY' : data.currency
-                        })(
-                          <Select placeholder="请选择">
-                            {currencyOptions.map((option) => {
-                              return <Option key={option.currency}>{option.currency}</Option>
-                            })}
-                          </Select>
-                        )}
-                      </FormItem>
-                    </Col>
-                    <Col span={16} offset={1}>
-                      <FormItem label=" " colon={false}>
-                        {getFieldDecorator('amount', {
-                          initialValue: isNew ? undefined : data.amount
-                        })(
-                          <InputNumber placeholder="请输入" style={{width: '100%'}}/>
-                        )}
-                      </FormItem>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={7} offset={1}>
-                  <Row>
-                    <Col span={11}>
-                      <FormItem label="有效期限">
-                        {getFieldDecorator('startDate', {
-                          initialValue: isNew ? undefined : (data.startDate ? moment(data.startDate) : undefined)
-                        })(
-                          <DatePicker placeholder="有效期限从"/>
-                        )}
-                      </FormItem>
-                    </Col>
-                    <Col span={12} offset={1}>
-                      <FormItem label=" " colon={false}>
-                        {getFieldDecorator('endDate', {
-                          initialValue: isNew ? undefined : (data.endDate ? moment(data.endDate) : undefined)
-                        })(
-                          <DatePicker placeholder="有效期限至"/>
-                        )}
-                      </FormItem>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Card>
-            <Card title="合同方信息" hoverable={false} style={{marginBottom:'20px'}}>
-              <Row>
-                <Col span={7}>
-                  <FormItem label="合同方类型">
-                    {getFieldDecorator('partnerCategory', {
+                <Col span={15} offset={1}>
+                  <FormItem label="事由说明">
+                    {getFieldDecorator('contractName', {
                       rules: [{
                         required: true,
-                        message: '请选择'
+                        message: '请输入'
                       }],
-                      initialValue: isNew ? (partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : '') : data.partnerCategory
+                      initialValue: isNew ? '' : data.contractName
                     })(
-                      <Select placeholder="请选择">
-                        {partnerCategoryOptions.map((option) => {
-                          return <Option key={option.value}>{option.messageKey}</Option>
-                        })}
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-                <Col span={7} offset={1}>
-                  <FormItem label="合同方">
-                    {getFieldDecorator('partnerId', {
-                      rules: [{
-                        required: true,
-                        message: '请选择'
-                      }],
-                      initialValue: isNew ? undefined : data.partnerId
-                    })(
-                      <Select placeholder="请选择">
-                        <Option key="911143733222408193">lucky</Option>
-                      </Select>
+                      <Input placeholder="请输入"/>
                     )}
                   </FormItem>
                 </Col>
               </Row>
             </Card>
-            <Card title="附件信息" hoverable={false} style={{marginBottom:'20px'}}>
+            <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
               <Row>
                 <Col span={7}>
                   <FormItem>
@@ -357,39 +274,6 @@ class NewContract extends React.Component{
                       <Upload attachmentType="CONTRACT"
                               fileNum={9}
                               uploadHandle={this.handleUpload}/>
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-            </Card>
-            <Card title="其他信息" hoverable={false}>
-              <Row>
-                <Col span={7}>
-                  <FormItem label="责任部门">
-                    {getFieldDecorator('unitId', {
-                      initialValue: isNew ? undefined : data.unitId
-                    })(
-                      <Input placeholder="请输入"/>
-                    )}
-                  </FormItem>
-                </Col>
-                <Col span={7} offset={1}>
-                  <FormItem label="责任人">
-                    {getFieldDecorator('employeeId', {
-                      initialValue: isNew ? undefined : data.employeeId
-                    })(
-                      <Input placeholder="请输入"/>
-                    )}
-                  </FormItem>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={15}>
-                  <FormItem label="备注">
-                    {getFieldDecorator('remark', {
-                      initialValue: isNew ? undefined : data.remark
-                    })(
-                      <Input placeholder="请输入"/>
                     )}
                   </FormItem>
                 </Col>
@@ -408,11 +292,11 @@ class NewContract extends React.Component{
   }
 }
 
-NewContract.contextTypes = {
+MyNewPrePayment.contextTypes = {
   router: React.PropTypes.object
 };
 
-const wrappedNewContract = Form.create()(injectIntl(NewContract));
+const wrappedMyNewPrePayment = Form.create()(injectIntl(MyNewPrePayment));
 
 function mapStateToProps(state) {
   return {
@@ -420,6 +304,6 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(wrappedNewContract);
+export default connect(mapStateToProps)(wrappedMyNewPrePayment);
 
 

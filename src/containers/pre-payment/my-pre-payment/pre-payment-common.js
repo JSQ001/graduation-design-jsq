@@ -1,3 +1,6 @@
+/**
+ * Created by 13576 on 2017/12/5.
+ */
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
@@ -5,19 +8,19 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
-
 import moment from 'moment'
 import SlideFrame from 'components/slide-frame'
-import NewPayPlan from 'containers/contract/new-pay-plan'
-import 'styles/contract/contract-detail.scss'
+import  NewPrePaymentDetail from 'containers/contract/new-pay-plan'
+import 'styles/pre-payment/my-pre-payment/pre-payment-detail.scss'
 
-class ContractDetailCommon extends React.Component {
+class PrePaymentCommon extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       topLoading: false,
       detailLoading: false,
       planLoading: false,
+      loading:false,
       topTapValue: 'contractInfo',
       headerData: {},
       contractStatus: {
@@ -31,28 +34,38 @@ class ContractDetailCommon extends React.Component {
       },
       subTabsList: [
         {label: '详情', key: 'DETAIL'},
-        {label: '资金计划', key: 'PLAN'},
-        {label: '预付款', key: 'ADVANCE'},
-        {label: '费用申请', key: 'APPLY'},
-        {label: '费用报销', key: 'PAYMENT'},
-        {label: '支付明细', key: 'PayDETAIL'},
       ],
       columns: [
         {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => (index + 1)},
-        {title: '币种', dataIndex: 'currency', width: '7%'},
-        {title: '计划金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '合同方类型', dataIndex: 'partnerCategory'},
-        {title: '合同方', dataIndex: 'partnerId'},
-        {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '备注', dataIndex: 'remark', render: value => {return (
+        {title: '说明', dataIndex: 'remark', render: value => {return (
           value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
-        )}}
+        )}},
+        {title: '预付款类型', dataIndex: 'partnerCategory'},
+        {title: '收款方', dataIndex: 'currency'},
+        {title: '预付款金额', dataIndex: 'amount',
+          render: this.filterMoney
+        },
+        {title: '本位币金额', dataIndex: 'fAmount',
+          render: this.filterMoney
+        },
+        {title: '收款账户', dataIndex: 'partnerId'},
+        {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
+
+        {title: '其他', dataIndex: 'id', render: (text, record) => (
+          <span>
+            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <span className="ant-divider"/>
+            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
+          </span>)
+        }
       ],
       data: [],
       planAmount: 0,
       pagination: {
         total: 0
       },
+      pageSize: 10,
+      page: 0,
       showSlideFrame: false,
       slideFrameTitle: '',
       record: {}, //资金计划行信息
@@ -61,19 +74,6 @@ class ContractDetailCommon extends React.Component {
   }
 
   componentWillMount() {
-    if (this.props.contractEdit) {
-      let columns = this.state.columns;
-      columns.push(
-        {title: '操作', dataIndex: 'id', render: (text, record) => (
-          <span>
-            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
-            <span className="ant-divider"/>
-            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
-          </span>)
-        }
-      );
-      this.setState({ columns })
-    }
     this.getInfo();
     this.getPayInfo()
   }
@@ -177,8 +177,12 @@ class ContractDetailCommon extends React.Component {
     })
   };
 
+  newItemTypeShowSlide=()=>{
+
+  }
+
   render() {
-    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
+    const { topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
@@ -194,7 +198,7 @@ class ContractDetailCommon extends React.Component {
           </Col>
           <Col span={12}>
             <div style={{float:'right'}}>
-              <div className="amount-title">合同金额</div>
+              <div className="amount-title">预付款总金额</div>
               <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount)}</div>
             </div>
             <div style={{float:'right', marginRight:'50px'}}>
@@ -207,7 +211,7 @@ class ContractDetailCommon extends React.Component {
     );
     let contractHistory = (
       <div>
-        <Timeline style={{marginTop:20}}>
+        <Timeline>
           <Timeline.Item color="grey">
             <p>
               <span style={{fontWeight:'bold'}}>等待审批</span>
@@ -239,92 +243,54 @@ class ContractDetailCommon extends React.Component {
     );
     let subContent = {};
     subContent.DETAIL = (
-      <div className="tab-container">
-        <Spin spinning={detailLoading}>
-          <h3 className="sub-header-title">合同信息
-            {this.props.contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
-          </h3>
-          <Row>
-            <Col span={8}>{this.renderList('合同名称', headerData.contractName)}</Col>
-            <Col span={8}>{this.renderList('签署日期', moment(headerData.signDate).format('YYYY-MM-DD'))}</Col>
-          </Row>
-          <Row>
-            <Col span={8}>{this.renderList('公司', headerData.companyId)}</Col>
-            <Col span={8}>{this.renderList('有效期限',
-              headerData.startDate || headerData.endDate ?
-                (
-                  (headerData.startDate ? moment(headerData.startDate).format('YYYY-MM-DD') : '无')
-                  + ' 至 ' +
-                  (headerData.endDate ? moment(headerData.endDate).format('YYYY-MM-DD') : '无')
-                ) : '-'
-            )}</Col>
-          </Row>
-          <h3 className="margin-20-0">合同方信息</h3>
-          <Row>
-            <Col span={8}>{this.renderList('合同方类型', headerData.partnerCategory)}</Col>
-            <Col span={8}>{this.renderList('合同方', headerData.partnerId)}</Col>
-          </Row>
-          <h3 className="margin-20-0">其他信息</h3>
-          <Row>
-            <Col span={8}>{this.renderList('责任部门', headerData.unitId ? headerData.unitId + ' - ' + headerData.unitName : '-')}</Col>
-            <Col span={8}>{this.renderList('责任人', headerData.employeeId ? headerData.employeeId + ' - ' + headerData.employeeName : '-')}</Col>
-          </Row>
-          <Row>
-            <Col span={8}>{this.renderList('备注', headerData.remark || '-')}</Col>
-          </Row>
-          <h3 className="margin-20-0">附件信息</h3>
-        </Spin>
-      </div>
-    );
-    subContent.PLAN = (
-      <div className="tab-container">
-        <Spin spinning={planLoading}>
-          <h3 className="sub-header-title">付款计划</h3>
-          <div className="table-header">
-            <div className="table-header-buttons">
-              {this.props.contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
-            </div>
-            <Breadcrumb style={{marginBottom:'10px'}}>
-              <Breadcrumb.Item>共 {pagination.total} 条数据</Breadcrumb.Item>
-              <Breadcrumb.Item>合同总金额: {headerData.currency} {this.filterMoney(planAmount)}</Breadcrumb.Item>
-              <Breadcrumb.Item>计划总金额: {headerData.currency} {this.filterMoney(headerData.amount)}</Breadcrumb.Item>
-              <Breadcrumb.Item>待计划金额: {headerData.currency} {this.filterMoney(headerData.amount - planAmount)}</Breadcrumb.Item>
-            </Breadcrumb>
+      <div>
+        {/*detailLoading*/}
+        <Spin spinning={false}>
+        <div className="tab-container" style={{marginBottom:16}}>
+            <h3 className="sub-header-title">基本信息
+              {this.props.contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
+            </h3>
+            <Row>
+              <Col span={12}>{this.renderList('申请日期', moment(headerData.signDate).format('YYYY-MM-DD'))}</Col>
+              <Col span={12}>{this.renderList('公司', headerData.companyId)}</Col>
+              <Col span={12}>{this.renderList('申请人', headerData.companyId)}</Col>
+              <Col span={12}>{this.renderList('部门', headerData.partnerCategory)}</Col>
+            </Row>
+            <Row>
+              <Col span={8}>{this.renderList('事由说明', headerData.partnerId)}</Col>
+            </Row>
+            <h3 className="margin-20-0">附件信息</h3>
+        </div>
+          <div className="tab-container">
+              <h3 className="sub-header-title">付款信息</h3>
+              <div className="table-header">
+                <div className="table-header-buttons">
+                  {this.props.contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
+                </div>
+                <Breadcrumb style={{marginBottom:'10px'}}>
+                  <Breadcrumb.Item>共 {pagination.total} 条数据</Breadcrumb.Item>
+                  <Breadcrumb.Item>金额: {headerData.currency} {this.filterMoney(planAmount)}</Breadcrumb.Item>
+                  <Breadcrumb.Item>本币金额: {"CNY"} {this.filterMoney(headerData.amount - planAmount)}</Breadcrumb.Item>
+                </Breadcrumb>
+              </div>
+              <Table rowKey={record => record.id}
+                     columns={columns}
+                     dataSource={data}
+                     bordered
+                     loading={planLoading}
+                     size="middle"/>
           </div>
-          <Table rowKey={record => record.id}
-                 columns={columns}
-                 dataSource={data}
-                 bordered
-                 size="middle"/>
         </Spin>
       </div>
+
     );
-    subContent.ADVANCE = (
-      <div className="tab-container">
-        <h3 className="sub-header-title">预付款</h3>
-      </div>
-    );
-    subContent.APPLY = (
-      <div className="tab-container">
-        <h3 className="sub-header-title">费用申请</h3>
-      </div>
-    );
-    subContent.PAYMENT = (
-      <div className="tab-container">
-        <h3 className="sub-header-title">费用报销</h3>
-      </div>
-    );
-    subContent.PayDETAIL = (
-      <div className="tab-container">
-        <h3 className="sub-header-title">支付明细</h3>
-      </div>
-    );
+
     return (
-      <div className="contract-detail-common">
+      <div className="pre-payment-common">
         <div className="top-info">
           <Tabs onChange={this.handleTabsChange}>
-            <TabPane tab="合同信息" key="contractInfo">{contractInfo}</TabPane>
-            <TabPane tab="合同历史" key="contractHistory">{contractHistory}</TabPane>
+            <TabPane tab="单据信息" key="contractInfo">{contractInfo}</TabPane>
+            <TabPane tab="单据历史" key="contractHistory">{contractHistory}</TabPane>
           </Tabs>
         </div>
         {topTapValue === 'contractInfo' &&
@@ -335,7 +301,7 @@ class ContractDetailCommon extends React.Component {
         </Tabs>}
         <SlideFrame title={slideFrameTitle}
                     show={showSlideFrame}
-                    content={NewPayPlan}
+                    content={NewPrePaymentDetail}
                     params={{id: this.props.id,currency: headerData.currency, record}}
                     onClose={() => this.showSlide(false)}
                     afterClose={this.handleCloseSlide}/>
@@ -344,19 +310,19 @@ class ContractDetailCommon extends React.Component {
   }
 }
 
-ContractDetailCommon.propTypes = {
+PrePaymentCommon.propTypes = {
   id: React.PropTypes.any.isRequired, //显示数据
   contractEdit: React.PropTypes.bool,  //合同信息是否可编辑
 };
 
-ContractDetailCommon.defaultProps = {
+PrePaymentCommon.defaultProps = {
   contractEdit: false
 };
 
-ContractDetailCommon.contextTypes = {
+PrePaymentCommon.contextTypes = {
   router: React.PropTypes.object
 };
 
-const wrappedContractDetailCommon = Form.create()(injectIntl(ContractDetailCommon));
+const wrappedPrePaymentCommon = Form.create()(injectIntl(PrePaymentCommon));
 
-export default wrappedContractDetailCommon;
+export default wrappedPrePaymentCommon;

@@ -129,7 +129,9 @@ class BudgetStrategy extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({
+                 onClick: () => this.handleRowClick(record)
+               })}
                bordered
                size="middle"/>
       </div>
