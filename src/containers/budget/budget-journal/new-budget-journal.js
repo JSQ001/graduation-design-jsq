@@ -60,22 +60,18 @@ class NewBudgetJournalFrom extends React.Component {
     let defaultValueList =  this.state.defaultValueList;
     let defaultDataList = this.state.defaultDataList;
     defaultDataList.map((item)=>{
-      console.log(item);
       httpFetch.get(item.url).then((res)=>{
         let data=res.data;
-        console.log(data);
         if(item.type === "chooser"){
           defaultValueList[item.defaultValueKey]=data;
-          console.log(defaultDataList);
           this.props.from.setFieldsValue(
             defaultValueList
           )
         }
       }).catch((e)=>{
-
+          message.error(e.response.data.message)
       })
     })
-    console.log(defaultValueList);
   }
 
 
@@ -83,7 +79,6 @@ class NewBudgetJournalFrom extends React.Component {
   //获取编制期段
   getPeriodStrategy = () => {
     this.getSystemValueList(2002).then((response) => {
-      console.log(response.data);
       let periodStrategy = [];
       response.data.values.map((item) => {
         let option = {
@@ -125,20 +120,8 @@ class NewBudgetJournalFrom extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
       if (!err) {
-        let formOid =null;
-        let documentType =null;
-   /*     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value.journalTypeName[0].id}`).then((res)=>{
-          console.log(123);
-          console.log(res.data);
-            formOid = res.data.formOid;
-            documentOid =res.data.documentOid;
-        })*/
-        //${config.budgetUrl}/api/budget/journals/journalType/selectByInput
-        ///api/budget/journal/types/query
-
         let userData = {
           "dto": {
-
              "companyId": this.props.company.id,
              "companyName": this.props.company.name,
              "organizationId": this.props.organization.id,
@@ -168,7 +151,6 @@ class NewBudgetJournalFrom extends React.Component {
           ,
           "list": []
         };
-        console.log(userData);
         this.saveHeard(userData);
       }
     })
@@ -178,23 +160,18 @@ class NewBudgetJournalFrom extends React.Component {
   //根据预算日记账类型，获得预算表
   getStructure(value) {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
-      console.log(response.data);
       response.data.map((item)=>{
         item.key=item.id;
       })
-      console.log(response.data);
       this.setState(
         {"structureGroup": response.data},()=>{
-          console.log(this.state.structureGroup);
         }
       )
     }).catch(e => {message.error(e.response.data.message)})
     let structureId = null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
-      console.log(response.data);
         if(response.data){
           structureId =  response.data.id;
-          console.log(structureId);
           this.props.form.setFieldsValue({
             "structureId":structureId,
             "periodStrategy":response.data.periodStrategy
@@ -213,11 +190,8 @@ class NewBudgetJournalFrom extends React.Component {
 
       res.data.map((item)=>{
         if(item.id == value){
-          console.log(555);
           formOid = item.form0id;
           documentOid = item.formType;
-          console.log(formOid);
-          console.log(documentOid);
           this.setState({
             formOid,
             documentOid
@@ -230,7 +204,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得期间段
   handleSelectChange = (values) => {
-    console.log(values);
     this.state.structureGroup.map((item) => {
       if (item.id == values) {
         const periodStrategy = item.periodStrategy;
@@ -251,10 +224,7 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType = (value) => {
-
-    console.log(value);
     if (value.length > 0) {
-      console.log(value);
      let valueData = value[0];
       this.setState({
         idSelectJournal: true,
@@ -271,7 +241,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   //上传附件，获取OID
   uploadHandle = (value) => {
-    console.log(value);
     this.setState({
       attachmentOID: value
     })

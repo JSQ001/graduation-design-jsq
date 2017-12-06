@@ -183,7 +183,6 @@ class BudgetJournalDetail extends React.Component {
 
   //选项改变时的回调，重置selection
   onSelectChange = (selectedRowKeys,selectedRows) =>{
-    console.log(selectedRowKeys);
     let { rowSelection } = this.state;
     rowSelection.selectedRowKeys = selectedRowKeys;
     this.setState({
@@ -197,7 +196,6 @@ class BudgetJournalDetail extends React.Component {
   //删除预算日记账行
   handleDeleteLine=()=>{
     let data = this.state.selectedRowKeys;
-    console.log(data);
     let  selectedRowKeys=[];
     data.map((item)=>{
       if(item){
@@ -234,7 +232,6 @@ class BudgetJournalDetail extends React.Component {
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
-      console.log(resp.data);
       this.setState({
         dimensionList:resp.data
       },()=>{
@@ -248,7 +245,6 @@ class BudgetJournalDetail extends React.Component {
 
   //根据预算表的维度.获取维度Columuns和获取维度的handleData数据
   getColumnsAndDimensionhandleData(){
-    console.log("getColumns")
     let columns=this.state.columns;
     let handleData=this.state.handleData;
     const dimensionList = this.state.dimensionList;
@@ -282,7 +278,6 @@ class BudgetJournalDetail extends React.Component {
     })
     const journalCode =this.props.params.journalCode;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${journalCode}`).then((response)=>{
-      console.log(response.data);
       let listData = response.data.list;
       let headerData =response.data.dto;
       if(this.state.columnsSetFlag){
@@ -416,7 +411,6 @@ class BudgetJournalDetail extends React.Component {
 
   //获得表单数据
   handleAfterCloseNewSlide=(value)=>{
-    console.log(value);
     this.setState({
       showSlideFrameNew:false,
     });
@@ -439,7 +433,6 @@ class BudgetJournalDetail extends React.Component {
     let sum =0;
     data.map((item)=>{
       sum+= item.functionalAmount;
-      console.log(sum)
     })
     let newData ="CNY"+" "+sum.toFixed(2);
     const infoDateNew =this.state.infoDate;
@@ -447,7 +440,6 @@ class BudgetJournalDetail extends React.Component {
       ...infoDateNew,
       "totalAmount":newData
     }
-    console.log(headerAndListData);
     this.setState({
       data:data,
       headerAndListData: headerAndListData,
@@ -472,12 +464,11 @@ class BudgetJournalDetail extends React.Component {
 //保存新增，或修改
   handleSaveJournal=()=>{
     let headerAndListData = this.state.headerAndListData;
-    console.log(headerAndListData);
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
       message.success("预算日记账行保存成功");
       this.getDataByBudgetJournalCode();
     }).catch((e)=>{
-      console.log(e.response.data.message)
+      message.error(e.response.data.message)
     })
   }
 
@@ -528,7 +519,6 @@ class BudgetJournalDetail extends React.Component {
           itemData["key"]=values[item.columnValue];
           result.push(itemData);
           valuesData[item.id] = result;
-          console.log(result);
         } else if (item.type === 'input' || item.type === 'inputNumber'){
           valuesData[item.id] = values[item.valueKey];
       }
@@ -538,7 +528,6 @@ class BudgetJournalDetail extends React.Component {
 
   //编辑行
   handlePutData=(value)=>{
-    console.log(value);
     let valuePutData =this.headleUpData(value);
     this.setState({
      params:{...valuePutData,
