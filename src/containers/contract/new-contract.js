@@ -162,7 +162,7 @@ class NewContract extends React.Component{
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Spin spinning={pageLoading}>
-          <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
+          <Card title="基本信息" hoverable={false} style={{marginBottom:'20px'}}>
             <Row>
               <Col span={7}>
                 <div style={{lineHeight: '32px'}}>合同编号:</div>
@@ -179,7 +179,7 @@ class NewContract extends React.Component{
             </Row>
           </Card>
           <Form onSubmit={isNew ? this.handleSave : this.handleUpdate}>
-            <Card title="合同信息" noHovering style={{marginBottom:'20px'}}>
+            <Card title="合同信息" hoverable={false} style={{marginBottom:'20px'}}>
               <Row>
                 <Col span={15}>
                   <FormItem label="合同名称">
@@ -313,7 +313,7 @@ class NewContract extends React.Component{
                 </Col>
               </Row>
             </Card>
-            <Card title="合同方信息" noHovering style={{marginBottom:'20px'}}>
+            <Card title="合同方信息" hoverable={false} style={{marginBottom:'20px'}}>
               <Row>
                 <Col span={7}>
                   <FormItem label="合同方类型">
@@ -349,7 +349,7 @@ class NewContract extends React.Component{
                 </Col>
               </Row>
             </Card>
-            <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
+            <Card title="附件信息" hoverable={false} style={{marginBottom:'20px'}}>
               <Row>
                 <Col span={7}>
                   <FormItem>
@@ -362,7 +362,7 @@ class NewContract extends React.Component{
                 </Col>
               </Row>
             </Card>
-            <Card title="其他信息" noHovering>
+            <Card title="其他信息" hoverable={false}>
               <Row>
                 <Col span={7}>
                   <FormItem label="责任部门">

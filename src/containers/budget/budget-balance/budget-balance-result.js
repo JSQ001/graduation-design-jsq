@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
 import 'styles/budget/budget-balance/budget-balance-result.scss'
-import { Table, Row, Col, Form } from 'antd'
+import { Table, Row, Col, Form, message, Button } from 'antd'
 const FormItem = Form.Item;
 
 import httpFetch from 'share/httpFetch'
@@ -83,6 +83,7 @@ class BudgetBalanceResult extends React.Component {
   };
 
   getList = () => {
+    this.setState({loading: true});
     return httpFetch.get(`${config.budgetUrl}/api/budget/balance/query/results/${this.props.params.id}?page=${this.state.page}&size=${this.state.pageSize}`).then(res => {
       let data = [], total = [];
       if(res.data){
@@ -97,6 +98,11 @@ class BudgetBalanceResult extends React.Component {
         loading: false,
         data,
         total
+      })
+    }).catch(e => {
+      message.error(e.response.data.message);
+      this.setState({
+        loading: false
       })
     })
   };
@@ -179,6 +185,12 @@ class BudgetBalanceResult extends React.Component {
                     onClose={() => this.setState({ showSlideFrameFlag: false })}
                     params={slideFrameParam}
                     title={slideFrameParam.title} width="70%"/>
+
+        <div className="footer-operate">
+          <Button type="primary" onClick={this.getList}>重新查询结果</Button>
+          <Button style={{ marginLeft: 10}}>导出CVS</Button>
+        </div>
+
       </div>
     )
   }

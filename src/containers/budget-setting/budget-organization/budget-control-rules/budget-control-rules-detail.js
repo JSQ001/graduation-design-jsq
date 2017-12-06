@@ -168,9 +168,11 @@ class BudgetControlRulesDetail extends React.Component{
     })
   };
 
-  handleCloseSlideUpdate = ()=>{
+  handleCloseSlideUpdate = (changed)=>{
+    if(changed)
     this.setState({
-      showSlideFrameUpdate: false
+      showSlideFrameUpdate: false,
+      loading: true
     },this.getList())
   };
 

@@ -141,14 +141,14 @@ class BudgetItemMap extends React.Component {
     let paramValueMap = {
       EXPENSE_TYPE:{
         title: formatMessage({id:"itemMap.expenseType"}),
-        url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
+        url: `${config.baseUrl}/api/company/integration/expense/types`,
         searchForm: [
           {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
         ],
         columns: [
           {title: formatMessage({id:"itemMap.icon"}), dataIndex: 'iconURL', width: '25%',
             render: (value) =>{
-                return <img src={value} />
+                return <img src={value} height="20" width="20"/>
             }
           },
           {title: formatMessage({id:"itemMap.expenseTypeName"}), dataIndex: 'name', width: '25%'},
@@ -177,7 +177,7 @@ class BudgetItemMap extends React.Component {
         item.key = paramsKey++;
         item.edit = false;
         item.item = [{id: item.budgetItemId, itemName: item.budgetItemName}];
-        item.detail = [{id: item.sourceItemId, sourceItemName: item.sourceItemName}]
+        item.detail = [{id: item.sourceItemId, name: item.sourceItemName}]
       });
       let pagination = this.state.pagination;
       pagination.total = Number(response.headers['x-total-count']);
@@ -276,7 +276,7 @@ class BudgetItemMap extends React.Component {
                 valueKey='id'
                 itemMap={true}
                 selectorItem={paramValueMap[record.sourceType]}
-                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId, enabled: true}}
+                listExtraParams={{}}
                 value={record.detail}
                 single={true}/>
             );
@@ -361,6 +361,7 @@ class BudgetItemMap extends React.Component {
             dataSource={params}
             columns={columns}
             loading={loading}
+            onChange={this.onChangePager}
             pagination={pagination}
             size="middle"/>
         </Form>

@@ -276,7 +276,7 @@ class ListSelector extends React.Component {
           </div>
         </div>
         <Table columns={columns}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({onClick: () => this.handleRowClick(record)})}
                dataSource={data}
                rowKey={record => record[key]}
                pagination={pagination}
