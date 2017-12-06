@@ -111,5 +111,7 @@
   "menu.me-pre-payment":"我的预付款",
   "menu.new-pre-payment":"新建预付款",
   "menu.pre-payment-detail":"预付款详情",
-  "menu.basic-data": "基础数据"
+  "menu.basic-data": "基础数据",
+  "menu.check-center": "对账中心"
+
 }
