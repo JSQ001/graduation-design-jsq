@@ -379,10 +379,12 @@ class SearchArea extends React.Component{
       }
       //选择组件
       case 'select':{
+        console.log(item)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
                   allowClear
+                  showSearch
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
@@ -400,6 +402,7 @@ class SearchArea extends React.Component{
                   onChange={handle}
                   options={item.options}
                   allowClear
+                  showSearch
                   disabled={item.disabled}>
           </Cascader>
         )

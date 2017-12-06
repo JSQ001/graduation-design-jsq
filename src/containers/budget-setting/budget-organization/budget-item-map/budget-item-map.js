@@ -141,7 +141,7 @@ class BudgetItemMap extends React.Component {
     let paramValueMap = {
       EXPENSE_TYPE:{
         title: formatMessage({id:"itemMap.expenseType"}),
-        url: `${config.baseUrl}/api/expense/type/by/setOfBooks`,
+        url: `${config.baseUrl}/api/company/integration/expense/types`,
         searchForm: [
           {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
         ],
@@ -276,7 +276,7 @@ class BudgetItemMap extends React.Component {
                 valueKey='id'
                 itemMap={true}
                 selectorItem={paramValueMap[record.sourceType]}
-                listExtraParams={{roleType: 'TENANT', setOfBooksId: this.props.company.setOfBooksId, enabled: true}}
+                listExtraParams={{}}
                 value={record.detail}
                 single={true}/>
             );

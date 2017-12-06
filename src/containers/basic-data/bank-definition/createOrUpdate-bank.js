@@ -5,16 +5,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Button, Form, Input, Switch, Icon, Select, message, Cascader } from 'antd';
-import debounce from 'lodash.debounce';
+import { Button, Form, Input, Select, message, Cascader, Row, Col,Switch, Icon } from 'antd';
 
-import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import CitySelector from 'components/city-selector'
-import menuRoute from 'share/menuRoute'
-import 'styles/pay/bank-definition/createOrUpdate-bank-definition.scss'
-import SlideFrame from 'components/slide-frame'
+import 'styles/basic-data/bank-definition/createOrUpdate-bank-definition.scss'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -36,7 +31,6 @@ class CreateOrUpdateBank extends React.Component{
   }
 
   componentWillMount(){
-    console.log(this.props)
     let params = this.props.params;
     //获取国家
     httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/county?language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
@@ -55,24 +49,17 @@ class CreateOrUpdateBank extends React.Component{
     });
     if(typeof params.id !== 'undefined'){
       let accountAddress = [];
-      accountAddress.push(params.provinceCode);
-      accountAddress.push(params.cityCode);
-      accountAddress.push(params.districtCode);
+      accountAddress.push(params.provinceCode+"-"+params.provinceName);
+      accountAddress.push(params.cityCode+"-"+params.cityName);
+      accountAddress.push(params.districtCode+"-"+params.districtName);
       params.accountAddress = accountAddress;
+      console.log(params)
       this.setState({
         address: params.addressDetail,
-        bank: params
+        bank: params,
+        isEnabled: params.isEnabled
       })
     }
-
-
-    /*//国家默认是中国,获取省份地区
-    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${this.state.countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
-      console.log(response.data)
-      this.setState({
-        address: response.data
-      })
-    });*/
   }
 
 
@@ -80,7 +67,6 @@ class CreateOrUpdateBank extends React.Component{
     console.log(nextprops.params);
     if(typeof nextprops.params.id === 'undefined'){
       this.setState({
-        isEditor: false,
         address: nextprops.params.addressDetail
       })
     }
@@ -118,29 +104,40 @@ class CreateOrUpdateBank extends React.Component{
   };
 
   handleUpdate = ()=>{
-    let values = this.props.form.getFieldsValue();
-    values.id = this.state.bank.id;
-    if(values.bankName === ""){
-      return
-    }
-    httpFetch.put(`${config.payUrl}api/cash/bank/user/defineds`,values).then((response)=>{
-      console.log(response)
-      message.success(this.props.intl.formatMessage({id:"common.save.success"},{name:values.bankName}));
-      this.setState({
-        loading: false
-      });
-      this.props.close(true);
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.validationErrors[0].message}`);
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values)
+        values.id = this.state.bank.id;
+        values.versionNumber = this.state.bank.versionNumber;
+        values.countryCode = values.country.split("-")[0];
+        values.countryName = values.country.split("-")[1];
+        values.provinceCode = values.accountAddress[0].split("-")[0];
+        values.provinceName = values.accountAddress[0].split("-")[1];
+        values.cityCode = values.accountAddress[1].split("-")[0];
+        values.cityName = values.accountAddress[1].split("-")[1];
+        if(typeof values.accountAddress[2] !== 'undefined'){
+          values.districtCode = values.accountAddress[2].split("-")[0];
+          values.districtName = values.accountAddress[2].split("-")[1];
+        }
+        httpFetch.put(`${config.payUrl}/api/cash/bank/user/defineds`,values).then((response)=>{
+          message.success(this.props.intl.formatMessage({id:"common.operate.success"}));
+          this.props.close(response.data);
+          this.props.form.resetFields();
+          this.setState({
+            loading: false
+          })
+        }).catch((e)=>{
+          if(e.response){
+            message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})}, ${e.response.data.message}`);
+          }
+          this.setState({loading: false});
+        })
       }
-      this.setState({loading: false});
     })
   };
 
-  //选择国家
+  //换选国家，查询出省份
   countryChange = (value)=>{
-    console.log(value)
     httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${value.split("-")[0]}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       console.log(response.data)
       this.setState({
@@ -155,10 +152,10 @@ class CreateOrUpdateBank extends React.Component{
     this.setState({
       loading: true
     });
-    this.state.isEditor ?
-      this.handleUpdate()
+    typeof this.state.bank.id === 'undefined'?
+      this.handleCreate()
       :
-      this.handleCreate();
+      this.handleUpdate();
   };
 
   onCancel = () =>{
@@ -172,11 +169,17 @@ class CreateOrUpdateBank extends React.Component{
     })
   };
 
+  switchChange = () => {
+    this.setState((prevState) => ({
+      isEnabled: !prevState.isEnabled
+    }))
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
 
-    const { defaultStatus, loading, bankTypeHelp, bank, country, countryCode,address, isEditor} = this.state;
+    const { defaultStatus, isEnabled, loading, bankTypeHelp, bank, country, countryCode,address, isEditor} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -186,6 +189,17 @@ class CreateOrUpdateBank extends React.Component{
     return(
       <div className="new-bank-definition">
         <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
+          <FormItem {...formItemLayout}
+                    label={formatMessage({id:"common.column.status"})} colon={true}>
+            {getFieldDecorator('isEnabled', {
+              valuePropName:"defaultChecked",
+              initialValue:isEnabled
+            })(
+              <div>
+                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
+              </div>)}
+          </FormItem>
           <FormItem {...formItemLayout}
             label={formatMessage({id:"bank.bankCode"})}>
             {getFieldDecorator('bankCode', {
@@ -243,7 +257,7 @@ class CreateOrUpdateBank extends React.Component{
                 }
               ],
             })(
-              <Select onChange={this.countryChange} allowClear placeholder={ formatMessage({id:"common.please.select"})}>
+              <Select onChange={this.countryChange} allowClear showSearch placeholder={ formatMessage({id:"common.please.select"})}>
                 {
                   country.map((item)=><Option key={item.key}>{item.label}</Option>)
                 }

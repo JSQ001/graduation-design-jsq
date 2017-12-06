@@ -8,7 +8,6 @@
   "bank.branchBankName": "分行名称",
   "bank.branchBankNumber": "分行行号",
   "bank.belongsToBank": "所属银行",
-  "bank.branchInfo": "分行信息",
   "bank.createBank": "新建银行",
   "bank.editorBank": "编辑银行",
   "bank.validateExist": "该银行已存在",

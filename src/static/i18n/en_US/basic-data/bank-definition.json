@@ -8,7 +8,6 @@
   "bank.branchBankName": "Branch bank name",
   "bank.branchBankNumber": "Branch bank number",
   "bank.belongsToBank": "Belongs to Bank",
-  "bank.branchInfo": "Branch bank information",
   "bank.createBank": "Create bank",
   "bank.editorBank": "Edit bank",
   "bank.validateExist": "Bank already existed",
