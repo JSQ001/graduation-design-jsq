@@ -143,7 +143,9 @@ class MyContract extends React.Component{
                padination={pagination}
                loading={loading}
                scroll={{x: true, y: false}}
-               onRowClick={this.rowClick}
+               onRow={record => ({
+                 onClick: () => this.rowClick(record)
+               })}
                bordered
                size="middle"/>
       </div>

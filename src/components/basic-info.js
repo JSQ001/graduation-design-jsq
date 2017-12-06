@@ -175,7 +175,7 @@ class BasicInfo extends React.Component{
       domRender = (
         <Card title={this.props.intl.formatMessage({id: 'common.baseInfo'}) /* 基本信息 */}
               extra={<a onClick={this.editInfo}>{this.props.intl.formatMessage({id: 'common.edit'}) /* 编辑 */}</a>}
-              noHovering >
+              hoverable={false} >
           <Row>{this.getInfo()}</Row>
         </Card>)
     } else {

@@ -165,7 +165,9 @@ class Contract extends React.Component{
                    dataSource={unapprovedData}
                    padination={unapprovedPagination}
                    loading={loading1}
-                   onRowClick={this.handleRowClick}
+                   onRow={record => ({
+                     onClick: () => this.handleRowClick(record)
+                   })}
                    bordered
                    size="middle"/>
           </TabPane>
@@ -180,7 +182,9 @@ class Contract extends React.Component{
                    dataSource={approvedData}
                    padination={approvedPagination}
                    loading={loading2}
-                   onRowClick={this.handleRowClick}
+                   onRow={record => ({
+                     onClick: () => this.handleRowClick(record)
+                   })}
                    bordered
                    size="middle"/>
           </TabPane>
