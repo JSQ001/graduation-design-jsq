@@ -231,7 +231,9 @@ class PayPaying extends React.Component {
                dataSource={onlineData}
                pagination={false}
                loading={onlineLoading}
-               onRowClick={this.checkPaymentDetail}
+               onRow={record => ({
+                 onClick: () => this.checkPaymentDetail(record)
+               })}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
                bordered

@@ -91,7 +91,7 @@ class PaymentDetail extends React.Component {
                pagination={false}
                bordered
                size="middle"/>
-        <Card bordered={false} noHovering>
+        <Card bordered={false} hoverable={false}>
           <Card.Grid style={gridLeftStyle}>描述：</Card.Grid>
           <Card.Grid style={gridRightStyle}>Content</Card.Grid>
           <Card.Grid style={gridLeftStyle}>付方信息：</Card.Grid>
@@ -101,7 +101,7 @@ class PaymentDetail extends React.Component {
           <Card.Grid style={gridLeftStyle}>出纳：</Card.Grid>
           <Card.Grid style={gridRightStyle}>Content</Card.Grid>
         </Card>
-        <Card bordered={false} noHovering>
+        <Card bordered={false} hoverable={false}>
           <Card.Grid style={gridLeftStyle}>收方类型：</Card.Grid>
           <Card.Grid style={gridRightStyle}>Content</Card.Grid>
           <Card.Grid style={gridLeftStyle}>收方信息：</Card.Grid>
