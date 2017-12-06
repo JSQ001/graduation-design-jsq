@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Breadcrumb, Table, Pagination, message, Alert } from 'antd'
+import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu } from 'antd'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -39,28 +39,56 @@ class PayPaying extends React.Component {
         {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item><a>{value}</a></Breadcrumb.Item>
-              <Breadcrumb.Item>{record.documentCategory}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              <a>{value}</a>
+              <span className="ant-divider"/>
+              {record.documentCategoryName}
+            </div>
           )}
         },
-        {title: '工号 | 申请人', dataIndex: 'employeeName'},
-        {title: '币种', dataIndex: 'currency'},
-        {title: '本次支付金额', dataIndex: 'currentPayAmount'},
-        {title: '付款方式', dataIndex: 'paymentTypeName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
-              <Breadcrumb.Item>{record.partnerName}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              {record.employeeId}
+              <span className="ant-divider"/>
+              {value}
+            </div>
           )}
         },
-        {title: '收款方账号', dataIndex: 'accountNumber'},
+        {title: '币种', dataIndex: 'currency'},
+        {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '付款方式', dataIndex: 'paymentTypeName'},
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
+          return (
+            <div>
+              {value}
+              <span className="ant-divider"/>
+              {record.partnerName}
+            </div>
+          )}
+        },
+        {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>},
-        {title: '操作', dataIndex: 'id'}
+        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='processing' text="支付中"/>},
+        {title: '操作', dataIndex: 'id', render: id => {
+          const menu = (
+            <Menu>
+              <Menu.Item>
+                <a>确认成功</a>
+              </Menu.Item>
+              <Menu.Item>
+                <a>确认失败</a>
+              </Menu.Item>
+            </Menu>
+          );
+          return (
+            <div>
+              <a>查看</a>
+              <span className="ant-divider"/>
+              <Dropdown overlay={menu} placement="bottomRight"><a>更多<Icon type="down" /></a></Dropdown>
+            </div>
+          )}
+        }
       ],
 
       /* 线上 */
@@ -212,13 +240,15 @@ class PayPaying extends React.Component {
     const tableTitle = (
       <div>
         支付中
-        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.length > 0 && <span className="ant-divider"/>}
         {onlineCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== onlineCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -256,13 +286,15 @@ class PayPaying extends React.Component {
     const tableTitle = (
       <div>
         支付中
-        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.length > 0 && <span className="ant-divider"/>}
         {fileCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== fileCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
