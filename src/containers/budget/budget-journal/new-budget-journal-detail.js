@@ -553,7 +553,9 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
+      console.log(77777);
       console.log(resp.data);
+      console.log(77777);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
@@ -567,8 +569,7 @@ class NewBudgetJournalDetail extends React.Component {
     let dimensionDataLists ={};
     for(let i=0;i<dimension.length;i++){
       const item =dimension[i];
-      const priority =i+1;
-      //const priority = item.priority;
+      const priority = item.sequenceNumber;
       let dimensionListKey = ["dimension"+priority+"Id","dimension"+priority+"Name","dimension"+priority+"ValueId","dimension"+priority+"ValueName","dimension"+priority];
       dimensionList[dimensionListKey[0]]=item.dimensionId;
       dimensionList[dimensionListKey[1]]=item.dimensionName;

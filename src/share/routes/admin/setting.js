@@ -19,6 +19,8 @@ import CompanyGroupDetail from 'containers/setting/company-group/company-group-d
 import DepartmentGroup from 'containers/setting/department-group/department-group'
 import DepartmentGroupDetail from 'containers/setting/department-group/department-group-detail'
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
+import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
+
 
 //新建部门组
 const newDepartmentGroup = {
@@ -216,10 +218,18 @@ const companyMaintain ={
 };
 
 
+/*科目表定义*/
+const subjectSheet = {
+  key: 'subject-sheet',
+  url: '/main/setting/subject-sheet',
+  components: SubjectSheet,
+  parent: 'setting'
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,subjectSheet],
   icon: 'setting',
   admin: true
 };

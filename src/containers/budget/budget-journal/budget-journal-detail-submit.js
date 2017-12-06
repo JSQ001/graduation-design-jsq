@@ -172,7 +172,7 @@ class BudgetJournalDetailSubmit extends React.Component {
     let columns=this.state.columns;
     for(let i=0;i<dimensionList.length;i++){
       const item =dimensionList[i];
-      let priority =i+1;
+      const priority = item.sequenceNumber;
       columns.push(
         {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
           render: recode => (
