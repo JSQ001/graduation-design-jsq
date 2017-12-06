@@ -170,7 +170,7 @@ class BudgetOrganization extends React.Component {
                pagination={pagination}
                loading={loading}
                bordered
-               onRowClick={this.handleRowClick}
+               onRow={record => ({onClick: () => this.handleRowClick(record)})}
                size="middle"/>
         {/* 编辑预算组织 */}
         <SlideFrame title={formatMessage({id:"budget.edit.organization"})}

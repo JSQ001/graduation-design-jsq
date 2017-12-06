@@ -135,7 +135,7 @@ class SetOfBooks extends React.Component {
                dataSource={data}
                pagination={pagination}
                loading={loading}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({onClick: () => this.handleRowClick(record)})}
                rowKey="setOfBooksId"
                bordered
                size="middle"/>
