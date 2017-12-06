@@ -269,15 +269,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   };
 
-  getjournalTypes(value){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value}`).then((res)=>{
-          console.log(res.data);
-          let formOid = res.data.formOid;
-          let documentOid =res.data.documentOid;
-      })
-  }
-
-
   //上传附件，获取OID
   uploadHandle = (value) => {
     console.log(value);

@@ -17,10 +17,10 @@ import accountPeriodControl from 'static/i18n/en_US/finance-setting/account-peri
 import companyMaintain from 'static/i18n/en_US/setting/company-maintain.json'
 import financeView from 'static/i18n/en_US/financial-management/finance-view.json'
 import departmentGroup from 'static/i18n/en_US/setting/department-group.json'
-import paymentMethod from 'static/i18n/en_US/pay/payment-method.json'
-import paymentCompanySetting from 'static/i18n/en_US/pay/payment-company-setting.json'
-import cashFlowItem from 'static/i18n/en_US/pay/cash-flow-item.json'
-import cashTransactionClass from 'static/i18n/en_US/pay/cash-transaction-class.json'
+import paymentMethod from 'static/i18n/en_US/pay-setting/payment-method.json'
+import paymentCompanySetting from 'static/i18n/en_US/pay-setting/payment-company-setting.json'
+import cashFlowItem from 'static/i18n/en_US/pay-setting/cash-flow-item.json'
+import cashTransactionClass from 'static/i18n/en_US/pay-setting/cash-transaction-class.json'
 
 
 

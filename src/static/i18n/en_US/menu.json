@@ -111,5 +111,6 @@
   "menu.pre-payment":"Previous Payment",
   "menu.me-pre-payment":"Me Previous Payment",
   "menu.new-pre-payment":"New Previous Payment",
-  "menu.pre-payment-detail":"Previous Payment Detail"
+  "menu.pre-payment-detail":"Previous Payment Detail",
+  "menu.pay-setting":"Pay Setting"
 }

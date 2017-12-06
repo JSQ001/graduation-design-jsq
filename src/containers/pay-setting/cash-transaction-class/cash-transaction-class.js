@@ -11,7 +11,7 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/pay/cash-transaction-class/cash-transaction-class.scss'
+import 'styles/pay-setting/cash-transaction-class/cash-transaction-class.scss'
 
 class CashTransactionClass extends React.Component{
   constructor(props) {
@@ -170,7 +170,9 @@ class CashTransactionClass extends React.Component{
           pagination={pagination}
           onChange={this.onChangePager}
           columns={columns}
-          onRowClick={this.handleRowClick}
+          onRow={record => ({
+            onClick: () => this.handleRowClick(record)
+          })}
           size="middle"
           bordered/>
         {/*<SlideFrame title={slideFrameTitle}*/}

@@ -17,10 +17,10 @@ import accountPeriodControl from 'static/i18n/zh_CN/finance-setting/account-peri
 import companyMaintain from 'static/i18n/zh_CN/setting/company-maintain.json'
 import financeView from 'static/i18n/zh_CN/financial-management/finance-view.json'
 import departmentGroup from 'static/i18n/zh_CN/setting/department-group.json'
-import paymentMethod from 'static/i18n/zh_CN/pay/payment-method.json'
-import paymentCompanySetting from 'static/i18n/zh_CN/pay/payment-company-setting.json'
-import cashFlowItem from 'static/i18n/zh_CN/pay/cash-flow-item.json'
-import cashTransactionClass from 'static/i18n/zh_CN/pay/cash-transaction-class.json'
+import paymentMethod from 'static/i18n/zh_CN/pay-setting/payment-method.json'
+import paymentCompanySetting from 'static/i18n/zh_CN/pay-setting/payment-company-setting.json'
+import cashFlowItem from 'static/i18n/zh_CN/pay-setting/cash-flow-item.json'
+import cashTransactionClass from 'static/i18n/zh_CN/pay-setting/cash-transaction-class.json'
 import subjectSheet from 'static/i18n/zh_CN/setting/subject-sheet.json'
 
 const i18nList = [

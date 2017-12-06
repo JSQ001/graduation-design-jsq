@@ -2,7 +2,6 @@
  * Created by 13576 on 2017/12/6.
  */
 import PaymentMethod from 'containers/pay-setting/payment-method/payment-method'
-
 import PaymentCompanySetting from 'containers/pay-setting/payment-company-setting/payment-company-setting'
 import CashFlowItem from 'containers/pay-setting/cash-flow-item/cash-flow-item'
 import CreateOrUpdateCashFlowItem from 'containers/pay-setting/cash-flow-item/createOrUpdate-item'
@@ -80,7 +79,8 @@ const cashTransactionClass = {
 const paySetting = {
   key:'pay-setting',
   subMenu: [paymentMethod,paymentCompanySetting,cashFlowItem,cashTransactionClass],
-  icon: 'pay-circle'
+  icon: 'pay-circle',
+  admin: true
 };
 
 export default paySetting

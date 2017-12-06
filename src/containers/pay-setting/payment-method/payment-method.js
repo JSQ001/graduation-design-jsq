@@ -13,11 +13,10 @@ import httpFetch from 'share/httpFetch'
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
-import WrappedPaymentMethod from 'containers/pay/payment-method/new-payment-method'
-import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
+import WrappedPaymentMethod from 'containers/pay-setting/payment-method/new-payment-method'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
-import 'styles/pay/payment-method/payment-method.scss'
+import 'styles/pay-setting/payment-method/payment-method.scss'
 
 
 class PaymentMethod extends React.Component {
@@ -223,7 +222,9 @@ class PaymentMethod extends React.Component {
             pagination={pagination}
             loading={loading}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
+            onRow={record => ({
+              onClick: () => this.putItemTypeShowSlide(record)
+            })}
             size="middle"
           />
         </div>

@@ -13,11 +13,9 @@ import httpFetch from 'share/httpFetch'
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
-import NewPaymentCompanySetting from 'containers/pay/payment-company-setting/new-payment-company-setting.js'
-import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
-import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
+import NewPaymentCompanySetting from 'containers/pay-setting/payment-company-setting/new-payment-company-setting.js'
 
-import 'styles/pay/payment-method/payment-method.scss'
+import 'styles/pay-setting/payment-method/payment-method.scss'
 
 
 class PaymentCompanySetting extends React.Component {
@@ -224,7 +222,9 @@ class PaymentCompanySetting extends React.Component {
             loading={loading}
             rowKey={recode=>{return recode.id}}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
+            onRow={record => ({
+              onClick: () => this.putItemTypeShowSlide(record)
+            })}
             size="middle"
           />
         </div>

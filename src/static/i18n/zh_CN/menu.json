@@ -111,5 +111,6 @@
   "menu.pre-payment":"预付款",
   "menu.me-pre-payment":"我的预付款",
   "menu.new-pre-payment":"新建预付款",
-  "menu.pre-payment-detail":"预付款详情"
+  "menu.pre-payment-detail":"预付款详情",
+  "menu.pay-setting":"支付设置"
 }

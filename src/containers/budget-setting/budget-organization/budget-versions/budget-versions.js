@@ -228,8 +228,8 @@ class BudgetVersions extends React.Component {
             bordered
             size="middle"
             onRow={record => ({
-              onClick: () => this.handleUpdate(record)
-            })}
+            onClick: () => this.handleUpdate(record)
+          })}
           />
         </div>
 
