@@ -34,7 +34,7 @@ class EditableCell extends React.Component {
 
   render() {
     const { type, message } = this.props;
-    const { value, editable } = this.state;
+    const { value, editable, modifyValue } = this.state;
     return (
       <div className="editable-cell">
         {
@@ -57,7 +57,9 @@ class EditableCell extends React.Component {
               </Tooltip>
             </div>
             :
-            <div className="editable-cell-text-wrapper">
+            <div className="editable-cell-text-wrapper" style={{textAlign: type === 'number' ? 'right' : 'left'}}>
+              {type === 'number' && modifyValue && modifyValue < this.props.value &&
+                <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red',marginRight:5}} /></Tooltip>}
               {type === 'number' ? (value || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : (value || '')}
               <Tooltip placement="top" title={message}>
                 <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />

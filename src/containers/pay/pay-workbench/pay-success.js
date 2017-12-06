@@ -306,6 +306,7 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-offline">
+        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={offlineData}
@@ -346,6 +347,7 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-file">
+        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}

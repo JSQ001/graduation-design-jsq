@@ -5,7 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import moment from 'moment'
 
-import { Radio, Table, Breadcrumb, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Row, Col, Tooltip } from 'antd'
+import { Radio, Table, Breadcrumb, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -59,31 +59,24 @@ class PayUnpaid extends React.Component {
         {title: '申请日期', dataIndex: 'requisitionDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '总金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '可支付金额', dataIndex: 'payableAmount', render: (value, record) => {return(
-          value !== record.amount ? this.filterMoney(value) :
-            <Row>
-              <Col span={5}>
-                <Tooltip title="可支付金额不等于总金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
-              </Col>
-              <Col span={18} offset={1}>
-                {this.filterMoney(value)}
-              </Col>
-            </Row>
-        )}},
+        {title: '可支付金额', dataIndex: 'payableAmount', render: (value, record) => {
+          let numberString = Number(value || 0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+          numberString += (numberString.indexOf('.') > -1 ? '' : '.00');
+          return(
+            value === record.amount ? this.filterMoney(value) :
+              <div style={{textAlign:'right'}}>
+                <Tooltip title="可支付金额不等于总金额"><Icon type="exclamation-circle-o" style={{color:'red',marginRight:5}} /></Tooltip>
+                {numberString}
+              </div>
+          )}
+        },
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => {
           return (
-            <Row>
-              <Col span={5}>
-                <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
-              </Col>
-              <Col span={18} offset={1}>
-                <EditableCell type="number"
-                              value={value}
-                              message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
-                              onChangeError={this.state.editCellError}
-                              onChange={(editValue) => this.editCurrentPay(editValue, record)} />
-              </Col>
-            </Row>
+            <EditableCell type="number"
+                          value={value}
+                          message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
+                          onChangeError={this.state.editCellError}
+                          onChange={(editValue) => this.editCurrentPay(editValue, record)} />
           )}
         },
         {title: '付款方式', dataIndex: 'paymentMethodCategoryName'},
@@ -398,18 +391,42 @@ class PayUnpaid extends React.Component {
   //提示框显示
   onlineNotice = (rows) => {
     let amount = 0;
-    rows.forEach(item => { amount += item.currentPay || item.currentPayAmount });
-    let onlineNotice = (
-      <span>
-        已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-        <span className="ant-divider" />
-        本次支付金额总计：CNY <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
-      </span>
-    );
-    this.setState({
-      onlineNotice: rows.length ? onlineNotice : '',
-      payOnlineAble: rows.length
+    let errFlag = false;
+    let currency = rows[0] ? rows[0].currency : null;
+    rows.forEach(item => {
+      if (item.currency === currency) {
+        amount += item.currentPay || item.currentPayAmount
+      } else {
+        errFlag = true
+      }
     });
+    if (!errFlag) {
+      let onlineNotice = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          本次支付金额总计：CNY <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
+        </span>
+      );
+      this.setState({
+        onlineNotice: rows.length ? onlineNotice : null,
+        onlineError: null,
+        payOnlineAble: rows.length
+      });
+    } else {
+      let onlineError = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          不同币种不可同时支付
+        </span>
+      );
+      this.setState({
+        onlineNotice: null,
+        onlineError: onlineError,
+        payOnlineAble: false
+      });
+    }
   };
 
   //弹框支付确认

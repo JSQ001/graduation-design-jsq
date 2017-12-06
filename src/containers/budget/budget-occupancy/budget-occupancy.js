@@ -43,7 +43,7 @@ class BudgetOccupancy extends React.Component{
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.budgetUrl}/api/budget/reserve/adjust?page=${page}&size=${pageSize}&batchNumber=123&employeeId=123&createDateFrom=&createDateTo=`;
+    let url = `${config.budgetUrl}/api/budget/reserve/adjust?page=${page}&size=${pageSize}`;
     httpFetch.get(url).then(res => {
 
     })
