@@ -1,1 +1,20 @@
-.check-center{}
+.check-center{
+  .check-center-tab1{
+    width: 32vw;
+    height: 40px;
+    border: 1px red solid;
+   // display: inline-table;
+  }
+  .check-center-tab2{
+    width: 32vw;
+    height: 40px;
+    border: 1px red solid;
+    display: inline-table;
+  }
+  .check-center-tab3{
+    width: 32vw;
+    height: 40px;
+    border: 1px red solid;
+    display: inline-table;
+  }
+}

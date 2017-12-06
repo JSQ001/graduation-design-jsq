@@ -379,7 +379,6 @@ class SearchArea extends React.Component{
       }
       //选择组件
       case 'select':{
-        console.log(item)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}
@@ -396,7 +395,6 @@ class SearchArea extends React.Component{
       }
       //级联选择
       case 'cascader':{
-        console.log(item)
         return (
           <Cascader placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={handle}

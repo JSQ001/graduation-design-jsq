@@ -42,11 +42,12 @@ class BudgetItemMap extends React.Component {
       },
       paramValueMap:{},
       searchForm: [
+
         {type: 'select', options: this.sourceTypeArray, id: 'itemCode', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
         {type: 'select', id: 'budgetItemName',options:[], labelKey: 'itemName',valueKey: 'itemTypeId',
           label: formatMessage({id: 'budget.item'}),  /*预算项目*/
           listExtraParams:{organizationId: this.props.id},
-          getUrl: `${config.budgetUrl}/api/budget/items/find/all`, method: 'get', getParams: {organizationId: this.props.organization.id}
+          getUrl: `${config.budgetUrl}/api/budget/items/find/all`, method: 'get', getParams: {organizationId: this.props.id, isEnabled: true}
         },
       ],
       columns: [
@@ -141,7 +142,7 @@ class BudgetItemMap extends React.Component {
     let paramValueMap = {
       EXPENSE_TYPE:{
         title: formatMessage({id:"itemMap.expenseType"}),
-        url: `${config.baseUrl}/api/company/integration/expense/types`,
+        url: `${config.baseUrl}/api/company/integration/expense/types/and/name`,
         searchForm: [
           {type: 'input', id: 'name', label: formatMessage({id:"itemMap.expenseTypeName"})},
         ],
@@ -191,6 +192,14 @@ class BudgetItemMap extends React.Component {
   }
 
   handleSearch = (values) =>{
+    console.log(values)
+    let params = {};
+    for(let paramsName in values){
+      if(typeof paramsName !== 'undefined'){
+        params[paramsName] = values[paramsName]
+      }
+    }
+    console.log(params)
     this.setState({
       searchParams:{
         itemCode: values.itemCode,

@@ -61,7 +61,7 @@ class NewBudgetControlRules extends React.Component{
 
   HandleStartChange = (value) =>{
     this.onChange("startValue",value)
-  }
+  };
 
   HandleEndChange = (value) =>{
     this.onChange("endValue",value)

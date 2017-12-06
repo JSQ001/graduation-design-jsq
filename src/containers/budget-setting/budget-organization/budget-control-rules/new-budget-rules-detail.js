@@ -95,7 +95,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'companyGroupName',
         codeKey: 'companyGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'UNIT': {
@@ -111,7 +111,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'description',
         codeKey: 'deptGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'EMPLOYEE': {

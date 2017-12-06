@@ -162,7 +162,9 @@ class BudgetStructure extends React.Component {
             columns={columns}
             pagination={pagination}
             onChange={this.onChangePager}
-            onRowClick={this.handleRowClick}
+            onRow={record => ({
+              onClick: () => this.handleRowClick(record)
+            })}
             size="middle"
             bordered/>
       </div>

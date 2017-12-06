@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Tabs, Table, Button, notification, Icon, Popover } from 'antd';
+import { Tabs, Table, Button, notification, Icon, Popover, Row, Col } from 'antd';
 const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -23,7 +23,16 @@ class CheckCenter extends React.Component{
   render(){
     return(
       <div className="check-center">
-        123
+        <Row/>
+        <div className="check-center-tab1">
+                    1
+        </div>
+        <div className="check-center-tab2">
+                  2
+        </div>
+        <div className="check-center-tab3">
+                              3
+        </div>
       </div>)
   }
 }
