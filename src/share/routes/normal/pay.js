@@ -21,29 +21,11 @@ const payWorkbench = {
   }
 };
 
-//分行信息
-const branchBankInformation = {
-  key:'branch-bank-information',
-  url:'/main/pay/bank-definition/branch-bank-information/:id',
-  components: BranchBankInformation,
-  parent: 'bank-definition',
-};
-
-//银行定义
-const bankDefinition = {
-  key:'bank-definition',
-  url:'/main/pay/bank-definition',
-  components: BankDefinition ,
-  parent: 'budget',
-  children: {
-    branchBankInformation
-  }
-};
 
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench, bankDefinition],
+  subMenu: [payWorkbench],
   icon: 'pay-circle'
 };
 

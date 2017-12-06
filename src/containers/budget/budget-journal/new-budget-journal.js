@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import {Button, Col, Row, Select, Form, Input, message, Card} from 'antd';
+import {Button, Col, Row, Select, Form, Input, message, Card,Affix} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -456,14 +456,13 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
             </Row>
           </Card>
-          <div className="divider" style={{height:16}}> </div>
-
-          <div className="footer-operate">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}
-                    style={{marginRight: '10px'}}>下一步</Button>
-            <Button style={{marginRight: '10px'}} onClick={this.HandleClear}>取消</Button>
-
-          </div>
+          <div className="divider" style={{height:40}}> </div>
+          <Affix offsetBottom={0}
+                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
+            <Button type="primary" htmlType="submit" loading={this.state.loading} style={{margin:'0 20px'}}>下一步</Button>
+            <Button onClick={this.HandleClear}>取消</Button>
+          </Affix>
         </Form>
       </div>
     )
