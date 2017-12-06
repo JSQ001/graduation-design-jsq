@@ -1,8 +1,7 @@
 import PayWorkbench from 'containers/pay/pay-workbench/pay-workbench'
 import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 
-import BankDefinition from 'containers/pay/bank-definition/bank-definition'
-import BranchBankInformation from 'containers/pay/bank-definition/branch-bank-information'
+
 
 import PaymentMethod from 'containers/pay/payment-method/payment-method'
 
@@ -29,25 +28,6 @@ const payWorkbench = {
   parent: 'pay',
   children: {
     paymentDetail
-  }
-};
-
-//分行信息
-const branchBankInformation = {
-  key:'branch-bank-information',
-  url:'/main/pay/bank-definition/branch-bank-information/:id',
-  components: BranchBankInformation,
-  parent: 'bank-definition',
-};
-
-//银行定义
-const bankDefinition = {
-  key:'bank-definition',
-  url:'/main/pay/bank-definition',
-  components: BankDefinition ,
-  parent: 'budget',
-  children: {
-    branchBankInformation
   }
 };
 
@@ -120,7 +100,7 @@ const cashTransactionClass = {
 //支付
 const pay = {
   key:'pay',
-  subMenu: [payWorkbench, bankDefinition,paymentMethod,paymentCompanySetting,cashFlowItem,cashTransactionClass],
+  subMenu: [payWorkbench,paymentMethod,paymentCompanySetting,cashFlowItem,cashTransactionClass],
   icon: 'pay-circle'
 };
 

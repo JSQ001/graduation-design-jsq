@@ -61,8 +61,8 @@ class UpdateBudgetRulesDetail extends React.Component{
     userSelectorItem.key = 'employeeID';
 
     let itemSelectorItem = selectorData['budget_item'];
-    itemSelectorItem.searchForm[1].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
-    itemSelectorItem.searchForm[2].getUrl += `&organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
 
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -117,8 +117,8 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'department',
         labelKey: 'id',
         valueKey: 'custDeptNumber',
-        codeKey: 'name',
-        listExtraParams: organizationIdParams,
+        codeKey: 'custDeptNumber',
+        listExtraParams: {},
         selectorItem: undefined
       },
       'UNIT_GROUP': {
@@ -126,7 +126,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'description',
         codeKey: 'deptGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'EMPLOYEE': {
@@ -153,17 +153,17 @@ class UpdateBudgetRulesDetail extends React.Component{
 
     let param = this.props.params;
     if(typeof  param.ruleParameterType!=="undefined") {
-      this.getValueList(valueListMap[this.props.params.ruleParameterType], ruleParamsArray);
 
       if(param.ruleParameterType === 'BGT_RULE_PARAMETER_DIM'){
         let temp = {
           listType: 'cost_center_item_by_id',
-          listExtraParams: {costCenterId: param.ruleParameter},
+          listExtraParams: {costCenterId: param.ruleParameterId},
           codeKey: 'code'
         };
-
         lov = temp;
+        this.getCostCenter(ruleParamsArray);
       }else{
+        this.getValueList(valueListMap[this.props.params.ruleParameterType], ruleParamsArray);
         lov = paramValueMap[param.ruleParameter];
       }
       lov.disabled　= false;
@@ -180,17 +180,16 @@ class UpdateBudgetRulesDetail extends React.Component{
     let {lov, ruleParamDetail, ruleParameterTypeArray, ruleParamsArray, summaryOrDetailArray, filtrateMethodArray,valueListMap, paramValueMap} = this.state;
     let param = nextprops;
     if(param.versionNumber !== ruleParamDetail.versionNumber){
-      this.getValueList(valueListMap[this.props.params.ruleParameterType], ruleParamsArray);
-
       if(param.ruleParameterType === 'BGT_RULE_PARAMETER_DIM'){
         let temp = {
           listType: 'cost_center_item_by_id',
-          listExtraParams: {costCenterId: param.ruleParameter},
+          listExtraParams: {costCenterId: param.ruleParameterId},
           codeKey: 'code'
         };
-
+        this.getCostCenter(ruleParamsArray);
         lov = temp;
       }else{
+        this.getValueList(valueListMap[this.props.params.ruleParameterType], ruleParamsArray);
         lov = paramValueMap[param.ruleParameter];
       }
       lov.disabled　= false;
@@ -232,9 +231,8 @@ class UpdateBudgetRulesDetail extends React.Component{
     httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
       response.data.map((item)=>{
         let option = {
-          id: item.id,
+          id: item.code + "+"+item.costCenterOID+"+"+item.id,
           value: item.name,
-          label: item.name
         };
         array.addIfNotExist(option)
         this.setState({
@@ -251,32 +249,42 @@ class UpdateBudgetRulesDetail extends React.Component{
      loading: true
      });
     this.props.form.validateFieldsAndScroll((err, values) => {
-      values.controlRuleId = ruleParamDetail.controlRuleId;
+      console.log(ruleParamDetail)
       values.id = ruleParamDetail.id;
+      values.controlRuleId = ruleParamDetail.controlRuleId;
       values.versionNumber = ruleParamDetail.versionNumber;
       values.isEnabled = ruleParamDetail.isEnabled;
       values.isDeleted = ruleParamDetail.isDeleted;
       values.createdBy = ruleParamDetail.createdBy;
 
+      if(ruleParamDetail.ruleParameterDescription === values.ruleParameter){
+        values.ruleParameter = ruleParamDetail.ruleParameter;
+        values.ruleParameterOID = ruleParamDetail.ruleParameterOID
+        console.log(ruleParamDetail.ruleParameterOID)
+
+      }else {
+        let str = values.ruleParameter.split("+");
+        values.ruleParameter = str[0];
+        values.ruleParameterOID = str[1];
+      }
       if (!err) {
         httpFetch.put(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=> {
-          if(res.status === 200){
-            message.success('操作成功');
-            this.props.form.resetFields();
-            this.onCancel();
-
-          }
-        }).catch((e)=>{
-          if(e.response){
-            message.error(`修改失败, ${e.response.data.message}`);
-          }
-          this.setState({loading: false});
-        })
+         if(res.status === 200){
+           message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
+           this.props.form.resetFields();
+           this.onCancel(true);
+         }
+       }).catch((e)=>{
+       if(e.response){
+       message.error(`${this.props.intl.formatMessage({id:"common.create.filed"})}, ${e.response.data.message}`);
+       }
+       this.setState({loading: false});
+       })
       }
     });
   };
 
-  onCancel = () =>{
+  onCancel = (flag) =>{
     this.setState({
       limitParam:{
         parameterLowerLimit: true,
@@ -286,7 +294,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       helpMap: {},
     });
     this.props.form.resetFields();
-    this.props.close();
+    this.props.close(flag);
   };
 
   handleSelectType = (value) =>{
@@ -316,12 +324,13 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   //选择规则参数
   handleChangeParam = (value)=>{
+    console.log(value)
     const {paramValueMap,lov} = this.state;
     let temp={};
     if(lov.type === 'BGT_RULE_PARAMETER_DIM'){
       temp = {
         listType: 'cost_center_item_by_id',
-        listExtraParams: {costCenterId: value},
+        listExtraParams: {costCenterId: value.split("+")[2]},
         codeKey: 'code'
       }
     }else {
@@ -330,8 +339,10 @@ class UpdateBudgetRulesDetail extends React.Component{
     temp.type = lov.type;
     temp.disabled = false;
     let ruleParameterType = this.props.form.getFieldValue("ruleParameterType");
+    this.props.form.setFieldsValue({"parameterLowerLimit": "", "parameterUpperLimit": ""});
     this.setState({
-      lov: temp
+      lov: temp,
+      loading:false
     })
   };
 
@@ -389,7 +400,7 @@ class UpdateBudgetRulesDetail extends React.Component{
                 validateStatus={validateStatusMap.ruleParameter}
                 help={helpMap.ruleParameter}>
                 {getFieldDecorator('ruleParameter', {
-                  initialValue: ruleParamDetail.ruleParameter,
+                  initialValue: ruleParamDetail.ruleParameterType==='BGT_RULE_PARAMETER_DIM' ? ruleParamDetail.ruleParameterDescription : ruleParamDetail.ruleParameter,
                   rules: [{
                     required: true,
                     message: formatMessage({id:"common.please.select"})
@@ -464,8 +475,8 @@ class UpdateBudgetRulesDetail extends React.Component{
           <Row gutter={30}>
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
-                validateStatus={validateStatusMap.parameterUpperLimit}
-                help={helpMap.parameterUpperLimit}>
+                        validateStatus={validateStatusMap.parameterUpperLimit}
+                        help={helpMap.parameterUpperLimit}>
                 {getFieldDecorator('parameterUpperLimit', {
                   initialValue: ruleParamDetail.parameterUpperLimit,
                   rules: [
@@ -490,29 +501,29 @@ class UpdateBudgetRulesDetail extends React.Component{
           </Row>
           <Row gutter={30}>
             <Col span={20}>
-               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                  validateStatus={validateStatusMap.parameterLowerLimit}
-                  help={helpMap.parameterLowerLimit}>
-                  {getFieldDecorator('parameterLowerLimit', {
-                    initialValue: ruleParamDetail.parameterLowerLimit,
-                    rules: [
-                      {
-                        required: true, message:formatMessage({id:"common.please.select"})
-                      },
-                      {
-                        validator:(item,value,callback)=>{
-                          callback();
-                        }
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
+                        validateStatus={validateStatusMap.parameterLowerLimit}
+                        help={helpMap.parameterLowerLimit}>
+                {getFieldDecorator('parameterLowerLimit', {
+                  initialValue: ruleParamDetail.parameterLowerLimit,
+                  rules: [
+                    {
+                      required: true, message:formatMessage({id:"common.please.select"})
+                    },
+                    {
+                      validator:(item,value,callback)=>{
+                        callback();
                       }
-                    ]
-                  })(
+                    }
+                  ]
+                })(
 
-                    <Selput type={lov.listType}
-                            valueKey={ lov.codeKey}
-                            listExtraParams={lov.listExtraParams}
-                            disabled={lov.disabled}
-                            onChange={()=>{}}/>
-                  )}
+                  <Selput type={lov.listType}
+                          valueKey={ lov.codeKey}
+                          listExtraParams={lov.listExtraParams}
+                          disabled={lov.disabled}
+                          onChange={()=>{}}/>
+                )}
               </FormItem>
             </Col>
           </Row>
