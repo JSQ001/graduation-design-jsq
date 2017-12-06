@@ -525,7 +525,7 @@ class BudgetBalance extends React.Component {
       this.getSystemValueList(item.valueListCode).then(res => {
         let options = [];
         res.data.values.map(data => {
-          options.push({label: data.messageKey, value: data.code, data: data})
+          options.push({label: data.messageKey, key: data.code, value: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
