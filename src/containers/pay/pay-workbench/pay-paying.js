@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Breadcrumb, Table, Pagination, message } from 'antd'
+import { Radio, Badge, Breadcrumb, Table, Pagination, message, Alert } from 'antd'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -225,6 +225,7 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-online">
+        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={onlineData}
@@ -266,6 +267,7 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-file">
+        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}
