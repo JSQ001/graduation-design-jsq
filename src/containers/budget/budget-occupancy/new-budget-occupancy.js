@@ -57,7 +57,7 @@ class NewBudgetOccupancy extends React.Component {
     return (
       <div className="new-budget-occupancy background-transparent" style={{marginBottom:40}}>
         <Form onSubmit={this.handleSave}>
-          <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
+          <Card title="基本信息" hoverable={false} style={{marginBottom:'20px'}}>
             <Row>
               <Col span={7}>
                 <div style={{lineHeight: '32px'}}>导入批次号：</div>
@@ -87,7 +87,7 @@ class NewBudgetOccupancy extends React.Component {
               </Col>
             </Row>
           </Card>
-          <Card title="导入数据" noHovering>
+          <Card title="导入数据" hoverable={false}>
             <div style={{marginBottom:10}}>共搜索到 {pagination.total} 条数据</div>
             <Table roeKey={record => record.id}
                    columns={columns}
