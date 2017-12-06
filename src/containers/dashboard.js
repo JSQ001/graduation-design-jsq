@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Row, Col, Card, Icon, Carousel } from 'antd';
+import { Row, Col, Card, Icon, Carousel,Tooltip} from 'antd';
 import 'styles/dashboard.scss'
 import httpFetch from 'share/httpFetch'
 import config from 'config'

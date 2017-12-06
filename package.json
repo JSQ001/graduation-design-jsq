@@ -67,7 +67,8 @@
     "webpack-dev-server": "^2.1.0-beta"
   },
   "dependencies": {
-    "antd": "^2.11.2",
+    "ant-design-pro": "^0.3.0",
+    "antd": "^3.0.0",
     "axios": "^0.16.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
