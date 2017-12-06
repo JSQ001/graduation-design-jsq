@@ -296,7 +296,7 @@ const selectorData = {
   },
   'department_group': {
     title: "部门组",
-    url: `${config.baseUrl}/DepartmentGroup/selectByInputAndEnabled`,
+    url: `${config.baseUrl}/api/DepartmentGroup/selectByInputAndEnabled`,
     searchForm: [
       {type: 'input', id: 'deptGroupCode', label: '部门组代码', defaultValue: ''},
       {type: 'input', id: 'description', label: '部门组描述', defaultValue: ''},

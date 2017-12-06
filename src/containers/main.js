@@ -273,9 +273,11 @@ class Main extends React.Component{
       <Layout className="helios-main">
         <Sider width={202} className="helios-sider" collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
           <div className="company-name">{this.renderModeMenu()}</div>
-          {this.renderMenu()}
+          <div className="menu-container">
+            {this.renderMenu()}
+          </div>
         </Sider>
-        <Layout style={{ marginLeft: collapsed ? 64 : 202 }} className="content-layout">
+        <Layout style={{ marginLeft: collapsed ? 80 : 202 }} className="content-layout">
           <Header className="helios-header">
             <div className="icon-logo">
               <img src={LogoImg}/>
@@ -292,6 +294,7 @@ class Main extends React.Component{
               <div className="user-avatar">
                 <img src={this.props.user.filePath ? this.props.user.filePath : UserImg}/>
               </div>
+              <Icon type="logout" style={{marginLeft: 20, cursor: 'pointer'}} onClick={() => {this.context.router.replace('/')}}/>
             </div>
             {this.renderBreadcrumb()}
           </Header>
