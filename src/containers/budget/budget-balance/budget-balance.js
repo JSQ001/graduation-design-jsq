@@ -199,7 +199,7 @@ class BudgetBalance extends React.Component {
         labelKey: 'fullName',
         valueKey: 'employeeID',
         codeKey: 'employeeID',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: userSelectorItem
       },
       'EMPLOYEE_GROUP': {
@@ -207,7 +207,7 @@ class BudgetBalance extends React.Component {
         labelKey: 'name',
         valueKey: 'id',
         codeKey: 'id',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: undefined
       }
     };
