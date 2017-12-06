@@ -175,7 +175,7 @@ class Main extends React.Component{
         this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
         this.setState({check: true});
       }).catch(e => {
-        this.props.dispatch(setUserOrganization({message: e.response ? e.response.data.message : 'error'}));
+        this.props.dispatch(setUserOrganization({message: (e.response && e.response.data) ? e.response.data.message : 'error'}));
         let modalData = {
           content: e.response.data.message,
           onOk: () => {
