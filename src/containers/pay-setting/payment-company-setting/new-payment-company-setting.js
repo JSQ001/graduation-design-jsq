@@ -31,17 +31,21 @@ class NewPaymentCompanySetting extends React.Component {
     this.getPaymentMethodCategory();
     this.getCompany();
     this.getSetOfBooks();
+    if( JSON.stringify(this.props.params)!="{}" ){
+      this.getducumentType(nextProps.params.ducumentCategory);
+    }
   }
 
+
   componentWillReceiveProps(nextProps){
+    console.log(444);
     if(this.props.params != nextProps.params && JSON.stringify(nextProps.params)!="{}" ){
-      this.setState({
-        params:nextProps.params,
-      })
+
+      console.log(1111111);
       if(this.props.params.ducumentCategory != nextProps.params.ducumentCategory){
+        console.log(123);
           this.getducumentType(nextProps.params.ducumentCategory);
       }
-
     }
   }
 
@@ -95,7 +99,7 @@ class NewPaymentCompanySetting extends React.Component {
           let toValue = {
             ...values,
           }
-          httpFetch.post(`http://192.168.1.195:9083/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+          httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -180,7 +184,7 @@ class NewPaymentCompanySetting extends React.Component {
           <FormItem {...formItemLayout}
                     label={this.props.intl.formatMessage({id:"budget.set.of.books"})}>
             {getFieldDecorator('setOfBooksId', {
-              initialValue: this.props.company.setOfBooksId,
+              initialValue: this.props.params.setOfBooksId||this.props.company.setOfBooksId,
               rules: [
                 {
                   required: true,
@@ -200,7 +204,7 @@ class NewPaymentCompanySetting extends React.Component {
           >
             {getFieldDecorator('priorty', {
               rules: [{ required: true, message: '请输入' }],
-
+              initialValue:this.props.params.priorty||''
             })(
               <InputNumber min={1} max={10} />
             )}

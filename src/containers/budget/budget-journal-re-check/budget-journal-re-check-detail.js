@@ -189,7 +189,7 @@ class BudgetJournalReCheckDetail extends React.Component {
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
+    httpFetch.post(`http://192.168.1.195:9996/api/budget/journals/balance/create`,data).then((request)=>{
       message.success("已经通过")
 
         let path=this.state.budgetJournalDetailReCheckPage.url;

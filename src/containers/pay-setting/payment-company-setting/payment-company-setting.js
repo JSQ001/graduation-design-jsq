@@ -118,7 +118,7 @@ class PaymentCompanySetting extends React.Component {
 //获得数据
   getList() {
     this.setState({loading:true})
-    let url = `http://192.168.1.195:9083/api/paymentCompanyConfig/selectByInput?setOfBooksId=${this.state.searchParams.setOfBooksId?this.state.searchParams.setOfBooksId:''}&companyCode=${this.state.searchParams.companyCode?this.state.searchParams.companyCode:""}&companyName=${this.state.searchParams.companyName?this.state.searchParams.companyName:""}&ducumentCategory=${this.state.searchParams.ducumentCategory?this.state.searchParams.ducumentCategory:""}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?setOfBooksId=${this.state.searchParams.setOfBooksId?this.state.searchParams.setOfBooksId:''}&companyCode=${this.state.searchParams.companyCode?this.state.searchParams.companyCode:""}&companyName=${this.state.searchParams.companyName?this.state.searchParams.companyName:""}&ducumentCategory=${this.state.searchParams.ducumentCategory?this.state.searchParams.ducumentCategory:""}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -189,12 +189,6 @@ class PaymentCompanySetting extends React.Component {
 
 
 
-  showSlidePut = (flag) => {
-    this.setState({
-      showSlideFramePut: flag
-    })
-  };
-
   showSlideNew = (flag) => {
     this.setState({
       showSlideFrameNew: flag
@@ -213,7 +207,7 @@ class PaymentCompanySetting extends React.Component {
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -260,7 +254,7 @@ class PaymentCompanySetting extends React.Component {
                     content={NewPaymentCompanySetting}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
 
       </div>
     );
