@@ -95,7 +95,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'companyGroupName',
         codeKey: 'companyGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'UNIT': {
@@ -111,7 +111,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'description',
         codeKey: 'deptGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'EMPLOYEE': {
@@ -194,7 +194,7 @@ class NewBudgetRulesDetail extends React.Component{
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
         values.ruleParameterOID = str[1];
-        httpFetch.post(`${config.budgetUrl}api/budget/control/rule/details`, values).then((res)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
           this.setState({
             loading: false,
             filtrateMethodHelp:'',

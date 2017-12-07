@@ -45,7 +45,7 @@ class BudgetItem extends React.Component {
         {type: 'select', id: 'itemTypeName',options:[], labelKey: 'itemTypeName',valueKey: 'id',
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id},
-          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.id}
+          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.id,isEnabled: true}
         },
         {type: 'select', id: 'itemCodeFrom',
           label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
@@ -90,7 +90,7 @@ class BudgetItem extends React.Component {
   componentWillMount(){
     this.getList();
     //查出所有预算项目，以方便预算项目的查询中可以选择
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.id}`).then((response)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.id}&isEnabled=${true}`).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
@@ -279,7 +279,9 @@ class BudgetItem extends React.Component {
           dataSource={data}
           columns={columns}
           rowSelection={rowSelection}
-          onRowClick={this.handleRowClick}
+          onRow={record => ({
+            onClick: () => this.handleRowClick(record)
+          })}
           pagination={pagination}
           onChange={this.onChangePager}
           size="middle"

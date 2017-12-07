@@ -384,7 +384,9 @@ class BudgetStructureDetail extends React.Component{
             dataSource={data}
             columns={columns}
             loading={loading}
-            onRowClick={this.handleRowClick}
+            onRow={record => ({
+              onClick: () => this.handleRowClick(record)
+            })}
             onChange={this.onChangePager}
             pagination={pagination}
             size="middle"

@@ -115,8 +115,8 @@ class BankDefinition extends React.Component{
   }
 
   deleteItem = (e,record) => {
-    //this.setState({loading: true});
-    httpFetch.delete(`${config.payUrl}/api/cash/bank/user/defineds`,[record.id]).then(response => {
+    this.setState({loading: true});
+    httpFetch.delete(`${config.payUrl}/api/cash/bank/user/defineds/${record.id}`).then(response => {
       if(response.status === 200){
         message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.name})); // name删除成功
         this.getList()
@@ -329,7 +329,9 @@ class BankDefinition extends React.Component{
             pagination={pagination}
             onChange={this.onChangePager}
             columns={columns}
-            onRowClick={this.handleUpdate}
+            onRow={record => ({
+              onClick: () => this.handleUpdate(record)
+            })}
             size="middle"
             bordered/>
         <SlideFrame title={slideFrame.title}
