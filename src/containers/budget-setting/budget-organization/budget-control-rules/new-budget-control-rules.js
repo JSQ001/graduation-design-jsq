@@ -95,7 +95,6 @@ class NewBudgetControlRules extends React.Component{
           }
         }).catch((e)=>{
           if(e.response){
-            console.log(12323)
             message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
           }
           this.setState({loading: false});

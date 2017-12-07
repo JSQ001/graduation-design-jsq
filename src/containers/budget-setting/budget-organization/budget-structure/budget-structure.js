@@ -175,7 +175,7 @@ class BudgetStructure extends React.Component {
 
 BudgetStructure.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {

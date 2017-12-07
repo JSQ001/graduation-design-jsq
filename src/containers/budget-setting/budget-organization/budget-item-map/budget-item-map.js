@@ -19,15 +19,12 @@ const Option = Select.Option;
 class BudgetItemMap extends React.Component {
   constructor(props) {
     super(props);
-    this.sourceTypeArray=[
-      {label: "申请类型", value: "appType"},
-      {label: "费用类型", value:"EXPENSE_TYPE"}
-    ];
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       params: [],
       paramsKey:0,
+      sourceType: [],
       searchParams:{
         sourceType: "",
         itemId: "",
@@ -42,9 +39,8 @@ class BudgetItemMap extends React.Component {
       },
       paramValueMap:{},
       searchForm: [
-
-        {type: 'select', options: this.sourceTypeArray, id: 'itemCode', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
-        {type: 'select', id: 'budgetItemName',options:[], labelKey: 'itemName',valueKey: 'itemTypeId',
+        {type: 'select', options: [], id: 'sourceType', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
+        {type: 'select', id: 'itemId',options:[], labelKey: 'itemName',valueKey: 'id',
           label: formatMessage({id: 'budget.item'}),  /*预算项目*/
           listExtraParams:{organizationId: this.props.id},
           getUrl: `${config.budgetUrl}/api/budget/items/find/all`, method: 'get', getParams: {organizationId: this.props.id, isEnabled: true}
@@ -163,6 +159,23 @@ class BudgetItemMap extends React.Component {
       },
     };
     this.setState({paramValueMap});
+    //获取来源类别值列表
+    this.getSystemValueList(2027).then((response)=>{
+      let sourceType = [];
+      response.data.values.map((item)=>{
+        let option = {
+          value: item.code,
+          label: item.messageKey
+        };
+        sourceType.push(option)
+      });
+      let searchForm = this.state.searchForm;
+      searchForm[0].options = sourceType;
+      this.setState({
+        searchForm,
+        sourceType
+      })
+    });
   }
 
   //获取预算项目映射数据
@@ -191,23 +204,14 @@ class BudgetItemMap extends React.Component {
     })
   }
 
+
   handleSearch = (values) =>{
-    console.log(values)
-    let params = {};
-    for(let paramsName in values){
-      if(typeof paramsName !== 'undefined'){
-        params[paramsName] = values[paramsName]
-      }
-    }
-    console.log(params)
+    let searchParams = this.state.searchParams;
+    searchParams.sourceType = values.sourceType===undefined ? "" : values.sourceType;
+    searchParams.itemId = values.itemId === undefined ? "" : values.itemId;
     this.setState({
-      searchParams:{
-        itemCode: values.itemCode,
-        itemName: values.itemName,
-        itemCodeFrom: values.itemCodeFrom,
-        itemCodeTo: values.itemCodeTo,
-        itemTypeId: typeof values.itemTypeName === "undefined" ? "" : values.itemTypeName[0],
-      },
+      searchParams,
+      loading: true
     },()=>{
       this.getList()
     })
@@ -261,7 +265,7 @@ class BudgetItemMap extends React.Component {
   };
 
   renderColumns = (decode, record,index, dataIndex) => {
-    const { paramValueMap } = this.state;
+    const { paramValueMap,sourceType } = this.state;
     if( record.edit){
       switch(dataIndex){
         case 'sourceType':{
@@ -270,7 +274,7 @@ class BudgetItemMap extends React.Component {
                     onChange={(value) => this.handleChangeType(value, index)}
                     value={record.sourceType}
                     notFoundContent={<Spin size="small" />}>
-              {this.sourceTypeArray.map((option)=>{
+              {sourceType.map((option)=>{
                 return <Option key={option.value}>{option.label}</Option>
               })}
             </Select>
@@ -290,7 +294,7 @@ class BudgetItemMap extends React.Component {
                 single={true}/>
             );
           }else {
-            if (record.sourceType === 'appType'){
+            if (record.sourceType === 'APPLICATION_TYPE'){
               return (
                 <Chooser
                   onChange={(value) => this.handleChangeAppType(value, index)}

@@ -4,7 +4,8 @@ import FinanceReview from 'containers/financial-management/finance-review'
 import FinanceView from 'containers/financial-management/finance-view'
 import ExpenseReportDetail from 'containers/expense-report/expense-report-detail'
 import LoanRequestDetail from 'containers/request/loan-request-detail'
-import CheckCenter from 'containers/financial-management/check-center'
+import CheckCenter from 'containers/financial-management/check-center/check-center'
+import CheckCenterTicket from  'containers/financial-management/check-center/check-center-ticket'
 
 //报销单详情
 const expenseReportDetailReview = {
@@ -57,11 +58,22 @@ const financeView = {
   parent: 'financial-management'
 };
 
+//机票账单
+const checkCenterTicket = {
+  key: 'check-center-ticket',
+  url: '/main/financial-management/check-center/check-center-ticket',
+  components: CheckCenterTicket,
+  parent: 'financial-management'
+};
+
 //对账中心
 const checkCenter = {
   key: 'check-center',
   url: '/main/financial-management/check-center',
   components: CheckCenter,
+  children:{
+    checkCenterTicket
+  },
   parent: 'financial-management'
 };
 
