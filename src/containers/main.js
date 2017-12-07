@@ -175,14 +175,15 @@ class Main extends React.Component{
         this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
         this.setState({check: true});
       }).catch(e => {
-        this.props.dispatch(setUserOrganization({message: (e.response && e.response.data) ? e.response.data.message : 'error'}));
+        let content = (e.response && e.response.data) ? e.response.data.message : 'error';
+        this.props.dispatch(setUserOrganization({message: content}));
         let modalData = {
-          content: e.response.data.message,
+          content: content,
           onOk: () => {
             this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
             this.setState({check: true});
           },
-          okText: '现在去设置'
+          okText: 'Ok'
         };
         Modal.error(modalData);
       })
