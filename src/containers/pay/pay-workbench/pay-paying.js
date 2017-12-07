@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu } from 'antd'
 
 import moment from 'moment';
@@ -35,17 +36,17 @@ class PayPaying extends React.Component {
       ],
       searchParams: {},
       columns: [
-        {title: '付款流水号', dataIndex: 'billcode'},
-        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '付款流水号', dataIndex: 'billcode', render: (value, record) => <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
             <div>
-              <a>{value}</a>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
               {record.documentCategoryName}
             </div>
           )}
         },
+        {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
             <div>
@@ -70,7 +71,7 @@ class PayPaying extends React.Component {
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '状态', dataIndex: 'state', render: (state) => <Badge status='processing' text="支付中"/>},
-        {title: '操作', dataIndex: 'id', render: id => {
+        {title: '操作', dataIndex: 'id', render: (id, record) => {
           const menu = (
             <Menu>
               <Menu.Item>
@@ -83,7 +84,7 @@ class PayPaying extends React.Component {
           );
           return (
             <div>
-              <a>查看</a>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>查看</a>
               <span className="ant-divider"/>
               <Dropdown overlay={menu} placement="bottomRight"><a>更多<Icon type="down" /></a></Dropdown>
             </div>
@@ -110,6 +111,7 @@ class PayPaying extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
@@ -137,7 +139,9 @@ class PayPaying extends React.Component {
   };
 
   //查看支付流水详情
-  checkPaymentDetail = () => {};
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
+  };
 
   /*********************** 获取总金额 ***********************/
 
@@ -346,6 +350,10 @@ class PayPaying extends React.Component {
   }
 
 }
+
+PayPaying.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

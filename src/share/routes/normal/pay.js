@@ -15,7 +15,7 @@ import CashTransactionClassDetail from 'containers/pay/cash-transaction-class/ca
 //支付流水详情
 const paymentDetail = {
   key:'payment-detail',
-  url:'/main/pay/pay-workbench/payment-detail/:id',
+  url:'/main/pay/pay-workbench/payment-detail/:tab/:id',
   components: PaymentDetail,
   parent: 'pay-workbench'
 };

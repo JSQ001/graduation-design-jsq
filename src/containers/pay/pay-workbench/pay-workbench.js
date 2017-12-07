@@ -26,6 +26,11 @@ class PayWorkbench extends React.Component {
     }
   }
 
+  componentWillMount(){
+    if(this.props.location.query.tab)
+      this.setState({nowStatus: this.props.location.query.tab})
+  }
+
   onChangeTabs = (key) => {
     this.setState({ nowStatus: key })
   };
@@ -50,10 +55,10 @@ class PayWorkbench extends React.Component {
   };
 
   render(){
-    const { tabs } = this.state;
+    const { tabs, nowStatus } = this.state;
     return (
       <div className="pay-workbench">
-        <Tabs onChange={this.onChangeTabs} defaultActiveKey="Unpaid">
+        <Tabs onChange={this.onChangeTabs} defaultActiveKey={nowStatus}>
           {tabs.map(tab => {
             return <TabPane tab={tab.name} key={tab.key}/>
           })}

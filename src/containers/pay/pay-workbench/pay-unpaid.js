@@ -194,7 +194,7 @@ class PayUnpaid extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/

@@ -65,7 +65,7 @@ class NewBudgetOccupancy extends React.Component {
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>创建人：</div>
-                <Input value={user.employeeID + ' - ' + user.fullName} disabled />
+                <Input value={user.fullName + ' - ' + user.employeeID} disabled />
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>导入日期：</div>
