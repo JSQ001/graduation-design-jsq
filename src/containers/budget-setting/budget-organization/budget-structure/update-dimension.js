@@ -136,18 +136,6 @@ class NewDimension extends React.Component{
     }))
   };
 
-  handleFocus = () => {
-
-    //this.refs.blur.focus();
-    this.showList(true)
-  };
-
-  showList = (flag) =>{
-    this.setState({
-      showSelectDimension: flag,
-    })
-  };
-
   /**
    * ListSelector确认点击事件，返回的结果包装为form需要的格式
    * @param result
@@ -182,7 +170,7 @@ class NewDimension extends React.Component{
   };
 
   handleDimensionValue = (value)=>{
-    this.props.form.setFieldsValue({"defaultDimValueName":value[0].name});
+    this.props.form.setFieldsValue({"defaultDimValueName":value[0].defaultDimValueName});
     this.setState({
       defaultDimension:value
     })
