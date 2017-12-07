@@ -610,7 +610,7 @@ class BudgetJournalDetail extends React.Component {
           <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">
             <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>提交</Button>
           </Popconfirm>
-          <Button  type="primary" style={{marginRight:'30px'}}> onClick={this.handleSaveJournal} loading={this.state.loading}>保存</Button>
+          <Button  type="primary" style={{marginRight:'30px'}}onClick={this.handleSaveJournal} loading={this.state.loading}>保存</Button>
           <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="确定" cancelText="取消">
             <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>
