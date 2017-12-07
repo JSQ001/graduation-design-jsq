@@ -124,37 +124,40 @@ class SearchArea extends React.Component{
    */
   handleSearch = (e) => {
     e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    let searchForm = [].concat(this.state.searchForm);
-    searchForm.map(item => {
-      if(values[item.id] && item.entity) {
-        if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
-          values[item.id] = JSON.parse(values[item.id].title);
-        } else if (item.type === 'multiple') {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(JSON.parse(value.title));
-          });
-          values[item.id] = result;
-        }
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if(!err){
+        let searchForm = [].concat(this.state.searchForm);
+        searchForm.map(item => {
+          if(values[item.id] && item.entity) {
+            if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
+              values[item.id] = JSON.parse(values[item.id].title);
+            } else if (item.type === 'multiple') {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(JSON.parse(value.title));
+              });
+              values[item.id] = result;
+            }
+          }
+          if(item.type === 'list' && values[item.id]){
+            if(item.entity){
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value);
+              });
+              values[item.id] = result;
+            } else {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value[item.valueKey]);
+              });
+              values[item.id] = result;
+            }
+          }
+        });
+        this.props.submitHandle(values)
       }
-      if(item.type === 'list' && values[item.id]){
-        if(item.entity){
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value);
-          });
-          values[item.id] = result;
-        } else {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value[item.valueKey]);
-          });
-          values[item.id] = result;
-        }
-      }
-    });
-    this.props.submitHandle(values)
+    })
   };
 
   //点击重置的事件，清空值为初始值
