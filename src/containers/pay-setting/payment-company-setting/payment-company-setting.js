@@ -63,8 +63,10 @@ class PaymentCompanySetting extends React.Component {
 
       ],
       searchForm: [
+        {type:'select',id:'setOfBooksId',label:"账套",options:[],valueKey:"id",labelKey:"name"},
         {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
         {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
+        {type: 'value_list', id: 'ducumentCategory', label: '单据类型', options: [], valueListCode: 2106}
       ],
       pageSize: 10,
       page: 0,
@@ -89,13 +91,18 @@ class PaymentCompanySetting extends React.Component {
 
 
   componentWillMount() {
+
     this.getList();
   }
 
+  //获取账套
+  getSetOfBooks(){
+
+  }
 
 //获得数据
   getList() {
-    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode}&companyName=${this.state.searchParams.companyName}&ducumentCategory=${this.state.searchParams.ducumentCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `http://192.168.1.195:9083/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode?this.state.searchParams.companyCode:""}&companyName=${this.state.searchParams.companyName?this.state.searchParams.companyName:""}&ducumentCategory=${this.state.searchParams.ducumentCategory?this.state.searchParams.ducumentCategory:""}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -140,9 +147,9 @@ class PaymentCompanySetting extends React.Component {
   //搜索
   search = (result) => {
     let searchParams = {
-        companyCode: result.companyCode,
-        companyName: result.companyName,
-        ducumentCategory:result.ducumentCategory,
+        companyCode: result.companyCode?result.companyCode:'',
+        companyName: result.companyName?result.companyName:'',
+        ducumentCategory:result.ducumentCategory?result.ducumentCategory:'',
     };
     this.setState({
       searchParams: searchParams,
@@ -184,6 +191,7 @@ class PaymentCompanySetting extends React.Component {
   }
 
   putItemTypeShowSlide = (recode) => {
+    console.log(recode);
     this.setState({
       updateParams: recode,
     }, () => {
@@ -244,6 +252,7 @@ class PaymentCompanySetting extends React.Component {
 
 function mapStateToProps() {
   return {
+
   }
 }
 

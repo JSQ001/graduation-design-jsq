@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button, Table, Select,Modal,message,Popconfirm,notification,Icon} from 'antd';
+import {Affix,Popover,Button, Table, Select,Modal,message,Popconfirm,notification,Icon} from 'antd';
 import "styles/budget/budget-journal/budget-journal-detail.scss";
 
 import httpFetch from 'share/httpFetch';
@@ -604,16 +604,18 @@ class BudgetJournalDetail extends React.Component {
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={this.state.params}/>
         <div className="divider"> </div>
-        <div className="footer-operate">
+        <Affix offsetBottom={0}
+               style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                 boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
           <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">
-          <Button type="primary">提交</Button>
+            <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>提交</Button>
           </Popconfirm>
-          <Button  type="primary"  onClick={this.handleSaveJournal} loading={this.state.loading}>{this.props.intl.formatMessage({id:"common.save"})}</Button>
+          <Button  type="primary" style={{marginRight:'30px'}}> onClick={this.handleSaveJournal} loading={this.state.loading}>保存</Button>
           <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="确定" cancelText="取消">
-            <Button className="delete">{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+            <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>
           <Button onClick={this.handleReturn}>返回</Button>
-        </div>
+        </Affix>
       </div>
     )
   }

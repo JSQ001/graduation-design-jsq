@@ -219,7 +219,7 @@ class NewBudgetJournalFrom extends React.Component {
   HandleClear = () => {
     let path = this.state.budgetJournalPage.url;
     this.context.router.push(path);
-  };
+  };h
 
 
   //选择预算日记账类型，设置对应的预算表选
