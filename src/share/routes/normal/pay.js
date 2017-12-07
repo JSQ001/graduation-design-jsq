@@ -5,7 +5,7 @@ import PaymentDetail from 'containers/pay/pay-workbench/payment-detail'
 //支付流水详情
 const paymentDetail = {
   key:'payment-detail',
-  url:'/main/pay/pay-workbench/payment-detail/:id',
+  url:'/main/pay/pay-workbench/payment-detail/:tab/:id',
   components: PaymentDetail,
   parent: 'pay-workbench'
 };

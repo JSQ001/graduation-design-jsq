@@ -21,6 +21,7 @@ import paymentMethod from 'static/i18n/en_US/pay-setting/payment-method.json'
 import paymentCompanySetting from 'static/i18n/en_US/pay-setting/payment-company-setting.json'
 import cashFlowItem from 'static/i18n/en_US/pay-setting/cash-flow-item.json'
 import cashTransactionClass from 'static/i18n/en_US/pay-setting/cash-transaction-class.json'
+import checkCenter from 'static/i18n/en_US/financial-management/check-center.json'
 
 
 
@@ -47,8 +48,8 @@ const i18nList = [
   paymentMethod, //付款方式
   paymentCompanySetting, //付款公司配置
   cashFlowItem,  //现金流量项
-  cashTransactionClass   //现金事物
-
+  cashTransactionClass,   //现金事物
+  checkCenter          //对账中心
 ];
 
 let result = {};

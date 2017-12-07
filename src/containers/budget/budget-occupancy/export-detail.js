@@ -1,7 +1,8 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Spin, Row, Col, Tabs, Table } from 'antd'
+import { Form, Spin, Row, Col, Tabs, Table, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
+import menuRoute from 'share/menuRoute'
 
 import 'styles/budget/budget-occupancy/export-detail.scss'
 
@@ -24,6 +25,7 @@ class ExportDetail extends React.Component {
       pagination: {
         total: 0,
       },
+      budgetOccupancy:  menuRoute.getRouteItem('budget-occupancy','key'),    //预算占用调整
     }
   }
 
@@ -34,6 +36,10 @@ class ExportDetail extends React.Component {
         <span style={{color:'#666'}}>{value}</span>
       </div>
     )
+  };
+
+  handleBack = () => {
+    this.context.router.replace(this.state.budgetOccupancy.url);
   };
 
   render() {
@@ -70,10 +76,17 @@ class ExportDetail extends React.Component {
             </div>
           </TabPane>
         </Tabs>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}>
+          <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
       </div>
     )
   }
 }
+
+ExportDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedExportDetail = Form.create()(injectIntl(ExportDetail));
 

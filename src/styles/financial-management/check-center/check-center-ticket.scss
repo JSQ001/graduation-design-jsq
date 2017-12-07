@@ -1,0 +1,22 @@
+.check-center-ticket{
+  .check-center-radio{
+    margin-top: 10px;
+  }
+  .check-center-detail{
+    background: #74ADEA;
+    border-radius:5px;
+    .check-center-detail-unPay{
+      display: inline-table;
+
+    }
+    .check-center-detail-checked{
+      display: inline-table;
+      margin-left: 340px;
+    }
+    .check-center-detail-unchecked{
+      display: inline-table;
+      margin-left: 340px;
+    }
+  }
+
+}

@@ -61,11 +61,11 @@ class NewBudgetOccupancy extends React.Component {
             <Row>
               <Col span={7}>
                 <div style={{lineHeight: '32px'}}>导入批次号：</div>
-                <Input value="" disabled />
+                <Input value="-" disabled />
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>创建人：</div>
-                <Input value={user.companyId + ' - ' + user.fullName} disabled />
+                <Input value={user.fullName + ' - ' + user.employeeID} disabled />
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>导入日期：</div>
@@ -96,7 +96,7 @@ class NewBudgetOccupancy extends React.Component {
                    size="middle"/>
           </Card>
           <Affix offsetBottom={0}
-                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px', zIndex:1,
                    boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
             <Button type="primary" loading={exportLoading} style={{margin:'0 20px'}}>导入数据</Button>
             <Button htmlType="submit" loading={loading}>最终确认</Button>
