@@ -246,18 +246,40 @@ class BudgetBalance extends React.Component {
       case 'value':{
         //如果为维度相关项目，则为成本中心selectorItem
         let param = params[index].params ? (params[index].type === 'BGT_RULE_PARAMETER_DIM' ? params[index].paramMap : paramValueMap[params[index].params]) : null;
-        return <Chooser disabled={param === null}
-                        onChange={(value) => this.handleChangeValue(value, index)}
-                        type={param ? param.listType : null}
-                        labelKey={param ? param.labelKey : null}
-                        valueKey={param ? param.valueKey : null}
-                        listExtraParams={param ? param.listExtraParams : null}
-                        selectorItem={param ? param.selectorItem : null}
-                        value={params[index].value}
-                        single={param ? param.listType === 'currency' : false}
-                        showNumber/>;
+        return (
+          <Row gutter={20}>
+            <Col span={12}>
+              <Select value={params[index].isAll ? "1" : "2"} onChange={(isAll) => {this.handleChangeIsAll(isAll, index)}} disabled={param === null}>
+                <Option value="1">全选</Option>
+                <Option value="2">手动选择</Option>
+              </Select>
+            </Col>
+            <Col span={12}>
+              <Chooser disabled={param === null || params[index].isAll}
+                       onChange={(value) => this.handleChangeValue(value, index)}
+                       type={param ? param.listType : null}
+                       labelKey={param ? param.labelKey : null}
+                       valueKey={param ? param.valueKey : null}
+                       listExtraParams={param ? param.listExtraParams : null}
+                       selectorItem={param ? param.selectorItem : null}
+                       value={params[index].value}
+                       single={param ? param.listType === 'currency' : false}
+                       showNumber/>
+            </Col>
+        </Row>
+        )
       }
     }
+  };
+
+  //修改参数值为全选还是手动选择
+  handleChangeIsAll = (isAll, index) => {
+    let { params } = this.state;
+    params[index].isAll = isAll === "1";
+    if(isAll === "1"){
+      params[index].value = [];
+    }
+    this.setState({ params });
   };
 
   //修改参数类型，同时清空参数和参数值
@@ -335,7 +357,7 @@ class BudgetBalance extends React.Component {
   //新增维度
   handleNew = () => {
     let { params, paramsKey } = this.state;
-    let newParams = {type: '', params: '', value: [], key: paramsKey};
+    let newParams = {type: '', params: '', value: [], key: paramsKey, isAll: false};
     params.push(newParams);
     paramsKey++;
     this.setState({ params, paramsKey});
@@ -405,12 +427,25 @@ class BudgetBalance extends React.Component {
         values.queryLineList = [];
         values.periodSummaryFlag = values.periodSummaryFlag === 'TRUE';
         this.state.params.map(param => {
+          if(param.type === null){
+            message.error('请选择参数类型');
+            this.setState({ searching: false });
+          }
+          if(param.params === null){
+            message.error('请选择参数');
+            this.setState({ searching: false });
+          }
+          if(param.value.length === 0 && !param.isAll){
+            message.error('当参数值部位全选的时候请选择至少一个参数值');
+            this.setState({ searching: false });
+          }
           let queryLine = {
+            isAll: param.isAll,
             parameterType: param.type,
             parameterCode: param.params,
             queryParameterList: []
           };
-          param.value.map(value => {
+          !param.isAll && param.value.map(value => {
             let paramItem = param.type === 'BGT_RULE_PARAMETER_DIM' ? costCenterSelectorItem : paramValueMap[param.params];
             let queryParameter = {
               parameterValueId: paramItem.listType === 'currency' ? null : (paramItem.valueKey ? value[paramItem.valueKey] : null),
@@ -485,8 +520,8 @@ class BudgetBalance extends React.Component {
       let { paramsKey, paramValueMap } = this.state;
       let params = [];
       condition.queryLineList.map((item, index) => {
-        let newParams = {type: item.parameterType, params: item.parameterCode, value: [], key: paramsKey};
-        item.queryParameterList.map(queryParameter => {
+        let newParams = {type: item.parameterType, params: item.parameterCode, value: [], key: paramsKey, isAll: item.isAll};
+        item.queryParameterList && item.queryParameterList.map(queryParameter => {
           let val = {};
           let mapItem = item.parameterType === 'BGT_RULE_PARAMETER_DIM' ? this.state.costCenterSelectorItem : paramValueMap[item.parameterCode];
           if(item.parameterCode !== 'CURRENCY')
