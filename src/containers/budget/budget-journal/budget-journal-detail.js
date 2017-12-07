@@ -484,6 +484,8 @@ class BudgetJournalDetail extends React.Component {
           }).catch(e => {
            message.error(e.response.data.message)
           })
+          let path=this.state.budgetJournalPage.url;
+          this.context.router.push(path);
         })
  /*     httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");

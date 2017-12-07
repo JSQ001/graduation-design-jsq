@@ -23,12 +23,14 @@ class NewPaymentCompanySetting extends React.Component {
       ducumentCategoryOptions:[],
       ducumentTypeOptions:[],
       companyOptions:[],
+      setOfBooksOption:[],
     };
   }
 
   componentWillMount() {
     this.getPaymentMethodCategory();
     this.getCompany();
+    this.getSetOfBooks();
   }
 
   componentWillReceiveProps(nextProps){
@@ -43,6 +45,19 @@ class NewPaymentCompanySetting extends React.Component {
     }
   }
 
+  getSetOfBooks(){
+    let setOfBooksOption = [];
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant`).then((res)=>{
+        res.data.map(data =>{
+          setOfBooksOption.push({"label":data.setOfBooksCode+"----"+data.setOfBooksName,"value":String(data.id)})
+        })
+       console.log(setOfBooksOption);
+        this.setState({
+          setOfBooksOption
+        })
+      }
+    )
+  }
 
 
   getPaymentMethodCategory(){
@@ -79,7 +94,6 @@ class NewPaymentCompanySetting extends React.Component {
         this.setState({loading: true});
           let toValue = {
             ...values,
-            setOfBooksId:this.props.company.setOfBooksId
           }
           httpFetch.post(`http://192.168.1.195:9083/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
@@ -96,7 +110,6 @@ class NewPaymentCompanySetting extends React.Component {
         let toValue = {
           ...this.props.params,
           ...values,
-          setOfBooksId:this.props.company.setOfBooksId
         }
         httpFetch.put(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
           this.setState({loading: false});
@@ -164,6 +177,24 @@ class NewPaymentCompanySetting extends React.Component {
 
       <div className="new-payment-method">
         <Form onSubmit={this.handleSave}>
+          <FormItem {...formItemLayout}
+                    label={this.props.intl.formatMessage({id:"budget.set.of.books"})}>
+            {getFieldDecorator('setOfBooksId', {
+              initialValue: this.props.company.setOfBooksId,
+              rules: [
+                {
+                  required: true,
+                  message: this.props.intl.formatMessage({id:"common.please.select"})
+                },
+              ],
+            })(
+              <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}>
+                {this.state.setOfBooksOption.map((option)=>{
+                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
           <FormItem
             {...formItemLayout}  label="优先级"
           >
