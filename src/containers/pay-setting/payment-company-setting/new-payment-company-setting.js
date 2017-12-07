@@ -32,18 +32,14 @@ class NewPaymentCompanySetting extends React.Component {
     this.getCompany();
     this.getSetOfBooks();
     if( JSON.stringify(this.props.params)!="{}" ){
-      this.getducumentType(nextProps.params.ducumentCategory);
+      this.getducumentType(this.props.params.ducumentCategory);
     }
   }
 
 
   componentWillReceiveProps(nextProps){
-    console.log(444);
     if(this.props.params != nextProps.params && JSON.stringify(nextProps.params)!="{}" ){
-
-      console.log(1111111);
       if(this.props.params.ducumentCategory != nextProps.params.ducumentCategory){
-        console.log(123);
           this.getducumentType(nextProps.params.ducumentCategory);
       }
     }
@@ -89,9 +85,10 @@ class NewPaymentCompanySetting extends React.Component {
     )
   }
 
-  //新建
+  //新建或者编辑
   handleSave = (e) => {
     e.preventDefault();
+    console.log(123);
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if(JSON.stringify(this.props.params)==="{}"){
@@ -108,22 +105,24 @@ class NewPaymentCompanySetting extends React.Component {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+e.required.data.message);
           })
-      }
       }else {
-        this.setState({loading: true});
-        let toValue = {
-          ...this.props.params,
-          ...values,
+          console.log(values);
+          this.setState({loading: true});
+          console.log(this.props.params);
+          let toValue = {
+            ...this.props.params,
+            ...values,
+          }
+          httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+            this.setState({loading: false});
+            this.props.form.resetFields();
+            this.props.close(true);
+            message.success("编辑成功");
+          }).catch((e) => {
+            this.setState({loading: false});
+            message.error(e.required.data.message);
+          })
         }
-        httpFetch.put(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
-          this.setState({loading: false});
-          this.props.form.resetFields();
-          this.props.close(true);
-          message.success("编辑成功");
-        }).catch((e) => {
-          this.setState({loading: false});
-          message.error(e.required.data.message);
-        })
       }
     });
   }
