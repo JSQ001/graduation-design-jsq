@@ -203,7 +203,9 @@ class BudgetJournalReCheck extends React.Component {
           pagination={pagination}
           size="middle"
           bordered
-          onRowClick={this.HandleRowClick}
+          onRow={record => ({
+            onClick: () => this.HandleRowClick(record)
+          })}
           rowKey={record=>record.id}
         />
       </div>

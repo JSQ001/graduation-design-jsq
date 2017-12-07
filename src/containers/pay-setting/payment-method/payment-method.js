@@ -13,60 +13,55 @@ import httpFetch from 'share/httpFetch'
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
-import NewPaymentCompanySetting from 'containers/pay/payment-company-setting/new-payment-company-setting.js'
-import WrappedNewBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/new-budget-item-type'
+import WrappedPaymentMethod from 'containers/pay-setting/payment-method/new-payment-method'
 import WrappedPutBudgetItemType from 'containers/budget-setting/budget-organization/budget-item-type/put-budget-item-type'
 
-import 'styles/pay/payment-method/payment-method.scss'
+import 'styles/pay-setting/payment-method/payment-method.scss'
 
 
-class PaymentCompanySetting extends React.Component {
+class PaymentMethod extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
       columns: [
-        {/*优先级*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.priorty"}),
-          dataIndex: 'priorty',
-          key: 'priorty',
-
+        {/*付款方式类型*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"}),
+          dataIndex: 'paymentMethodCategory',
+          key: 'paymentMethodCategory',
+          render(recode){
+            if(recode === "ONLINE_PAYMENT"){
+              return "线上"
+            }else if(recode === "OFFLINE_PAYMENT"){
+              return "线下"
+            }else if(recode === "EBANK_PAYMENT"){
+              return "落地文件"
+            }
+          }
         },
-        {/*单据公司代码*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"}),
-          dataIndex: 'companyCode',
-          key: 'companyCode',
+        {/*付款方式代码*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"}),
+          dataIndex: 'paymentMethodCode',
+          key: 'paymentMethodCode',
         },
-        {/*单据公司名称*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"}),
-          dataIndex: 'companyName',
-          key: 'companyName',
-        },
-        {/*单据类别*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"}),
-          dataIndex: 'ducumentCategory',
-          key: 'ducumentCategory',
-        },
-        {/*单据类型*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"}),
-          dataIndex: 'ducumentType',
-          key: 'ducumentType',
-        },
-        {/*付款公司代码*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyCode"}),
-          dataIndex: 'paymentCompanyCode',
-          key: 'paymentCompanyCode',
-        },
-        {/*付款公司名称*/
-          title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyName"}),
-          dataIndex: 'paymentCompanyName',
-          key: 'paymentCompanyName',
+        {/*付款方式名称*/
+          title: this.props.intl.formatMessage({id: "paymentMethod.description"}),
+          dataIndex: 'description',
+          key: 'description',
         },
 
+        {/*状态*/
+          title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
+          dataIndex: 'isEnabled',
+          key: 'isEnabled',
+          render: (recode, text) => {
+            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+          }
+        },
       ],
       searchForm: [
-        {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
-        {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
+        {type: 'input', id: 'paymentMethodCode', label: this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCode"})},
+        {type: 'input', id: 'description', label: this.props.intl.formatMessage({id: "paymentMethod.description"})},
       ],
       pageSize: 10,
       page: 0,
@@ -74,14 +69,10 @@ class PaymentCompanySetting extends React.Component {
         total: 0
       },
       searchParams: {
-        companyCode: '',
-        companyName: '',
-        ducumentCategory:'',
-      },
-      updateParams: {
-        paymentMethodCategory: '',
         paymentMethodCode: '',
+        description:'',
       },
+      updateParams: {},
       showSlideFrameNew: false,
       showSlideFramePut: false,
       loading: true
@@ -97,7 +88,7 @@ class PaymentCompanySetting extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode}&companyName=${this.state.searchParams.companyName}&ducumentCategory=${this.state.searchParams.ducumentCategory}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCode}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -131,20 +122,20 @@ class PaymentCompanySetting extends React.Component {
   //清空搜索区域
   clear = () => {
     this.setState({
-      searchParams: {
-        companyCode: '',
-        companyName: '',
-        ducumentCategory:'',
+      updateParams: {
+        description: '',
+        paymentMethodCode: '',
       },
     })
   }
 
   //搜索
   search = (result) => {
+    console.log(result);
+    console.log(12333333);
     let searchParams = {
-        companyCode: result.companyCode,
-        companyName: result.companyName,
-        ducumentCategory:result.ducumentCategory,
+      description: result.description,
+      paymentMethodCode: result.paymentMethodCode
     };
     this.setState({
       searchParams: searchParams,
@@ -163,6 +154,14 @@ class PaymentCompanySetting extends React.Component {
     })
   };
 
+
+  handleCloseUpdateSlide = (params) => {
+    this.getList();
+
+    this.setState({
+      showSlideFramePut: false
+    })
+  };
 
 
   showSlidePut = (flag) => {
@@ -189,7 +188,7 @@ class PaymentCompanySetting extends React.Component {
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -222,19 +221,28 @@ class PaymentCompanySetting extends React.Component {
             dataSource={data}
             pagination={pagination}
             loading={loading}
-            rowKey={recode=>{return recode.id}}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
+            onRow={record => ({
+              onClick: () => this.putItemTypeShowSlide(record)
+            })}
             size="middle"
           />
         </div>
 
-        <SlideFrame  title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款公司配置":"编辑付款公司配置"}
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款方式":"编辑付款方式"}
                     show={showSlideFrameNew}
-                    content={NewPaymentCompanySetting}
+                    content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
+
+        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
+                    show={showSlideFramePut}
+                    content={WrappedPutBudgetItemType}
+                    afterClose={this.handleCloseUpdateSlide}
+                    onClose={() => this.showSlidePut(false)}
+                    params={updateParams}/>
+
 
       </div>
     );
@@ -247,4 +255,4 @@ function mapStateToProps() {
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(PaymentCompanySetting));
+export default connect(mapStateToProps)(injectIntl(PaymentMethod));

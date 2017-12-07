@@ -11,7 +11,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
-import 'styles/pay/cash-transaction-class/new-cash-transaction-class.scss'
+import 'styles/pay-setting/cash-transaction-class/new-cash-transaction-class.scss'
 const FormItem = Form.Item;
 const Option = Select.Option;
 

@@ -112,5 +112,7 @@
   "menu.new-pre-payment":"New Previous Payment",
   "menu.pre-payment-detail":"Previous Payment Detail",
   "menu.basic-data": "Basic data",
-  "menu.check-center": "Check for the center"
+  "menu.check-center": "Check for the center",
+  "menu.pay-setting":"Pay Setting"
+
 }

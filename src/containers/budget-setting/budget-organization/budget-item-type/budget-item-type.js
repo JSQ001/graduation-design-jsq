@@ -204,7 +204,9 @@ class BudgetItemType extends React.Component {
             pagination={pagination}
             loading={loading}
             bordered
-            onRowClick={this.putItemTypeShowSlide}
+            onRow={record => ({
+              onClick: () => this.putItemTypeShowSlide(record)
+            })}
             size="middle"
           />
         </div>

@@ -10,7 +10,7 @@ const Option =Select.Option;
 
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import 'styles/pay/payment-method/new-payment-method.scss'
+import 'styles/pay-setting/payment-method/new-payment-method.scss'
 
 class NewPaymentCompanySetting extends React.Component {
   constructor(props) {
@@ -81,7 +81,7 @@ class NewPaymentCompanySetting extends React.Component {
             ...values,
             setOfBooksId:this.props.company.setOfBooksId
           }
-          httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+          httpFetch.post(`http://192.168.1.195:9083/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -125,7 +125,7 @@ class NewPaymentCompanySetting extends React.Component {
   handleDucumentCategory =(value)=>{
     console.log(value);
     this.props.form.setFieldsValue({
-      ducumentType:''
+      ducumentTypeId:''
     })
     this.getducumentType(value);
   }
@@ -202,9 +202,9 @@ class NewPaymentCompanySetting extends React.Component {
           </FormItem>
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"})}>
-            {getFieldDecorator('ducumentType', {
+            {getFieldDecorator('ducumentTypeId', {
               rules: [{ required: true, message: '请选择' }],
-              initialValue:this.props.params.ducumentType||''
+              initialValue:this.props.params.ducumentTypeId||''
             })(
               <Select>
                 {this.state.ducumentTypeOptions.map((option)=>{

@@ -10,7 +10,7 @@ const Option = Select.Option;
 
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import 'styles/pay/payment-method/new-payment-method.scss'
+import 'styles/pay-setting/payment-method/new-payment-method.scss'
 
 class NewSubjectSheet extends React.Component {
     constructor(props) {
