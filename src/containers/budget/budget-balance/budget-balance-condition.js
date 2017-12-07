@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Table, Popconfirm } from 'antd'
+import { Table, Popconfirm, Button } from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
@@ -68,6 +68,9 @@ class BudgetBalanceCondition extends React.Component {
                dataSource={data}
                size="middle"
                bordered rowKey="id"/>
+        <div className="slide-footer">
+          <Button type="primary" onClick={this.getList} loading={loading}>刷新列表</Button>
+        </div>
       </div>
     )
   }
