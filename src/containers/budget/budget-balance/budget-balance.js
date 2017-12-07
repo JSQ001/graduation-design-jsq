@@ -336,9 +336,15 @@ class BudgetBalance extends React.Component {
         if(!queryLineListParamOptions[type] || queryLineListParamOptions[type].length === 0 ){
           this.getSystemValueList(paramTypeMap[type]).then(res => {
             let options = [];
-            res.data.values.map(data => {
-              options.push({label: data.messageKey, value: data.code})
-            });
+            if(type === 'BGT_RULE_PARAMETER_BUDGET'){
+              res.data.values.map(data => {
+                data.common && options.push({label: data.messageKey, value: data.code})
+              });
+            } else {
+              res.data.values.map(data => {
+                options.push({label: data.messageKey, value: data.code})
+              });
+            }
             queryLineListParamOptions[type] = options;
             this.setState({ queryLineListParamOptions });
           });
