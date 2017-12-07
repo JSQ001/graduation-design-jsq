@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Table, Button, message } from 'antd'
+import { Table, Button, message, Popover } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -18,20 +18,22 @@ class BudgetBalanceAmountDetail extends React.Component {
       pageSize: 10,
       data: [],
       columns: [
-        {title: "公司", dataIndex: "companyName"},
-        {title: "部门", dataIndex: "unitName"},
+        {title: "公司", dataIndex: "companyName", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "部门", dataIndex: "unitName", render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: "预算申请人", dataIndex: "employeeName", type: "J"},{title: "申请人", dataIndex: "employeeName", type: "R"},{title: "报销人", dataIndex: "employeeName", type: "U"},
         {title: "单据类型", dataIndex: "documentType"},
-        {title: "单据编号", dataIndex: "documentNumber"},
+        {title: "单据编号", dataIndex: "documentNumber", render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: "预算申请日期", dataIndex: "requisitionDate", type: "J"},{title: "申请日期", dataIndex: "requisitionDate", type: "R"},{title: "报销日期", dataIndex: "requisitionDate", type: "U"},
         {title: "单据行号", dataIndex: "documentLineNum"},
-        {title: "预算项目", type: "J"},{title: "申请项目", type: "R"},{title: "报销项目", type: "U"},
+        {title: "预算项目", type: "J", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "申请项目", type: "R", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "报销项目", type: "U", render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: "币种", dataIndex: "currency"},
         {title: "预算金额", dataIndex: "amount", type: "J"},{title: "申请金额", dataIndex: "amount", type: "R"},{title: "报销金额", dataIndex: "amount", type: "U"},
         {title: "税额", dataIndex: "taxAmount"},
         {title: "不含税金额", dataIndex: "saleAmount"},
         {title: "状态"},
-        {title: "摘要", dataIndex: "description"},
+        {title: "摘要", dataIndex: "description", render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: "关闭状态", type: "J"},{title: "关闭状态", type: "R"},{title: "反冲", type: "U"},
         {title: "会计期间", dataIndex: "periodName"},
         {title: "审核状态"}
