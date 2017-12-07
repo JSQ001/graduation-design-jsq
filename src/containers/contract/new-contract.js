@@ -160,7 +160,7 @@ class NewContract extends React.Component{
     const { getFieldDecorator } = this.props.form;
     const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
     return (
-      <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
+      <div className="new-contract background-transparent" style={{marginBottom:40, marginTop:-35}}>
         <Spin spinning={pageLoading}>
           <Card title="基本信息" hoverable={false} style={{marginBottom:'20px'}}>
             <Row>

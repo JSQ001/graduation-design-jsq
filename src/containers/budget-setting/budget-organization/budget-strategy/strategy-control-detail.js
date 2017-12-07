@@ -213,7 +213,9 @@ class StrategyControlDetail extends React.Component {
                pagination={pagination}
                loading={loading}
                rowKey={record => record.id}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({
+                 onClick: () => this.handleRowClick(record)
+               })}
                bordered
                size="middle"/>
         <SlideFrame title={(isNew ? '新建' : '编辑') + '触发条件'}

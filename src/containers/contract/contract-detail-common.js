@@ -21,13 +21,14 @@ class ContractDetailCommon extends React.Component {
       topTapValue: 'contractInfo',
       headerData: {},
       contractStatus: {
-        CANCEL: '取消',
-        CONFIRM: '确认',
-        FINISH: '完成',
-        GENERATE: '新建',
+        CANCEL: '已取消',
+        FINISH: '已完成',
+        GENERATE: '编辑中',
         HOLD: '暂挂',
-        REJECTED: '拒绝',
-        SUBMITTED: '提交',
+        REJECTED: '已驳回',
+        SUBMITTED: '审批中',
+        CONFIRM: '已通过',
+        FINISH2: '已撤回'  //字段未确认
       },
       subTabsList: [
         {label: '详情', key: 'DETAIL'},

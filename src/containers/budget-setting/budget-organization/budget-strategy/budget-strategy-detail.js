@@ -178,7 +178,9 @@ class BudgetStrategyDetail extends React.Component {
                pagination={pagination}
                rowKey={record => record.id}
                loading={loading}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({
+                 onClick: () => this.handleRowClick(record)
+               })}
                bordered
                size="middle"/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
