@@ -8,12 +8,10 @@ import { injectIntl } from 'react-intl';
 import { Button, Form, Input, Switch, Icon, Select, message } from 'antd';
 import debounce from 'lodash.debounce';
 
-import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
-import 'styles/pay/cash-flow-item/createOrUpdate-item.scss'
-import SlideFrame from 'components/slide-frame'
+import 'styles/pay-setting/cash-flow-item/createOrUpdate-item.scss'
+
 
 const FormItem = Form.Item;
 const Option = Select.Option;

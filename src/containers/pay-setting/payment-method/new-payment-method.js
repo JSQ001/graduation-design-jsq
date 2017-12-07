@@ -10,7 +10,7 @@ const Option =Select.Option;
 
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import 'styles/pay/payment-method/new-payment-method.scss'
+import 'styles/pay-setting/payment-method/new-payment-method.scss'
 
 class NewPaymentMethod extends React.Component {
   constructor(props) {
@@ -85,10 +85,9 @@ class NewPaymentMethod extends React.Component {
             versionNumber: 1,
             ...this.props.params,
             ...values,
-            isEnabled:this.state.isEnabled
           }
-          toValue.isEnabled =this.state.isEnabled;
-          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          console.log(this.state.isEnabled);
+          httpFetch.post(`${config.payUrl}/api/Cash/PaymentMethod`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -102,10 +101,8 @@ class NewPaymentMethod extends React.Component {
           let toValue ={
             ...this.props.params,
             ...values,
-            isEnabled:this.state.isEnabled
           }
-          toValue.isEnabled = this.state.isEnabled;
-          httpFetch.post(`${config.payUrl}/payment/api/Cash/PaymentMethod`, toValue).then((res) => {
+          httpFetch.post(`${config.payUrl}/api/Cash/PaymentMethod`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -124,10 +121,9 @@ class NewPaymentMethod extends React.Component {
     this.props.close();
   };
 
-  switchChange = () => {
-    this.setState((prevState) => ({
-      isEnabled: !prevState.isEnabled
-    }))
+  switchChange = (value) => {
+    console.log(value);
+   this.setState({isEnabled:value})
   }
 
   render() {
@@ -148,7 +144,7 @@ class NewPaymentMethod extends React.Component {
               valuePropName: 'checked',
               initialValue: this.state.isEnabled
             })(
-                <Switch defaultChecked={true} checkedChildren={<Icon type="check"/>}
+                <Switch  checkedChildren={<Icon type="check"/>}
                         unCheckedChildren={<Icon type="cross" />}
                         onChange={this.switchChange}
                 />

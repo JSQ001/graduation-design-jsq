@@ -5,7 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import moment from 'moment'
 
-import { Radio, Table, Breadcrumb, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Row, Col, Tooltip } from 'antd'
+import { Radio, Table, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -42,57 +42,53 @@ class PayUnpaid extends React.Component {
       columns: [
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item><a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a></Breadcrumb.Item>
-              <Breadcrumb.Item>{record.documentCategoryName}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
+              <span className="ant-divider"/>
+              {record.documentCategoryName}
+            </div>
           )}
         },
         {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item>{record.employeeId}</Breadcrumb.Item>
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              {record.employeeId}
+              <span className="ant-divider"/>
+              {value}
+            </div>
           )}
         },
         {title: '申请日期', dataIndex: 'requisitionDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '总金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '可支付金额', dataIndex: 'payableAmount', render: (value, record) => {return(
-          value !== record.amount ? this.filterMoney(value) :
-            <Row>
-              <Col span={5}>
-                <Tooltip title="可支付金额不等于总金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
-              </Col>
-              <Col span={18} offset={1}>
-                {this.filterMoney(value)}
-              </Col>
-            </Row>
-        )}},
+        {title: '可支付金额', dataIndex: 'payableAmount', render: (value, record) => {
+          let numberString = Number(value || 0).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+          numberString += (numberString.indexOf('.') > -1 ? '' : '.00');
+          return(
+            value === record.amount ? this.filterMoney(value) :
+              <div style={{textAlign:'right'}}>
+                <Tooltip title="可支付金额不等于总金额"><Icon type="exclamation-circle-o" style={{color:'red',marginRight:5}} /></Tooltip>
+                {numberString}
+              </div>
+          )}
+        },
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => {
           return (
-            <Row>
-              <Col span={5}>
-                <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red'}} /></Tooltip>
-              </Col>
-              <Col span={18} offset={1}>
-                <EditableCell type="number"
-                              value={value}
-                              message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
-                              onChangeError={this.state.editCellError}
-                              onChange={(editValue) => this.editCurrentPay(editValue, record)} />
-              </Col>
-            </Row>
+            <EditableCell type="number"
+                          value={value}
+                          message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
+                          onChangeError={this.state.editCellError}
+                          onChange={(editValue) => this.editCurrentPay(editValue, record)} />
           )}
         },
         {title: '付款方式', dataIndex: 'paymentMethodCategoryName'},
         {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
-              <Breadcrumb.Item>{record.partnerName}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              {value}
+              <span className="ant-divider"/>
+              {record.partnerName}
+            </div>
           )}
         },
         {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
@@ -147,6 +143,7 @@ class PayUnpaid extends React.Component {
       payFileAble: false,             //支付按钮是否可用
       fileCash: [],                   //总金额
 
+      currency: null,
       payModalVisible: false,
       confirmSuccessDate: null,
       partnerCategoryOptions: [],
@@ -173,6 +170,8 @@ class PayUnpaid extends React.Component {
 
   //搜索
   search = (result) => {
+    result.requisitionDateFrom = result.requisitionDateFrom ? moment(result.requisitionDateFrom).format('YYYY-MM-DD') : null;
+    result.requisitionDateTo = result.requisitionDateTo ? moment(result.requisitionDateTo).format('YYYY-MM-DD') : null;
     this.setState({ searchParams: result },() => {
       this.getList()
     })
@@ -195,7 +194,7 @@ class PayUnpaid extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
@@ -398,18 +397,43 @@ class PayUnpaid extends React.Component {
   //提示框显示
   onlineNotice = (rows) => {
     let amount = 0;
-    rows.forEach(item => { amount += item.currentPay || item.currentPayAmount });
-    let onlineNotice = (
-      <span>
-        已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-        <span className="ant-divider" />
-        本次支付金额总计：CNY <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
-      </span>
-    );
-    this.setState({
-      onlineNotice: rows.length ? onlineNotice : '',
-      payOnlineAble: rows.length
+    let errFlag = false;
+    let currency = rows[0] ? rows[0].currency : null;
+    this.setState({ currency });
+    rows.forEach(item => {
+      if (item.currency === currency) {
+        amount += item.currentPay || item.currentPayAmount
+      } else {
+        errFlag = true
+      }
     });
+    if (!errFlag) {
+      let onlineNotice = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          本次支付金额总计：{currency} <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
+        </span>
+      );
+      this.setState({
+        onlineNotice: rows.length ? onlineNotice : null,
+        onlineError: null,
+        payOnlineAble: rows.length
+      });
+    } else {
+      let onlineError = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          不同币种不可同时支付
+        </span>
+      );
+      this.setState({
+        onlineNotice: null,
+        onlineError: onlineError,
+        payOnlineAble: false
+      });
+    }
   };
 
   //弹框支付确认
@@ -445,13 +469,15 @@ class PayUnpaid extends React.Component {
     const tableTitle = (
       <div>
         {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
-        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.length > 0 && <span className="ant-divider"/>}
         {onlineCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== onlineCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -498,13 +524,15 @@ class PayUnpaid extends React.Component {
     const tableTitle = (
       <div>
         {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
-        {offlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {offlineCash.length > 0 && <span className="ant-divider"/>}
         {offlineCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== offlineCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -551,13 +579,15 @@ class PayUnpaid extends React.Component {
     const tableTitle = (
       <div>
         {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
-        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.length > 0 && <span className="ant-divider"/>}
         {fileCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index}  style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== fileCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -598,7 +628,7 @@ class PayUnpaid extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, payModalVisible, radioValue, payWayOptions } = this.state;
+    const { searchForm, payModalVisible, radioValue, payWayOptions, currency } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -638,7 +668,7 @@ class PayUnpaid extends React.Component {
                 rules: [{
                   required: true
                 }],
-                initialValue: ''
+                initialValue: currency
               })(
                 <Input disabled />
               )}

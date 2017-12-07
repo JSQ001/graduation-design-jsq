@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Alert, Badge, Table, Card } from 'antd'
+import menuRoute from 'share/menuRoute'
+import { Alert, Badge, Table, Card, Icon } from 'antd'
 
 import 'styles/pay/pay-workbench/payment-detail.scss'
 
@@ -37,7 +38,7 @@ class PaymentDetail extends React.Component {
         {title: '操作类型', dataIndex: 'operaType', key: 'operaType'},
         {title: '操作人', dataIndex: 'operaPerson', key: 'operaPerson'},
         {title: '执行结果', dataIndex: 'executionResult', key: 'executionResult', render: (result) => {
-          let status = result == '未支付' ? 'default' : (result == '成功' ? 'success' : 'error');
+          let status = result === '未支付' ? 'default' : (result === '成功' ? 'success' : 'error');
           return <Badge status={status} text={result}/>
         }},
         {title: '操作时间', dataIndex: 'operaTime', key: 'operaTime'},
@@ -45,6 +46,7 @@ class PaymentDetail extends React.Component {
       ],
       data: [],
       logData: [],
+      payWorkbench:  menuRoute.getRouteItem('pay-workbench','key'),    //付款工作台
     };
   }
 
@@ -57,6 +59,10 @@ class PaymentDetail extends React.Component {
     httpFetch.get(url).then(res => {
 
     })
+  };
+
+  handleBack = () => {
+    this.context.router.replace(`${this.state.payWorkbench.url}?tab=${this.props.params.tab}`);
   };
 
   render(){
@@ -124,11 +130,18 @@ class PaymentDetail extends React.Component {
                style={{marginBottom:'50px'}}
                expandedRowRender={record => <p>{record.description}</p>}
                size="middle"/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}>
+          <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+        </a>
       </div>
     )
   }
 
 }
+
+PaymentDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

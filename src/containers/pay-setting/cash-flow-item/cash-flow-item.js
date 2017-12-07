@@ -11,9 +11,9 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/pay/cash-flow-item/cash-flow-item.scss'
+import 'styles/pay-setting/cash-flow-item/cash-flow-item.scss'
 import SlideFrame from 'components/slide-frame'
-import CreateOrUpdateItem from 'containers/pay/cash-flow-item/createOrUpdate-item'
+import CreateOrUpdateItem from 'containers/pay-setting/cash-flow-item/createOrUpdate-item'
 
 class CashFlowItem extends React.Component{
   constructor(props){
@@ -177,7 +177,9 @@ class CashFlowItem extends React.Component{
             pagination={pagination}
             onChange={this.onChangePager}
             columns={columns}
-            onRowClick={this.handleRowClick}
+            onRow={record => ({
+              onClick: () => this.handleRowClick(record)
+            })}
             size="middle"
             bordered/>
         <SlideFrame title={slideFrameTitle}

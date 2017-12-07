@@ -113,5 +113,7 @@
   "menu.pre-payment-detail":"Previous Payment Detail",
   "menu.basic-data": "Basic data",
   "menu.check-center": "Check for the center",
-  "menu.check-center-ticket": "Ticket bills"
+  "menu.check-center-ticket": "Ticket bills",
+  "menu.pay-setting":"Pay Setting"
+
 }

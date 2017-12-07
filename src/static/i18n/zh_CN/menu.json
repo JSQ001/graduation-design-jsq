@@ -113,6 +113,6 @@
   "menu.pre-payment-detail":"预付款详情",
   "menu.basic-data": "基础数据",
   "menu.check-center": "对账中心",
-  "menu.check-center-ticket": "机票账单"
-
+  "menu.check-center-ticket": "机票账单",
+  "menu.pay-setting":"支付设置"
 }
