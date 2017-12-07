@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
+import menuRoute from 'share/menuRoute'
 
 import { Tabs } from 'antd'
 const TabPane = Tabs.TabPane;
@@ -23,6 +24,7 @@ class PayWorkbench extends React.Component {
         {key: 'Fail', name:'退票或失败'},
         {key: 'Success', name:'支付成功'}
       ],
+      payWorkbench:  menuRoute.getRouteItem('pay-workbench','key'),    //付款工作台
     }
   }
 
@@ -32,7 +34,9 @@ class PayWorkbench extends React.Component {
   }
 
   onChangeTabs = (key) => {
-    this.setState({ nowStatus: key })
+    this.setState({ nowStatus: key }, () => {
+      this.context.router.replace(`${this.state.payWorkbench.url}?tab=${this.state.nowStatus}`);
+    })
   };
 
   renderContent = () => {
@@ -69,6 +73,10 @@ class PayWorkbench extends React.Component {
   }
 
 }
+
+PayWorkbench.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}
