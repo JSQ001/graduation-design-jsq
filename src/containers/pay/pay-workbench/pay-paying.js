@@ -4,7 +4,8 @@ import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu } from 'antd'
+import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu, Modal, Form, DatePicker } from 'antd'
+const FormItem = Form.Item;
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -75,10 +76,10 @@ class PayPaying extends React.Component {
           const menu = (
             <Menu>
               <Menu.Item>
-                <a>确认成功</a>
+                <a onClick={this.handleSuccess}>确认成功</a>
               </Menu.Item>
               <Menu.Item>
-                <a>确认失败</a>
+                <a onClick={this.handleFail}>确认失败</a>
               </Menu.Item>
             </Menu>
           );
@@ -142,6 +143,52 @@ class PayPaying extends React.Component {
   checkPaymentDetail = (record) => {
     this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
   };
+
+  //确认成功弹框
+  handleSuccess = () => {
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: { span: 8 },
+      wrapperCol: { span: 15, offset: 1 },
+    };
+    const modalTitle = (
+      <div>
+        <span style={{marginRight:10,fontSize:14}}>将付款状态更改为</span>
+        <Badge status="success" text="支付成功"/>
+      </div>
+    );
+    const modalContent = (
+      <div>
+        <div style={{fontSize:12,color:'red'}}>请通过网银或询问银行的方式确认该笔付款已成功转账</div>
+        <Form onSubmit={this.confirmSuccess}>
+          <FormItem {...formItemLayout} label="实际付款日期" style={{margin:'20px 0 10px'}}>
+            {getFieldDecorator('date', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]
+            })(
+              <DatePicker format="YYYY-MM-DD"
+                          placeholder="请选择"
+                          allowClear={false}/>
+            )}
+          </FormItem>
+        </Form>
+      </div>
+    );
+    Modal.confirm({
+      title: modalTitle,
+      content: modalContent,
+    });
+  };
+
+  //确认成功操作
+  confirmSuccess = () => {
+
+  };
+
+  //确认失败弹框
+  handleFail = () => {};
 
   /*********************** 获取总金额 ***********************/
 
@@ -359,4 +406,6 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(PayPaying));
+const wrappedPayPaying = Form.create()(injectIntl(PayPaying));
+
+export default connect(mapStateToProps)(wrappedPayPaying);
