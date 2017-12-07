@@ -1,8 +1,11 @@
 {
   "check-center.suppliers": "供应商",
   "check-center.time": "时间",
-  "check-center-serviceType": "服务类型",
-  "check-center-clearingKey": "结算主键",
-  "check-center-linkNumber": "关联行程号"
+  "check-center.serviceType": "服务类型",
+  "check-center.clearingKey": "结算主键",
+  "check-center.linkNumber": "关联行程号",
+  "check-center.all": "全部",
+  "check-center.checked": "已确认",
+  "check-center.unchecked": "未确认"
 }
 

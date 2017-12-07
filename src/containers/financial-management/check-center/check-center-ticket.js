@@ -18,34 +18,37 @@ class CheckCenterTicket extends React.Component{
     super(props);
     const { formatMessage } = this.props.intl;
     this.state = {
-      loading: true,
+      loading: false,
+      detail:[
+        {key:'unPay', label: formatMessage({id: "check-center.unPay"}), quota: '123,45', count: '' },
+        {key:'checked', label: formatMessage({id: "check-center.checked"}), quota: '231,322', count: '' },
+        {key:'unchecked', label: formatMessage({id: "check-center.unchecked"}), quota: '903,1', count: '' }
+      ],
+      defaultLabel: 'all',
       radio:[
-        {
-          label: ''
-        }
+        {label: formatMessage({id: "check-center.all"}), value: 'all' },
+        {label: formatMessage({id: "check-center.checked"}), value: 'checked'},
+        {label: formatMessage({id: "check-center.unchecked"}), value: 'unchecked'}
       ],
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'check-center.suppliers'}) }, /*供应商*/
         {type: 'date', id: 'bankName', label: formatMessage({id: 'check-center.time'}) }, /*时间*/
         {type: 'select', id: 'countryName',options:[], labelKey: 'country',valueKey: 'country',
-          label: formatMessage({id: 'check-center-serviceType'}),  /*服务类型*/
+          label: formatMessage({id: 'check-center.serviceType'}),  /*服务类型*/
           event:'TYPE_CHANGE',
           defaultValue:'全部',
           //getUrl: `http://192.168.1.77:13001/location-service/api/localization/query/county`, method: 'get', getParams: {},
         },
-        {type: 'input', id: 'clearingKey', label: formatMessage({id: 'check-center-clearingKey'}) , /*结算主键*/},
-        {type: 'input', id: 'linkNumber', label: formatMessage({id: 'check-center-linkNumber'}) , /*关联行程号*/}
+        {type: 'input', id: 'clearingKey', label: formatMessage({id: 'check-center.clearingKey'}) , /*结算主键*/},
+        {type: 'input', id: 'linkNumber', label: formatMessage({id: 'check-center.linkNumber'}) , /*关联行程号*/}
       ],
-      cards: [
-        {
-          label: '机票', checked: 11, unChecked:11 ,total: 22, index: 1, onClick:this.handleTicket
+      columns:[
+        {          /*供应商*/
+          title: formatMessage({id:"check-center.suppliers"}), key: "countryName", dataIndex: 'countryName'
         },
-        {
-          label: '酒店', checked: 11, unChecked:11 ,total: 22, index: 2, onClick:this.handleTicket
+        {          /*结算日期*/
+          title: formatMessage({id:"check-center.clearDate"}), key: "bankCode", dataIndex: 'bankCode'
         },
-        {
-          label: '火车', checked: 11, unChecked:11 ,total: 22, index: 3, onClick:this.handleTicket
-        }
       ]
     }
   }
@@ -62,14 +65,33 @@ class CheckCenterTicket extends React.Component{
   };
 
 
+  renderDetail() {
+    const {detail} = this.state;
+    return detail.map((item)=>(
+      <div className={"check-center-detail-"+item.key}>
+        <p>{item.label}</p>
+        <p>{item.quota}元</p>
+        <p>{item.total}笔</p>
+      </div>))
+  }
+
   render(){
-    const { searchForm, radio} = this.state;
+    const { loading, searchForm, radio, defaultLabel, data, columns, pagination} = this.state;
     return(
       <div className="check-center-ticket">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
-        <Radio.Group value={radio} onChange={this.onChange} style={{ marginBottom: 16 }}>
+        <Radio.Group value={defaultLabel} className="check-center-radio" onChange={this.onChange} style={{ marginBottom: 16 }}>
           {radio.map((item)=><Radio.Button value={item.value}>{item.label}</Radio.Button>)}
         </Radio.Group>
+        <Card className="check-center-detail">
+          {this.renderDetail()}
+        </Card>
+        <Table
+            loading={loading}
+            data={data}
+            columns={columns}
+            pagination={pagination}
+        />
       </div>)
   }
 }
