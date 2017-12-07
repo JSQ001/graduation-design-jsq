@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
 import 'styles/budget/budget-balance/budget-balance-result.scss'
-import { Table, Row, Col, Form, message, Button } from 'antd'
+import { Table, Row, Col, Form, message, Button, Popover } from 'antd'
 const FormItem = Form.Item;
 
 import httpFetch from 'share/httpFetch'
@@ -20,22 +20,22 @@ class BudgetBalanceResult extends React.Component {
       budgetBalancePage: menuRoute.getRouteItem('budget-balance', 'key'),
       data: [],
       columns: [
-        {title: '公司', dataIndex: 'companyName'},
-        {title: '预算项目类型', dataIndex: 'itemTypeName'},
-        {title: '预算项目', dataIndex: 'itemName'},
+        {title: '公司', dataIndex: 'companyName', render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: '预算项目类型', dataIndex: 'itemTypeName', render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: '预算项目', dataIndex: 'itemName', render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: '年', dataIndex: 'periodYear'},
         {title: '季度', dataIndex: 'periodQuarter'},
-        {title: '期间', dataIndex: 'periodName'},
+        {title: '期间', dataIndex: 'periodName', render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: '币种', dataIndex: 'currency'},
         {title: '预算额', dataIndex: 'bgtAmount', render: (bgtAmount, record) => bgtAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'J')}>{this.filterMoney(bgtAmount)}</a> : this.filterMoney(bgtAmount)},
         {title: '保留额', dataIndex: 'expReserveAmount', render: (expReserveAmount, record) => expReserveAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'R')}>{this.filterMoney(expReserveAmount)}</a> : this.filterMoney(expReserveAmount)},
         {title: '发生额', dataIndex: 'expUsedAmount', render: (expUsedAmount, record) => expUsedAmount > 0 ? <a onClick={() => this.showSlideFrame(record, 'U')}>{this.filterMoney(expUsedAmount)}</a> : this.filterMoney(expUsedAmount)},
         {title: '可用额', dataIndex: 'expAvailableAmount', render: expAvailableAmount => this.filterMoney(expAvailableAmount)},
         {title: '预算进度', dataIndex: 'schedule'},
-        {title: '部门', dataIndex: 'unitName'},
-        {title: '部门组', dataIndex: 'unitGroupName'},
-        {title: '员工', dataIndex: 'employeeName'},
-        {title: '员工组', dataIndex: 'employeeGroupName'}
+        {title: '部门', dataIndex: 'unitName', render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: '部门组', dataIndex: 'unitGroupName', render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: '员工', dataIndex: 'employeeName', render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: '员工组', dataIndex: 'employeeGroupName', render: recode => <Popover content={recode}>{recode}</Popover>}
       ],
       condition: {
         companyNumber: 0,
