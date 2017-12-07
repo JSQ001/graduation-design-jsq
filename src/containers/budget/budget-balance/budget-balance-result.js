@@ -10,12 +10,14 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 import SlideFrame from 'components/slide-frame'
 import BudgetBalanceAmountDetail from 'containers/budget/budget-balance/budget-balance-amount-detail'
+import menuRoute from 'share/menuRoute'
 
 class BudgetBalanceResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
+      budgetBalancePage: menuRoute.getRouteItem('budget-balance', 'key'),
       data: [],
       columns: [
         {title: '公司', dataIndex: 'companyName'},
@@ -140,7 +142,7 @@ class BudgetBalanceResult extends React.Component {
   };
 
   render(){
-    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam } = this.state;
+    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam, budgetBalancePage } = this.state;
     return (
       <div className="budget-balance-result">
         <h3 className="header-title">查询结果</h3>
@@ -187,7 +189,8 @@ class BudgetBalanceResult extends React.Component {
                     title={slideFrameParam.title} width="70%"/>
 
         <div className="footer-operate">
-          <Button type="primary" onClick={this.getList}>重新查询结果</Button>
+          <Button type="primary" onClick={() => {this.context.router.push(budgetBalancePage.url)}}>返回修改参数</Button>
+          <Button onClick={this.getList}>重新查询结果</Button>
           <Button style={{ marginLeft: 10}}>导出CVS</Button>
         </div>
 
@@ -196,6 +199,10 @@ class BudgetBalanceResult extends React.Component {
   }
 
 }
+
+BudgetBalanceResult.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps() {
   return {}

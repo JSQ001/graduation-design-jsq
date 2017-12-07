@@ -179,11 +179,11 @@ class BudgetBalance extends React.Component {
         selectorItem: undefined
       },
       'UNIT': {
-        listType: 'journal_line_department',
+        listType: 'department',
         labelKey: 'name',
-        valueKey: 'id',
-        codeKey: 'code',
-        listExtraParams: {companyId: this.props.company.id},
+        valueKey: 'departmentId',
+        codeKey: 'custDeptNumber',
+        listExtraParams: {},
         selectorItem: undefined
       },
       'UNIT_GROUP': {
