@@ -13,7 +13,6 @@ import menuRoute from 'share/menuRoute';
 
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';
-import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js';
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js';
 import Importer from 'components/importer.js';
 
@@ -29,7 +28,6 @@ class BudgetJournalDetail extends React.Component {
       listData:[],
       headerAndListData:{},
       showSlideFrameNew:false,
-      showModal:false,
       updateState:false,
       pageSize:10,
       page:0,
@@ -180,9 +178,6 @@ class BudgetJournalDetail extends React.Component {
     //根据编制期代码拿数据
     this.getDataByBudgetJournalCode();
   }
-
-
-
 
   //选项改变时的回调，重置selection
   onSelectChange = (selectedRowKeys,selectedRows) =>{
@@ -377,17 +372,6 @@ class BudgetJournalDetail extends React.Component {
 
   }
 
-  //处理导入
-  handleModal=(value)=>{
-    this.setState({
-      showModal: value,
-    });
-  }
-
-  handleModalOk=()=>{
-    this.handleModal(false)
-  }
-
   showSlideFrameNew=(value)=>{
     this.setState({
       showSlideFrameNew:value,
@@ -567,7 +551,7 @@ class BudgetJournalDetail extends React.Component {
 
   render(){
 
-    const {loading, data,templateUrl,uploadUrl,columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,rowSelection} = this.state;
+    const {loading, data,templateUrl,uploadUrl,columns, pagination,formData,infoDate,infoList,updateState,showSlideFrameNew,rowSelection} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-journal-detail">
@@ -581,7 +565,6 @@ class BudgetJournalDetail extends React.Component {
             <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys.length}条数据</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
-              <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
               <Importer
                 templateUrl={templateUrl}
                 uploadUrl={uploadUrl}
@@ -607,15 +590,6 @@ class BudgetJournalDetail extends React.Component {
           />
 
         </div>
-
-        <BudgetJournalDetailLead
-          visible={showModal}
-          onOk={this.handleModalOk}
-          onCancel={() => this.handleModal(false)}
-        >
-        </BudgetJournalDetailLead>
-
-
 
         <SlideFrame title={"预算日记账"}
                     show={showSlideFrameNew}
