@@ -143,6 +143,7 @@ class PayUnpaid extends React.Component {
       payFileAble: false,             //支付按钮是否可用
       fileCash: [],                   //总金额
 
+      currency: null,
       payModalVisible: false,
       confirmSuccessDate: null,
       partnerCategoryOptions: [],
@@ -398,6 +399,7 @@ class PayUnpaid extends React.Component {
     let amount = 0;
     let errFlag = false;
     let currency = rows[0] ? rows[0].currency : null;
+    this.setState({ currency });
     rows.forEach(item => {
       if (item.currency === currency) {
         amount += item.currentPay || item.currentPayAmount
@@ -626,7 +628,7 @@ class PayUnpaid extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, payModalVisible, radioValue, payWayOptions } = this.state;
+    const { searchForm, payModalVisible, radioValue, payWayOptions, currency } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -666,7 +668,7 @@ class PayUnpaid extends React.Component {
                 rules: [{
                   required: true
                 }],
-                initialValue: ''
+                initialValue: currency
               })(
                 <Input disabled />
               )}

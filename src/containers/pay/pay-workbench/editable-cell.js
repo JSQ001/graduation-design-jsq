@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl';
-import { Form, Input, InputNumber, Icon, Tooltip } from 'antd'
+import { Form, InputNumber, Icon, Tooltip, Select } from 'antd'
 
 class EditableCell extends React.Component {
   constructor(props) {
@@ -45,9 +45,9 @@ class EditableCell extends React.Component {
                   <InputNumber value={value}
                                onChange={(value) => this.setState({ value })}/>
                   :
-                  <Input value={value}
-                         style={{width:140}}
-                         onChange={(e) => this.setState({ value: e.target.value })}/>
+                  <Select defaultValue={value}
+                          onChange={(value) => this.setState({ value })}>
+                  </Select>
               }
               <Tooltip placement="top" title="保存">
                 <Icon type="check" className="editable-cell-icon-check" onClick={this.check}/>
