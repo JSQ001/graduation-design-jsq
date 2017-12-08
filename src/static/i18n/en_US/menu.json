@@ -98,7 +98,7 @@
   "menu.pay-requisition-type":"Pay Requisition Type",
   "menu.budget-occupancy":"Budget Adjustment",
   "menu.new-budget-occupancy":"Budget Adjustment New",
-  "menu.export-detail":"Export Detail",
+  "menu.import-detail":"Import Detail",
   "menu.cash-flow-item":"Cash flow item",
   "menu.cash-transaction-class": "Cash transaction class",
   "menu.new-cash-transaction-class": "New cash transaction class",

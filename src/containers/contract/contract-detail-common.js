@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import moment from 'moment'
@@ -285,12 +285,12 @@ class ContractDetailCommon extends React.Component {
             <div className="table-header-buttons">
               {this.props.contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
             </div>
-            <Breadcrumb style={{marginBottom:'10px'}}>
-              <Breadcrumb.Item>共 {pagination.total} 条数据</Breadcrumb.Item>
-              <Breadcrumb.Item>合同总金额: {headerData.currency} {this.filterMoney(planAmount)}</Breadcrumb.Item>
-              <Breadcrumb.Item>计划总金额: {headerData.currency} {this.filterMoney(headerData.amount)}</Breadcrumb.Item>
-              <Breadcrumb.Item>待计划金额: {headerData.currency} {this.filterMoney(headerData.amount - planAmount)}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div style={{marginBottom:'10px'}}>
+              共 {pagination.total} 条数据<span className="ant-divider"/>
+              合同总金额: {headerData.currency} {this.filterMoney(planAmount)}<span className="ant-divider"/>
+              计划总金额: {headerData.currency} {this.filterMoney(headerData.amount)}<span className="ant-divider"/>
+              待计划金额: {headerData.currency} {this.filterMoney(headerData.amount - planAmount)}
+            </div>
           </div>
           <Table rowKey={record => record.id}
                  columns={columns}

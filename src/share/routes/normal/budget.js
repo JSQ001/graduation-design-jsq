@@ -11,7 +11,7 @@ import BudgetBalanceResult from 'containers/budget/budget-balance/budget-balance
 
 import BudgetOccupancy from 'containers/budget/budget-occupancy/budget-occupancy'
 import NewBudgetOccupancy from 'containers/budget/budget-occupancy/new-budget-occupancy'
-import ExportDetail from 'containers/budget/budget-occupancy/export-detail'
+import ExportDetail from 'containers/budget/budget-occupancy/import-detail'
 
 //新建预算日记账
 const newBudgetJournal={
@@ -88,9 +88,9 @@ const budgetBalance = {
   }
 };
 
-const exportDetail = {
-  key: 'export-detail',
-  url: '/main/budget/budget-occupancy/export-detail',
+const importDetail = {
+  key: 'import-detail',
+  url: '/main/budget/budget-occupancy/import-detail',
   components: ExportDetail,
   parent: 'budgetOccupancy'
 };
@@ -111,7 +111,7 @@ const budgetOccupancy = {
   parent: 'budget',
   children: {
     newBudgetOccupancy,
-    exportDetail
+    importDetail
   }
 };
 
