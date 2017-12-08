@@ -38,13 +38,15 @@ class BankDefinition extends React.Component{
       searchParams: {
         bankCode: "",
         bankName: "",
-        countryName: "",
-        address: ""
+        countryCode: "",
+        provinceCode: "",
+        cityCode: "",
+        districtCode: ""
       },
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
-        {type: 'select', id: 'countryName',options:[], labelKey: 'country',valueKey: 'code',
+        {type: 'select', id: 'countryCode',options:[], labelKey: 'country',valueKey: 'code',
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
           defaultValue:'中国',
@@ -138,11 +140,12 @@ class BankDefinition extends React.Component{
 
   componentWillMount(){
     let {searchForm, columns, operate,countryCode} = this.state;
+    this.getAddress(countryCode)
     this.setState({
       columns: columns.concat(operate)
     });
     //国家默认是中国，查询出中国的省市
-    this.getAddress()
+
   }
 
   //根据国家代码获取下级城市
@@ -247,7 +250,10 @@ class BankDefinition extends React.Component{
     let searchParams = {
       bankCode: values.bankCode,
       bankName: values.bankName,
-      country: values.countryName
+      countryCode: values.countryCode === '中国' ? 'CHN000000000' : values.countryCode,
+      provinceCode: values.address[0].split("-")[0],
+      cityCode: values.address[1].split("-")[0],
+      districtCode: values.address.length===3 ? values.address[2].split("-")[0] : ""
     };
     this.setState({
       searchParams:searchParams,
