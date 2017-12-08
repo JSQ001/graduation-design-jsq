@@ -5,7 +5,7 @@ const config = {
   budgetUrl: 'http://rjfin.haasgz.hand-china.com:30496',
   uatUrl: 'https://apiuat.huilianyi.com',
   baseUrl: 'http://139.224.2.45:11011',
-  // baseUrl: 'http://apiuat.huilianyi.com',
+ // baseUrl: 'http://uat.huilianyi.com',
   payUrl: 'http://rjfin.haasgz.hand-china.com:30498/payment',
   contractUrl: 'http://rjfin.haasgz.hand-china.com:30498',
   localUrl:'http://localhost:9998',

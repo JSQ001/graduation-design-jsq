@@ -44,11 +44,11 @@ class BankDefinition extends React.Component{
       searchForm: [
         {type: 'input', id: 'bankCode', label: formatMessage({id: 'bank.bankCode'}) }, /*银行代码*/
         {type: 'input', id: 'bankName', label: formatMessage({id: 'bank.bankName'}) }, /*银行名称*/
-        {type: 'select', id: 'countryName',options:[], labelKey: 'country',valueKey: 'country',
+        {type: 'select', id: 'countryName',options:[], labelKey: 'country',valueKey: 'code',
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
           defaultValue:'中国',
-          getUrl: `http://192.168.1.77:13001/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
+          getUrl: `https://apiuat.huilianyi.com/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
         },
         {type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
       ],
@@ -129,42 +129,30 @@ class BankDefinition extends React.Component{
   };
 
   handleEvent =(event,value)=>{
-    let { searchForm, address} = this.state;
     switch (event) {
       case 'COUNTRY_CHANGE':
-        let add = {};
-        let addressOptions = [];
-        add.country = value;
-        httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/state?code=${value}`).then((response)=>{
-          response.data.map((item)=>{
-            let options = {
-              value: item.code,
-              label: item.state,
-              children: []
-            };
-           addressOptions.push(options)
-          });
-          searchForm[3].options = addressOptions;
-            this.setState({
-             address:add
-,            searchForm
-          })
-        });
-        break;
+        this.getAddress(value);break;
       case 'ADDRESS_CHANGE':
      }
   };
 
   componentWillMount(){
-    let {searchForm, columns, operate} = this.state;
+    let {searchForm, columns, operate,countryCode} = this.state;
     this.setState({
       columns: columns.concat(operate)
     });
     //国家默认是中国，查询出中国的省市
-    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${this.state.countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+    this.getAddress()
+  }
+
+  //根据国家代码获取下级城市
+  getAddress(countryCode){
+    let {searchForm} = this.state;
+    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       searchForm[3].options = response.data;
       this.setState({
         accountAddress: response.data,
+        loading: false,
         searchForm,
       },this.getList())
     });
@@ -291,7 +279,6 @@ class BankDefinition extends React.Component{
         total: pagination.total
       }
     }, ()=>{
-
       this.getList();
     })
   };
@@ -319,7 +306,7 @@ class BankDefinition extends React.Component{
           <div className="table-header-buttons">
             {label === "commonBank" ? null
               :
-              <Button type="primary" disabled={loading} onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>
+              <Button type="primary"  onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>
             }
           </div>
         </div>
