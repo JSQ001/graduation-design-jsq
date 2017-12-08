@@ -13,7 +13,7 @@ import config from 'config'
 
 import 'styles/financial-management/check-center/check-center-ticket.scss'
 
-class CheckCenterTicket extends React.Component{
+class CheckCenterHotel extends React.Component{
   constructor(props){
     super(props);
     const { formatMessage } = this.props.intl;
@@ -125,10 +125,10 @@ class CheckCenterTicket extends React.Component{
           {this.renderDetail()}
         </Card>
         <Table
-            loading={loading}
-            data={data}
-            columns={columns}
-            pagination={pagination}
+          loading={loading}
+          data={data}
+          columns={columns}
+          pagination={pagination}
         />
       </div>)
   }
@@ -138,4 +138,4 @@ function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(CheckCenterTicket));
+export default connect(mapStateToProps)(injectIntl(CheckCenterHotel));

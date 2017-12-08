@@ -6,6 +6,10 @@ import ExpenseReportDetail from 'containers/expense-report/expense-report-detail
 import LoanRequestDetail from 'containers/request/loan-request-detail'
 import CheckCenter from 'containers/financial-management/check-center/check-center'
 import CheckCenterTicket from  'containers/financial-management/check-center/check-center-ticket'
+import CheckCenterHotel from  'containers/financial-management/check-center/check-center-hotel'
+import CheckCenterTrain from  'containers/financial-management/check-center/check-center-train'
+
+
 
 //报销单详情
 const expenseReportDetailReview = {
@@ -66,13 +70,32 @@ const checkCenterTicket = {
   parent: 'financial-management'
 };
 
+//酒店账单
+const checkCenterHotel = {
+  key: 'check-center-hotel',
+  url: '/main/financial-management/check-center/check-center-hotel',
+  components: CheckCenterHotel,
+  parent: 'financial-management'
+};
+
+//火车账单
+const checkCenterTrain = {
+  key: 'check-center-train',
+  url: '/main/financial-management/check-center/check-center-train',
+  components: CheckCenterTrain,
+  parent: 'financial-management'
+};
+
+
 //对账中心
 const checkCenter = {
   key: 'check-center',
   url: '/main/financial-management/check-center',
   components: CheckCenter,
   children:{
-    checkCenterTicket
+    checkCenterTicket,
+    checkCenterHotel,
+    checkCenterTrain
   },
   parent: 'financial-management'
 };

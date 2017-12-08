@@ -8,6 +8,13 @@
   "check-center.checked": "已确认",
   "check-center.unchecked": "未确认",
   "check-center.unPay": "应付",
-  "check-center.clearDate": "结算日期"
+  "check-center.clearDate": "结算日期",
+  "check-center.price": "价格",
+  "check-center.person": "乘机人",
+  "check-center.departureCity": "出发城市",
+  "check-center.reachCity": "到达城市",
+  "check-center.type": "类型",
+  "check-center.departureTime": "起飞时间",
+  "check-center.checkStatus": "对账状态"
 }
 
