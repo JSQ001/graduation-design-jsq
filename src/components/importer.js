@@ -15,7 +15,8 @@ class Importer extends React.Component {
       visible: false,
       fileList: [],
       uploading: false,
-      tabKey: 'UPDATE'
+      tabKey: 'UPDATE',
+      result: {}
     };
   }
 
@@ -38,12 +39,15 @@ class Importer extends React.Component {
             fileList: [],
             tabKey: 'SUCCESS',
             uploading: false,
+            result: res.data
           })
+        }).catch(() => {
+          this.setState({ uploading: false });
+          message.error('导入失败，请重试')
         });
-      }).catch(e => {
-        this.setState({
-          uploading: false,
-        });
+      }).catch(() => {
+        this.setState({ uploading: false });
+        message.error('导入失败，请重试')
       })
     } else {
       this.props.onOk('close');
@@ -75,7 +79,7 @@ class Importer extends React.Component {
 
   render() {
     const { title, uploadUrl } = this.props;
-    const { visible, uploading, tabKey } = this.state;
+    const { visible, uploading, tabKey, result } = this.state;
     const props = {
       action: uploadUrl,
       onRemove: (file) => {
@@ -127,7 +131,8 @@ class Importer extends React.Component {
               </Upload>
             </TabPane>
             <TabPane tab="导入结果" key="SUCCESS" disabled={tabKey === 'UPDATE'}>
-
+              <div>导入成功：{result.successEntities}条</div>
+              <div>导入失败：{result.failureEntities}条</div>
             </TabPane>
           </Tabs>
         </Modal>

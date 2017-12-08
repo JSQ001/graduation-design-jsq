@@ -143,9 +143,9 @@ class NewBudgetOccupancy extends React.Component {
                    boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px', paddingLeft:20}}>
             <Importer title="预算导入"
                       templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
-                      // uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import?employeeId=${user.employeeID}`}
+                      // uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
                       uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import?employeeId=174342`}
-                      fileName="预算导入文件"
+                      fileName="预算占用调整导入文件"
                       onOk={this.handleImportOk}/>
             <Button htmlType="submit" loading={loading} style={{marginLeft:20}}>最终确认</Button>
             <Button onClick={this.handleBack} style={{marginLeft:50}}>返 回</Button>
