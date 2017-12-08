@@ -156,16 +156,22 @@ class PayUnpaid extends React.Component {
   }
 
   getList = () => {
-    this.getOnlineCash();
-    this.getOfflineCash();
-    this.getFileCash();
-    return new Promise((resolve, reject) => {
-      this.getOnlineList(resolve, reject);
-      this.getOfflineList(resolve, reject);
-      this.getFileList(resolve, reject);
+    let online = new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject)
+    });
+    let offline = new Promise((resolve, reject) => {
+      this.getOfflineList(resolve, reject)
+    });
+    let file = new Promise((resolve, reject) => {
+      this.getFileList(resolve, reject)
+    });
+    Promise.all([ online, offline, file ]).then(() => {
+      this.getOnlineCash();
+      this.getOfflineCash();
+      this.getFileCash();
     }).catch(() => {
       message.error('数据加载失败，请重试')
-    });
+    })
   };
 
   //搜索
@@ -316,13 +322,13 @@ class PayUnpaid extends React.Component {
 
   //修改本次支付金额
   editCurrentPay = (value, record) => {
-    if (value > record.payableAmount) {
-      message.error('本次支付金额不能大于可支付金额');
+    if (!value || value <= 0) {
+      message.error('本次支付金额必须大于0');
       this.setState({ editCellError: true });
       return
     }
-    if (value <= 0) {
-      message.error('本次支付金额必须大于0');
+    if (value > record.payableAmount) {
+      message.error('本次支付金额不能大于可支付金额');
       this.setState({ editCellError: true });
       return
     }

@@ -129,7 +129,7 @@ class NewContract extends React.Component{
   getContractType = (value) => {
     let selectorItem = {
       title: "合同类型",
-      url: `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company`,
+      url: `${config.contractUrl}/contract/api/contract/type/contract/type/by/company`,
       searchForm: [
         {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
         {type: 'input', id: 'contractTypeName', label: '合同类型名称'},

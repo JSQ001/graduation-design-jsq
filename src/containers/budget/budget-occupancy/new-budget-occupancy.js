@@ -2,22 +2,26 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import {connect} from 'react-redux'
 import menuRoute from 'share/menuRoute'
-import { Form, Card, Row, Col, Input, Affix, Button, Table } from 'antd'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Form, Card, Row, Col, Input, Affix, Button, Table, message } from 'antd'
 const FormItem = Form.Item;
+
+import Importer from 'components/importer'
 
 class NewBudgetOccupancy extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      exportLoading: false,
+      tableLoading: false,
       user: {},
       columns: [
-        {title: '序号', dataIndex: 'id'},
-        {title: '公司', dataIndex: '1'},
-        {title: '预算期间', dataIndex: '2'},
-        {title: '部门', dataIndex: '3'},
-        {title: '预算项目', dataIndex: '4'},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => index + 1},
+        {title: '公司', dataIndex: 'companyCodeName'},
+        {title: '预算期间', dataIndex: 'periodName'},
+        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '预算项目', dataIndex: 'itemCodeName'},
         {title: '成本中心1', dataIndex: '5'},
         {title: '成本中心2', dataIndex: '6'},
         {title: '成本中心3', dataIndex: '7'}
@@ -36,14 +40,52 @@ class NewBudgetOccupancy extends React.Component {
     this.setState({ user: this.props.user });
   }
 
+  //获取导入数据
+  getList = () => {
+    const { page, pageSize } = this.state;
+    let url = `${config.budgetUrl}/api/budget/reserve/adjust/import/data?page=${page}&size=${pageSize}`;
+    this.setState({ tableLoading: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          data: res.data,
+          tableLoading: false
+        })
+      }
+    })
+  };
+
   //最终确认
   handleSave = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        let params = {
+          reserveAdjustInfo: {
+            batchNumber: 1,
+            remark: values.remark
+          },
+          reserveAdjustImports: this.state.data
+        };
+        let url = `${config.budgetUrl}/api/budget/reserve/adjust/import/final/confirmation`;
+        this.setState({ loading: true });
+        httpFetch.post(url, params).then(res => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('保存成功');
+            this.handleBack()
+          }
+        }).catch(e => {
+          this.setState({ loading: false });
+          message.success(`保存失败，${e.response.data.message}`);
+        })
       }
     })
+  };
+
+  //导入成功回调
+  handleImportOk = () => {
+    this.getList()
   };
 
   //返回
@@ -53,7 +95,7 @@ class NewBudgetOccupancy extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, exportLoading, user, pagination, columns, data } = this.state;
+    const { loading, tableLoading, user, pagination, columns, data } = this.state;
     return (
       <div className="new-budget-occupancy background-transparent" style={{marginBottom:40}}>
         <Form onSubmit={this.handleSave}>
@@ -89,17 +131,23 @@ class NewBudgetOccupancy extends React.Component {
           </Card>
           <Card title="导入数据" hoverable={false}>
             <div style={{marginBottom:10}}>共搜索到 {pagination.total} 条数据</div>
-            <Table roeKey={record => record.id}
+            <Table rowKey={record => record.id}
                    columns={columns}
                    dataSource={data}
+                   loading={tableLoading}
                    bordered
                    size="middle"/>
           </Card>
           <Affix offsetBottom={0}
-                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px', zIndex:1,
-                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-            <Button type="primary" loading={exportLoading} style={{margin:'0 20px'}}>导入数据</Button>
-            <Button htmlType="submit" loading={loading}>最终确认</Button>
+                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:50, zIndex:1,
+                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px', paddingLeft:20}}>
+            <Importer title="预算导入"
+                      templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
+                      // uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import?employeeId=${user.employeeID}`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import?employeeId=174342`}
+                      fileName="预算导入文件"
+                      onOk={this.handleImportOk}/>
+            <Button htmlType="submit" loading={loading} style={{marginLeft:20}}>最终确认</Button>
             <Button onClick={this.handleBack} style={{marginLeft:50}}>返 回</Button>
           </Affix>
         </Form>
