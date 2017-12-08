@@ -20,13 +20,13 @@ class CheckCenter extends React.Component{
       loading: true,
       cards: [
         {
-          label: '机票',key: 'ticket', checked: 11, unChecked:11 ,total: 22, index: 1, onClick:this.handleTicket
+          label: '机票',key: 'ticket', checked: 11, unChecked:11 ,total: 22, index: 1, onClick:()=>this.handleTicket('ticket')
         },
         {
-          label: '酒店',key: 'hotel', checked: 11, unChecked:11 ,total: 22, index: 2, onClick:this.handleTicket
+          label: '酒店',key: 'hotel', checked: 11, unChecked:11 ,total: 22, index: 2, onClick:()=>this.handleTicket('hotel')
         },
         {
-          label: '火车',key: 'train', checked: 11, unChecked:11 ,total: 22, index: 3, onClick:this.handleTicket
+          label: '火车',key: 'train', checked: 11, unChecked:11 ,total: 22, index: 3, onClick:()=>this.handleTicket('train')
         }
       ]
     }
@@ -38,16 +38,15 @@ class CheckCenter extends React.Component{
     })*/
   }
 
-  //机票账单
-  handleTicket = () =>{
-    console.log(menuRoute.getRouteItem('check-center-ticket', 'key').url)
-    this.context.router.push(menuRoute.getRouteItem('check-center-ticket', 'key').url);
+  //账单详情
+  handleTicket = (key) =>{
+    this.context.router.push(menuRoute.getRouteItem('check-center-'+key, 'key').url);
   };
 
   renderCard(){
     const {cards} = this.state;
     return cards.map((item)=>(
-      <Card className={"check-center-tab"+item.key} onClick={item.onClick}>
+      <Card className={"check-center-tab"+item.index} onClick={item.onClick}>
         <img src="" className="tab-img" width={10} height={10}/>
         <div title="e121e21oe1jo2" className="tab-content">
           累计订单数

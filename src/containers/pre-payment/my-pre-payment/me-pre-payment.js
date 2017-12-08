@@ -27,24 +27,24 @@ class MyPrePayment extends React.Component{
         SUBMITTED: {label: '提交', state: ''},
       },
       searchForm: [
-        {type: 'input', id: 'contractNumber', label: '单据编号'},
-        {type: 'input', id: 'contractName', label: '单据类型'},
+        {type: 'input', id: 'requisitionNumber', label: '单据编号'},
+        {type: 'input', id: 'paymentReqTypeId', label: '预付款单类型'},
         {type: 'value_list', id: 'status', label: '状态', valueListCode: 2201, options: []},
         {type: 'items', id: 'signDate', items: [
           {type: 'date', id: 'signDateStart', label: '签订日期从'},
           {type: 'date', id: 'signDateEnd', label: '签订日期至'}
         ]},
         {type: 'items', id: 'price', items: [
-          {type: 'input', id: 'amountBegin', label: '申请日期从'},
-          {type: 'input', id: 'amountEnd', label: '申请日期至'}
+          {type: 'input', id: 'amountBegin', label: '金额从'},
+          {type: 'input', id: 'amountEnd', label: '今额至'}
         ]},
         {type: 'input', id: 'employeeId', label: '申请人'},
 
       ],
       columns: [
         {title: '序号', dataIndex: 'id', render: (value, record, index) => index + 1},
-        {title: '单据编号', dataIndex: 'contractNumber'},
-        {title:'单据类型',dataIndex:'type'},
+        {title: '单据编号', dataIndex: 'requisitionNumber'},
+        {title:'单据类型',dataIndex:'paymentReqTypeId'},
         {title: '申请人', dataIndex: 'employeeId'},
         {title: '申请日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
@@ -125,6 +125,7 @@ class MyPrePayment extends React.Component{
   };
 
   render() {
+    const testData=[{"id":123,"status":"CANCEL"}]
     const { loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="my-contract">
@@ -138,7 +139,7 @@ class MyPrePayment extends React.Component{
         </div>
         <Table rowKey={record => record.id}
                columns={columns}
-               dataSource={data}
+               dataSource={testData}
                padination={pagination}
                loading={loading}
                scroll={{x: true, y: false}}

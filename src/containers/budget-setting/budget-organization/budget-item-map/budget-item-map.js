@@ -11,7 +11,7 @@ import "styles/budget-setting/budget-organization/budget-item-map/budget-item-ma
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import ListSelector from 'components/list-selector'
+import selectorData from 'share/selectorData'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -34,8 +34,6 @@ class BudgetItemMap extends React.Component {
         page:0,
         total:0,
         pageSize:10,
-      /*  showSizeChanger:true,
-        showQuickJumper:true,*/
       },
       paramValueMap:{},
       searchForm: [
@@ -135,6 +133,14 @@ class BudgetItemMap extends React.Component {
   componentWillMount(){
     const {formatMessage} = this.props.intl;
     this.getList();
+
+    let itemSelectorItem = selectorData['budget_item'];
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    if(key < 2){
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    }
+
     let paramValueMap = {
       EXPENSE_TYPE:{
         title: formatMessage({id:"itemMap.expenseType"}),
@@ -310,6 +316,7 @@ class BudgetItemMap extends React.Component {
           }
         }
         case 'item':{
+
           return(
               <Chooser
                 onChange={(value) => this.handleChangeItem(value, index)}
@@ -317,7 +324,7 @@ class BudgetItemMap extends React.Component {
                 labelKey='itemName'
                 valueKey='id'
                 itemMap={true}
-                listExtraParams={{organizationId: this.props.organization.id}}
+                listExtraParams={{organizationId: this.props.id}}
                 value={record.item}
                 single={true}/>)
         }
