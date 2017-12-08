@@ -82,16 +82,16 @@ class NewDimension extends React.Component{
   }
   componentWillReceiveProps(nextprops){
     if(nextprops.params.versionNumber !== this.state.dimension.versionNumber){
-      let dimension = this.props.params;
+      let dimension = nextprops.params;
       let extraParams = this.state.extraParams;
       if(typeof dimension.id !== 'undefined'){
         extraParams = {dimensionId: dimension.dimensionId}
+        this.setState({
+          dimension,
+          extraParams,
+          defaultDimension: dimension.defaultDimensionValue
+        });
       }
-      this.setState({
-        dimension,
-        extraParams,
-        defaultDimension: dimension.defaultDimensionValue
-      });
     }
   }
 
@@ -136,18 +136,6 @@ class NewDimension extends React.Component{
     }))
   };
 
-  handleFocus = () => {
-
-    //this.refs.blur.focus();
-    this.showList(true)
-  };
-
-  showList = (flag) =>{
-    this.setState({
-      showSelectDimension: flag,
-    })
-  };
-
   /**
    * ListSelector确认点击事件，返回的结果包装为form需要的格式
    * @param result
@@ -169,9 +157,20 @@ class NewDimension extends React.Component{
     formItem.handle && formItem.handle();
   };
 
+  handleDimensionCode = (value)=>{
+    if(value.length>0){
+      let dimension = {};
+      this.props.form.setFieldsValue({"dimensionName": value[0].dimensionName,"defaultDimensionCode": [],"defaultDimValueName":""})
+      let extraParams = this.state.extraParams;
+      extraParams.dimensionId = value[0].dimensionId;
+      this.setState({
+        extraParams
+      });
+    }
+  };
 
   handleDimensionValue = (value)=>{
-    this.props.form.setFieldsValue({"defaultDimValueName":value[0].name});
+    this.props.form.setFieldsValue({"defaultDimValueName":value[0].defaultDimValueName});
     this.setState({
       defaultDimension:value
     })

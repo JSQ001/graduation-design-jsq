@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button, Modal } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Select, Dropdown, Button, Modal, message, Tooltip } from 'antd';
 const { Option } = Select;
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -147,6 +147,7 @@ class Main extends React.Component{
    * 这样可以在进入一些特定url时自动检查状态从而更新redux
    */
   checkParams() {
+    let errorContent = this.props.intl.formatMessage({id: 'common.error'});
     this.setState({check: false});
     const path = location.pathname;
     let section = path.split('/');
@@ -154,6 +155,9 @@ class Main extends React.Component{
       let actions = (value) => {
         httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${value}`).then(res => {
           this.props.dispatch(setOrganization(res.data));
+          this.setState({check: true});
+        }).catch(e => {
+          message.error(errorContent);
           this.setState({check: true});
         })
       };
@@ -171,11 +175,11 @@ class Main extends React.Component{
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
     } else if(path.indexOf('/budget/') > -1) {   //预算组织的默认检查
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/organization/by/login`).then((response)=>{
+      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/${this.props.company.setOfBooksId}`).then((response)=>{
         this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
         this.setState({check: true});
       }).catch(e => {
-        let content = (e.response && e.response.data) ? e.response.data.message : 'error';
+        let content = (e.response && e.response.data) ? (e.response.data.message ? e.response.data.message : errorContent) : errorContent;
         this.props.dispatch(setUserOrganization({message: content}));
         let modalData = {
           content: content,
@@ -270,6 +274,7 @@ class Main extends React.Component{
 
   render(){
     const { collapsed, check, showListSelector, adminMode } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <Layout className="helios-main">
         <Sider width={202} className="helios-sider" collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
@@ -284,18 +289,20 @@ class Main extends React.Component{
               <img src={LogoImg}/>
             </div>
             <div className="user-area">
-              <Button className="admin-button" onClick={this.handleModeChange}>{adminMode ? '退出管理员模式' : '管理员模式'}</Button>
+              <Button className="admin-button" onClick={this.handleModeChange}>{adminMode ? formatMessage({id: 'main.exit.admin.mode'}) /* 退出管理员模式*/ : formatMessage({id: 'main.admin.mode'}) /* 管理员模式*/}</Button>
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
                 <Option value="en">English</Option>
               </Select>
               <div className="user-name">
-                {this.props.intl.formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
+                {formatMessage({id: 'main.welcome'}, {name: this.props.user.fullName}) /*欢迎您, name*/}
               </div>
               <div className="user-avatar">
                 <img src={this.props.user.filePath ? this.props.user.filePath : UserImg}/>
               </div>
-              <Icon type="logout" style={{marginLeft: 20, cursor: 'pointer'}} onClick={() => {this.context.router.replace('/')}}/>
+              <Tooltip placement="bottom" title={<span style={{whiteSpace: 'nowrap'}}>{formatMessage({id: 'main.logout'})}</span>}>
+                <Icon type="logout" style={{marginLeft: 20, cursor: 'pointer'}} onClick={() => {this.context.router.replace('/')}}/>
+              </Tooltip>
             </div>
             {this.renderBreadcrumb()}
           </Header>

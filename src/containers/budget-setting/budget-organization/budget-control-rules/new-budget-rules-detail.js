@@ -43,10 +43,13 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillMount() {
     let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let userSelectorItem = selectorData['user'];
-    let itemSelectorItem = selectorData['budget_item'];
-    itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-    itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
 
+    let itemSelectorItem = selectorData['budget_item'];
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    if(key < 2){
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    }
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -72,14 +75,17 @@ class NewBudgetRulesDetail extends React.Component{
         valueKey: 'itemName',
         codeKey: 'itemCode',
         listExtraParams: organizationIdParams,
-        selectorItem: undefined
+        selectorItem: itemSelectorItem
       },
       'CURRENCY': {
         listType: 'currency',
-        labelKey: 'id',
-        valueKey: 'currencyName',
-        codeKey: 'currency',
-        listExtraParams: organizationIdParams,
+        labelKey: 'currencyName',
+        valueKey: 'currency',
+        codeKey: undefined,
+        listExtraParams: {
+          roleType: 'TENANT',
+          language: 'chineseName'
+        },
         selectorItem: undefined
       },
       'COMPANY': {

@@ -98,7 +98,7 @@
   "menu.pay-requisition-type":"预付款单定义",
   "menu.budget-occupancy":"预算占用调整",
   "menu.new-budget-occupancy":"预算占用调整新建",
-  "menu.export-detail":"导入详情",
+  "menu.import-detail":"导入详情",
   "menu.cash-flow-item":"现金流量项",
   "menu.cash-transaction-class": "现金事务分类定义",
   "menu.new-cash-transaction-class": "新建现金事务分类",
@@ -114,5 +114,7 @@
   "menu.basic-data": "基础数据",
   "menu.check-center": "对账中心",
   "menu.check-center-ticket": "机票账单",
-  "menu.pay-setting":"支付设置"
+  "menu.pay-setting":"支付设置",
+  "menu.check-center-hotel": "酒店账单",
+  "menu.check-center-train": "火车账单"
 }

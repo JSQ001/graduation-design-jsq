@@ -125,10 +125,10 @@ class CheckCenterTicket extends React.Component{
           {this.renderDetail()}
         </Card>
         <Table
-            loading={loading}
-            data={data}
-            columns={columns}
-            pagination={pagination}
+          loading={loading}
+          data={data}
+          columns={columns}
+          pagination={pagination}
         />
       </div>)
   }
