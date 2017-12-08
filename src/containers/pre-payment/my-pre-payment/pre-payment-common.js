@@ -6,11 +6,11 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin,Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
 import moment from 'moment'
 import SlideFrame from 'components/slide-frame'
-import  NewPrePaymentDetail from 'containers/contract/new-pay-plan'
+import  NewPrePaymentDetail from 'containers/pre-payment/my-pre-payment/new-pre-payment-detail'
 import 'styles/pre-payment/my-pre-payment/pre-payment-detail.scss'
 
 class PrePaymentCommon extends React.Component {
