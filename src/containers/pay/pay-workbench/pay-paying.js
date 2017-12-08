@@ -117,21 +117,27 @@ class PayPaying extends React.Component {
   }
 
   componentWillMount() {
-    this.getOnlineCash();
-    this.getFileCash();
-    return new Promise((resolve, reject) => {
-      this.getOnlineList(resolve, reject);
-      this.getFileList(resolve, reject)
-    }).catch(() => {
-      message.error('数据加载失败，请重试')
-    });
+    this.getList()
   }
 
+  getList = () => {
+    let online = new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject)
+    });
+    let file = new Promise((resolve, reject) => {
+      this.getFileList(resolve, reject)
+    });
+    Promise.all([ online, file ]).then(() => {
+      this.getOnlineCash();
+      this.getFileCash();
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    })
+  };
+
   search = (values) => {
-    console.log(values);
     this.setState({ searchParams: values }, () => {
-      this.getOnlineList();
-      this.getFileList()
+      this.getList()
     })
   };
 

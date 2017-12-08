@@ -96,19 +96,33 @@ class PaySuccess extends React.Component {
   }
 
   componentWillMount() {
-    this.getOnlineCash();
-    this.getOfflineCash();
-    this.getFileCash();
-    return new Promise((resolve, reject) => {
-      this.getOnlineList(resolve, reject);
-      this.getOfflineList(resolve, reject);
-      this.getFileList(resolve, reject)
-    }).catch(() => {
-      message.error('数据加载失败，请重试')
-    });
+    this.getList()
   }
 
-  search = () => {};
+  getList = () => {
+    let online = new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject)
+    });
+    let offline = new Promise((resolve, reject) => {
+      this.getOfflineList(resolve, reject)
+    });
+    let file = new Promise((resolve, reject) => {
+      this.getFileList(resolve, reject)
+    });
+    Promise.all([ online, offline, file ]).then(() => {
+      this.getOnlineCash();
+      this.getOfflineCash();
+      this.getFileCash();
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    })
+  };
+
+  search = (values) => {
+    this.setState({ searchParams: values }, () => {
+      this.getList()
+    })
+  };
 
   clear = () => {};
 
