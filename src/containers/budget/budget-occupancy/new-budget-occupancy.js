@@ -43,7 +43,7 @@ class NewBudgetOccupancy extends React.Component {
   //获取导入数据
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.budgetUrl}/api/budget/reserve/adjust/import?page=${page}&size=${pageSize}`;
+    let url = `${config.budgetUrl}/api/budget/reserve/adjust/import/data?page=${page}&size=${pageSize}`;
     this.setState({ tableLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {

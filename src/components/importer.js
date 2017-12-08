@@ -107,8 +107,8 @@ class Importer extends React.Component {
                title={title}
                confirmLoading={uploading}
                okText={tabKey === 'UPDATE' ? '导入' : '完成'}>
-          <Tabs defaultActiveKey="UPDATE" onChange={(key) => {this.setState({ tabKey: key })}}>
-            <TabPane tab="上传文件" key="UPDATE">
+          <Tabs defaultActiveKey="UPDATE" activeKey={tabKey} onChange={(key) => {this.setState({ tabKey: key })}}>
+            <TabPane tab="上传文件" key="UPDATE" disabled={tabKey === 'SUCCESS'}>
               <h3>创建电子表格</h3>
               <Button size="small" type="primary" onClick={this.downloadTemplate}>下载Excel电子表格</Button><br/>
               1.点击上方按钮<br/>
@@ -126,7 +126,7 @@ class Importer extends React.Component {
                 </Button>
               </Upload>
             </TabPane>
-            <TabPane tab="导入结果" key="SUCCESS">
+            <TabPane tab="导入结果" key="SUCCESS" disabled={tabKey === 'UPDATE'}>
 
             </TabPane>
           </Tabs>
