@@ -98,7 +98,7 @@
   "menu.pay-requisition-type":"预付款单定义",
   "menu.budget-occupancy":"预算占用调整",
   "menu.new-budget-occupancy":"预算占用调整新建",
-  "menu.export-detail":"导入详情",
+  "menu.import-detail":"导入详情",
   "menu.cash-flow-item":"现金流量项",
   "menu.cash-transaction-class": "现金事务分类定义",
   "menu.new-cash-transaction-class": "新建现金事务分类",

@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Modal, Button, Tabs, Upload, Icon } from 'antd'
+import config from 'config'
+import { Modal, Button, Tabs, Upload, Icon, message } from 'antd'
 const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
+import FileSaver from 'file-saver'
 
 //数据导入组件
 class Importer extends React.Component {
@@ -24,16 +26,19 @@ class Importer extends React.Component {
       const { fileList } = this.state;
       const formData = new FormData();
       fileList.forEach((file) => {
-        formData.append('files[]', file);
+        formData.append('file', file);
       });
       this.setState({
         uploading: true,
       });
       //TODO:导入数据，根据结果跳转success tab，显示成功与失败的结果
-      httpFetch.post(this.props.uploadUrl, formData).then(res => {
-        this.setState({
-          fileList: [],
-          uploading: false,
+      httpFetch.post(this.props.uploadUrl, formData, {"Content-type": 'multipart/form-data'}).then(res => {
+        httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${res.data.transactionID}`).then(res => {
+          this.setState({
+            fileList: [],
+            tabKey: 'SUCCESS',
+            uploading: false,
+          })
         });
       }).catch(e => {
         this.setState({
@@ -56,7 +61,16 @@ class Importer extends React.Component {
 
   //TODO:下载表格
   downloadTemplate = () => {
-
+    let hide = message.loading('正在生成文件..');
+    httpFetch.get(this.props.templateUrl, {}, {}, {responseType: 'arraybuffer'}).then(res => {
+      let b = new Blob([res.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+      let name = this.props.fileName;
+      FileSaver.saveAs(b, `${name}.xlsx`);
+      hide();
+    }).catch(() => {
+      message.error('表格下载失败，请重试');
+      hide();
+    })
   };
 
   render() {
@@ -126,11 +140,13 @@ Importer.propTypes = {
   templateUrl: React.PropTypes.string,  //模版下载接口
   uploadUrl: React.PropTypes.string,  //上传接口
   title: React.PropTypes.string,  //标题
-  onOk: React.PropTypes.func  //点击OK后的回调，当有选择的值时会返回一个数组
+  fileName: React.PropTypes.string, //下载文件名
+  onOk: React.PropTypes.func
 };
 
 Importer.defaultProps = {
   title: '导入',
+  fileName: '导入文件',
   onOk: () => {}
 };
 

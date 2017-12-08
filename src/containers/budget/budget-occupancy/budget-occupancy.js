@@ -36,6 +36,7 @@ class BudgetOccupancy extends React.Component{
         total: 0
       },
       newBudgetOccupancy:  menuRoute.getRouteItem('new-budget-occupancy','key'),    //新建预算占用调整
+      importDetail:  menuRoute.getRouteItem('export-detail','key'),    //导入详情
     }
   }
 
@@ -78,6 +79,11 @@ class BudgetOccupancy extends React.Component{
     this.context.router.push(this.state.newBudgetOccupancy.url);
   };
 
+  //导入详情页
+  toImportDetail = () => {
+    this.context.router.push(this.state.importDetail.url);
+  };
+
   render() {
     const { loading, searchForm, pagination, columns, data } = this.state;
     return (
@@ -96,6 +102,9 @@ class BudgetOccupancy extends React.Component{
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               onRow={record => ({
+                 onClick: () => this.toImportDetail(record)
+               })}
                bordered
                size="middle"/>
       </div>
