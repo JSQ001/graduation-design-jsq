@@ -5,5 +5,8 @@
   "login.forget": "Find password",
   "login.wrong": "Wrong username or password, please check and enter again :)",
   "login.error": "Oops, service error occurs, please try it later :(",
-  "main.welcome": "Welcome，{name}"
+  "main.welcome": "Welcome，{name}",
+  "main.logout": "Logout",
+  "main.admin.mode": "Admin mode",
+  "main.exit.admin.mode": "Exit admin mode"
 }
