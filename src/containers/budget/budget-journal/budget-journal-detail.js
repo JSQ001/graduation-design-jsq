@@ -568,7 +568,8 @@ class BudgetJournalDetail extends React.Component {
               <Importer
                 templateUrl={templateUrl}
                 uploadUrl={uploadUrl}
-                title="预算日记账导入"
+                title="导入"
+                fileName="预算日记账导入"
                 onOk={this.onLoadOk}
               />
               <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="确定" cancelText="取消">

@@ -3,10 +3,13 @@
  */
 import React from 'react'
 import { injectIntl } from 'react-intl'
+import {connect} from 'react-redux'
 import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
+import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'
@@ -16,6 +19,7 @@ class MyPrePayment extends React.Component{
     super(props);
     this.state = {
       loading: false,
+      visible:false,
       setOfBooksId: null,
       contractStatus: {
         CANCEL: {label: '取消', state: ''},
@@ -31,12 +35,12 @@ class MyPrePayment extends React.Component{
         {type: 'input', id: 'paymentReqTypeId', label: '预付款单类型'},
         {type: 'value_list', id: 'status', label: '状态', valueListCode: 2201, options: []},
         {type: 'items', id: 'signDate', items: [
-          {type: 'date', id: 'signDateStart', label: '签订日期从'},
-          {type: 'date', id: 'signDateEnd', label: '签订日期至'}
+          {type: 'date', id: 'timestampFrom', label: '签订日期从'},
+          {type: 'date', id: 'timestampTo', label: '签订日期至'}
         ]},
         {type: 'items', id: 'price', items: [
-          {type: 'input', id: 'amountBegin', label: '金额从'},
-          {type: 'input', id: 'amountEnd', label: '今额至'}
+          {type: 'input', id: 'amountFrom', label: '金额从'},
+          {type: 'input', id: 'amountTo', label: '今额至'}
         ]},
         {type: 'input', id: 'employeeId', label: '申请人'},
 
@@ -81,7 +85,7 @@ class MyPrePayment extends React.Component{
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/header/update/query?page=${page}&size=${pageSize}`;
+    let url = `${config.cbcUrl}/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
     this.setState({ loading: true });
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {
@@ -109,6 +113,20 @@ class MyPrePayment extends React.Component{
     }
   };
 
+  handleListOk=(value)=>{
+
+  //  this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',value[0].id))
+    this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',123))
+      this.showListSelector(false);
+  }
+
+  showListSelector =(value)=>{
+    console.log(value);
+    this.setState({
+      visible:value,
+    })
+  }
+
   //搜索
   search = (result) => {
     console.log(result)
@@ -116,7 +134,7 @@ class MyPrePayment extends React.Component{
 
   //新建
   handleNew = () => {
-    this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0))
+
   };
 
   //合同详情
@@ -126,7 +144,7 @@ class MyPrePayment extends React.Component{
 
   render() {
     const testData=[{"id":123,"status":"CANCEL"}]
-    const { loading, searchForm, columns, data, pagination } = this.state;
+    const { visible,loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="my-contract">
         <SearchArea searchForm={searchForm}
@@ -134,9 +152,10 @@ class MyPrePayment extends React.Component{
         <div className="table-header">
           <div className="table-header-title">{`共搜索到 ${pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleNew}>新 建</Button>
+            <Button type="primary" onClick={()=>this.showListSelector(true)}>新 建</Button>
           </div>
         </div>
+        {this.props.company.setOfBooksId}
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={testData}
@@ -148,6 +167,12 @@ class MyPrePayment extends React.Component{
                })}
                bordered
                size="middle"/>
+        <ListSelector type="pre_payment_type"
+                      visible={visible}
+                      single={true}
+                      onOk={this.handleListOk}
+                      extraParams={{"setOfBookId":this.props.company.setOfBooksId}}
+                      onCancel={()=>this.showListSelector(false)}/>
       </div>
     )
   }
@@ -159,4 +184,14 @@ MyPrePayment.contextTypes = {
 
 const wrappedMyPrePayment = Form.create()(injectIntl(MyPrePayment));
 
-export default wrappedMyPrePayment
+function mapStateToProps(state) {
+  return {
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
+
+  }
+
+}
+
+export default connect(mapStateToProps)(injectIntl(wrappedMyPrePayment));

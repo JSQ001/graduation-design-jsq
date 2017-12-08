@@ -175,10 +175,6 @@ class MyNewPrePayment extends React.Component{
                 <div style={{lineHeight: '32px'}}>创建人:</div>
                 <Input value={user.fullName} disabled />
               </Col>
-              <Col span={7} offset={1}>
-                <div style={{lineHeight: '32px'}}>创建日期:</div>
-                <Input value={isNew ? moment(data.createdDate).format('YYYY-MM-DD') : new Date().format('yyyy-MM-dd')} disabled />
-              </Col>
             </Row>
           </Card>
           <Form onSubmit={isNew ? this.handleSave : this.handleUpdate}>
@@ -186,7 +182,7 @@ class MyNewPrePayment extends React.Component{
               <Row>
                 <Col span={7} offset={1}>
                   <FormItem label="申请日期">
-                    {getFieldDecorator('signDate', {
+                    {getFieldDecorator('requisitionDate', {
                       rules: [{
                         required: true,
                         message: '请选择'
@@ -194,6 +190,23 @@ class MyNewPrePayment extends React.Component{
                       initialValue: isNew ? undefined : moment(data.signDate)
                     })(
                       <DatePicker style={{width:'100%'}}/>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={7} offset={1}>
+                  <FormItem label="申请人">
+                    {getFieldDecorator('employeeId', {
+                      rules: [{
+                        required: true,
+                        message: '请选择'
+                      }],
+                     // initialValue: isNew ? undefined : [data.contractTypeId]
+                     // initialValue:this.props.user.id
+                      initialValue:123,
+                    })(
+                      <select>
+
+                      </select>
                     )}
                   </FormItem>
                 </Col>
@@ -214,39 +227,22 @@ class MyNewPrePayment extends React.Component{
                     )}
                   </FormItem>
                 </Col>
-                <Col span={7} offset={1}>
-                  <FormItem label="申请人">
-                    {getFieldDecorator('contractTypeId', {
-                      rules: [{
-                        required: true,
-                        message: '请选择'
-                      }],
-                      initialValue: isNew ? undefined : [data.contractTypeId]
-                    })(
-                      <Chooser disabled={isNew ? contractTypeDisabled : false}
-                               selectorItem={selectorItem}
-                               listExtraParams={{companyId: extraParams}}
-                               valueKey="contractTypeCode"
-                               labelKey="contractTypeName"
-                               single/>
-                    )}
-                  </FormItem>
-                </Col>
+
               </Row>
               <Row>
                 <Col span={7} offset={1}>
                   <FormItem label="部门">
-                    {getFieldDecorator('contractCategory', {
+                    {getFieldDecorator('unitId', {
                       rules: [{
                         required: true,
                         message: '请选择'
                       }],
-                      initialValue: isNew ? undefined : data.contractCategory
+                     // initialValue: isNew ? undefined : data.unitId
                     })(
                       <Select placeholder="请选择">
-                        {contractCategoryOptions.map(option => {
+                 {/*       {contractCategoryOptions.map(option => {
                           return <Option key={option.value}>{option.messageKey}</Option>
-                        })}
+                        })}*/}
                       </Select>
                     )}
                   </FormItem>
@@ -300,8 +296,11 @@ const wrappedMyNewPrePayment = Form.create()(injectIntl(MyNewPrePayment));
 
 function mapStateToProps(state) {
   return {
-    user: state.login.user
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
   }
+
 }
 
 export default connect(mapStateToProps)(wrappedMyNewPrePayment);
