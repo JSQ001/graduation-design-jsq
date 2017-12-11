@@ -38,7 +38,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',with:'16%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
@@ -46,7 +46,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',with:'16%',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
@@ -55,7 +55,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',with:'16%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
@@ -64,26 +64,26 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*期间*/
-          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',with:'8%',
 
         },
         {
           /*季度*/
-          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
+          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),with:'8%',
           key: "periodQuarter",
           dataIndex: 'periodQuarter'
         },
         {
           /*年度*/
-          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear'
+          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',with:'8%'
         },
         {
           /*币种*/
-          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
+          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',with:'8%'
         },
         {
           /*汇率*/
-          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
+          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',with:'8%',
         },
         {
           /*金额*/
@@ -98,7 +98,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity',with:'8%',
         },
         {
           /*备注*/
@@ -189,7 +189,7 @@ class BudgetJournalReCheckDetail extends React.Component {
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
-    httpFetch.post(`http://192.168.1.195:9996/api/budget/journals/balance/create`,data).then((request)=>{
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
       message.success("已经通过")
 
         let path=this.state.budgetJournalDetailReCheckPage.url;
@@ -356,11 +356,6 @@ class BudgetJournalReCheckDetail extends React.Component {
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
             <Collapse.Panel header="审批历史" key="1">
-              <Steps direction="vertical" size="small" >
-                <Step title="Finished" description="This is a description." />
-                <Step title="In Progress" description="This is a description." />
-                <Step title="Waiting" description="This is a description." icon={<Icon  type="smile-o"/>} />
-              </Steps>
             </Collapse.Panel>
 
           </Collapse>
