@@ -46,9 +46,17 @@ class PaySuccess extends React.Component {
             </div>
           )}
         },
-        {title: '工号 | 申请人', dataIndex: 'employeeName'},
+        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
+          return (
+            <div>
+              {record.employeeId}
+              <span className="ant-divider"/>
+              {value}
+            </div>
+          )}
+        },
         {title: '币种', dataIndex: 'currency'},
-        {title: '本次支付金额', dataIndex: 'currentPayAmount'},
+        {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '付款方式', dataIndex: 'paymentTypeName'},
         {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
           return (
@@ -59,9 +67,9 @@ class PaySuccess extends React.Component {
             </div>
           )}
         },
-        {title: '收款方账号', dataIndex: 'accountNumber'},
-        {title: '支付日期', dataIndex: 'requisitionDate111', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>},
+        {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
+        {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='success' text={state}/>},
       ],
       /* 线上 */
       onlineLoading: false,
