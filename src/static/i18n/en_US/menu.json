@@ -46,7 +46,6 @@
   "menu.agency-setting": "Agency Setting",
   "menu.new-agency": "New Agency",
   "menu.bank-definition": "Bank Definition",
-  "menu.branch-bank-information": "Branch Bank Information",
   "menu.security-setting": "Security Setting",
   "menu.callback-setting": "The Callback Is Set",
   "menu.finance-setting":"Finance Setting",
@@ -99,7 +98,7 @@
   "menu.pay-requisition-type":"Pay Requisition Type",
   "menu.budget-occupancy":"Budget Adjustment",
   "menu.new-budget-occupancy":"Budget Adjustment New",
-  "menu.export-detail":"Export Detail",
+  "menu.import-detail":"Import Detail",
   "menu.cash-flow-item":"Cash flow item",
   "menu.cash-transaction-class": "Cash transaction class",
   "menu.new-cash-transaction-class": "New cash transaction class",
@@ -111,5 +110,12 @@
   "menu.pre-payment":"Previous Payment",
   "menu.me-pre-payment":"Me Previous Payment",
   "menu.new-pre-payment":"New Previous Payment",
-  "menu.pre-payment-detail":"Previous Payment Detail"
+  "menu.pre-payment-detail":"Previous Payment Detail",
+  "menu.basic-data": "Basic data",
+  "menu.check-center": "Check for the center",
+  "menu.check-center-ticket": "Ticket bills",
+  "menu.pay-setting":"Pay Setting",
+  "menu.check-center-hotel": "Hotel bills",
+  "menu.check-center-train": "Train bills"
+
 }

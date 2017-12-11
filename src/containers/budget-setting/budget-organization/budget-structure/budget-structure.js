@@ -162,7 +162,9 @@ class BudgetStructure extends React.Component {
             columns={columns}
             pagination={pagination}
             onChange={this.onChangePager}
-            onRowClick={this.handleRowClick}
+            onRow={record => ({
+              onClick: () => this.handleRowClick(record)
+            })}
             size="middle"
             bordered/>
       </div>
@@ -173,7 +175,7 @@ class BudgetStructure extends React.Component {
 
 BudgetStructure.contextTypes = {
   router: React.PropTypes.object
-}
+};
 
 function mapStateToProps(state) {
   return {

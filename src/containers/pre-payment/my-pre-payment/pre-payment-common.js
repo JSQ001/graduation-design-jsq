@@ -181,6 +181,10 @@ class PrePaymentCommon extends React.Component {
 
   }
 
+  rowClick=()=>{
+
+  }
+
   render() {
     const { topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
@@ -277,6 +281,9 @@ class PrePaymentCommon extends React.Component {
                      columns={columns}
                      dataSource={data}
                      bordered
+                     onRow={record => ({
+                       onClick: () => this.rowClick(record)
+                     })}
                      loading={planLoading}
                      size="middle"/>
           </div>

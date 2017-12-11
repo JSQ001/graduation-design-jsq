@@ -4,6 +4,12 @@ import FinanceReview from 'containers/financial-management/finance-review'
 import FinanceView from 'containers/financial-management/finance-view'
 import ExpenseReportDetail from 'containers/expense-report/expense-report-detail'
 import LoanRequestDetail from 'containers/request/loan-request-detail'
+import CheckCenter from 'containers/financial-management/check-center/check-center'
+import CheckCenterTicket from  'containers/financial-management/check-center/check-center-ticket'
+import CheckCenterHotel from  'containers/financial-management/check-center/check-center-hotel'
+import CheckCenterTrain from  'containers/financial-management/check-center/check-center-train'
+
+
 
 //报销单详情
 const expenseReportDetailReview = {
@@ -56,10 +62,48 @@ const financeView = {
   parent: 'financial-management'
 };
 
+//机票账单
+const checkCenterTicket = {
+  key: 'check-center-ticket',
+  url: '/main/financial-management/check-center/check-center-ticket',
+  components: CheckCenterTicket,
+  parent: 'financial-management'
+};
+
+//酒店账单
+const checkCenterHotel = {
+  key: 'check-center-hotel',
+  url: '/main/financial-management/check-center/check-center-hotel',
+  components: CheckCenterHotel,
+  parent: 'financial-management'
+};
+
+//火车账单
+const checkCenterTrain = {
+  key: 'check-center-train',
+  url: '/main/financial-management/check-center/check-center-train',
+  components: CheckCenterTrain,
+  parent: 'financial-management'
+};
+
+
+//对账中心
+const checkCenter = {
+  key: 'check-center',
+  url: '/main/financial-management/check-center',
+  components: CheckCenter,
+  children:{
+    checkCenterTicket,
+    checkCenterHotel,
+    checkCenterTrain
+  },
+  parent: 'financial-management'
+};
+
 //财务管理
 const financialManagement = {
   key:'financial-management',
-  subMenu: [financeReview, confirmPayment, paymentBatch, financeView],
+  subMenu: [financeReview, confirmPayment, paymentBatch, financeView, checkCenter],
   icon: 'pay-circle-o'
 };
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Breadcrumb, Table, Pagination, message } from 'antd'
+import { Radio, Badge, Table, Pagination, message } from 'antd'
 
 import SearchArea from 'components/search-area'
 
@@ -34,10 +34,11 @@ class PayFail extends React.Component {
         {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item><a>{value}</a></Breadcrumb.Item>
-              <Breadcrumb.Item>{record.documentCategory}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              <a>{value}</a>
+              <span className="ant-divider"/>
+              {record.documentCategory}
+            </div>
           )}
         },
         {title: '工号 | 申请人', dataIndex: 'employeeName'},
@@ -46,10 +47,11 @@ class PayFail extends React.Component {
         {title: '付款方式', dataIndex: 'paymentTypeName'},
         {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
-              <Breadcrumb.Item>{record.partnerName}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              {value}
+              <span className="ant-divider"/>
+              {record.partnerName}
+            </div>
           )}
         },
         {title: '收款方账号', dataIndex: 'accountNumber'},
@@ -78,18 +80,28 @@ class PayFail extends React.Component {
   }
 
   componentWillMount() {
-    this.getOnlineCash();
-    this.getFileCash();
-    return new Promise((resolve, reject) => {
-      this.getOnlineList(resolve, reject);
-      this.getFileList(resolve, reject)
-    }).catch(() => {
-      message.error('数据加载失败，请重试')
-    });
+    this.getList()
   }
 
-  search = () => {
+  getList = () => {
+    let online = new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject)
+    });
+    let file = new Promise((resolve, reject) => {
+      this.getFileList(resolve, reject)
+    });
+    Promise.all([ online, file ]).then(() => {
+      this.getOnlineCash();
+      this.getFileCash();
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    })
+  };
 
+  search = (values) => {
+    this.setState({ searchParams: values }, () => {
+      this.getList()
+    })
   };
 
   clear = () => {
@@ -214,13 +226,15 @@ class PayFail extends React.Component {
     const tableTitle = (
       <div>
         退票或失败
-        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.length > 0 && <span className="ant-divider"/>}
         {onlineCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== onlineCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -259,13 +273,15 @@ class PayFail extends React.Component {
     const tableTitle = (
       <div>
         退票或失败
-        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.length > 0 && <span className="ant-divider"/>}
         {fileCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== fileCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>

@@ -4,7 +4,7 @@
 import React from 'react'
 import { injectIntl, FormattedMessage } from 'react-intl';
 
-import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch  } from 'antd';
+import { Form, Row, Col, Input, Button, Icon, DatePicker,Radio, Checkbox, Select, Switch,Cascader  } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -124,37 +124,40 @@ class SearchArea extends React.Component{
    */
   handleSearch = (e) => {
     e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    let searchForm = [].concat(this.state.searchForm);
-    searchForm.map(item => {
-      if(values[item.id] && item.entity) {
-        if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
-          values[item.id] = JSON.parse(values[item.id].title);
-        } else if (item.type === 'multiple') {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(JSON.parse(value.title));
-          });
-          values[item.id] = result;
-        }
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if(!err){
+        let searchForm = [].concat(this.state.searchForm);
+        searchForm.map(item => {
+          if(values[item.id] && item.entity) {
+            if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
+              values[item.id] = JSON.parse(values[item.id].title);
+            } else if (item.type === 'multiple') {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(JSON.parse(value.title));
+              });
+              values[item.id] = result;
+            }
+          }
+          if(item.type === 'list' && values[item.id]){
+            if(item.entity){
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value);
+              });
+              values[item.id] = result;
+            } else {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value[item.valueKey]);
+              });
+              values[item.id] = result;
+            }
+          }
+        });
+        this.props.submitHandle(values)
       }
-      if(item.type === 'list' && values[item.id]){
-        if(item.entity){
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value);
-          });
-          values[item.id] = result;
-        } else {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value[item.valueKey]);
-          });
-          values[item.id] = result;
-        }
-      }
-    });
-    this.props.submitHandle(values)
+    })
   };
 
   //点击重置的事件，清空值为初始值
@@ -164,8 +167,28 @@ class SearchArea extends React.Component{
   };
 
   //区域点击事件，返回事件给父级进行处理
-  handleEvent = (e, event) => {
-    this.props.eventHandle(event, e ? (e.target? e.target.value : e) : null)
+  handleEvent = (e, item) => {
+    let result = null;
+    if(item.entity && (item.type === 'value_list' || item.type === 'select' || item.type === 'combobox')){
+      item.options.map(option => {
+        if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === e.key)
+          result = option.data
+      })
+    } else if (item.entity && item.type === 'multiple'){
+      result = [];
+      e.map(value => {
+        item.options.map(option => {
+          if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === value.key)
+            result.push(option.data);
+        })
+      })
+    } else {
+      if(item.type === 'switch')
+        result = e.target.checked;
+      else
+        result = e ? (e.target? e.target.value : e) : null;
+    }
+    this.props.eventHandle(item.event, result)
   };
 
   //给select增加options
@@ -300,7 +323,7 @@ class SearchArea extends React.Component{
     this.setState({ searchForm }, () => {
       this.props.form.setFieldsValue(valueWillSet);
     });
-    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    let handle = item.event ? (event) => this.handleEvent(event,item) : ()=>{};
     handle();
   };
 
@@ -371,7 +394,7 @@ class SearchArea extends React.Component{
 
   //渲染搜索表单组件
   renderFormItem(item){
-    let handle = item.event ? (event) => this.handleEvent(event,item.event) : ()=>{};
+    let handle = item.event ? (event) => this.handleEvent(event,item) : ()=>{};
     switch(item.type){
       //输入组件
       case 'input':{
@@ -390,6 +413,18 @@ class SearchArea extends React.Component{
               return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
+        )
+      }
+      //级联选择
+      case 'cascader':{
+        return (
+          <Cascader placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
+                  onChange={handle}
+                  options={item.options}
+                  allowClear
+                  showSearch
+                  disabled={item.disabled}>
+          </Cascader>
         )
       }
       //值列表选择组件
@@ -477,6 +512,7 @@ class SearchArea extends React.Component{
         return <Chooser placeholder={item.placeholder}
                         disabled={item.disabled}
                         type={item.listType}
+                        onChange={handle}
                         labelKey={item.labelKey}
                         valueKey={item.valueKey}
                         listExtraParams={item.listExtraParams}
@@ -676,7 +712,7 @@ class SearchArea extends React.Component{
  *
  * @type searchForm 表单列表，如果项数 > maxLength 则自动隐藏多余选项到下拉部分，每一项的格式如下：
  * {
-          type: '',                     //必填，类型,为input、select、date、radio、big_radio、checkbox、combobox、multiple, list, items, value_list, selput中的一种
+          type: '',                     //必填，类型,为input、select、cascader、 date、radio、big_radio、checkbox、combobox、multiple、 list、 items、 value_list、 selput中的一种
           id: '',                      //必填，表单id，搜索后返回的数据key
           label: '',                  //必填，界面显示名称label
           listType: '',              //可选，当type为list、selput，listSelector的type类型

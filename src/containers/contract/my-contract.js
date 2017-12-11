@@ -15,13 +15,14 @@ class MyContract extends React.Component{
       loading: false,
       setOfBooksId: null,
       contractStatus: {
-        CANCEL: {label: '取消', state: ''},
-        CONFIRM: {label: '确认', state: ''},
-        FINISH: {label: '完成', state: ''},
-        GENERATE: {label: '新建', state: ''},
-        HOLD: {label: '暂挂', state: ''},
-        REJECTED: {label: '拒绝', state: ''},
-        SUBMITTED: {label: '提交', state: ''},
+        CANCEL: {label: '已取消', state: 'default'},
+        FINISH: {label: '已完成', state: 'success'},
+        GENERATE: {label: '编辑中', state: 'processing'},
+        HOLD: {label: '暂挂', state: 'warning'},
+        SUBMITTED: {label: '审批中', state: 'processing'},
+        REJECTED: {label: '已驳回', state: 'error'},
+        CONFIRM: {label: '已通过', state: 'success'},
+        FINISH2: {label: '已撤回', state: 'warning'}, //字段未确认
       },
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
@@ -143,7 +144,9 @@ class MyContract extends React.Component{
                padination={pagination}
                loading={loading}
                scroll={{x: true, y: false}}
-               onRowClick={this.rowClick}
+               onRow={record => ({
+                 onClick: () => this.rowClick(record)
+               })}
                bordered
                size="middle"/>
       </div>

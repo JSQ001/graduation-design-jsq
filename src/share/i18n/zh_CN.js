@@ -10,18 +10,19 @@ import budgetVersion from 'static/i18n/zh_CN/budget-setting/budget-organization/
 import budgetItemType from 'static/i18n/zh_CN/budget-setting/budget-organization/budget-item-type.json'
 import budgetJournal from 'static/i18n/zh_CN/budget-journal/budget-journal.json'
 import agencySetting from 'static/i18n/zh_CN/approve-setting/agency-setting.json'
-import bankDefinition from 'static/i18n/zh_CN/pay/bank-definition.json'
+import bankDefinition from 'static/i18n/zh_CN/basic-data/bank-definition.json'
 import securitySetting from 'static/i18n/zh_CN/setting/security-setting.json'
 import accountPeriodDefine from 'static/i18n/zh_CN/finance-setting/account-period-define.json'
 import accountPeriodControl from 'static/i18n/zh_CN/finance-setting/account-period-control.json'
 import companyMaintain from 'static/i18n/zh_CN/setting/company-maintain.json'
 import financeView from 'static/i18n/zh_CN/financial-management/finance-view.json'
 import departmentGroup from 'static/i18n/zh_CN/setting/department-group.json'
-import paymentMethod from 'static/i18n/zh_CN/pay/payment-method.json'
-import paymentCompanySetting from 'static/i18n/zh_CN/pay/payment-company-setting.json'
-import cashFlowItem from 'static/i18n/zh_CN/pay/cash-flow-item.json'
-import cashTransactionClass from 'static/i18n/zh_CN/pay/cash-transaction-class.json'
+import paymentMethod from 'static/i18n/zh_CN/pay-setting/payment-method.json'
+import paymentCompanySetting from 'static/i18n/zh_CN/pay-setting/payment-company-setting.json'
+import cashFlowItem from 'static/i18n/zh_CN/pay-setting/cash-flow-item.json'
+import cashTransactionClass from 'static/i18n/zh_CN/pay-setting/cash-transaction-class.json'
 import subjectSheet from 'static/i18n/zh_CN/setting/subject-sheet.json'
+import checkCenter from 'static/i18n/zh_CN/financial-management/check-center.json'
 
 const i18nList = [
   common,  //公用
@@ -47,7 +48,8 @@ const i18nList = [
   paymentCompanySetting, //付款公司配置
   cashFlowItem,  //现金流量项
   cashTransactionClass,   //现金事物
-  subjectSheet    //科目表
+  subjectSheet,    //科目表
+  checkCenter,    //对账中心
 ];
 
 let result = {};

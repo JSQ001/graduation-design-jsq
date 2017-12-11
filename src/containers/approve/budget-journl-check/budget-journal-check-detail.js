@@ -81,16 +81,6 @@ class BudgetJournalCheckDetail extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        /*{
-
-         title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-         },
-         {
-
-         title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
-         key: "rateQuotation",
-         dataIndex: 'rateQuotation'
-         },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
