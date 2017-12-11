@@ -8,7 +8,7 @@ import httpFetch from 'share/httpFetch'
 
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
-import NewContractType from 'containers/finance-setting/contract-type-define/new-contract-type'
+import NewContractType from 'containers/receipt-type-setting/contract-type-define/new-contract-type'
 
 class ContractTypeDefine extends React.Component{
   constructor(props) {
@@ -127,11 +127,10 @@ class ContractTypeDefine extends React.Component{
 
   //关闭侧滑后的回调
   handleCloseSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
 
