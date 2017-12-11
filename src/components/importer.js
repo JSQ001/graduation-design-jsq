@@ -60,7 +60,9 @@ class Importer extends React.Component {
   listenStatus = () => {
     httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
       if (res.data.status !== 1003) {
-        this.listenStatus()
+        setTimeout(() => {
+          this.listenStatus()
+        }, 1000)
       } else {
         this.setState({
           fileList: [],
@@ -72,19 +74,11 @@ class Importer extends React.Component {
           let errors = this.state.result.errors;
           Object.keys(errors).map(error => {
             errors[error].map(index => {
-              if (errorData.length) {
-                errorData.map((item, i) => {
-                  if (index === item.index) {
-                    errorData[i].erros = error
-                  } else {
-                    errorData.push({index, error})
-                  }
-                })
-              } else {
-                errorData.push({index, error})
-              }
+              errorData.push({index, error})
             })
           });
+          errorData.sort((a,b) => a.index > b.index);
+          errorData = errorData.slice(0, 10);
           this.setState({ errorData })
         })
       }
@@ -100,12 +94,12 @@ class Importer extends React.Component {
 
   onCancel = () => {
     this.setState({visible: false});
-    if (this.state.uploading) {
+    if (this.state.uploading && this.state.transactionID) {
       httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
     }
   };
 
-  //TODO:下载表格
+  //下载导入模板
   downloadTemplate = () => {
     let hide = message.loading('正在生成文件..');
     httpFetch.get(this.props.templateUrl, {}, {}, {responseType: 'arraybuffer'}).then(res => {
@@ -192,6 +186,10 @@ class Importer extends React.Component {
               <div>导入失败：{result.failureEntities}条
                 {result.failureEntities ? <span style={{fontSize:12,marginLeft:10}}>（请修改相应数据后，重新导入）</span> : ''}
               </div>
+              {result.failureEntities > 10 ?
+                <div style={{marginTop:10}}>
+                  <Icon type="exclamation-circle-o" style={{marginRight:5, color:'red'}}/>导入失败超过10条，请下载错误信息查看详情
+                </div> : ''}
               {result.failureEntities ? (
                 <div>
                   <a style={{display:'block', textAlign:'right', marginBottom:6}}
@@ -199,6 +197,8 @@ class Importer extends React.Component {
                   <Table rowKey={record => record.index}
                          columns={errorColumns}
                          dataSource={errorData}
+                         pagination={false}
+                         scroll={{x: false, y: 170}}
                          bordered
                          size="small"/>
                 </div>

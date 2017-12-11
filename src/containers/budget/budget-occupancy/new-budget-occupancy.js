@@ -17,7 +17,7 @@ class NewBudgetOccupancy extends React.Component {
       tableLoading: false,
       user: {},
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => index + 1},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '公司', dataIndex: 'companyCodeName'},
         {title: '预算期间', dataIndex: 'periodName'},
         {title: '部门', dataIndex: 'unitCodeName'},
@@ -49,10 +49,24 @@ class NewBudgetOccupancy extends React.Component {
       if (res.status === 200) {
         this.setState({
           data: res.data,
-          tableLoading: false
+          tableLoading: false,
+          pagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            onChange: this.onChangePager,
+            current: page + 1,
+            pageSize: pageSize
+          }
         })
       }
     })
+  };
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({ page: page - 1 }, ()=>{
+        this.getList();
+      })
   };
 
   //最终确认
@@ -134,6 +148,7 @@ class NewBudgetOccupancy extends React.Component {
             <Table rowKey={record => record.id}
                    columns={columns}
                    dataSource={data}
+                   pagination={pagination}
                    loading={tableLoading}
                    bordered
                    size="middle"/>
