@@ -40,36 +40,8 @@ class Importer extends React.Component {
       });
       //TODO:导入数据，根据结果跳转success tab，显示成功与失败的结果
       httpFetch.post(this.props.uploadUrl, formData, {"Content-type": 'multipart/form-data'}).then(res => {
-        this.setState({ transactionID: res.data.transactionID });
-        httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${res.data.transactionID}`).then(res => {
-          this.setState({
-            fileList: [],
-            tabKey: 'SUCCESS',
-            uploading: false,
-            result: res.data
-          }, () => {
-            let errorData = [];
-            let errors = this.state.result.errors;
-            Object.keys(errors).map(error => {
-              errors[error].map(index => {
-                if (errorData.length) {
-                  errorData.map((item, i) => {
-                    if (index === item.index) {
-                      errorData[i].erros = error
-                    } else {
-                      errorData.push({index, error})
-                    }
-                  })
-                } else {
-                  errorData.push({index, error})
-                }
-              })
-            });
-            this.setState({ errorData })
-          })
-        }).catch(() => {
-          this.setState({ uploading: false });
-          message.error('导入失败，请重试')
+        this.setState({ transactionID: res.data.transactionID },() => {
+          this.listenStatus()
         });
       }).catch(() => {
         this.setState({ uploading: false });
@@ -82,6 +54,44 @@ class Importer extends React.Component {
         tabKey: 'UPDATE'
       })
     }
+  };
+
+  //监听导入状态，status === 1003时表示成功
+  listenStatus = () => {
+    httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
+      if (res.data.status !== 1003) {
+        this.listenStatus()
+      } else {
+        this.setState({
+          fileList: [],
+          tabKey: 'SUCCESS',
+          uploading: false,
+          result: res.data
+        }, () => {
+          let errorData = [];
+          let errors = this.state.result.errors;
+          Object.keys(errors).map(error => {
+            errors[error].map(index => {
+              if (errorData.length) {
+                errorData.map((item, i) => {
+                  if (index === item.index) {
+                    errorData[i].erros = error
+                  } else {
+                    errorData.push({index, error})
+                  }
+                })
+              } else {
+                errorData.push({index, error})
+              }
+            })
+          });
+          this.setState({ errorData })
+        })
+      }
+    }).catch(() => {
+      this.setState({ uploading: false });
+      message.error('导入失败，请重试')
+    })
   };
 
   showImporter = () => {

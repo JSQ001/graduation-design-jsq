@@ -25,9 +25,9 @@ class BudgetOccupancy extends React.Component{
       columns: [
         {title: '导入批次号', dataIndex: '1'},
         {title: '说明', dataIndex: '2', width: '40%'},
-        {title: '创建人', dataIndex: '3'},
-        {title: '导入日期', dataIndex: '4'},
-        {title: '操作', dataIndex: '5'},
+        {title: '创建人', dataIndex: '3', render: (value, record) => value + ' - ' + record.employeeId},
+        {title: '导入日期', dataIndex: '4', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '操作', dataIndex: 'id', render: id => <a>查看详情</a>},
       ],
       data: [],
       page: 0,
