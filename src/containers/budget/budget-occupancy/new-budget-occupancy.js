@@ -77,7 +77,7 @@ class NewBudgetOccupancy extends React.Component {
           }
         }).catch(e => {
           this.setState({ loading: false });
-          message.success(`保存失败，${e.response.data.message}`);
+          message.error(`保存失败，${e.response.data.message}`);
         })
       }
     })
@@ -143,8 +143,8 @@ class NewBudgetOccupancy extends React.Component {
                    boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px', paddingLeft:20}}>
             <Importer title="预算导入"
                       templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
-                      // uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
-                      uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import?employeeId=174342`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
+                      errorUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import/failed/export`}
                       fileName="预算占用调整导入文件"
                       onOk={this.handleImportOk}/>
             <Button htmlType="submit" loading={loading} style={{marginLeft:20}}>最终确认</Button>

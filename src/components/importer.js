@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import config from 'config'
-import { Modal, Button, Tabs, Upload, Icon, message } from 'antd'
+import { Modal, Button, Tabs, Upload, Icon, message, Table } from 'antd'
 const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import FileSaver from 'file-saver'
@@ -16,7 +16,13 @@ class Importer extends React.Component {
       fileList: [],
       uploading: false,
       tabKey: 'UPDATE',
-      result: {}
+      result: {},
+      transactionID: null,
+      errorColumns: [
+        {title: '行号', dataIndex: 'index', width: '10%'},
+        {title: '错误信息', dataIndex: 'error'}
+      ],
+      errorData: []
     };
   }
 
@@ -34,12 +40,32 @@ class Importer extends React.Component {
       });
       //TODO:导入数据，根据结果跳转success tab，显示成功与失败的结果
       httpFetch.post(this.props.uploadUrl, formData, {"Content-type": 'multipart/form-data'}).then(res => {
+        this.setState({ transactionID: res.data.transactionID });
         httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${res.data.transactionID}`).then(res => {
           this.setState({
             fileList: [],
             tabKey: 'SUCCESS',
             uploading: false,
             result: res.data
+          }, () => {
+            let errorData = [];
+            let errors = this.state.result.errors;
+            Object.keys(errors).map(error => {
+              errors[error].map(index => {
+                if (errorData.length) {
+                  errorData.map((item, i) => {
+                    if (index === item.index) {
+                      errorData[i].erros = error
+                    } else {
+                      errorData.push({index, error})
+                    }
+                  })
+                } else {
+                  errorData.push({index, error})
+                }
+              })
+            });
+            this.setState({ errorData })
           })
         }).catch(() => {
           this.setState({ uploading: false });
@@ -51,16 +77,22 @@ class Importer extends React.Component {
       })
     } else {
       this.props.onOk('close');
-      this.setState({visible: false})
+      this.setState({
+        visible: false,
+        tabKey: 'UPDATE'
+      })
     }
   };
 
   showImporter = () => {
-    this.setState({visible: true})
+    this.setState({visible: true, tabKey: 'UPDATE'})
   };
 
   onCancel = () => {
-    this.setState({visible: false})
+    this.setState({visible: false});
+    if (this.state.uploading) {
+      httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
+    }
   };
 
   //TODO:下载表格
@@ -77,9 +109,24 @@ class Importer extends React.Component {
     })
   };
 
+  //下载错误信息
+  downloadErrors = () => {
+    let hide = message.loading('正在生成文件..');
+    let url = this.props.errorUrl + `/${this.state.transactionID}`;
+    httpFetch.get(url, {}, {}, {responseType: 'arraybuffer'}).then(res => {
+      let b = new Blob([res.data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+      let name = '错误信息';
+      FileSaver.saveAs(b, `${name}.xlsx`);
+      hide();
+    }).catch(() => {
+      message.error('错误信息下载失败，请重试');
+      hide();
+    })
+  };
+
   render() {
     const { title, uploadUrl } = this.props;
-    const { visible, uploading, tabKey, result } = this.state;
+    const { visible, uploading, tabKey, result, errorColumns, errorData } = this.state;
     const props = {
       action: uploadUrl,
       onRemove: (file) => {
@@ -132,7 +179,20 @@ class Importer extends React.Component {
             </TabPane>
             <TabPane tab="导入结果" key="SUCCESS" disabled={tabKey === 'UPDATE'}>
               <div>导入成功：{result.successEntities}条</div>
-              <div>导入失败：{result.failureEntities}条</div>
+              <div>导入失败：{result.failureEntities}条
+                {result.failureEntities ? <span style={{fontSize:12,marginLeft:10}}>（请修改相应数据后，重新导入）</span> : ''}
+              </div>
+              {result.failureEntities ? (
+                <div>
+                  <a style={{display:'block', textAlign:'right', marginBottom:6}}
+                     onClick={this.downloadErrors}>下载错误信息</a>
+                  <Table rowKey={record => record.index}
+                         columns={errorColumns}
+                         dataSource={errorData}
+                         bordered
+                         size="small"/>
+                </div>
+              ) : ''}
             </TabPane>
           </Tabs>
         </Modal>
@@ -144,6 +204,7 @@ class Importer extends React.Component {
 Importer.propTypes = {
   templateUrl: React.PropTypes.string,  //模版下载接口
   uploadUrl: React.PropTypes.string,  //上传接口
+  errorUrl: React.PropTypes.string,  //错误信息下载接口
   title: React.PropTypes.string,  //标题
   fileName: React.PropTypes.string, //下载文件名
   onOk: React.PropTypes.func
