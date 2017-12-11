@@ -41,17 +41,23 @@ class PrePaymentCommon extends React.Component {
           value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
         )}},
         {title: '预付款类型', dataIndex: 'partnerCategory'},
-        {title: '收款方', dataIndex: 'currency'},
+        {title:'关联申请单',dataIndex:'123'},
         {title: '预付款金额', dataIndex: 'amount',
           render: this.filterMoney
         },
         {title: '本位币金额', dataIndex: 'fAmount',
           render: this.filterMoney
         },
-        {title: '收款账户', dataIndex: 'partnerId'},
+        {title: '收款方', dataIndex: 'currency'},
+        {title: '银行账号', dataIndex: 'partnerI'},
+        {title: '银行户名', dataIndex: 'part'},
         {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
-
-        {title: '其他', dataIndex: 'id', render: (text, record) => (
+        {title: '银行户名', dataIndex: 'part'},
+        {title: '银行户名', dataIndex: 'partvfvf'},
+        {title:'预付款方式类型',dataIndex:''},
+        {title:'关联合同',dataIndex:'ggg'},
+        {title:'合同付款计划行',dataIndex:'gtrgtrgt'},
+        {title: '操作', dataIndex: 'id', render: (text, record) => (
           <span>
             <a onClick={(e) => this.editItem(e, record)}>编辑</a>
             <span className="ant-divider"/>

@@ -116,14 +116,14 @@ class NewPrePaymentDetail extends React.Component{
             <Steps.Step title="基本信息" description="" />
           </Steps>
           <FormItem {...formItemLayout} label="事由说明">
-            {getFieldDecorator('remark')(
+            {getFieldDecorator('description')(
               <TextArea autosize={{minRows: 2}}
                         style={{minWidth:'100%'}}
                         placeholder="请输入"/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="预付款类型定义">
-            {getFieldDecorator('perPaymentTypeId', {
+          <FormItem {...formItemLayout} label="现金事务">
+            {getFieldDecorator('cshTransactionClassCode', {
               rules: [{
                 required: true,
                 message: '请选择'
@@ -140,7 +140,7 @@ class NewPrePaymentDetail extends React.Component{
             <Col span={8} className="ant-form-item-label label-style">收款方：</Col>
             <Col span={4} className="ant-col-offset-1">
               <FormItem>
-                {getFieldDecorator('1111', {
+                {getFieldDecorator('partnerategory', {
                   rules: [{
                     required: true,
                     message: '请选择'
@@ -148,7 +148,9 @@ class NewPrePaymentDetail extends React.Component{
                   initialValue:"人员"
                 })(
                   <Select>
-
+                    {partnerCategoryOptions.map((option) => {
+                      return <Option key={option.value}>{option.messageKey}</Option>
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -156,10 +158,10 @@ class NewPrePaymentDetail extends React.Component{
 
             <Col span={6}>
               <FormItem className="ant-col-offset-1">
-                {getFieldDecorator('amount', {
+                {getFieldDecorator('partnerd', {
                   rules: [{
                     required: true,
-                    message: '请输入'
+                    message: '请选择'
                   }]
                 })(
                   <Select>
@@ -211,9 +213,7 @@ class NewPrePaymentDetail extends React.Component{
               }]
             })(
               <Select placeholder="请选择">
-                {partnerCategoryOptions.map((option) => {
-                  return <Option key={option.value}>{option.messageKey}</Option>
-                })}
+
               </Select>
             )}
           </FormItem>

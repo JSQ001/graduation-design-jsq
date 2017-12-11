@@ -34,7 +34,7 @@ class MyPrePayment extends React.Component{
         {type: 'input', id: 'requisitionNumber', label: '单据编号'},
         {type: 'input', id: 'paymentReqTypeId', label: '预付款单类型'},
         {type: 'value_list', id: 'status', label: '状态', valueListCode: 2201, options: []},
-        {type: 'items', id: 'signDate', items: [
+        {type: 'items', id: 'timestamp', items: [
           {type: 'date', id: 'timestampFrom', label: '签订日期从'},
           {type: 'date', id: 'timestampTo', label: '签订日期至'}
         ]},
@@ -50,7 +50,7 @@ class MyPrePayment extends React.Component{
         {title: '单据编号', dataIndex: 'requisitionNumber'},
         {title:'单据类型',dataIndex:'paymentReqTypeId'},
         {title: '申请人', dataIndex: 'employeeId'},
-        {title: '申请日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
+        {title: '申请日期', dataIndex: 'timestamp', render: (value) => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
         {title:'已核销金额',dataIndex: 'pppamount', render: this.filterMoney},
@@ -85,7 +85,7 @@ class MyPrePayment extends React.Component{
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.cbcUrl}/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
+    let url = `http://192.168.1.72:8072/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
     this.setState({ loading: true });
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {
@@ -114,9 +114,10 @@ class MyPrePayment extends React.Component{
   };
 
   handleListOk=(value)=>{
-
-  //  this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',value[0].id))
-    this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',123))
+    console.log(value);
+    const result = value.result;
+    this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',(result[0].id)));
+   // this.context.router.push(this.state.NewPayRequisition.url.replace(':id',0).replace(':prePaymentTypeId',123))
       this.showListSelector(false);
   }
 

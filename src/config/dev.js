@@ -11,7 +11,7 @@ const config = {
   localUrl:'http://localhost:9998',
   liouliangUrl:'http://192.168.1.195:9996',
   prePaymentUrl: "http://rjfin.haasgz.hand-china.com:30498/prepayment",
-  cdcUrl:'http://192.168.1.72'
+  cdcUrl:'http://192.168.1.72:9999'
 
 
 };

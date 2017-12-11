@@ -547,6 +547,7 @@ class BudgetJournalDetail extends React.Component {
 
   onLoadOk(value){
     console.log(value);
+    this.getDataByBudgetJournalCode();
   }
 
   render(){

@@ -33,6 +33,8 @@ class MyNewPrePayment extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
+      employeeIdOptions:[],//申请人
+      unitIdOptions:[],//部门
       selectorItem: {},
       extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
@@ -41,8 +43,7 @@ class MyNewPrePayment extends React.Component{
   }
 
   componentWillMount() {
-    Number(this.props.params.id) && this.getInfo(); //合同编辑
-
+    Number(this.props.params.id) && this.getInfo(); //预付款编辑
     this.setState({ user: this.props.user });
     this.getSystemValueList(2107).then(res => { //合同方类型
       let partnerCategoryOptions = res.data.values || [];
@@ -62,10 +63,15 @@ class MyNewPrePayment extends React.Component{
         let companyIdOptions = res.data;
         this.setState({ companyIdOptions })
       })
+      httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectDept/enabled?companyId=''&setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
+        let unitIdOptions = res.data;
+        this.setState({ unitIdOptions })
+      })
     });
+
   }
 
-  //获取合同信息
+  //获取
   getInfo = () => {
     let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
     this.setState({ pageLoading: true });
@@ -76,7 +82,7 @@ class MyNewPrePayment extends React.Component{
         pageLoading: false,
         contractTypeDisabled: false
       }, () => {
-        this.getContractType(this.state.data.contractTypeId);
+
       })
     })
   };
@@ -91,14 +97,14 @@ class MyNewPrePayment extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.attachmentOID = this.state.uploadOIDs;
-        values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
-        values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
-        values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
-        values.contractTypeId = values.contractTypeId[0].id;
+        values.requisitionDate && (values.requisitionDate = values.requisitionDate.format('YYYY-MM-DD'));
+        const dataValue={
+          ...values,
+          paymentReqTypeId:this.props.params.prePaymentTypeId
+      }
+        let url = `http://192.168.1.72:8072/api/cash/prepayment/requisitionHead`;
         this.setState({ loading: true });
-        let url = `${config.contractUrl}/contract/api/contract/header`;
-        httpFetch.post(url, values).then(res => {
+        httpFetch.post(url, dataValue).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -128,40 +134,22 @@ class MyNewPrePayment extends React.Component{
     this.context.router.push(this.state.myContract.url);
   };
 
-  //获取合同类型
-  getContractType = (value) => {
-    let selectorItem = {
-      title: "合同类型",
-      url: `${config.contractUrl}/contract/api/contract/type/${this.state.setOfBooksId}/contract/type/by/company`,
-      searchForm: [
-        {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
-        {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
-        {type: 'input', id: 'contractCategory', label: '合同大类'}
-      ],
-      columns: [
-        {title: '合同类型代码', dataIndex: 'contractTypeCode'},
-        {title: '合同类型名称', dataIndex: 'contractTypeName'},
-        {title: '合同大类', dataIndex: 'contractCategoryName'},
-      ],
-      key: 'id'
-    };
-    this.setState({
-      selectorItem,
-      extraParams: value
-    })
-  };
 
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
-      this.getContractType(value);
       this.setState({ contractTypeDisabled: false })
     }
   };
 
+  //当选择申请人的时候
+  handleSelectEmoloyee = () =>{
+
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data,unitIdOptions, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
         <Spin spinning={pageLoading}>
@@ -187,7 +175,7 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请选择'
                       }],
-                      initialValue: isNew ? undefined : moment(data.signDate)
+                      initialValue: isNew ? undefined : moment(data.timestamp)
                     })(
                       <DatePicker style={{width:'100%'}}/>
                     )}
@@ -202,11 +190,11 @@ class MyNewPrePayment extends React.Component{
                       }],
                      // initialValue: isNew ? undefined : [data.contractTypeId]
                      // initialValue:this.props.user.id
-                      initialValue:123,
+                      initialValue:174342,
                     })(
-                      <select>
+                      <Select onSelect={this.handleSelectEmoloyee}>
 
-                      </select>
+                      </Select>
                     )}
                   </FormItem>
                 </Col>
@@ -238,23 +226,24 @@ class MyNewPrePayment extends React.Component{
                         message: '请选择'
                       }],
                      // initialValue: isNew ? undefined : data.unitId
+                      initialValue:123
                     })(
                       <Select placeholder="请选择">
-                 {/*       {contractCategoryOptions.map(option => {
-                          return <Option key={option.value}>{option.messageKey}</Option>
-                        })}*/}
+                        {unitIdOptions.map(option => {
+                          return <Option key={option.id}>{option.name}</Option>
+                        })}
                       </Select>
                     )}
                   </FormItem>
                 </Col>
                 <Col span={15} offset={1}>
                   <FormItem label="事由说明">
-                    {getFieldDecorator('contractName', {
+                    {getFieldDecorator('description', {
                       rules: [{
                         required: true,
                         message: '请输入'
                       }],
-                      initialValue: isNew ? '' : data.contractName
+                      initialValue: isNew ? '' : data.description
                     })(
                       <Input placeholder="请输入"/>
                     )}
