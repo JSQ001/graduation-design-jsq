@@ -7,7 +7,7 @@ import httpFetch from 'share/httpFetch'
 import { Form, Card, Row, Col, Input, Affix, Button, Table, message } from 'antd'
 const FormItem = Form.Item;
 
-import Importer from 'components/importer'
+import Importer from 'components/template/importer'
 
 class NewBudgetOccupancy extends React.Component {
   constructor(props) {
