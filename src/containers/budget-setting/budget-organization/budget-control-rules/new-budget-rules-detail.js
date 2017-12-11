@@ -135,6 +135,30 @@ class NewBudgetRulesDetail extends React.Component{
         codeKey: 'id',
         listExtraParams: {},
         selectorItem: undefined
+      },
+      'BUDGET_SCENARIO':{
+        listType: 'budget_scenario',
+        labelKey: 'scenarioName',
+        valueKey: 'id',
+        codeKey: 'scenarioCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_VERSION':{
+        listType: 'budget_versions',
+        labelKey: 'versionName',
+        valueKey: 'id',
+        codeKey: 'versionCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_STRUCTURE':{
+        listType: 'budget_structure',
+        labelKey: 'structureName',
+        valueKey: 'id',
+        codeKey: 'structureCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
       }
     };
     this.getValueList(2014, this.state.summaryOrDetailArray);
@@ -344,6 +368,7 @@ class NewBudgetRulesDetail extends React.Component{
                   },
                     {
                       validator: (item,value,callback)=>{
+                        console.log(value)
                         if(typeof value === 'undefined'){
                           validateStatusMap.ruleParameter = "error";
                           helpMap.ruleParameter = formatMessage({id:"common.please.select"})
