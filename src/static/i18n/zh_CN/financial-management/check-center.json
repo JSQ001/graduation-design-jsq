@@ -15,6 +15,9 @@
   "check-center.reachCity": "到达城市",
   "check-center.type": "类型",
   "check-center.departureTime": "起飞时间",
-  "check-center.checkStatus": "对账状态"
+  "check-center.checkStatus": "对账状态",
+  "check-center.ticket": "机票",
+  "check-center.hotel": "酒店",
+  "check-center.train": "火车"
 }
 

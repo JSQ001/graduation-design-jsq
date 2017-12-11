@@ -23,26 +23,41 @@ class NewPaymentCompanySetting extends React.Component {
       ducumentCategoryOptions:[],
       ducumentTypeOptions:[],
       companyOptions:[],
+      setOfBooksOption:[],
     };
   }
 
   componentWillMount() {
     this.getPaymentMethodCategory();
     this.getCompany();
-  }
-
-  componentWillReceiveProps(nextProps){
-    if(this.props.params != nextProps.params && JSON.stringify(nextProps.params)!="{}" ){
-      this.setState({
-        params:nextProps.params,
-      })
-      if(this.props.params.ducumentCategory != nextProps.params.ducumentCategory){
-          this.getducumentType(nextProps.params.ducumentCategory);
-      }
-
+    this.getSetOfBooks();
+    if( JSON.stringify(this.props.params)!="{}" ){
+      this.getducumentType(this.props.params.ducumentCategory);
     }
   }
 
+
+  componentWillReceiveProps(nextProps){
+    if(this.props.params != nextProps.params && JSON.stringify(nextProps.params)!="{}" ){
+      if(this.props.params.ducumentCategory != nextProps.params.ducumentCategory){
+          this.getducumentType(nextProps.params.ducumentCategory);
+      }
+    }
+  }
+
+  getSetOfBooks(){
+    let setOfBooksOption = [];
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant`).then((res)=>{
+        res.data.map(data =>{
+          setOfBooksOption.push({"label":data.setOfBooksCode+"----"+data.setOfBooksName,"value":String(data.id)})
+        })
+       console.log(setOfBooksOption);
+        this.setState({
+          setOfBooksOption
+        })
+      }
+    )
+  }
 
 
   getPaymentMethodCategory(){
@@ -70,18 +85,18 @@ class NewPaymentCompanySetting extends React.Component {
     )
   }
 
-  //新建
+  //新建或者编辑
   handleSave = (e) => {
     e.preventDefault();
+    console.log(123);
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if(JSON.stringify(this.props.params)==="{}"){
         this.setState({loading: true});
           let toValue = {
             ...values,
-            setOfBooksId:this.props.company.setOfBooksId
           }
-          httpFetch.post(`http://192.168.1.195:9083/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+          httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
@@ -90,23 +105,24 @@ class NewPaymentCompanySetting extends React.Component {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+e.required.data.message);
           })
-      }
       }else {
-        this.setState({loading: true});
-        let toValue = {
-          ...this.props.params,
-          ...values,
-          setOfBooksId:this.props.company.setOfBooksId
+          console.log(values);
+          this.setState({loading: true});
+          console.log(this.props.params);
+          let toValue = {
+            ...this.props.params,
+            ...values,
+          }
+          httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
+            this.setState({loading: false});
+            this.props.form.resetFields();
+            this.props.close(true);
+            message.success("编辑成功");
+          }).catch((e) => {
+            this.setState({loading: false});
+            message.error(e.required.data.message);
+          })
         }
-        httpFetch.put(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
-          this.setState({loading: false});
-          this.props.form.resetFields();
-          this.props.close(true);
-          message.success("编辑成功");
-        }).catch((e) => {
-          this.setState({loading: false});
-          message.error(e.required.data.message);
-        })
       }
     });
   }
@@ -164,12 +180,30 @@ class NewPaymentCompanySetting extends React.Component {
 
       <div className="new-payment-method">
         <Form onSubmit={this.handleSave}>
+          <FormItem {...formItemLayout}
+                    label={this.props.intl.formatMessage({id:"budget.set.of.books"})}>
+            {getFieldDecorator('setOfBooksId', {
+              initialValue: this.props.params.setOfBooksId||this.props.company.setOfBooksId,
+              rules: [
+                {
+                  required: true,
+                  message: this.props.intl.formatMessage({id:"common.please.select"})
+                },
+              ],
+            })(
+              <Select placeholder={this.props.intl.formatMessage({id:"common.please.select"})}>
+                {this.state.setOfBooksOption.map((option)=>{
+                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
           <FormItem
             {...formItemLayout}  label="优先级"
           >
             {getFieldDecorator('priorty', {
               rules: [{ required: true, message: '请输入' }],
-
+              initialValue:this.props.params.priorty||''
             })(
               <InputNumber min={1} max={10} />
             )}

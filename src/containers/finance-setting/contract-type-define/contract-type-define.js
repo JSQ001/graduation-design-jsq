@@ -1,5 +1,6 @@
 import React from "react";
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux'
 import { Form, Button, Table, Badge } from 'antd'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -188,7 +189,9 @@ class ContractTypeDefine extends React.Component{
 ContractTypeDefine.contextTypes = {
   router: React.PropTypes.object
 };
-
-const wrappedContractTypeDefine = Form.create()(injectIntl(ContractTypeDefine));
-
-export default wrappedContractTypeDefine;
+function mapStateToProps(state) {
+  return {
+    company: state.login.company,
+  }
+}
+export default connect(mapStateToProps)(injectIntl(ContractTypeDefine));

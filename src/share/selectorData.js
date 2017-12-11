@@ -425,6 +425,59 @@ const selectorData = {
     columns: [
       {title: "预算项目代码", dataIndex: 'itemCode'},
       {title: "预算项目名称",dataIndex:"itemName"},
+    ],
+    key: 'id'
+  },
+  'budget_scenario':{
+    title: '预算场景',
+    url: `${config.budgetUrl}/api/budget/scenarios/queryAll`,
+    searchForm: [
+      {type: 'input', id: 'scenarioCode', label: "预算场景代码",defaultValue: ''},
+      {type: 'input', id: 'scenarioName', label: "预算场景名称",defaultValue: ''},
+    ],
+    columns: [
+      {title: "预算场景代码", dataIndex: 'scenarioCode'},
+      {title: "预算场景名称",dataIndex:"scenarioName"},
+    ],
+    key: 'id'
+  },
+  'budget_structure':{
+    title: '预算表',
+    url: `${config.budgetUrl}/api/budget/structures/query`,
+    searchForm: [
+      {type: 'input', id: 'structureCode', label: "预算表代码",defaultValue: ''},
+      {type: 'input', id: 'structureName', label: "预算表名称",defaultValue: ''},
+    ],
+    columns: [
+      {title: "预算表代码", dataIndex: 'structureCode'},
+      {title: "预算表名称",dataIndex:"structureName"},
+    ],
+    key: 'id'
+  },
+  'pre_payment_type': {
+    title: '预付款单类型选择',
+    url: `${config.prePaymentUrl}/api/cash/pay/requisition/types/query`,
+    searchForm: [
+      {type: 'input', id: 'typeCode', label: "预付款单类型代码",defaultValue: ''},
+      {type: 'input', id: 'typeName', label: "预付款单类型名称",defaultValue: ''},
+    ],
+    columns: [
+      {title: "预付款单类型代码", dataIndex: 'typeCode'},
+      {title: "预付款单类型名称",dataIndex:"typeName"},
+
+    ],
+    key: 'id'
+  },
+  'pre_payment_type': {
+    title: '预付款单类型选择',
+    url: `${config.prePaymentUrl}/api/cash/pay/requisition/types/query`,
+    searchForm: [
+      {type: 'input', id: 'typeCode', label: "预付款单类型代码",defaultValue: ''},
+      {type: 'input', id: 'typeName', label: "预付款单类型名称",defaultValue: ''},
+    ],
+    columns: [
+      {title: "预付款单类型代码", dataIndex: 'typeCode'},
+      {title: "预付款单类型名称",dataIndex:"typeName"},
 
     ],
     key: 'id'

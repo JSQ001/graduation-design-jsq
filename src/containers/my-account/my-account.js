@@ -37,6 +37,11 @@ class MyAccount extends React.Component{
       console.log(e)
     };
 
+    componentDidMount(){
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+        setOfBooksId: {label: '测试', value: '123'}
+      });
+    }
 
     render(){
       const { searchForm } = this.state;
@@ -45,7 +50,8 @@ class MyAccount extends React.Component{
 
           <SearchArea searchForm={searchForm}
                       eventHandle={this.eventHandle}
-                      submitHandle={this.ok}/>
+                      submitHandle={this.ok}
+                      wrappedComponentRef={(inst) => this.formRef = inst}/>
 
           <Importer onOk={this.handleOk} title="导入数据"/>
 

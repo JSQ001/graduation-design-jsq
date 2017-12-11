@@ -184,7 +184,7 @@ class BudgetJournal extends React.Component {
           </div>
         </div>
         <Table
-          rowKey={record => record.journalTypeCode}
+          rowKey={(record )=>{return record.journalTypeCode}}
           loading={loading}
           dataSource={data}
           columns={columns}
