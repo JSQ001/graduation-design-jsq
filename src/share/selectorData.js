@@ -453,6 +453,20 @@ const selectorData = {
       {title: "预算表名称",dataIndex:"structureName"},
     ],
     key: 'id'
+  },
+  'pre_payment_type': {
+    title: '预付款单类型选择',
+    url: `${config.prePaymentUrl}/api/cash/pay/requisition/types/query`,
+    searchForm: [
+      {type: 'input', id: 'typeCode', label: "预付款单类型代码",defaultValue: ''},
+      {type: 'input', id: 'typeName', label: "预付款单类型名称",defaultValue: ''},
+    ],
+    columns: [
+      {title: "预付款单类型代码", dataIndex: 'typeCode'},
+      {title: "预付款单类型名称",dataIndex:"typeName"},
+
+    ],
+    key: 'id'
   }
 };
 

@@ -13,8 +13,8 @@ import menuRoute from 'share/menuRoute';
 
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';
-import BudgetJournalDetailLead from 'containers/budget/budget-journal/budget-journal-detail-lead.js';
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js';
+import Importer from 'components/importer.js';
 
 class BudgetJournalDetail extends React.Component {
   constructor(props) {
@@ -28,7 +28,6 @@ class BudgetJournalDetail extends React.Component {
       listData:[],
       headerAndListData:{},
       showSlideFrameNew:false,
-      showModal:false,
       updateState:false,
       pageSize:10,
       page:0,
@@ -44,6 +43,8 @@ class BudgetJournalDetail extends React.Component {
       },
       commitFlag:false,
       infoDate:{},
+      templateUrl:'',
+      uploadUrl:'',
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
         {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'departmentName',columnValue: 'unitId'},//部门
@@ -178,9 +179,6 @@ class BudgetJournalDetail extends React.Component {
     this.getDataByBudgetJournalCode();
   }
 
-
-
-
   //选项改变时的回调，重置selection
   onSelectChange = (selectedRowKeys,selectedRows) =>{
     let { rowSelection } = this.state;
@@ -231,7 +229,7 @@ class BudgetJournalDetail extends React.Component {
 
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
       this.setState({
         dimensionList:resp.data
       },()=>{
@@ -347,8 +345,11 @@ class BudgetJournalDetail extends React.Component {
         "periodStrategy":periodStrategy,
         "totalAmount":amountData
       }
-
+      const templateUrl = `${config.budgetUrl}/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
+      const uploadUrl =`${config.budgetUrl}/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
       this.setState({
+        templateUrl,
+        uploadUrl,
         loading:false,
         headerAndListData:response.data,
         infoDate:infoData,
@@ -369,17 +370,6 @@ class BudgetJournalDetail extends React.Component {
       updateState:true
     })
 
-  }
-
-  //处理导入
-  handleModal=(value)=>{
-    this.setState({
-      showModal: value,
-    });
-  }
-
-  handleModalOk=()=>{
-    this.handleModal(false)
   }
 
   showSlideFrameNew=(value)=>{
@@ -484,6 +474,8 @@ class BudgetJournalDetail extends React.Component {
           }).catch(e => {
            message.error(e.response.data.message)
           })
+          let path=this.state.budgetJournalPage.url;
+          this.context.router.push(path);
         })
  /*     httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
         message.success("提交成功");
@@ -553,9 +545,14 @@ class BudgetJournalDetail extends React.Component {
     this.context.router.push(path);
   }
 
+  onLoadOk(value){
+    console.log(value);
+    this.getDataByBudgetJournalCode();
+  }
+
   render(){
 
-    const {loading, data, columns, pagination,formData,infoDate,infoList,updateState,showModal,showSlideFrameNew,rowSelection} = this.state;
+    const {loading, data,templateUrl,uploadUrl,columns, pagination,formData,infoDate,infoList,updateState,showSlideFrameNew,rowSelection} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-journal-detail">
@@ -569,7 +566,13 @@ class BudgetJournalDetail extends React.Component {
             <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys.length}条数据</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
-              <Button type="primary" onClick={() => this.handleModal(true)}>{this.props.intl.formatMessage({id:"budget.leading"})}</Button>
+              <Importer
+                templateUrl={templateUrl}
+                uploadUrl={uploadUrl}
+                title="导入"
+                fileName="预算日记账导入"
+                onOk={this.onLoadOk}
+              />
               <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="确定" cancelText="取消">
                 <Button className="delete"    disabled={this.state.selectedRowKeys.length === 0} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
@@ -589,13 +592,6 @@ class BudgetJournalDetail extends React.Component {
           />
 
         </div>
-
-        <BudgetJournalDetailLead
-          visible={showModal}
-          onOk={this.handleModalOk}
-          onCancel={() => this.handleModal(false)}
-        >
-        </BudgetJournalDetailLead>
 
         <SlideFrame title={"预算日记账"}
                     show={showSlideFrameNew}

@@ -154,7 +154,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
         this.getColumnsAndDimensionhandleData(resp.data);
 
     }).catch(e=>{
