@@ -1,5 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
 import { Form, Spin, Row, Col, Tabs, Table, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
 import menuRoute from 'share/menuRoute'
@@ -11,23 +13,61 @@ class ExportDetail extends React.Component {
     super(props);
     this.state = {
       loading: false,
+      tableLoading: false,
       columns: [
-        {title: '序号', dataIndex: 'id'},
-        {title: '公司', dataIndex: '1'},
-        {title: '预算期间', dataIndex: '2'},
-        {title: '部门', dataIndex: '3'},
-        {title: '预算项目', dataIndex: '4'},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => index + 1},
+        {title: '公司', dataIndex: 'companyCodeName'},
+        {title: '预算期间', dataIndex: 'periodName'},
+        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '预算项目', dataIndex: 'itemCodeName'},
         {title: '成本中心1', dataIndex: '5'},
         {title: '成本中心2', dataIndex: '6'},
         {title: '成本中心3', dataIndex: '7'}
       ],
       data: [],
+      page: 0,
+      pageSize: 10,
       pagination: {
         total: 0,
       },
       budgetOccupancy:  menuRoute.getRouteItem('budget-occupancy','key'),    //预算占用调整
     }
   }
+
+  componentWillMount() {
+
+  }
+
+  getInfo = () => {
+
+  };
+
+  getList = () =>{
+    const { page, pageSize } = this.state;
+    let url = `${config.budgetUrl}/api/budget/reserve/adjust/import/data?page=${page}&size=${pageSize}`;
+    this.setState({ tableLoading: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          data: res.data,
+          tableLoading: false,
+          pagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            onChange: this.onChangePager,
+            current: page + 1
+          }
+        })
+      }
+    })
+  };
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({ page: page - 1 }, ()=>{
+        this.getList();
+      })
+  };
 
   renderList = (title, value) => {
     return (
@@ -43,7 +83,7 @@ class ExportDetail extends React.Component {
   };
 
   render() {
-    const { loading, pagination, columns, data } = this.state;
+    const { loading, tableLoading, pagination, columns, data } = this.state;
     return (
       <div className="export-detail background-transparent">
         <Spin spinning={loading}>
@@ -71,6 +111,8 @@ class ExportDetail extends React.Component {
               <Table roeKey={record => record.id}
                      columns={columns}
                      dataSource={data}
+                     pagination={pagination}
+                     loading={tableLoading}
                      bordered
                      size="middle"/>
             </div>

@@ -52,13 +52,13 @@ class CheckCenterTicket extends React.Component{
       ],
       columns:[
         {          /*供应商*/
-          title: formatMessage({id:"check-center.suppliers"}), key: "countryName", dataIndex: 'countryName'
+          title: formatMessage({id:"check-center.suppliers"}), key: "vendorName", dataIndex: 'vendorName'
         },
         {          /*结算日期*/
-          title: formatMessage({id:"check-center.clearDate"}), key: "bankCode", dataIndex: 'bankCode'
+          title: formatMessage({id:"check-center.clearDate"}), key: "takeOffTime", dataIndex: 'takeOffTime'
         },
         {          /*结算主键*/
-          title: formatMessage({id:"check-center.clearingKey"}), key: "bankCode", dataIndex: 'bankCode'
+          title: formatMessage({id:"check-center.clearingKey"}), key: "clearingKey", dataIndex: 'bankCode'
         },
         {          /*关联行程号*/
           title: formatMessage({id:"check-center.linkNumber"}), key: "linkNumber", dataIndex: 'linkNumber'
@@ -70,16 +70,16 @@ class CheckCenterTicket extends React.Component{
           title: formatMessage({id:"check-center.serviceType"}), key: "serviceType", dataIndex: 'serviceType'
         },
         {          /*乘机人*/
-          title: formatMessage({id:"check-center.person"}), key: "serviceType", dataIndex: 'serviceType'
+          title: formatMessage({id:"check-center.person"}), key: "passengerName", dataIndex: 'passengerName'
         },
         {          /*出发城市*/
-          title: formatMessage({id:"check-center.departureCity"}), key: "departureCity", dataIndex: 'departureCity'
+          title: formatMessage({id:"check-center.departureCity"}), key: "acityName", dataIndex: 'acityName'
         },
         {          /*到达城市*/
-          title: formatMessage({id:"check-center.reachCity"}), key: "reachCity", dataIndex: 'reachCity'
+          title: formatMessage({id:"check-center.reachCity"}), key: "dcityName", dataIndex: 'dcityName'
         },
         {          /*类型*/
-          title: formatMessage({id:"check-center.type"}), key: "reachCity", dataIndex: 'reachCity'
+          title: formatMessage({id:"check-center.type"}), key: "trafficType", dataIndex: 'trafficType'
         },
         {          /*起飞时间*/
           title: formatMessage({id:"check-center.departureTime"}), key: "departureTime", dataIndex: 'departureTime'
@@ -95,6 +95,7 @@ class CheckCenterTicket extends React.Component{
     /* httpFetch.post(`http://uat.huilianyi.com/vendor-data-service/api/order/settlement/totalSummary`).then((response)=>{
      console.log(response.data)
      })*/
+    this.getList()
   }
 
   //机票账单
@@ -102,6 +103,27 @@ class CheckCenterTicket extends React.Component{
     alert(1)
   };
 
+  handleSearch = (value)=>{
+    this.getList()
+  }
+
+  getList(){
+    let value = {
+      channel:'hly-admin',
+      companyOID: this.props.company.companyOID
+    };
+    httpFetch.post(`${config.baseUrl}/vendor-data-service/api/order/air/reconciliation/search`,value).then((response)=>{
+      console.log(response)
+      response.data.reconciliationSearchVOs.map((item)=>{
+        console.log(item.recordId)
+        item.key = item.recordId
+      });
+      this.setState({
+        data: response.data.reconciliationSearchVOs,
+        loading: false
+      })
+    })
+  }
 
   renderDetail() {
     const {detail} = this.state;
@@ -119,14 +141,14 @@ class CheckCenterTicket extends React.Component{
       <div className="check-center-ticket">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <Radio.Group value={defaultLabel} className="check-center-radio" onChange={this.onChange} style={{ marginBottom: 16 }}>
-          {radio.map((item)=><Radio.Button value={item.value}>{item.label}</Radio.Button>)}
+          {radio.map((item)=><Radio.Button key={item.value} value={item.value}>{item.label}</Radio.Button>)}
         </Radio.Group>
         <Card className="check-center-detail">
           {this.renderDetail()}
         </Card>
         <Table
             loading={loading}
-            data={data}
+            dataSource={data}
             columns={columns}
             pagination={pagination}
         />
@@ -135,7 +157,9 @@ class CheckCenterTicket extends React.Component{
 }
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    company: state.login.company
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(CheckCenterTicket));
