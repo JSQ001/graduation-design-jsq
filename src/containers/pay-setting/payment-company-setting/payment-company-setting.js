@@ -63,7 +63,8 @@ class PaymentCompanySetting extends React.Component {
 
       ],
       searchForm: [
-        {type:'select',id:'setOfBooksId',label:"账套",options:[],valueKey:"id",labelKey:"name"},
+        {type: 'select', id: 'setOfBooksId', label: '账套', options: [], defaultValue: '', isRequired: true,
+          labelKey: 'setOfBooksCode', valueKey: 'setOfBooksId'},
         {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
         {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
         {type: 'value_list', id: 'ducumentCategory', label: '单据类型', options: [], valueListCode: 2106}
@@ -74,6 +75,7 @@ class PaymentCompanySetting extends React.Component {
         total: 0
       },
       searchParams: {
+        setOfBooksId:'',
         companyCode: '',
         companyName: '',
         ducumentCategory:'',
@@ -84,25 +86,39 @@ class PaymentCompanySetting extends React.Component {
       },
       showSlideFrameNew: false,
       showSlideFramePut: false,
-      loading: true
+      loading:false,
 
     };
   }
 
 
+
   componentWillMount() {
+    let url = `${config.baseUrl}/api/setOfBooks/by/tenant`;
+    httpFetch.get(url).then((res) => {
+        let searchForm = this.state.searchForm;
+        let searchParams = this.state.searchParams;
+        searchForm[0].defaultValue = this.props.company.setOfBooksId;
+        const options =[];
+        res.data.map((item)=>{
+          options.push({
+            label:item.setOfBooksCode+"----"+item.setOfBooksName,
+            value:String(item.id),
+          })
+        })
+        searchForm[0].options = options;
+        searchParams.setOfBooksId = this.props.company.setOfBooksId;
+        this.setState({ searchForm, searchParams }, () => {
+          this.getList();
+        })
 
-    this.getList();
-  }
-
-  //获取账套
-  getSetOfBooks(){
-
+    })
   }
 
 //获得数据
   getList() {
-    let url = `http://192.168.1.195:9083/api/paymentCompanyConfig/selectByInput?companyCode=${this.state.searchParams.companyCode?this.state.searchParams.companyCode:""}&companyName=${this.state.searchParams.companyName?this.state.searchParams.companyName:""}&ducumentCategory=${this.state.searchParams.ducumentCategory?this.state.searchParams.ducumentCategory:""}&size=${this.state.pageSize}&page=${this.state.page}`;
+    this.setState({loading:true})
+    let url = `${config.baseUrl}/api/paymentCompanyConfig/selectByInput?setOfBooksId=${this.state.searchParams.setOfBooksId?this.state.searchParams.setOfBooksId:''}&companyCode=${this.state.searchParams.companyCode?this.state.searchParams.companyCode:""}&companyName=${this.state.searchParams.companyName?this.state.searchParams.companyName:""}&ducumentCategory=${this.state.searchParams.ducumentCategory?this.state.searchParams.ducumentCategory:""}&size=${this.state.pageSize}&page=${this.state.page}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -162,19 +178,16 @@ class PaymentCompanySetting extends React.Component {
   };
 
   handleCloseNewSlide = (params) => {
-    this.getList();
+    if(params) {
+      this.setState({loading: true});
+      this.getList();
+    }
     this.setState({
       showSlideFrameNew: false
     })
   };
 
 
-
-  showSlidePut = (flag) => {
-    this.setState({
-      showSlideFramePut: flag
-    })
-  };
 
   showSlideNew = (flag) => {
     this.setState({
@@ -191,11 +204,10 @@ class PaymentCompanySetting extends React.Component {
   }
 
   putItemTypeShowSlide = (recode) => {
-    console.log(recode);
     this.setState({
       updateParams: recode,
     }, () => {
-      this.showSlidePut(true)
+      this.showSlideNew(true)
     })
 
   }
@@ -242,7 +254,7 @@ class PaymentCompanySetting extends React.Component {
                     content={NewPaymentCompanySetting}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
-                    params={{}}/>
+                    params={updateParams}/>
 
       </div>
     );
@@ -250,9 +262,10 @@ class PaymentCompanySetting extends React.Component {
 
 }
 
-function mapStateToProps() {
-  return {
 
+function mapStateToProps(state) {
+  return {
+    company: state.login.company,
   }
 }
 
