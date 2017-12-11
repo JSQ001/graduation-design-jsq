@@ -51,6 +51,8 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   componentWillMount() {
+    console.log(this.props.user);
+    console.log(this.props.company);
     this.getPeriodStrategy();
     this.getDefaultValue();
   }

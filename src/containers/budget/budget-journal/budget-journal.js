@@ -108,6 +108,7 @@ class BudgetJournal extends React.Component {
 
   componentWillMount(){
     this.getList();
+
   }
 
 

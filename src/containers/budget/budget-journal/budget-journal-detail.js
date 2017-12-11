@@ -45,6 +45,7 @@ class BudgetJournalDetail extends React.Component {
       infoDate:{},
       templateUrl:'',
       uploadUrl:'',
+      errorUrl:'',
       handleData:[
         {type: 'list', id: 'company',options: [], labelKey: 'name', valueKey: 'id', columnLabel: 'companyName', columnValue: 'companyId'},//公司
         {type: 'list', id: 'unit',options: [], labelKey: 'name',valueKey: 'id',columnLabel: 'departmentName',columnValue: 'unitId'},//部门
@@ -250,7 +251,7 @@ class BudgetJournalDetail extends React.Component {
      const item =dimensionList[i];
       const priority = item.sequenceNumber;
      columns.push(
-       {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
+       {title:`${item.dimensionName}`, key:`dimension${priority}ValueName`,id:`dimension${priority}ValueName`, dataIndex: `dimension${priority}ValueName`,
          render: recode => (
            <Popover content={recode}>
              {recode}
@@ -345,8 +346,9 @@ class BudgetJournalDetail extends React.Component {
         "periodStrategy":periodStrategy,
         "totalAmount":amountData
       }
-      const templateUrl = `${config.budgetUrl}/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
-      const uploadUrl =`${config.budgetUrl}/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
+      const templateUrl = `http://192.168.1.72:9996/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
+      const uploadUrl =`http://192.168.1.72:9996/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
+      const errorUrl ='http://192.168.1.72:9996/api/api/batch/transaction/logs/failed/export/budgetJournal'
       this.setState({
         templateUrl,
         uploadUrl,
@@ -552,7 +554,7 @@ class BudgetJournalDetail extends React.Component {
 
   render(){
 
-    const {loading, data,templateUrl,uploadUrl,columns, pagination,formData,infoDate,infoList,updateState,showSlideFrameNew,rowSelection} = this.state;
+    const {loading, data,templateUrl,errorUrl,uploadUrl,columns, pagination,formData,infoDate,infoList,updateState,showSlideFrameNew,rowSelection} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-journal-detail">
@@ -569,6 +571,7 @@ class BudgetJournalDetail extends React.Component {
               <Importer
                 templateUrl={templateUrl}
                 uploadUrl={uploadUrl}
+                errorUrl={errorUrl}
                 title="导入"
                 fileName="预算日记账导入"
                 onOk={this.onLoadOk}

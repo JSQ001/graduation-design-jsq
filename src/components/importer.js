@@ -58,7 +58,7 @@ class Importer extends React.Component {
 
   //监听导入状态，status === 1003时表示成功
   listenStatus = () => {
-    httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
+    httpFetch.get(`http://192.168.1.72:9996/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
       if (res.data.status !== 1003) {
         this.listenStatus()
       } else {
@@ -101,7 +101,7 @@ class Importer extends React.Component {
   onCancel = () => {
     this.setState({visible: false});
     if (this.state.uploading) {
-      httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
+      httpFetch.delete(`http://192.168.1.72:9996/api/batch/transaction/logs/${this.state.transactionID}`)
     }
   };
 

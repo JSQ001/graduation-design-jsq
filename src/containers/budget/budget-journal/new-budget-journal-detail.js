@@ -124,14 +124,14 @@ class NewBudgetJournalDetail extends React.Component {
     let queryLineListTypeOptions = [];
     this.getSystemValueList(2021).then(res => {
       res.data.values.map(data => {
-        queryLineListTypeOptions.push({label: data.messageKey, value: data.code})
+        queryLineListTypeOptions.push({label: data.messageKey, value: data.code,key:data.code})
       });
     });
     let currencyOptions = [];
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`).then((res)=>{
       console.log(res.data);
       res.data.map(data => {
-        currencyOptions.push({label: data.attribute5,data: data})
+        currencyOptions.push({label: data.attribute5,data: data,key:data.id})
       });
     })
     let nowYear = new Date().getFullYear();
@@ -394,7 +394,7 @@ class NewBudgetJournalDetail extends React.Component {
     const children = [];
     this.state.searchForm.map((item, i)=>{
       children.push(
-        <Col span={20} key={item.id}>
+        <Col span={20} key={i}>
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label} colon={false}>
               {getFieldDecorator(item.id, {
