@@ -54,12 +54,25 @@ class BudgetOccupancy extends React.Component{
     httpFetch.get(url).then(res => {
       this.setState({
         loading: false,
-        data: res.data
+        data: res.data,
+        pagination: {
+          total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+          onChange: this.onChangePager,
+          current: page + 1
+        }
       })
     }).catch(() => {
       this.setState({ loading: false });
       message.error('数据加载失败，请重试')
     })
+  };
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({ page: page - 1 }, ()=>{
+        this.getList();
+      })
   };
 
   search = (values) => {
