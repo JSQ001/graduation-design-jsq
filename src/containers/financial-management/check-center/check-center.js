@@ -90,7 +90,7 @@ class CheckCenter extends React.Component{
     const {cards} = this.state;
     console.log(cards)
     return cards.map((item)=>(
-      <Card className={"check-center-tab"+item.index} onClick={item.onClick}>
+      <Card className={"check-center-tab"+item.index} key={item.index} onClick={item.onClick}>
         <img src={item.url} className="tab-img" width={30} height={30}/>
         {item.label}
         <div title="e121e21oe1jo2" className="tab-content">

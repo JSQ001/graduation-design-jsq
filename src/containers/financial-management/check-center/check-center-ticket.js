@@ -58,7 +58,7 @@ class CheckCenterTicket extends React.Component{
           title: formatMessage({id:"check-center.clearDate"}), key: "takeOffTime", dataIndex: 'takeOffTime'
         },
         {          /*结算主键*/
-          title: formatMessage({id:"check-center.clearingKey"}), key: "bankCode", dataIndex: 'bankCode'
+          title: formatMessage({id:"check-center.clearingKey"}), key: "clearingKey", dataIndex: 'bankCode'
         },
         {          /*关联行程号*/
           title: formatMessage({id:"check-center.linkNumber"}), key: "linkNumber", dataIndex: 'linkNumber'
@@ -141,7 +141,7 @@ class CheckCenterTicket extends React.Component{
       <div className="check-center-ticket">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <Radio.Group value={defaultLabel} className="check-center-radio" onChange={this.onChange} style={{ marginBottom: 16 }}>
-          {radio.map((item)=><Radio.Button value={item.value}>{item.label}</Radio.Button>)}
+          {radio.map((item)=><Radio.Button key={item.value} value={item.value}>{item.label}</Radio.Button>)}
         </Radio.Group>
         <Card className="check-center-detail">
           {this.renderDetail()}

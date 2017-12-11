@@ -206,7 +206,7 @@ class SecuritySetting extends React.Component{
 
     return(
       <div>
-        { flag ? null :
+        { false ? null :
           <div className="security-setting">
           <div id="3" className="security-setting-company">
             企业ID： DING37484930239458493922-2-8472283
