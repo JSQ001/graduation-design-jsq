@@ -92,7 +92,7 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'versionName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.version'}),  /*预算版本*/
-          listExtraParams:{organizationId:this.props.organization.id}
+          listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*预算场景*/
         {type: 'list', id: 'scenarioName',
@@ -100,7 +100,7 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'scenarioName',
           valueKey: 'id',
           label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
-          listExtraParams:{organizationId:this.props.organization.id}
+          listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*编辑期段*/
         {type: 'value_list', id: 'periodStrategy', label: '编制期段', options: [], valueListCode: 2002,disabled: true},

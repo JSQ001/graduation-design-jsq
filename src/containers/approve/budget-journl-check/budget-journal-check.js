@@ -63,7 +63,7 @@ class BudgetJournalCheck extends React.Component{
 
   getUnJournalList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
-    let unJournalUrl = ` http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    let unJournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
     this.setState({ loading1: true });
     httpFetch.get(unJournalUrl).then((res) => {
       if (res.status === 200) {

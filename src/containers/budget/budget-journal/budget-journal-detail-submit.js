@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps} from 'antd';
+import { Spin,Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps} from 'antd';
 const Step =Steps.Step;
 
 import "styles/budget/budget-journal/budget-journal-detail-submit.scss"
@@ -15,6 +15,7 @@ class BudgetJournalDetailSubmit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinLoading:true,
       loading: true,
       data: [],
       total:0,
@@ -179,6 +180,8 @@ class BudgetJournalDetailSubmit extends React.Component {
     }
     this.setState({
       columns,
+    },()=>{
+      this.setState({spinLoading:false})
     })
   }
 
@@ -334,7 +337,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
 
         </div>
-
+        <Spin spinning={this.state.spinLoading}>
         <Table columns={columns}
                dataSource={data}
                bordered
@@ -343,6 +346,7 @@ class BudgetJournalDetailSubmit extends React.Component {
                rowKey={recode=>{return recode.id}}
 
         />
+        </Spin>
 
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
