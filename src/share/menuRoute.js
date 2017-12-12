@@ -19,7 +19,6 @@ import myAccount from 'share/routes/normal/my-account'  //我的账本
 import expenseReport from 'share/routes/normal/expense-report'  //报销单
 import request from 'share/routes/normal/request'  //申请单
 import financialManagement from 'share/routes/normal/finacial-management'  //财务管理
-import budgetSetting from 'share/routes/normal/budget-setting'  //预算设置
 import budget from 'share/routes/normal/budget'  //预算
 import pay from 'share/routes/normal/pay'  //支付
 import contract from 'share/routes/normal/contract'  //合同
@@ -30,6 +29,7 @@ import prePayment from 'share/routes/normal/pre-payment'  //预付款
 import dashboardAdmin from 'share/routes/admin/dashboard-admin'  //管理员仪表盘
 import setting from 'share/routes/admin/setting'  //基础设置
 import basicData from 'share/routes/admin/basic-data' //基础数据
+import budgetSetting from 'share/routes/admin/budget-setting'  //预算设置
 import financeSetting from 'share/routes/admin/finance-setting'  //财务设置
 import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
 import receiptTypeSetting from 'share/routes/admin/receipt-type-setting'  //单据类型设置
@@ -56,7 +56,6 @@ const menu = [
   expenseReport,  //报销单
   request,  //申请单
   financialManagement,  //财务管理
-  budgetSetting,  //预算设置
   budget,  //预算
   pay,  //支付
   contract, //合同
@@ -65,6 +64,7 @@ const menu = [
   /** 以下是管理员模式下的菜单 **/
   dashboardAdmin,  //管理员仪表盘
   setting,  //基础设置
+  budgetSetting,  //预算设置
   financeSetting,  //财务设置
   approveSetting,  //审批设置
   receiptTypeSetting,  //单据类型设置
@@ -208,6 +208,7 @@ function getRouteItem(attr, attrName){
 
 const menuRoute = {
   indexUrl: menuIndexUrl,
+  adminIndexUrl: menuAdminIndexUrl,
   ClientRoute: ClientRoute,
   MainRoute: <Router history={browserHistory} onUpdate={updateCurrentPage}>{MainRoute}</Router>,
   menu: menu,

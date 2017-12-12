@@ -184,7 +184,7 @@ class Main extends React.Component{
         let modalData = {
           content: content,
           onOk: () => {
-            this.context.router.replace(menuRoute.getRouteItem('budget-organization', 'key').url);
+            this.context.router.replace(menuRoute.getRouteItem('dashboard', 'key').url);
             this.setState({check: true});
           },
           okText: 'Ok'

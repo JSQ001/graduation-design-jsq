@@ -183,7 +183,8 @@ const budgetOrganization = {
 const budgetSetting = {
   key:'budget-setting',
   subMenu: [budgetOrganization],
-  icon: 'tags-o'
+  icon: 'tags-o',
+  admin: true
 };
 
 export default budgetSetting
