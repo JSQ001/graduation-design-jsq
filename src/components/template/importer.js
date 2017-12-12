@@ -38,7 +38,7 @@ class Importer extends React.Component {
       this.setState({
         uploading: true,
       });
-      //TODO:导入数据，根据结果跳转success tab，显示成功与失败的结果
+      //导入数据
       httpFetch.post(this.props.uploadUrl, formData, {"Content-type": 'multipart/form-data'}).then(res => {
         this.setState({ transactionID: res.data.transactionID },() => {
           this.listenStatus()
@@ -56,10 +56,13 @@ class Importer extends React.Component {
     }
   };
 
-  //监听导入状态，status === 1003时表示成功
+  //监听导入状态：PARSING_FILE(1001), PROCESS_DATA(1002), DONE(1003), ERROR(1004), CANCELLED(1005)
   listenStatus = () => {
     httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
-      if (res.data.status !== 1003) {
+      if (res.data.status === 1004) {
+        this.setState({ uploading: false });
+        message.error('导入失败，请重试')
+      } else if (res.data.status !== 1003) {
         setTimeout(() => {
           this.listenStatus()
         }, 1000)
@@ -93,7 +96,7 @@ class Importer extends React.Component {
   };
 
   onCancel = () => {
-    this.setState({visible: false});
+    this.setState({visible: false, uploading: false});
     if (this.state.uploading && this.state.transactionID) {
       httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
     }
@@ -123,9 +126,16 @@ class Importer extends React.Component {
       FileSaver.saveAs(b, `${name}.xlsx`);
       hide();
     }).catch(() => {
-      message.error('错误信息下载失败，请重试');
       hide();
+      message.error('错误信息下载失败，请重试');
     })
+  };
+
+  //只能上传一个文件
+  handleChange = (info) => {
+    let fileList = info.fileList;
+    fileList = fileList.slice(-1);
+    this.setState({ fileList })
   };
 
   render() {
@@ -150,6 +160,7 @@ class Importer extends React.Component {
         return false;
       },
       fileList: this.state.fileList,
+      onChange: this.handleChange
     };
 
     return (

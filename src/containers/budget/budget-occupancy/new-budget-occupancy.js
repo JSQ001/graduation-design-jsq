@@ -58,6 +58,8 @@ class NewBudgetOccupancy extends React.Component {
           }
         })
       }
+    }).catch(() => {
+      this.setState({ tableLoading: false });
     })
   };
 
@@ -160,7 +162,7 @@ class NewBudgetOccupancy extends React.Component {
                       templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
                       uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
                       errorUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import/failed/export`}
-                      fileName="预算占用调整导入文件"
+                      fileName="预算占用调整导入模板"
                       onOk={this.handleImportOk}/>
             <Button htmlType="submit" loading={loading} style={{marginLeft:20}}>最终确认</Button>
             <Button onClick={this.handleBack} style={{marginLeft:50}}>返 回</Button>

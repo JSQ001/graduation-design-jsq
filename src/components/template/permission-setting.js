@@ -29,6 +29,9 @@ class PermissionSetting extends React.Component{
           <Select value="all">
             <Option key="all">全部人员</Option>
           </Select>}
+        {value === 'b' &&
+          <Select placeholder="请选择"
+                  dropdownStyle={{ display: 'none' }}/>}
       </div>
     )
   }
