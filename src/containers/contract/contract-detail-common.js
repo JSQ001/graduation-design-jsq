@@ -58,7 +58,7 @@ class ContractDetailCommon extends React.Component {
       showSlideFrame: false,
       slideFrameTitle: '',
       record: {}, //资金计划行信息
-      NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
+      EditContract: menuRoute.getRouteItem('edit-contract', 'key'), //编辑合同
     }
   }
 
@@ -144,9 +144,10 @@ class ContractDetailCommon extends React.Component {
       params && this.getPayInfo();
     })
   };
+
   //编辑
   edit = () => {
-    this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
+    this.context.router.push(this.state.EditContract.url.replace(':id', this.props.id))
   };
 
   //添加资金计划行

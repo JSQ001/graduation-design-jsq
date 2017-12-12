@@ -81,7 +81,6 @@ class NewBudgetOccupancy extends React.Component {
       if (!err) {
         let params = {
           reserveAdjustInfo: {
-            batchNumber: 1,
             remark: values.remark
           },
           reserveAdjustImports: this.state.data

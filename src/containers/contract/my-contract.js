@@ -119,7 +119,7 @@ class MyContract extends React.Component{
 
   //新建
   handleNew = () => {
-    this.context.router.push(this.state.NewContract.url.replace(':id', 0))
+    this.context.router.push(this.state.NewContract.url)
   };
 
   //合同详情
