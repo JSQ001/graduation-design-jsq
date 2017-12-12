@@ -86,17 +86,15 @@ class BudgetBalanceResult extends React.Component {
     });
     this.getList();
   };
-  //分页点击
+
   onChangePager = (page) => {
     if (page - 1 !== this.state.page)
       this.setState({
-        page: page - 1,
-        loading: true
+        page: page - 1
       }, () => {
         this.getList();
       })
   };
-
 
   getList = () => {
     this.setState({loading: true});
