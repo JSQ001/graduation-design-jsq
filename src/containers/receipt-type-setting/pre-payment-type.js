@@ -20,15 +20,15 @@ class PrePaymentType extends React.Component {
       page: 0,
       pageSize: 10,
       columns: [
-        {title: '预付款类型代码', dataIndex: 'typeCode', width: '20%'},
-        {title: '预付款类型名称', dataIndex: 'typeName', width: '20%',
+        {title: '预付款单类型代码', dataIndex: 'typeCode', width: '20%'},
+        {title: '预付款单类型名称', dataIndex: 'typeName', width: '20%',
           render: typeName => (
             <Popover content={typeName}>
               {typeName}
             </Popover>)
         },
         {title: '付款方式', dataIndex: 'paymentMethodCategoryName', width: '10%'},
-        {title: '帐套', dataIndex: 'setOfBooksCode', width: '20%'},
+        {title: '帐套', dataIndex: 'setOfBookName', width: '20%'},
         {title: formatMessage({id:"common.column.status"}), dataIndex: 'isEnabled', width: '15%',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
@@ -43,13 +43,13 @@ class PrePaymentType extends React.Component {
         total: 0
       },
       searchForm: [
-        {type: 'select', id: 'setOfBooksId', label: formatMessage({id:"budget.set.of.books"}), options: [],
+        {type: 'select', id: 'setOfBookId', label: formatMessage({id:"budget.set.of.books"}), options: [],
           getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}}, //账套
         {type: 'input', id: 'typeCode', label: '预付款单代码'},
         {type: 'input', id: 'typeName', label: '预付款单名称'}
       ],
       searchParams: {
-        setOfBooksId: '',
+        setOfBookId: this.props.company.setOfBooksId,
         typeCode: '',
         typeName: ''
       },
@@ -75,7 +75,7 @@ class PrePaymentType extends React.Component {
   getList(){
     this.setState({ loading: true });
     let params = this.state.searchParams;
-    let url = `${config.prePaymentUrl}/api/cash/sob/pay/req/types/query?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let url = `${config.prePaymentUrl}/api/cash/pay/requisition/types/query?&page=${this.state.page}&size=${this.state.pageSize}`;
     for(let paramsName in params){
       url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
     }
@@ -111,7 +111,7 @@ class PrePaymentType extends React.Component {
     this.setState({
       page: 0,
       searchParams: {
-        setOfBooksId: result.setOfBooksId ? result.setOfBooksId : '',
+        setOfBookId: result.setOfBookId ? result.setOfBookId : this.props.company.setOfBooksId,
         typeCode: result.typeCode ? result.typeCode : '',
         typeName: result.typeName ? result.typeName : ''
       }
@@ -185,8 +185,10 @@ PrePaymentType.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    company: state.login.company
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(PrePaymentType));
