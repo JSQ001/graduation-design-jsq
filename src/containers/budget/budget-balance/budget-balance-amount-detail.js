@@ -50,6 +50,15 @@ class BudgetBalanceAmountDetail extends React.Component {
     }
   }
 
+  onChangePager = (page) => {
+    if (page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1
+      }, () => {
+        this.getList();
+      })
+  };
+
   getList = (nextProps) => {
     this.setState({ loading: true });
     let params = nextProps.params.data;
@@ -83,13 +92,18 @@ class BudgetBalanceAmountDetail extends React.Component {
   };
 
   render(){
-    const { data, loading } = this.state;
+    const { data, loading, pagination } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <div>
         <h3 className="header-title">预算额明细</h3>
+        <div className="table-header">
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
+        </div>
         <Table columns={this.filterColumns()}
                dataSource={data}
                bordered
+               pagination={pagination}
                loading={loading}
                size="middle"
                rowKey="key"
