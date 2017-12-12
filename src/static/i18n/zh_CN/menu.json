@@ -79,6 +79,8 @@
   "menu.new-department-group": "新建部门组",
   "menu.department-group-detail": "部门组详情",
   "menu.contract-type-define": "合同类型定义",
+  "menu.new-contract-type": "新建合同类型",
+  "menu.edit-contract-type": "编辑合同类型",
   "menu.company-distribution": "公司分配",
   "menu.approve": "审批",
   "menu.contract": "合同",

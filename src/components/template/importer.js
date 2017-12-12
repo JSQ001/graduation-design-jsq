@@ -214,7 +214,7 @@ class Importer extends React.Component {
 Importer.propTypes = {
   templateUrl: React.PropTypes.string,  //模版下载接口
   uploadUrl: React.PropTypes.string,  //上传接口
-  errorUrl: React.PropTypes.string,  //错误信息下载接口
+  errorUrl: React.PropTypes.string,  //错误信息下载接口，不需要写transactionID变量
   title: React.PropTypes.string,  //标题
   fileName: React.PropTypes.string, //下载文件名
   onOk: React.PropTypes.func

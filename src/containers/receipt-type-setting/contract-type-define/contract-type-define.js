@@ -7,8 +7,6 @@ import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
 import SearchArea from 'components/search-area'
-import SlideFrame from 'components/slide-frame'
-import NewContractType from 'containers/receipt-type-setting/contract-type-define/new-contract-type'
 
 class ContractTypeDefine extends React.Component{
   constructor(props) {
@@ -48,8 +46,9 @@ class ContractTypeDefine extends React.Component{
         total: 0
       },
       showSlideFrame: false,
-      editContractType: {},
       companyDistribution:  menuRoute.getRouteItem('company-distribution','key'),    //公司分配
+      newContractType:  menuRoute.getRouteItem('new-contract-type','key'),    //新建公司类型
+      editContractType:  menuRoute.getRouteItem('edit-contract-type','key'),    //编辑公司类型
     }
   }
 
@@ -121,10 +120,6 @@ class ContractTypeDefine extends React.Component{
 
   };
 
-  showSlide = (flag) => {
-    this.setState({ showSlideFrame: flag })
-  };
-
   //关闭侧滑后的回调
   handleCloseSlide = (params) => {
     this.setState({
@@ -136,26 +131,21 @@ class ContractTypeDefine extends React.Component{
 
   //新建合同类型
   handleNew = () => {
-    this.setState({
-      editContractType: {},
-      showSlideFrame: true
-    });
+    this.context.router.push(this.state.newContractType.url)
   };
 
   //编辑合同类型
   handleEdit = (record) => {
-    this.setState({ editContractType: record }, () => {
-      this.showSlide(true)
-    })
+    this.context.router.push(this.state.editContractType.url.replace(':setOfBooksId', record.setOfBooksId).replace(':id', record.id))
   };
 
   //分配公司
   handleDistribute = (record) => {
-    this.context.router.push(this.state.companyDistribution.url.replace(':setOfBooksId', record.setOfBooksId).replace(':id', record.id));
+    this.context.router.push(this.state.companyDistribution.url.replace(':setOfBooksId', record.setOfBooksId).replace(':id', record.id))
   };
 
   render() {
-    const { loading, searchForm, columns, data, pagination, showSlideFrame, editContractType } = this.state;
+    const { loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="contract-type-define">
         <SearchArea searchForm={searchForm}
@@ -174,12 +164,6 @@ class ContractTypeDefine extends React.Component{
                pagination={pagination}
                bordered
                size="middle"/>
-        <SlideFrame title={editContractType.id ? "编辑合同类型" :  "新建合同类型"}
-                    show={showSlideFrame}
-                    content={NewContractType}
-                    onClose={() => this.showSlide(false)}
-                    afterClose={this.handleCloseSlide}
-                    params={editContractType}/>
       </div>
     )
   }

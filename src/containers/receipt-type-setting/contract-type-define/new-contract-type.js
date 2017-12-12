@@ -1,23 +1,26 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import { Form, Input, Switch, Button, Icon, Select, message } from 'antd'
+import menuRoute from 'share/menuRoute'
+import { Form, Input, Switch, Button, Icon, Select, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+
+import PermissionSetting from 'components/template/permission-setting'
 
 class NewContractType extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       loading: false,
+      infoLoading: false,
       isEnabled: true,
       setOfBooks: [],
       defaultSetOfBooks: null,
       contractCategory: [],
-      defaultValue: {
-        isEnabled: true
-      },
+      data: {},
+      contractTypeDefine:  menuRoute.getRouteItem('contract-type-define','key'),    //公司类型定义
     }
   }
 
@@ -32,29 +35,24 @@ class NewContractType extends React.Component{
       let contractCategory = res.data.values;
       this.setState({ contractCategory })
     });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.params.id &&
-      (nextProps.params.id !== this.state.defaultValue.id ||
-        nextProps.params.versionNumber !== this.state.defaultValue.versionNumber)) {  //编辑
-      this.setState({ defaultValue: nextProps.params }, () => {
-        this.setState({ isEnabled: this.state.defaultValue.isEnabled });
-        for (let key in this.props.form.getFieldsValue()) {
-          let params = {};
-          params[key] = this.state.defaultValue[key];
-          this.props.form.setFieldsValue(params)
-        }
-      })
-    } else if (!nextProps.params.id && this.state.defaultValue.id) {  //新建
-      this.setState({
-        isEnabled: true,
-        defaultValue: {isEnabled: true}
-      }, () => {
-        this.props.form.resetFields()
-      })
+    if (this.props.params.id) {
+      this.setState({ infoLoading: true });
+      this.getInfo()
     }
   }
+
+  getInfo = () => {
+    const { setOfBooksId, id } = this.props.params;
+    let url = `${config.contractUrl}/contract/api/contract/type/${setOfBooksId}/${id}`;
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          data: res.data,
+          infoLoading: false
+        })
+      }
+    })
+  };
 
   //状态改变
   switchChange = (status) => {
@@ -95,8 +93,8 @@ class NewContractType extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.isEnabled = this.state.isEnabled;
-        values.id = this.state.defaultValue.id;
-        values.versionNumber = this.state.defaultValue.versionNumber;
+        values.id = this.state.data.id;
+        values.versionNumber = this.state.data.versionNumber;
         let params = [];
         params.push(values);
         this.setState({ loading: true });
@@ -119,92 +117,115 @@ class NewContractType extends React.Component{
     })
   };
 
-  onCancel = () => {
-    this.props.form.resetFields();
-    this.props.close()
+  //取消
+  handleCancel = () => {
+    this.context.router.push(this.state.contractTypeDefine.url)
   };
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, setOfBooks, defaultSetOfBooks, contractCategory, defaultValue } = this.state;
+    const { loading, infoLoading, setOfBooks, defaultSetOfBooks, contractCategory, data } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 }
     };
     return (
       <div className="new-contract-type">
-        <Form style={{marginTop:'30px'}} onSubmit={ this.state.defaultValue.id ? this.handleUpdate :this.handleSave }>
-          <FormItem {...formItemLayout} label="账套">
-            {getFieldDecorator('setOfBooksId', {
-              rules: [{
-                required: true,
-                message: '请选择'
-              }],
-              initialValue: defaultValue.setOfBooksId || defaultSetOfBooks
-            })(
-              <Select disabled={defaultValue.id ? true : false}>
-                {setOfBooks.map((option)=>{
-                  return <Option key={option.setOfBooksId}>{option.setOfBooksCode}</Option>
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="合同大类">
-            {getFieldDecorator('contractCategory', {
-              rules: [{
-                required: true,
-                message: '请选择'
-              }],
-              initialValue: defaultValue.contractCategory
-            })(
-              <Select placeholder="请选择">
-                {contractCategory.map((option)=>{
-                  return <Option key={option.value}>{option.messageKey}</Option>
-                })}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="合同类型代码">
-            {getFieldDecorator('contractTypeCode', {
-              rules: [{
-                required: true,
-                message: '请输入'
-              }],
-              initialValue: defaultValue.contractTypeCode
-            })(
-              <Input placeholder="请输入" disabled={defaultValue.id ? true : false}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="合同类型名称">
-            {getFieldDecorator('contractTypeName', {
-              rules: [{
-                required: true,
-                message: '请输入'
-              }],
-              initialValue: defaultValue.contractTypeName
-            })(
-              <Input placeholder="请输入" />
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="状态">
-            {getFieldDecorator('isEnabled', {
-              valuePropName: 'checked',
-              initialValue: defaultValue.isEnabled
-            })(
-              <Switch checkedChildren={<Icon type="check"/>}
-                      unCheckedChildren={<Icon type="cross" />}
-                      onChange={this.switchChange}/>
-            )}
-          </FormItem>
-          <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
-          </div>
-        </Form>
+        <Spin spinning={infoLoading}>
+          <Form style={{width:'70%', margin:'30px auto 0'}} onSubmit={ data.id ? this.handleUpdate :this.handleSave }>
+            <FormItem {...formItemLayout} label="账套">
+              {getFieldDecorator('setOfBooksId', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }],
+                initialValue: data.setOfBooksId || defaultSetOfBooks
+              })(
+                <Select disabled={!!data.id}>
+                  {setOfBooks.map((option)=>{
+                    return <Option key={option.setOfBooksId}>{option.setOfBooksCode}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="合同大类">
+              {getFieldDecorator('contractCategory', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }],
+                initialValue: data.contractCategory
+              })(
+                <Select placeholder="请选择">
+                  {contractCategory.map((option)=>{
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="合同类型代码">
+              {getFieldDecorator('contractTypeCode', {
+                rules: [{
+                  required: true,
+                  message: '请输入'
+                }],
+                initialValue: data.contractTypeCode
+              })(
+                <Input placeholder="请输入" disabled={!!data.id}/>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="合同类型名称">
+              {getFieldDecorator('contractTypeName', {
+                rules: [{
+                  required: true,
+                  message: '请输入'
+                }],
+                initialValue: data.contractTypeName
+              })(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="关联表单类型">
+              {getFieldDecorator('type', {
+                initialValue: undefined
+              })(
+                <Select placeholder="请选择">
+
+                </Select>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="适用人员">
+              {getFieldDecorator('permission', {
+                initialValue: undefined
+              })(
+                <PermissionSetting/>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="状态">
+              {getFieldDecorator('isEnabled', {
+                valuePropName: 'checked',
+                initialValue: data.isEnabled
+              })(
+                <Switch checkedChildren={<Icon type="check"/>}
+                        unCheckedChildren={<Icon type="cross" />}
+                        onChange={this.switchChange}/>
+              )}
+            </FormItem>
+
+            <FormItem wrapperCol={{ offset: 7 }}>
+              <Button type="primary" htmlType="submit" loading={loading} style={{marginRight:'10px'}}>保存</Button>
+              <Button onClick={this.handleCancel}>取消</Button>
+            </FormItem>
+          </Form>
+        </Spin>
       </div>
     )
   }
 }
+
+NewContractType.contextTypes = {
+  router: React.PropTypes.object
+};
 
 const wrappedNewContractType = Form.create()(injectIntl(NewContractType));
 
