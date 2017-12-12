@@ -38,7 +38,7 @@ class Importer extends React.Component {
       this.setState({
         uploading: true,
       });
-      //TODO:导入数据，根据结果跳转success tab，显示成功与失败的结果
+      //导入数据
       httpFetch.post(this.props.uploadUrl, formData, {"Content-type": 'multipart/form-data'}).then(res => {
         this.setState({ transactionID: res.data.transactionID },() => {
           this.listenStatus()
@@ -56,11 +56,16 @@ class Importer extends React.Component {
     }
   };
 
-  //监听导入状态，status === 1003时表示成功
+  //监听导入状态：PARSING_FILE(1001), PROCESS_DATA(1002), DONE(1003), ERROR(1004), CANCELLED(1005)
   listenStatus = () => {
     httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
-      if (res.data.status !== 1003) {
-        this.listenStatus()
+      if (res.data.status === 1004) {
+        this.setState({ uploading: false });
+        message.error('导入失败，请重试')
+      } else if (res.data.status !== 1003) {
+        setTimeout(() => {
+          this.listenStatus()
+        }, 1000)
       } else {
         this.setState({
           fileList: [],
@@ -72,19 +77,11 @@ class Importer extends React.Component {
           let errors = this.state.result.errors;
           Object.keys(errors).map(error => {
             errors[error].map(index => {
-              if (errorData.length) {
-                errorData.map((item, i) => {
-                  if (index === item.index) {
-                    errorData[i].erros = error
-                  } else {
-                    errorData.push({index, error})
-                  }
-                })
-              } else {
-                errorData.push({index, error})
-              }
+              errorData.push({index, error})
             })
           });
+          errorData.sort((a,b) => a.index > b.index);
+          errorData = errorData.slice(0, 10);
           this.setState({ errorData })
         })
       }
@@ -99,13 +96,13 @@ class Importer extends React.Component {
   };
 
   onCancel = () => {
-    this.setState({visible: false});
-    if (this.state.uploading) {
+    this.setState({visible: false, uploading: false});
+    if (this.state.uploading && this.state.transactionID) {
       httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
     }
   };
 
-  //TODO:下载表格
+  //下载导入模板
   downloadTemplate = () => {
     let hide = message.loading('正在生成文件..');
     httpFetch.get(this.props.templateUrl, {}, {}, {responseType: 'arraybuffer'}).then(res => {
@@ -129,9 +126,16 @@ class Importer extends React.Component {
       FileSaver.saveAs(b, `${name}.xlsx`);
       hide();
     }).catch(() => {
-      message.error('错误信息下载失败，请重试');
       hide();
+      message.error('错误信息下载失败，请重试');
     })
+  };
+
+  //只能上传一个文件
+  handleChange = (info) => {
+    let fileList = info.fileList;
+    fileList = fileList.slice(-1);
+    this.setState({ fileList })
   };
 
   render() {
@@ -156,6 +160,7 @@ class Importer extends React.Component {
         return false;
       },
       fileList: this.state.fileList,
+      onChange: this.handleChange
     };
 
     return (
@@ -192,6 +197,10 @@ class Importer extends React.Component {
               <div>导入失败：{result.failureEntities}条
                 {result.failureEntities ? <span style={{fontSize:12,marginLeft:10}}>（请修改相应数据后，重新导入）</span> : ''}
               </div>
+              {result.failureEntities > 10 ?
+                <div style={{marginTop:10}}>
+                  <Icon type="exclamation-circle-o" style={{marginRight:5, color:'red'}}/>导入失败超过10条，请下载错误信息查看详情
+                </div> : ''}
               {result.failureEntities ? (
                 <div>
                   <a style={{display:'block', textAlign:'right', marginBottom:6}}
@@ -199,6 +208,8 @@ class Importer extends React.Component {
                   <Table rowKey={record => record.index}
                          columns={errorColumns}
                          dataSource={errorData}
+                         pagination={false}
+                         scroll={{x: false, y: 170}}
                          bordered
                          size="small"/>
                 </div>
@@ -214,7 +225,7 @@ class Importer extends React.Component {
 Importer.propTypes = {
   templateUrl: React.PropTypes.string,  //模版下载接口
   uploadUrl: React.PropTypes.string,  //上传接口
-  errorUrl: React.PropTypes.string,  //错误信息下载接口
+  errorUrl: React.PropTypes.string,  //错误信息下载接口，不需要写transactionID变量
   title: React.PropTypes.string,  //标题
   fileName: React.PropTypes.string, //下载文件名
   onOk: React.PropTypes.func

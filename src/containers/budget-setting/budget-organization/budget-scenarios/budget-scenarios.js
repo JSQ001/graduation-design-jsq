@@ -66,6 +66,7 @@ class BudgetScenarios extends React.Component {
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
+    this.setState({ loading: true });
     organizationInfo.id && httpFetch.get(url).then(res => {
       if (res.status === 200) {
         res.data.map((item, index) => {
@@ -92,8 +93,7 @@ class BudgetScenarios extends React.Component {
   onChangePager = (page) => {
     if(page - 1 !== this.state.page)
       this.setState({
-        page: page - 1,
-        loading: true
+        page: page - 1
       }, ()=>{
         this.getList();
       })
@@ -107,7 +107,6 @@ class BudgetScenarios extends React.Component {
     };
     this.setState({
       searchParams:searchParams,
-      loading: true,
       page: 0,
       pagination: {
         current: 1
@@ -138,19 +137,17 @@ class BudgetScenarios extends React.Component {
   };
 
   handleCloseSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
   handleCloseUpdateSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showUpdateSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
 

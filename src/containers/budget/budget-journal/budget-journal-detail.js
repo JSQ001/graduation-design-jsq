@@ -14,7 +14,7 @@ import menuRoute from 'share/menuRoute';
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';
 import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js';
-import Importer from 'components/importer.js';
+import Importer from 'components/template/importer.js';
 
 class BudgetJournalDetail extends React.Component {
   constructor(props) {
