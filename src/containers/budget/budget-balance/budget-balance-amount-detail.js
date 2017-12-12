@@ -16,24 +16,27 @@ class BudgetBalanceAmountDetail extends React.Component {
       loading: false,
       page: 0,
       pageSize: 10,
+      pagination: {
+        total: 0
+      },
       data: [],
       columns: [
-        {title: "公司", dataIndex: "companyName", render: recode => <Popover content={recode}>{recode}</Popover>},
-        {title: "部门", dataIndex: "unitName", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "公司", dataIndex: "companyName", render: companyName => <Popover content={companyName}>{companyName}</Popover>},
+        {title: "部门", dataIndex: "unitName", render: unitName => <Popover content={unitName}>{unitName}</Popover>},
         {title: "预算申请人", dataIndex: "employeeName", type: "J"},{title: "申请人", dataIndex: "employeeName", type: "R"},{title: "报销人", dataIndex: "employeeName", type: "U"},
         {title: "单据类型", dataIndex: "documentType"},
-        {title: "单据编号", dataIndex: "documentNumber", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "单据编号", dataIndex: "documentNumber", render: documentNumber => <Popover content={documentNumber}>{documentNumber}</Popover>},
         {title: "预算申请日期", dataIndex: "requisitionDate", type: "J"},{title: "申请日期", dataIndex: "requisitionDate", type: "R"},{title: "报销日期", dataIndex: "requisitionDate", type: "U"},
         {title: "单据行号", dataIndex: "documentLineNum"},
-        {title: "预算项目", type: "J", render: recode => <Popover content={recode}>{recode}</Popover>},
-        {title: "申请项目", type: "R", render: recode => <Popover content={recode}>{recode}</Popover>},
-        {title: "报销项目", type: "U", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "预算项目", dataIndex: "itemName", type: "J", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
+        {title: "申请项目", dataIndex: "itemName", type: "R", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
+        {title: "报销项目", dataIndex: "itemName", type: "U", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
         {title: "币种", dataIndex: "currency"},
         {title: "预算金额", dataIndex: "amount", type: "J"},{title: "申请金额", dataIndex: "amount", type: "R"},{title: "报销金额", dataIndex: "amount", type: "U"},
         {title: "税额", dataIndex: "taxAmount"},
         {title: "不含税金额", dataIndex: "saleAmount"},
         {title: "状态"},
-        {title: "摘要", dataIndex: "description", render: recode => <Popover content={recode}>{recode}</Popover>},
+        {title: "摘要", dataIndex: "description", render: description => <Popover content={description}>{description}</Popover>},
         {title: "关闭状态", type: "J"},{title: "关闭状态", type: "R"},{title: "反冲", type: "U"},
         {title: "会计期间", dataIndex: "periodName"},
         {title: "审核状态"}
@@ -58,7 +61,15 @@ class BudgetBalanceAmountDetail extends React.Component {
         item.key = index;
         return item;
       });
-      this.setState({ loading: false, data });
+      this.setState({
+        loading: false,
+        data,
+        pagination: {
+          total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+          onChange: this.onChangePager,
+          current: this.state.page + 1
+        }
+      });
     })
   }
 
