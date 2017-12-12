@@ -10,7 +10,6 @@
     position: fixed;
     z-index: -1;
     left: 0;
-    left: 0;
     width: 100vw;
     height: 100vh;
   }
@@ -23,7 +22,7 @@
     .login-logo-text{
       font-size: 32px;
       color: white;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
     input{
       border-radius: 0;
@@ -31,6 +30,15 @@
       line-height: 40px;
       margin-bottom: 30px;
       font-size: 16px;
+      border: none;
+      background: transparent;
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    input:focus{
+      border: none;
+      box-shadow: none;
+      border-bottom: 1px solid white;
     }
     .forget-password{
       font-size: 14px;
@@ -56,7 +64,7 @@
     position: absolute;
     left: 15vw;
     top: 10vh;
-    width: 40vw;
+    width: 36vw;
     height: 80vh;
     div{
       width: 100%;
