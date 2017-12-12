@@ -53,7 +53,8 @@ class MyContract extends React.Component{
         {title: '合同方', dataIndex: 'partnerCategory', render: (value, record) => (value + ' - ' + record.partnerId)},
         {title: '币种', dataIndex: 'currency'},
         {title: '合同金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '状态', dataIndex: 'status', render: value => <Badge status="processing" text={this.state.contractStatus[value].label} />}
+        {title: '状态', dataIndex: 'status',
+          render: value => <Badge status={this.state.contractStatus[value].state} text={this.state.contractStatus[value].label} />}
       ],
       data: [],
       page: 0,

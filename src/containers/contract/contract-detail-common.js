@@ -183,8 +183,8 @@ class ContractDetailCommon extends React.Component {
     })
   };
 
-  //合同撤回
-  recall = () => {
+  //撤回
+  contractRecall = () => {
     let url = `${config.contractUrl}/contract/api/contract/header/withdrawal/${this.props.id}`;
     httpFetch.put(url).then(res => {
       if (res.status === 200) {
@@ -196,13 +196,72 @@ class ContractDetailCommon extends React.Component {
     })
   };
 
+  //暂挂
+  contractHold = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/hold/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('暂挂成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('暂挂失败，请稍后再试');
+    })
+  };
+
+  //取消暂挂
+  contractCancelHold = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/unHold/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('取消暂挂成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('取消暂挂失败，请稍后再试');
+    })
+  };
+
+  //取消
+  contractCancel = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/cancel/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('取消成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('取消失败，请稍后再试');
+    })
+  };
+
+  //完成
+  contractFinish = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/finish/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('完成成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('完成失败，请稍后再试');
+    })
+  };
+
   render() {
     const { topLoading, detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
       <Spin spinning={topLoading}>
         <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
           {contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
-          {headerData.status === 'SUBMITTED' && !this.props.isApprovePage && <Button type="primary" onClick={this.recall}>撤 回</Button>}
+          {!this.props.isApprovePage && headerData.status === 'SUBMITTED' && <Button type="primary" onClick={this.contractRecall}>撤 回</Button>}
+          {!this.props.isApprovePage && headerData.status === 'CONFIRM' &&
+            <div>
+              <Button type="primary" onClick={this.contractFinish}>完 成</Button>
+              <Button type="primary" onClick={this.contractCancel} style={{marginRight:10}}>取 消</Button>
+              <Button type="primary" onClick={this.contractHold} style={{marginRight:10}}>暂 挂</Button>
+            </div>}
+          {!this.props.isApprovePage && headerData.status === 'HOLD' && <Button type="primary" onClick={this.contractCancelHold}>取消暂挂</Button>}
         </h3>
         <Row>
           <Col span={6}>
