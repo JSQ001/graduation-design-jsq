@@ -59,7 +59,7 @@ class ContractDetail extends React.Component {
     const { loading, dLoading } = this.state;
     return (
       <div className="contract-detail background-transparent">
-        <ContractDetailCommon contractEdit={true} id={this.props.params.id} />
+        <ContractDetailCommon id={this.props.params.id} />
         <Affix offsetBottom={0} className="bottom-bar">
           <Button type="primary" onClick={this.onSubmit} loading={loading} style={{margin:'0 20px'}}>提 交</Button>
           <Button onClick={this.onCancel}>保 存</Button>

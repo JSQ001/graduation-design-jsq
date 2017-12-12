@@ -23,7 +23,7 @@ class Contract extends React.Component{
         SUBMITTED: {label: '审批中', state: 'processing'},
         REJECTED: {label: '已驳回', state: 'error'},
         CONFIRM: {label: '已通过', state: 'success'},
-        FINISH2: {label: '已撤回', state: 'warning'}, //字段未确认
+        WITHDRAWAL: {label: '已撤回', state: 'warning'},
       },
       SearchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},

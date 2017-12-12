@@ -22,7 +22,7 @@ class MyContract extends React.Component{
         SUBMITTED: {label: '审批中', state: 'processing'},
         REJECTED: {label: '已驳回', state: 'error'},
         CONFIRM: {label: '已通过', state: 'success'},
-        FINISH2: {label: '已撤回', state: 'warning'}, //字段未确认
+        WITHDRAWAL: {label: '已撤回', state: 'warning'}, //字段未确认
       },
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
@@ -89,7 +89,7 @@ class MyContract extends React.Component{
       if (res.status === 200) {
         this.setState({
           loading: false,
-          data: res.data,
+          data: res.data || [],
           pagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
             current: page + 1,
