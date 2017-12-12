@@ -66,7 +66,7 @@ class PrePaymentType extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
-      nowOrganization: record,
+      nowType: record,
       showSlideFrame: true
     })
   };
@@ -167,7 +167,7 @@ class PrePaymentType extends React.Component {
                loading={loading}
                bordered
                rowKey="id"
-               onRowClick={this.handleRowClick}
+               onRow={record => ({onClick: () => this.handleRowClick(record)})}
                size="middle"/>
         <SlideFrame content={NewPrePaymentType}
                     title="预付款类型"
