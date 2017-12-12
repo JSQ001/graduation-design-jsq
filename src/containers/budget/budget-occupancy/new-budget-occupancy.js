@@ -17,14 +17,17 @@ class NewBudgetOccupancy extends React.Component {
       tableLoading: false,
       user: {},
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
+        {title: '序号', dataIndex: 'index', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '公司', dataIndex: 'companyCodeName'},
-        {title: '预算期间', dataIndex: 'periodName'},
-        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '调整日期', dataIndex: 'periodName'},
+        {title: '币种', dataIndex: 'currency'},
         {title: '预算项目', dataIndex: 'itemCodeName'},
-        {title: '成本中心1', dataIndex: '5'},
-        {title: '成本中心2', dataIndex: '6'},
-        {title: '成本中心3', dataIndex: '7'}
+        {title: '金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '项目', dataIndex: 'costCenterItemCodeName'},
+        {title: '产品', dataIndex: 'costCenterProductCodeName'},
+        {title: '渠道', dataIndex: 'costCenterChannelCodeName'},
+        {title: '团队', dataIndex: 'costCenterTeamCodeName'}
       ],
       data: [],
       page: 0,
@@ -152,6 +155,7 @@ class NewBudgetOccupancy extends React.Component {
                    dataSource={data}
                    pagination={pagination}
                    loading={tableLoading}
+                   scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
           </Card>
