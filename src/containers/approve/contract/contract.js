@@ -77,7 +77,7 @@ class Contract extends React.Component{
     httpFetch.get(unapprovedUrl).then((res) => {
       if (res.status === 200) {
         this.setState({
-          unapprovedData: res.data,
+          unapprovedData: res.data || [],
           loading1: false,
           unapprovedPagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
@@ -101,7 +101,7 @@ class Contract extends React.Component{
     httpFetch.get(approvedUrl).then((res) => {
       if (res.status === 200) {
         this.setState({
-          approvedData: res.data,
+          approvedData: res.data || [],
           loading2: false,
           approvedPagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,

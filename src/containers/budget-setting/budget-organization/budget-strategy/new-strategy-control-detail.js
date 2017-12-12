@@ -241,7 +241,7 @@ class NewStrategyControlDetail extends React.Component{
               </FormItem>
             </Col>
             {mannerValue !== 'PERCENTAGE' && (
-              <Col span={5}>
+              <Col span={5} style={{marginLeft:5}}>
                 <FormItem className="ant-col-offset-1">
                   {getFieldDecorator('operator', {
                     rules: [{
@@ -259,7 +259,7 @@ class NewStrategyControlDetail extends React.Component{
                 </FormItem>
               </Col>
             )}
-            <Col span={4}>
+            <Col span={3} style={{marginLeft:5}}>
               <FormItem className="ant-col-offset-1">
                 {getFieldDecorator('value', {
                   rules: [{

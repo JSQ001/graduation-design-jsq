@@ -124,7 +124,7 @@ class NewPayPlan extends React.Component{
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={6} style={{marginLeft:3}}>
               <FormItem className="ant-col-offset-1">
                 {getFieldDecorator('amount', {
                   rules: [{
