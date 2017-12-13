@@ -222,6 +222,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       lov.disabled　= false;
       lov.type = param.ruleParameterType;
       this.setState({
+        loading: false,
         ruleParamDetail: param,
         paramValueMap: paramValueMap,
         lov
@@ -302,7 +303,6 @@ class UpdateBudgetRulesDetail extends React.Component{
      loading: true
      });
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(ruleParamDetail)
       values.id = ruleParamDetail.id;
       values.controlRuleId = ruleParamDetail.controlRuleId;
       values.versionNumber = ruleParamDetail.versionNumber;
@@ -313,8 +313,6 @@ class UpdateBudgetRulesDetail extends React.Component{
       if(ruleParamDetail.ruleParameterDescription === values.ruleParameter){
         values.ruleParameter = ruleParamDetail.ruleParameter;
         values.ruleParameterOID = ruleParamDetail.ruleParameterOID
-        console.log(ruleParamDetail.ruleParameterOID)
-
       }else {
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
@@ -339,6 +337,7 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   onCancel = (flag) =>{
     this.setState({
+      loading: false,
       limitParam:{
         parameterLowerLimit: true,
         parameterUpperLimit: true
@@ -377,7 +376,6 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   //选择规则参数
   handleChangeParam = (value)=>{
-    console.log(value)
     const {paramValueMap,lov} = this.state;
     let temp={};
     if(lov.type === 'BGT_RULE_PARAMETER_DIM'){
@@ -593,7 +591,7 @@ class UpdateBudgetRulesDetail extends React.Component{
           </Row>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id:"common.save"})}</Button>
-            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
+            <Button onClick={()=>this.onCancel(false)}>{formatMessage({id:"common.cancel"})}</Button>
             <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>

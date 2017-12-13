@@ -14,6 +14,9 @@
   "itemMap.sourceType": "来源类别",
   "itemMap.detailType": "明细类型",
   "itemMap.expenseType": "费用类型",
+  "itemMap.applyType": "申请类型",
   "itemMap.expenseTypeName": "费用类型名称",
-  "itemMap.icon": "图标"
+  "itemMap.icon": "图标",
+  "itemMap.itemUpload": "预算项目映射导入",
+  "itemMap.itemUploadFile": "预算项目映射导入文件"
 }

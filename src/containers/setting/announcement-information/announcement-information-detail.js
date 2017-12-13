@@ -41,6 +41,7 @@ class AnnouncementInformationDetail extends React.Component{
         showSizeChanger:true,
         showQuickJumper:true,
       },
+      label: 'detail',
       tabs: [
         {key: 'detail', name: formatMessage({id:"announcement-info.infoDetail"})}, /*公告详情*/
         {key: 'company', name: formatMessage({id: "announcement-info.deliveryCompany"})} /*分配公司*/
@@ -97,7 +98,20 @@ class AnnouncementInformationDetail extends React.Component{
 
   handleSubmit = (e)=>{
     e.preventDefault();
-    alert("保存")
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values);
+        values.attachmentOID ="936e0d08-ed13-4ce5-813f-84818964e3cf";
+        httpFetch.post(`${config.baseUrl}/api/carousels`,values).then((response)=>{
+          console.log(response)
+          message.success("保存成功")
+        }).catch((e)=>{
+          if(e.response){
+            message.error("保存失败")
+          }
+        })
+      }
+    })
   };
 
 
@@ -111,16 +125,9 @@ class AnnouncementInformationDetail extends React.Component{
 
   //Tabs点击
   onChangeTabs = (key) => {
-    let columnGroup = this.state.columnGroup;
-    let pagination = this.state.pagination
-    pagination.page = 0;
-    pagination.pageSize = 10;
     this.setState({
       loading: true,
-      pagination,
-      data: [],
       label: key,
-      columns: key === 'company' ? columnGroup.company : columnGroup.dimension
     },()=>{
       this.getList()
     });
@@ -139,33 +146,98 @@ class AnnouncementInformationDetail extends React.Component{
     });
   };
 
-  //勾选轮播图片
-  handleSelected = (e)=>{
-    console.log(e.target.checked)
-  };
-
   handleCancel = () => this.setState({ previewVisible: false })
-  handleChange = ({ fileList }) => this.setState({ fileList })
+
+  handleChange = ({ fileList }) =>{
+    console.log(fileList)
+    let array = [];
+    array.push(fileList[fileList.length-1]);
+    this.setState({ fileList: array })
+  };
 
   //点击取消，跳转到上一页面
   onCancel = ()=>{
     this.context.router.push(menuRoute.getMenuItemByAttr('announcement-information', 'key').url);
   };
 
-  render(){
+  renderContent(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { defaultStatus, isEnabled, loading, previewVisible, previewImage, fileList, countryCode,address, isEditor} = this.state;
+    const { label, isEnabled, loading, previewVisible, previewImage, fileList} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
     const uploadButton = (
-      <div className="ant-upload.ant-upload-select-picture-card ant-upload">
+      <div className="announcement-information-detail-upload">
         <Icon type="plus" />
         <div className="ant-upload-text">Upload</div>
       </div>
     );
+    return(
+      <div>
+        {label === 'detail' ?
+          <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
+         <FormItem {...formItemLayout}
+                   label={formatMessage({id:"common.column.status"})} colon={true} >
+           {getFieldDecorator('enable', {
+             valuePropName:"defaultChecked",
+             initialValue:isEnabled
+           })(
+             <div>
+               <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+               <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
+             </div>)}
+         </FormItem>                                                         {/*标题*/}
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.title"})} wrapperCol={{span: 8, offset: 1}}>
+           {getFieldDecorator('title', {
+             rules: [
+               {
+                 required: true,
+                 message: formatMessage({id:"common.please.enter"})
+               }
+             ],
+           })(
+             <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+           )}
+         </FormItem>                   {/*轮播图片*/}
+         <FormItem {...formItemLayout} label= {formatMessage({id: "announcement-info.picture"})}>
+           {getFieldDecorator('attachmentOID')(
+             <Upload  action="//jsonplaceholder.typicode.com/posts/"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onPreview={this.handlePreview}
+                      onChange={this.handleChange}>
+               {uploadButton}
+               <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                 <img alt="example" style={{ width: '100%' }} src={previewImage} />
+               </Modal>
+             </Upload>
+           )}
+         </FormItem>                      {/*跳转外部链接*/}
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.link"})}  wrapperCol={{span: 8, offset: 1}}>
+           {getFieldDecorator('outLink')(
+             <Checkbox onChange={this.checked}>选中后点击轮播图将直接跳转外部页面</Checkbox>
+           )}
+         </FormItem>
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.content"})} wrapperCol={{span: 8, offset: 1}}>
+           {getFieldDecorator('content')(
+             <TextArea placeholder={ formatMessage({id:"common.please.enter"})}/>
+           )}
+         </FormItem>
+         <div className="slide-footer">
+           <Button type="primary" htmlType="submit"  loading={loading}>{formatMessage({id:"common.save"})}</Button>
+           <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
+         </div>
+       </Form>
+          :
+          <Table/>
+        }
+      </div>)
+  }
+
+
+  render(){
     return (
       <div className="announcement-information">
         <div className="announcement-information-tabs">
@@ -173,55 +245,10 @@ class AnnouncementInformationDetail extends React.Component{
             {this.renderTabs()}
           </Tabs>
         </div>
-        <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
-          <FormItem {...formItemLayout}
-                    label={formatMessage({id:"common.column.status"})} colon={true} >
-            {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
-              initialValue:isEnabled
-            })(
-              <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
-              </div>)}
-          </FormItem>                                                         {/*标题*/}
-          <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.title"})} wrapperCol={{span: 8, offset: 1}}>
-            {getFieldDecorator('bankCode', {
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({id:"common.please.enter"})
-                }
-              ],
-            })(
-              <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
-            )}
-          </FormItem>                   {/*轮播图片*/}
-          <FormItem {...formItemLayout} label= {formatMessage({id: "announcement-info.picture"})}>
-            {getFieldDecorator('picture')(
-              <Upload  placeholder={formatMessage({id:"common.please.enter"})}>
-                {uploadButton}
-                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                  <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                </Modal>
-              </Upload>
-            )}
-          </FormItem>                      {/*跳转外部链接*/}
-          <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.link"})}  wrapperCol={{span: 8, offset: 1}}>
-            {getFieldDecorator('bankName')(
-              <Checkbox onChange={this.checked}>选中后点击轮播图将直接跳转外部页面</Checkbox>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.content"})} wrapperCol={{span: 8, offset: 1}}>
-            {getFieldDecorator('text')(
-              <TextArea placeholder={ formatMessage({id:"common.please.enter"})}/>
-            )}
-          </FormItem>
-          <div className="slide-footer">
-            <Button type="primary" htmlType="submit"  loading={loading}>{formatMessage({id:"common.save"})}</Button>
-            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
-          </div>
-        </Form>
+        <div className="announcement-information-content">
+          {this.renderContent()}
+        </div>
+
       </div>)
   }
 }
