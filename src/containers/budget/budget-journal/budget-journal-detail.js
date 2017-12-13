@@ -471,25 +471,15 @@ class BudgetJournalDetail extends React.Component {
     if(this.state.commitFlag) {
        let header =this.state. headerAndListData.dto;
         httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${header.id}`).then((res)=>{
-            message.success("提交成功");
+          message.success("提交成功");
             this.setState({
             listData:[],
-          }).catch(e => {
-           message.error(e.response.data.message)
           })
           let path=this.state.budgetJournalPage.url;
           this.context.router.push(path);
+        }).catch(e => {
+          message.error(e.response.data.message)
         })
- /*     httpFetch.post(`${config.baseUrl}/api/budget/journa/reports/submit`,header).then((req) => {
-        message.success("提交成功");
-        this.setState({
-          listData:[],
-        })
-        let path=this.state.budgetJournalPage.url;
-        this.context.router.push(path);
-      }).catch(e => {
-        message.error(e.response.data.message)
-      })*/
     }else {
       notification.open({
         message: '行信息不能为空！',
