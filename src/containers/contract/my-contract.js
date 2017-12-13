@@ -47,10 +47,10 @@ class MyContract extends React.Component{
       columns: [
         {title: '序号', dataIndex: 'id', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '合同编号', dataIndex: 'contractNumber'},
-        {title: '公司', dataIndex: 'companyId'},
-        {title: '合同类型', dataIndex: 'contractTypeId', render: (value, record) => (record.contractCategory + ' - ' + value)},
+        {title: '公司', dataIndex: 'companyName'},
+        {title: '合同类型', dataIndex: 'contractTypeName', render: (value, record) => (record.contractCategory + ' - ' + value)},
         {title: '签署日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
-        {title: '合同方', dataIndex: 'partnerCategory', render: (value, record) => (value + ' - ' + record.partnerId)},
+        {title: '合同方', dataIndex: 'partnerCategoryName', render: (value, record) => (value + ' - ' + record.partnerName)},
         {title: '币种', dataIndex: 'currency'},
         {title: '合同金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '状态', dataIndex: 'status',

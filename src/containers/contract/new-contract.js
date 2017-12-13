@@ -361,7 +361,7 @@ class NewContract extends React.Component{
                       initialValue: isNew ? undefined : data.partnerId
                     })(
                       <Select placeholder="请选择">
-                        <Option key="911143733222408193">lucky</Option>
+
                       </Select>
                     )}
                   </FormItem>

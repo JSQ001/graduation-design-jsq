@@ -15,7 +15,6 @@ class ContractDetailCommon extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      topLoading: false,
       detailLoading: false,
       planLoading: false,
       topTapValue: 'contractInfo',
@@ -263,10 +262,10 @@ class ContractDetailCommon extends React.Component {
   };
 
   render() {
-    const { topLoading, detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
+    const { detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
-      <Spin spinning={topLoading}>
-        <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
+      <Spin spinning={detailLoading}>
+        <h3 className="header-title">{headerData.contractTypeName} {headerData.contractCategory}
           {contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
           {!this.props.isApprovePage && headerData.status === 'SUBMITTED' && <Button type="primary" onClick={this.contractRecall}>撤 回</Button>}
           {!this.props.isApprovePage && headerData.status === 'CONFIRM' &&
@@ -279,7 +278,7 @@ class ContractDetailCommon extends React.Component {
         </h3>
         <Row>
           <Col span={6}>
-            {this.renderList('创建人', null)}
+            {this.renderList('创建人', headerData.createdName + ' - ' + headerData.createdBy)}
             {this.renderList('创建日期', moment(headerData.createdDate).format('YYYY-MM-DD'))}
           </Col>
           <Col span={6}>
@@ -342,7 +341,7 @@ class ContractDetailCommon extends React.Component {
             <Col span={8}>{this.renderList('签署日期', moment(headerData.signDate).format('YYYY-MM-DD'))}</Col>
           </Row>
           <Row>
-            <Col span={8}>{this.renderList('公司', headerData.companyId)}</Col>
+            <Col span={8}>{this.renderList('公司', headerData.companyName)}</Col>
             <Col span={8}>{this.renderList('有效期限',
               headerData.startDate || headerData.endDate ?
                 (
@@ -354,8 +353,8 @@ class ContractDetailCommon extends React.Component {
           </Row>
           <h3 className="margin-20-0">合同方信息</h3>
           <Row>
-            <Col span={8}>{this.renderList('合同方类型', headerData.partnerCategory)}</Col>
-            <Col span={8}>{this.renderList('合同方', headerData.partnerId)}</Col>
+            <Col span={8}>{this.renderList('合同方类型', headerData.partnerCategoryName)}</Col>
+            <Col span={8}>{this.renderList('合同方', headerData.partnerName)}</Col>
           </Row>
           <h3 className="margin-20-0">其他信息</h3>
           <Row>
