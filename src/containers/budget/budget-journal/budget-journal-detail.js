@@ -346,9 +346,9 @@ class BudgetJournalDetail extends React.Component {
         "periodStrategy":periodStrategy,
         "totalAmount":amountData
       }
-      const templateUrl = `http://192.168.1.72:9996/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
-      const uploadUrl =`http://192.168.1.72:9996/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
-      const errorUrl ='http://192.168.1.72:9996/api/api/batch/transaction/logs/failed/export/budgetJournal'
+      const templateUrl = `${config.budgetUrl}/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
+      const uploadUrl =`${config.budgetUrl}/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
+      const errorUrl =`${config.budgetUrl}/api/api/batch/transaction/logs/failed/export/budgetJournal`
       this.setState({
         templateUrl,
         uploadUrl,
