@@ -121,6 +121,7 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   componentWillMount(){
+    console.log(123);
     let queryLineListTypeOptions = [];
     this.getSystemValueList(2021).then(res => {
       res.data.values.map(data => {
@@ -524,7 +525,7 @@ class NewBudgetJournalDetail extends React.Component {
 
   //根据预算表id，获得维度
   getDimensionByStructureId = () =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);

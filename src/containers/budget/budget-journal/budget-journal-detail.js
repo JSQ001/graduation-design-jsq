@@ -348,7 +348,7 @@ class BudgetJournalDetail extends React.Component {
       }
       const templateUrl = `${config.budgetUrl}/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
       const uploadUrl =`${config.budgetUrl}/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
-      const errorUrl =`${config.budgetUrl}/api/api/batch/transaction/logs/failed/export/budgetJournal`
+      const errorUrl =`${config.budgetUrl}/api/batch/transaction/logs/failed/export/budgetJournal`
       this.setState({
         templateUrl,
         uploadUrl,
