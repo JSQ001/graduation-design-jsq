@@ -89,7 +89,7 @@ class BudgetItemDetail extends React.Component{
     value.organizationId = this.state.budgetItem.organizationId;
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
-    httpFetch.put(`http://192.168.1.72:9996/api/budget/items`,value).then((response)=>{
+    httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
       if(response) {
         response.data.organizationName = this.state.budgetItem.organizationName;
         response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
