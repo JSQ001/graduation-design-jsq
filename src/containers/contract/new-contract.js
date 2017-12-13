@@ -115,14 +115,33 @@ class NewContract extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       console.log(values);
       if (!err) {
-
+        values.attachmentOID = this.state.uploadOIDs;
+        values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
+        values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
+        values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
+        values.contractTypeId = values.contractTypeId[0].id;
+        values.id = this.state.data.id;
+        values.versionNumber = this.state.data.versionNumber;
+        this.setState({ loading: true });
+        let url = `${config.contractUrl}/contract/api/contract/header`;
+        httpFetch.put(url, values).then(res => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('修改成功');
+            this.context.router.push(this.state.contractDetail.url.replace(':id', res.data.id));
+          }
+        }).catch(e => {
+          message.error(`修改失败，${e.response.data.message}`);
+          this.setState({ loading: false })
+        })
       }
     })
   };
 
   //取消
   onCancel = () => {
-    this.context.router.push(this.state.myContract.url);
+    this.props.params.id ? this.context.router.push(this.state.contractDetail.url.replace(':id', this.props.params.id)) :
+      this.context.router.push(this.state.myContract.url)
   };
 
   //获取合同类型

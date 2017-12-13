@@ -23,7 +23,7 @@ class NewBudgetOccupancy extends React.Component {
         {title: '币种', dataIndex: 'currency'},
         {title: '预算项目', dataIndex: 'itemCodeName'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '部门', dataIndex: 'unitCodeName', render: value => value || '-'},
         {title: '项目', dataIndex: 'costCenterItemCodeName'},
         {title: '产品', dataIndex: 'costCenterProductCodeName'},
         {title: '渠道', dataIndex: 'costCenterChannelCodeName'},

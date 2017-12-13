@@ -45,7 +45,7 @@ class MyContract extends React.Component{
         {type: 'value_list', id: 'status', label: '合同状态', valueListCode: 2201, options: []},
       ],
       columns: [
-        {title: '序号', dataIndex: 'id', render: (value, record, index) => index + 1},
+        {title: '序号', dataIndex: 'id', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '公司', dataIndex: 'companyId'},
         {title: '合同类型', dataIndex: 'contractTypeId', render: (value, record) => (record.contractCategory + ' - ' + value)},

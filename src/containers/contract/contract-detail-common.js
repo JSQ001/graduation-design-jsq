@@ -40,7 +40,7 @@ class ContractDetailCommon extends React.Component {
         {label: '支付明细', key: 'PayDETAIL'},
       ],
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => (index + 1)},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '币种', dataIndex: 'currency', width: '7%'},
         {title: '计划金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '合同方类型', dataIndex: 'partnerCategory'},
@@ -52,6 +52,8 @@ class ContractDetailCommon extends React.Component {
       ],
       data: [],
       planAmount: 0,
+      page: 0,
+      pageSize: 10,
       pagination: {
         total: 0
       },
@@ -64,7 +66,7 @@ class ContractDetailCommon extends React.Component {
 
   componentWillMount() {
     this.getInfo();
-    this.getPayInfo()
+    this.getPayList()
   }
 
   //获取合同信息
@@ -99,8 +101,9 @@ class ContractDetailCommon extends React.Component {
   };
 
   //获取资金计划
-  getPayInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}`;
+  getPayList = () => {
+    const { page, pageSize } = this.state;
+    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}?page=${page}&size=${pageSize}`;
     this.setState({ planLoading: true });
     httpFetch.get(url).then(res => {
       let planAmount = 0;
@@ -113,9 +116,19 @@ class ContractDetailCommon extends React.Component {
         planLoading: false,
         pagination: {
           total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+          current: page + 1,
+          onChange: this.onChangePaper
         }
       })
     })
+  };
+
+  onChangePaper = (page) => {
+    if (page - 1 !== this.state.page) {
+      this.setState({ page: page - 1 }, () => {
+        this.getPayList()
+      })
+    }
   };
 
   handleTabsChange = (tab) => {
@@ -141,7 +154,7 @@ class ContractDetailCommon extends React.Component {
     this.setState({
       showSlideFrame: false
     },() => {
-      params && this.getPayInfo();
+      params && this.getPayList();
     })
   };
 
@@ -177,7 +190,7 @@ class ContractDetailCommon extends React.Component {
     this.setState({ planLoading: true });
     httpFetch.delete(url).then(() => {
       message.success(`删除成功`);
-      this.getPayInfo()
+      this.getPayList()
     }).catch(e => {
       this.setState({ planLoading: false });
       message.error(`删除失败，${e.response.data.message}`)
@@ -374,6 +387,7 @@ class ContractDetailCommon extends React.Component {
           <Table rowKey={record => record.id}
                  columns={columns}
                  dataSource={data}
+                 pagination={pagination}
                  bordered
                  size="middle"/>
         </Spin>
