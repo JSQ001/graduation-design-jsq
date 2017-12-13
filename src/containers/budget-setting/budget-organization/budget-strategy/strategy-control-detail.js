@@ -16,6 +16,7 @@ import 'styles/budget-setting/budget-organization/budget-strategy/strategy-contr
 class StrategyControlDetail extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       loading: false,
       strategyControlId: null,
