@@ -122,11 +122,10 @@ class StrategyControlDetail extends React.Component {
   };
 
   handleCloseSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
 

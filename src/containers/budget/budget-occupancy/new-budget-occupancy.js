@@ -7,7 +7,7 @@ import httpFetch from 'share/httpFetch'
 import { Form, Card, Row, Col, Input, Affix, Button, Table, message } from 'antd'
 const FormItem = Form.Item;
 
-import Importer from 'components/importer'
+import Importer from 'components/template/importer'
 
 class NewBudgetOccupancy extends React.Component {
   constructor(props) {
@@ -17,14 +17,17 @@ class NewBudgetOccupancy extends React.Component {
       tableLoading: false,
       user: {},
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => index + 1},
+        {title: '序号', dataIndex: 'index', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '公司', dataIndex: 'companyCodeName'},
-        {title: '预算期间', dataIndex: 'periodName'},
-        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '调整日期', dataIndex: 'periodName'},
+        {title: '币种', dataIndex: 'currency'},
         {title: '预算项目', dataIndex: 'itemCodeName'},
-        {title: '成本中心1', dataIndex: '5'},
-        {title: '成本中心2', dataIndex: '6'},
-        {title: '成本中心3', dataIndex: '7'}
+        {title: '金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '部门', dataIndex: 'unitCodeName'},
+        {title: '项目', dataIndex: 'costCenterItemCodeName'},
+        {title: '产品', dataIndex: 'costCenterProductCodeName'},
+        {title: '渠道', dataIndex: 'costCenterChannelCodeName'},
+        {title: '团队', dataIndex: 'costCenterTeamCodeName'}
       ],
       data: [],
       page: 0,
@@ -49,10 +52,26 @@ class NewBudgetOccupancy extends React.Component {
       if (res.status === 200) {
         this.setState({
           data: res.data,
-          tableLoading: false
+          tableLoading: false,
+          pagination: {
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+            onChange: this.onChangePager,
+            current: page + 1,
+            pageSize: pageSize
+          }
         })
       }
+    }).catch(() => {
+      this.setState({ tableLoading: false });
     })
+  };
+
+  //分页点击
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({ page: page - 1 }, ()=>{
+        this.getList();
+      })
   };
 
   //最终确认
@@ -134,7 +153,9 @@ class NewBudgetOccupancy extends React.Component {
             <Table rowKey={record => record.id}
                    columns={columns}
                    dataSource={data}
+                   pagination={pagination}
                    loading={tableLoading}
+                   scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
           </Card>
@@ -145,7 +166,7 @@ class NewBudgetOccupancy extends React.Component {
                       templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
                       uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
                       errorUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import/failed/export`}
-                      fileName="预算占用调整导入文件"
+                      fileName="预算占用调整导入模板"
                       onOk={this.handleImportOk}/>
             <Button htmlType="submit" loading={loading} style={{marginLeft:20}}>最终确认</Button>
             <Button onClick={this.handleBack} style={{marginLeft:50}}>返 回</Button>

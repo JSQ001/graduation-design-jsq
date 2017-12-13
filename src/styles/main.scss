@@ -21,6 +21,7 @@
       overflow: hidden;
       box-shadow: 0 0 10px 5px black;
       position: relative;
+      z-index: 1;
     }
     .menu-container{
       display: inline-block;
@@ -100,7 +101,6 @@
       }
     }
     .breadcrumb{
-      font-family: PingFangSC-Regular;
       font-size: 12px;
       display: inline-block;
       height: 32px;

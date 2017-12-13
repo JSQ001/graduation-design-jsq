@@ -169,24 +169,26 @@ class SearchArea extends React.Component{
   //区域点击事件，返回事件给父级进行处理
   handleEvent = (e, item) => {
     let result = null;
-    if(item.entity && (item.type === 'value_list' || item.type === 'select' || item.type === 'combobox')){
-      item.options.map(option => {
-        if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === e.key)
-          result = option.data
-      })
-    } else if (item.entity && item.type === 'multiple'){
-      result = [];
-      e.map(value => {
+    if(e){
+      if(item.entity && (item.type === 'value_list' || item.type === 'select' || item.type === 'combobox')){
         item.options.map(option => {
-          if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === value.key)
-            result.push(option.data);
+          if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === e.key)
+            result = option.data
         })
-      })
-    } else {
-      if(item.type === 'switch')
-        result = e.target.checked;
-      else
-        result = e ? (e.target? e.target.value : e) : null;
+      } else if (item.entity && item.type === 'multiple'){
+        result = [];
+        e.map(value => {
+          item.options.map(option => {
+            if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === value.key)
+              result.push(option.data);
+          })
+        })
+      } else {
+        if(item.type === 'switch')
+          result = e.target.checked;
+        else
+          result = e ? (e.target? e.target.value : e) : null;
+      }
     }
     this.props.eventHandle(item.event, result)
   };

@@ -87,6 +87,8 @@ class ContractDetailCommon extends React.Component {
       this.setState({
         headerData: res.data,
         detailLoading: false
+      },() => {
+        this.props.getContractStatus(this.state.headerData.status)
       })
     }).catch(() => {
       message.error('数据加载失败，请重试')
@@ -348,10 +350,12 @@ class ContractDetailCommon extends React.Component {
 ContractDetailCommon.propTypes = {
   id: React.PropTypes.any.isRequired, //显示数据
   contractEdit: React.PropTypes.bool,  //合同信息是否可编辑
+  getContractStatus: React.PropTypes.func, //确认合同信息状态
 };
 
 ContractDetailCommon.defaultProps = {
-  contractEdit: false
+  contractEdit: false,
+  getContractStatus: () => {}
 };
 
 ContractDetailCommon.contextTypes = {
