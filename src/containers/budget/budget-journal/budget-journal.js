@@ -108,6 +108,7 @@ class BudgetJournal extends React.Component {
 
   componentWillMount(){
     this.getList();
+    console.log(this.props.user);
 
   }
 
@@ -168,8 +169,6 @@ class BudgetJournal extends React.Component {
       let path=this.state.budgetJournalDetailSubmit.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }
-
-
   }
 
   render(){
@@ -208,6 +207,8 @@ BudgetJournal.contextTypes ={
 
 function mapStateToProps(state) {
   return {
+    user: state.login.user,
+    company: state.login.company,
     organization: state.login.organization
   }
 }

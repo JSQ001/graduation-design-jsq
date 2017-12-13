@@ -352,6 +352,7 @@ class BudgetJournalDetail extends React.Component {
       this.setState({
         templateUrl,
         uploadUrl,
+        errorUrl,
         loading:false,
         headerAndListData:response.data,
         infoDate:infoData,

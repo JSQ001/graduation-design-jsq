@@ -257,7 +257,15 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //撤回
   handleRevocation=()=>{
-   // this.context.router.push(this.state.budgetJournalPage.url);
+    const headerIds =[];
+    console.log(this.props.user);
+    headerIds.push(this.state.headerAndListData.dto.id)
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals/submit/return/by/headerIdsAndUserId?userId=${this.props.user.id}`,headerIds).then((item)=>{
+      this.context.router.push(this.state.budgetJournalPage.url);
+    }).catch((e)=>{
+
+    })
+
   }
 
   //返回
@@ -267,7 +275,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //审批中返回，撤回按钮
   getCheckingButton(){
-    return this.state.infoData.status=="CHECKIMG"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+    return this.state.infoData.status=="SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
   }
 
   render(){
@@ -375,8 +383,12 @@ BudgetJournalDetailSubmit.contextTypes ={
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalDetailSubmit));
