@@ -23,11 +23,11 @@ class BudgetOccupancy extends React.Component{
         ]}
       ],
       columns: [
-        {title: '导入批次号', dataIndex: '1'},
-        {title: '说明', dataIndex: '2', width: '40%'},
-        {title: '创建人', dataIndex: '3', render: (value, record) => value + ' - ' + record.employeeId},
-        {title: '导入日期', dataIndex: '4', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '操作', dataIndex: 'id', render: id => <a>查看详情</a>},
+        {title: '导入批次号', dataIndex: 'batchNumber'},
+        {title: '说明', dataIndex: 'remark', width: '40%'},
+        {title: '创建人', dataIndex: 'employeeName', render: (value, record) => value + ' - ' + record.createdBy},
+        {title: '导入日期', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '操作', dataIndex: 'id', render: (id, record) => <a onClick={() => this.checkDetail(record)}>查看详情</a>},
       ],
       data: [],
       page: 0,
@@ -36,7 +36,7 @@ class BudgetOccupancy extends React.Component{
         total: 0
       },
       newBudgetOccupancy:  menuRoute.getRouteItem('new-budget-occupancy','key'),    //新建预算占用调整
-      importDetail:  menuRoute.getRouteItem('export-detail','key'),    //导入详情
+      importDetail:  menuRoute.getRouteItem('import-detail','key'),    //导入详情
     }
   }
 
@@ -92,9 +92,9 @@ class BudgetOccupancy extends React.Component{
     this.context.router.push(this.state.newBudgetOccupancy.url);
   };
 
-  //导入详情页
-  toImportDetail = () => {
-    this.context.router.push(this.state.importDetail.url);
+  //查看详情
+  checkDetail = (record) => {
+    this.context.router.push(this.state.importDetail.url.replace(':id', record.id).replace(':batchNumber', record.batchNumber));
   };
 
   render() {
@@ -115,9 +115,6 @@ class BudgetOccupancy extends React.Component{
                dataSource={data}
                pagination={pagination}
                loading={loading}
-               onRow={record => ({
-                 onClick: () => this.toImportDetail(record)
-               })}
                bordered
                size="middle"/>
       </div>
