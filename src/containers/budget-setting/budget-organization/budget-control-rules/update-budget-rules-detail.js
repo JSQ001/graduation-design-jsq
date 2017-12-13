@@ -190,6 +190,14 @@ class UpdateBudgetRulesDetail extends React.Component{
         listExtraParams: {systemCustomEnumerationType: 2021},
         selectorItem: undefined
       },
+      'MONTH':{
+        listType: 'period',
+        labelKey: 'periodName',
+        valueKey: 'id',
+        codeKey: 'periodName',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
     };
 
     this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray);

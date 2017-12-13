@@ -482,7 +482,6 @@ const selectorData = {
     title: '期间',
     url: `${config.baseUrl}/api/periods/query/open/periods/by/setOfBook/id`,
     columns: [
-      {title: "期间号", dataIndex: 'periodNum'},
       {title: "期间名称",dataIndex:"periodName"},
     ],
     key: 'id'
