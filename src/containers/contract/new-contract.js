@@ -30,6 +30,7 @@ class NewContract extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
+      contractCategoryValue: 'EMPLOYEE',
       selectorItem: {},
       extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
@@ -60,6 +61,11 @@ class NewContract extends React.Component{
         this.setState({ companyIdOptions })
       })
     });
+    httpFetch.get(`${config.baseUrl}/api/users/v2/search?roleType=TENANT`).then(res => {  //获取员工列表
+      if (res.status === 200) {
+        this.setState({ employeeOptions: res.data })
+      }
+    })
   }
 
   //获取合同信息
@@ -177,7 +183,7 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, selectorItem, extraParams } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:40, marginTop:-35}}>
         <Spin spinning={pageLoading}>
@@ -343,7 +349,7 @@ class NewContract extends React.Component{
                       }],
                       initialValue: isNew ? (partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : '') : data.partnerCategory
                     })(
-                      <Select placeholder="请选择">
+                      <Select placeholder="请选择" onChange={(value) => {this.setState({contractCategoryValue: value})}}>
                         {partnerCategoryOptions.map((option) => {
                           return <Option key={option.value}>{option.messageKey}</Option>
                         })}
@@ -361,7 +367,14 @@ class NewContract extends React.Component{
                       initialValue: isNew ? undefined : data.partnerId
                     })(
                       <Select placeholder="请选择">
-
+                        {contractCategoryValue === 'EMPLOYEE' ?
+                          employeeOptions.map(option => {
+                            return <Option key={option.employeeID}>{option.fullName} - {option.employeeID}</Option>
+                          }) :
+                          venderOptions.map(option => {
+                            return <Option key={option.employeeId}>{option.fullName}</Option>
+                          })
+                        }
                       </Select>
                     )}
                   </FormItem>

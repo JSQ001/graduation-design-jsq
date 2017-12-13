@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Form, Button, Table, message } from 'antd'
+import { Form, Button, Table, message, Popover } from 'antd'
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'
@@ -24,7 +24,7 @@ class BudgetOccupancy extends React.Component{
       ],
       columns: [
         {title: '导入批次号', dataIndex: 'batchNumber'},
-        {title: '说明', dataIndex: 'remark', width: '40%'},
+        {title: '说明', dataIndex: 'remark', width: '40%', render: value => <Popover content={value}>{value}</Popover>},
         {title: '创建人', dataIndex: 'employeeName', render: (value, record) => value + ' - ' + record.createdBy},
         {title: '导入日期', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '操作', dataIndex: 'id', render: (id, record) => <a onClick={() => this.checkDetail(record)}>查看详情</a>},

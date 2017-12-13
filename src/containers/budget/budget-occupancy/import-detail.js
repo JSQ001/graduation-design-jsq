@@ -138,7 +138,7 @@ class ExportDetail extends React.Component {
             <div className="tab-container">
               <h3 className="sub-header-title">导入数据</h3>
               <div style={{marginBottom:10}}>共搜索到 {pagination.total} 条数据</div>
-              <Table roeKey={record => record.id}
+              <Table rowKey={record => record.id}
                      columns={columns}
                      dataSource={data}
                      pagination={pagination}
