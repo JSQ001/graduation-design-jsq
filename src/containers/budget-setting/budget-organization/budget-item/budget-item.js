@@ -73,10 +73,7 @@ class BudgetItem extends React.Component {
             <span>{description ? <Popover content={description}>{description} </Popover> : '-'} </span>)
         },
         {           /*状态*/
-          title: formatMessage({id:"common.column.status"}),
-          key: 'status',
-          width: '10%',
-          dataIndex: 'isEnabled',
+          title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
                    text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />

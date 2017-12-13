@@ -12,6 +12,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import selectorData from 'share/selectorData'
+import Importer from 'components/importer'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -370,8 +371,13 @@ class BudgetItemMap extends React.Component {
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>EXCEL导入</Button>
             <Button type="primary" onClick={this.handleAdd}>{formatMessage({id: 'common.add'})}</Button>  {/*添加*/}
+            <Importer title="预算项目映射导入"
+                      templateUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import`}
+                      errorUrl={`${config.budgetUrl}/api/budget/reserve/adjust/import/failed/export`}
+                      fileName="预算占用调整导入文件"
+                      onOk={this.handleImportOk}/>
             <Button type="primary" onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*添加*/}
           </div>
         </div>

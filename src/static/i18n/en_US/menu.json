@@ -117,6 +117,7 @@
   "menu.pay-setting":"Pay Setting",
   "menu.check-center-hotel": "Hotel bills",
   "menu.check-center-train": "Train bills",
-  "menu.announcement-information": "Announcement information"
+  "menu.announcement-information": "Announcement information",
+  "menu.announcement-information-detail": "Announcement information detail"
 
 }

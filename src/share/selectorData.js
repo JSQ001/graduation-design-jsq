@@ -428,19 +428,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'budget_scenario':{
-    title: '预算场景',
-    url: `${config.budgetUrl}/api/budget/scenarios/queryAll`,
-    searchForm: [
-      {type: 'input', id: 'scenarioCode', label: "预算场景代码",defaultValue: ''},
-      {type: 'input', id: 'scenarioName', label: "预算场景名称",defaultValue: ''},
-    ],
-    columns: [
-      {title: "预算场景代码", dataIndex: 'scenarioCode'},
-      {title: "预算场景名称",dataIndex:"scenarioName"},
-    ],
-    key: 'id'
-  },
   'budget_structure':{
     title: '预算表',
     url: `${config.budgetUrl}/api/budget/structures/query`,
@@ -481,7 +468,34 @@ const selectorData = {
 
     ],
     key: 'id'
-  }
+  },
+  'year': {
+    title: '年度',
+    url: `${config.baseUrl}/api/periods/select/years/by/setOfBooksId`,
+    columns: [
+      {title: "年", dataIndex: 'year'},
+    ],
+    key: 'year',
+    notJson: true
+  },
+  'period': {
+    title: '期间',
+    url: `${config.baseUrl}/api/periods/query/open/periods/by/setOfBook/id`,
+    columns: [
+      {title: "期间号", dataIndex: 'periodNum'},
+      {title: "期间名称",dataIndex:"periodName"},
+    ],
+    key: 'id'
+  },
+  'quarter': {
+    title: '季度',
+    url: `${config.baseUrl}/api/custom/enumeration/system/by/type`,
+    columns: [
+      {title: "季度", dataIndex: 'messageKey'},
+    ],
+    key: 'quarter',
+    isValueList: true
+  },
 };
 
 export default selectorData;

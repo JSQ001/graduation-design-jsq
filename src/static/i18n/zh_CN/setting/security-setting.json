@@ -1,5 +1,14 @@
 {
-  "aaa": "哈哈"
+
+  "announcement-info.number": "序号",
+  "announcement-info.createDate": "新建日期",
+  "announcement-info.title": "标题",
+  "announcement-info.deliveryCompany": "分配公司",
+  "announcement-info.infoDetail": "公告详情",
+  "announcement-info.picture": "轮播图片",
+  "announcement-info.link": "跳转外部链接",
+  "announcement-info.content": "正文"
+
 }
 
 

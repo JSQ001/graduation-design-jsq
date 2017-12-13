@@ -152,7 +152,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         selectorItem: undefined
       },
       'BUDGET_SCENARIO':{
-        listType: 'budget_scenario',
+        listType: 'budget_scenarios',
         labelKey: 'scenarioName',
         valueKey: 'id',
         codeKey: 'scenarioCode',
@@ -174,7 +174,22 @@ class UpdateBudgetRulesDetail extends React.Component{
         codeKey: 'structureCode',
         listExtraParams: organizationIdParams,
         selectorItem: undefined
-      }
+      },
+      'YEAR':{
+        listType: 'year',
+        labelKey: 'year',
+        codeKey: 'year',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
+      'QUARTER':{
+        listType: 'quarter',
+        labelKey: 'messageKey',
+        valueKey: 'id',
+        codeKey: 'messageKey',
+        listExtraParams: {systemCustomEnumerationType: 2021},
+        selectorItem: undefined
+      },
     };
 
     this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray);

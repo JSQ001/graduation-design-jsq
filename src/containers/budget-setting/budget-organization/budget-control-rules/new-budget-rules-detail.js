@@ -36,7 +36,7 @@ class NewBudgetRulesDetail extends React.Component{
       lov: {
         disabled: true
       },
-      selectedData:{}
+      selectedData:{},
     };
   }
 
@@ -137,7 +137,7 @@ class NewBudgetRulesDetail extends React.Component{
         selectorItem: undefined
       },
       'BUDGET_SCENARIO':{
-        listType: 'budget_scenario',
+        listType: 'budget_scenarios',
         labelKey: 'scenarioName',
         valueKey: 'id',
         codeKey: 'scenarioCode',
@@ -159,7 +159,30 @@ class NewBudgetRulesDetail extends React.Component{
         codeKey: 'structureCode',
         listExtraParams: organizationIdParams,
         selectorItem: undefined
-      }
+      },
+      'YEAR':{
+        listType: 'year',
+        labelKey: 'year',
+        codeKey: 'year',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
+      'QUARTER':{
+        listType: 'quarter',
+        labelKey: 'messageKey',
+        valueKey: 'id',
+        codeKey: 'messageKey',
+        listExtraParams: {systemCustomEnumerationType: 2021},
+        selectorItem: undefined
+      },
+      'MONTH':{
+        listType: 'period',
+        labelKey: 'periodName',
+        valueKey: 'id',
+        codeKey: 'periodName',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
     };
     this.getValueList(2014, this.state.summaryOrDetailArray);
     this.setState({
@@ -506,7 +529,8 @@ class NewBudgetRulesDetail extends React.Component{
                           valueKey={ lov.codeKey}
                           listExtraParams={lov.listExtraParams}
                           disabled={lov.disabled}
-                          onChange={()=>{}}/>
+                          onChange={()=>{}}
+                          />
                 )}
               </FormItem>
             </Col>
