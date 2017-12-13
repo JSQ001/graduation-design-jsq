@@ -419,7 +419,7 @@ class NewContract extends React.Component{
                     {getFieldDecorator('unitId', {
                       initialValue: isNew ? undefined : data.unitId
                     })(
-                      <Select placeholder="请选择" onChange={this.changeUnitId}>
+                      <Select placeholder="请选择" allowClear onChange={this.changeUnitId}>
                         {unitIdOptions.map((option) => {
                           return <Option key={option.departmentOID}>{option.name}</Option>
                         })}
@@ -432,7 +432,7 @@ class NewContract extends React.Component{
                     {getFieldDecorator('employeeId', {
                       initialValue: isNew ? undefined : data.employeeId
                     })(
-                      <Select placeholder="请选择">
+                      <Select placeholder="请选择" allowClear>
                         {employeeIdOptions.map((option) => {
                           return <Option key={option.userOID}>{option.fullName} - {option.employeeID}</Option>
                         })}

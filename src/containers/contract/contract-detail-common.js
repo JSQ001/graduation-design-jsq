@@ -287,7 +287,7 @@ class ContractDetailCommon extends React.Component {
           <Col span={12}>
             <div style={{float:'right'}}>
               <div className="amount-title">合同金额</div>
-              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount)}</div>
+              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount || planAmount)}</div>
             </div>
             <div style={{float:'right', marginRight:'50px'}}>
               <div className="status-title">状态</div>

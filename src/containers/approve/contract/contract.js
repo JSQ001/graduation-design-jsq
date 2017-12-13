@@ -35,14 +35,14 @@ class Contract extends React.Component{
         ]},
       ],
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
-        {title: '申请人', dataIndex: 'companyId'},
+        {title: '序号', dataIndex: 'index', render:(value, record, index) => index + 1},
+        {title: '申请人', dataIndex: 'createdName', render: (value, record) => value + ' - ' + record.createdBy},
         {title: '提交时间', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '合同类型', dataIndex: 'contractTypeName'},
-        {title: '合同编号', dataIndex: 'contractNumber', width: '18%'},
+        {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '币种', dataIndex: 'currency'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '状态', dataIndex: 'status', width: '7%', render: value => <Badge status="success" text={this.state.contractStatus[value].label}/>},
+        {title: '状态', dataIndex: 'status', render: value => <Badge status="success" text={this.state.contractStatus[value].label}/>},
       ],
       unapprovedData: [],
       approvedData: [],
@@ -169,6 +169,7 @@ class Contract extends React.Component{
                    onRow={record => ({
                      onClick: () => this.handleRowClick(record)
                    })}
+                   scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
           </TabPane>
@@ -186,6 +187,7 @@ class Contract extends React.Component{
                    onRow={record => ({
                      onClick: () => this.handleRowClick(record)
                    })}
+                   scroll={{x: true, y: false}}
                    bordered
                    size="middle"/>
           </TabPane>
