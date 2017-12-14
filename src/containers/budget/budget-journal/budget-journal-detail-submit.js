@@ -35,7 +35,7 @@ class BudgetJournalDetailSubmit extends React.Component {
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'8%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
@@ -43,7 +43,7 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'8%',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
@@ -52,52 +52,57 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
             </Popover>)
-
         },
         {
           /*期间*/
-          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%',
+
         },
         {
           /*季度*/
-          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
-          key: "periodQuarter",
-          dataIndex: 'periodQuarter'
+          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),width:'6%',
+          key: "periodQuarterName",
+          dataIndex: 'periodQuarterName'
         },
         {
           /*年度*/
-          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear'
+          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'8%'
         },
         {
           /*币种*/
-          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
+          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',width:'8%'
         },
-
         {
           /*汇率*/
-          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
+          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',width:'8%',
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
+          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*本币今额*/
           title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
           key: "functionalAmount",
           dataIndex: 'functionalAmount',
-          render: this.filterMoney
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity',with:'8%',
         },
-
         {
           /*备注*/
           title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
@@ -107,7 +112,6 @@ class BudgetJournalDetailSubmit extends React.Component {
             </Popover>)
         },
       ],
-
       budgetJournalPage: menuRoute.getRouteItem('budget-journal','key'),    //预算日记账
 
     };

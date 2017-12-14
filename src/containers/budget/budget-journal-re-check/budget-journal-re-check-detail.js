@@ -61,7 +61,6 @@ class BudgetJournalReCheckDetail extends React.Component {
             <Popover content={itemName}>
               {itemName}
             </Popover>)
-
         },
         {
           /*期间*/
