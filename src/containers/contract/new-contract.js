@@ -89,7 +89,8 @@ class NewContract extends React.Component{
 
   //上传附件
   handleUpload = (OIDs) => {
-    this.setState({ uploadOIDs: OIDs })
+    let uploadOIDs = OIDs.join();
+    this.setState({ uploadOIDs })
   };
 
   //保存
@@ -97,7 +98,8 @@ class NewContract extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.attachmentOID = this.state.uploadOIDs;
+        values.amount = 0;
+        values.attachmentOIDs = this.state.uploadOIDs;
         values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
@@ -123,7 +125,7 @@ class NewContract extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.attachmentOID = this.state.uploadOIDs;
+        values.attachmentOIDs = this.state.uploadOIDs;
         values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
@@ -269,7 +271,7 @@ class NewContract extends React.Component{
                   </FormItem>
                 </Col>
                 <Col span={7} offset={1}>
-                  <FormItem label="合同类型（请先选择公司）">
+                  <FormItem label="合同类型">
                     {getFieldDecorator('contractTypeId', {
                       rules: [{
                         required: true,
@@ -323,7 +325,7 @@ class NewContract extends React.Component{
                     <Col span={16} offset={1}>
                       <FormItem label=" " colon={false}>
                         {getFieldDecorator('amount', {
-                          initialValue: isNew ? '0.00' : (data.amount || '0.00')
+                          initialValue: isNew ? '0.00' : data.amount
                         })(
                           <Input style={{width: '100%'}} disabled/>
                         )}
@@ -402,7 +404,7 @@ class NewContract extends React.Component{
               <Row>
                 <Col span={7}>
                   <FormItem>
-                    {getFieldDecorator('attachmentOID')(
+                    {getFieldDecorator('attachmentOIDs')(
                       <Upload attachmentType="CONTRACT"
                               fileNum={9}
                               uploadHandle={this.handleUpload}/>

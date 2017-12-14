@@ -50,7 +50,6 @@ class ContractDetailCommon extends React.Component {
         )}}
       ],
       data: [],
-      planAmount: 0,
       page: 0,
       pageSize: 10,
       pagination: {
@@ -77,8 +76,8 @@ class ContractDetailCommon extends React.Component {
         res.data.status === 'REJECTED' ||
         res.data.status === 'WITHDRAWAL') { //编辑中、已驳回、已撤回
         let columns = this.state.columns;
-        columns.push(
-          {title: '操作', dataIndex: 'id', render: (text, record) => (
+        columns[columns.length-1].title !== '操作' && columns.push(
+          {title: '操作', dataIndex: 'id', width: '10%', render: (text, record) => (
             <span>
             <a onClick={(e) => this.editItem(e, record)}>编辑</a>
             <span className="ant-divider"/>
@@ -105,13 +104,8 @@ class ContractDetailCommon extends React.Component {
     let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}?page=${page}&size=${pageSize}`;
     this.setState({ planLoading: true });
     httpFetch.get(url).then(res => {
-      let planAmount = 0;
-      res.data.map(item => {
-        planAmount += item.amount;
-      });
       this.setState({
         data: res.data,
-        planAmount,
         planLoading: false,
         pagination: {
           total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
@@ -153,7 +147,10 @@ class ContractDetailCommon extends React.Component {
     this.setState({
       showSlideFrame: false
     },() => {
-      params && this.getPayList();
+      if (params) {
+        this.getPayList();
+        this.getInfo()
+      }
     })
   };
 
@@ -189,7 +186,8 @@ class ContractDetailCommon extends React.Component {
     this.setState({ planLoading: true });
     httpFetch.delete(url).then(() => {
       message.success(`删除成功`);
-      this.getPayList()
+      this.getPayList();
+      this.getInfo()
     }).catch(e => {
       this.setState({ planLoading: false });
       message.error(`删除失败，${e.response.data.message}`)
@@ -262,7 +260,7 @@ class ContractDetailCommon extends React.Component {
   };
 
   render() {
-    const { detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
+    const { detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
       <Spin spinning={detailLoading}>
         <h3 className="header-title">{headerData.contractTypeName} {headerData.contractCategory}
@@ -287,7 +285,7 @@ class ContractDetailCommon extends React.Component {
           <Col span={12}>
             <div style={{float:'right'}}>
               <div className="amount-title">合同金额</div>
-              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount || planAmount)}</div>
+              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount)}</div>
             </div>
             <div style={{float:'right', marginRight:'50px'}}>
               <div className="status-title">状态</div>
@@ -378,9 +376,7 @@ class ContractDetailCommon extends React.Component {
             </div>
             <div style={{marginBottom:'10px'}}>
               共 {pagination.total} 条数据<span className="ant-divider"/>
-              合同总金额: {headerData.currency} {this.filterMoney(planAmount)}<span className="ant-divider"/>
-              计划总金额: {headerData.currency} {this.filterMoney(headerData.amount)}<span className="ant-divider"/>
-              待计划金额: {headerData.currency} {this.filterMoney(headerData.amount - planAmount)}
+              合同总金额: {headerData.currency} {this.filterMoney(headerData.amount)}
             </div>
           </div>
           <Table rowKey={record => record.id}
