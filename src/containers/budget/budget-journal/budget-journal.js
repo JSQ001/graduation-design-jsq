@@ -109,9 +109,7 @@ class BudgetJournal extends React.Component {
   componentWillMount(){
     this.getList();
   }
-
-
-
+  
   //获取预算日记账数据
   getList(){
     this.setState({
