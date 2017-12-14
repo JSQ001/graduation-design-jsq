@@ -5,7 +5,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message } from 'antd'
+import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message,Steps,Modal} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -112,21 +112,84 @@ class NewPrePaymentDetail extends React.Component{
     return (
       <div className="new-pay-plan">
         <Form onSubmit={this.props.params.record.id ? this.handleUpdate : this.handleSave}>
-          <Row>
-            <Col span={8} className="ant-form-item-label label-style">计划金额： </Col>
+          <Steps direction="vertical">
+            <Steps.Step title="基本信息" description="" />
+          </Steps>
+          <FormItem {...formItemLayout} label="事由说明">
+            {getFieldDecorator('description')(
+              <TextArea autosize={{minRows: 2}}
+                        style={{minWidth:'100%'}}
+                        placeholder="请输入"/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="现金事务">
+            {getFieldDecorator('cshTransactionClassCode', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]
+            })(
+              <Select placeholder="请选择">
+                {partnerCategoryOptions.map((option) => {
+                  return <Option key={option.value}>{option.messageKey}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
+          <Row gutter={8}>
+            <Col span={8} className="ant-form-item-label label-style">收款方：</Col>
             <Col span={4} className="ant-col-offset-1">
               <FormItem>
-                {getFieldDecorator('currency', {
+                {getFieldDecorator('partnerategory', {
                   rules: [{
                     required: true,
                     message: '请选择'
                   }],
-                  initialValue: currency
+                  initialValue:"人员"
                 })(
-                  <Input disabled/>
+                  <Select>
+                    {partnerCategoryOptions.map((option) => {
+                      return <Option key={option.value}>{option.messageKey}</Option>
+                    })}
+                  </Select>
                 )}
               </FormItem>
             </Col>
+
+            <Col span={6}>
+              <FormItem className="ant-col-offset-1">
+                {getFieldDecorator('partnerd', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]
+                })(
+                  <Select>
+
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+
+          <Row gutter={8}>
+            <Col span={8} className="ant-form-item-label label-style">金额：</Col>
+            <Col span={4} className="ant-col-offset-1">
+              <FormItem>
+                {getFieldDecorator('1111', {
+                  rules: [{
+                    required: true,
+                    message: '请选择币种'
+                  }],
+                  initialValue:"RNB"
+                })(
+                  <Select>
+
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+
             <Col span={6}>
               <FormItem className="ant-col-offset-1">
                 {getFieldDecorator('amount', {
@@ -140,8 +203,53 @@ class NewPrePaymentDetail extends React.Component{
               </FormItem>
             </Col>
           </Row>
-          <FormItem {...formItemLayout} label="合同方类型">
+
+
+          <FormItem {...formItemLayout} label="银行账号">
             {getFieldDecorator('partnerCategory', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]
+            })(
+              <Select placeholder="请选择">
+
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="银行户名">
+            {getFieldDecorator('partnerId', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }],
+              initialValue: '911143733222408193'
+            })(
+              <Input/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="银行账户">
+            {getFieldDecorator('rrrr', {
+              rules: [{
+                required: true,
+                message: '请输入'
+              }],
+              initialValue: '911143733222408193'
+            })(
+              <Input/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="计划付款日期">
+            {getFieldDecorator('dueDate', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]})(
+              <DatePicker style={{width:'100%'}}/>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="付款方式">
+            {getFieldDecorator('payment', {
               rules: [{
                 required: true,
                 message: '请选择'
@@ -154,33 +262,24 @@ class NewPrePaymentDetail extends React.Component{
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="合同方">
-            {getFieldDecorator('partnerId', {
-              rules: [{
-                required: true,
-                message: '请输入'
-              }],
-              initialValue: '911143733222408193'
-            })(
-              <Select></Select>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="计划付款日期">
-            {getFieldDecorator('dueDate', {
-              rules: [{
-                required: true,
-                message: '请选择'
-              }]})(
-              <DatePicker style={{width:'100%'}}/>
-            )}
-          </FormItem>
-          <FormItem {...formItemLayout} label="备注">
-            {getFieldDecorator('remark')(
-              <TextArea autosize={{minRows: 2}}
-                        style={{minWidth:'100%'}}
-                        placeholder="请输入"/>
-            )}
-          </FormItem>
+
+          <Steps direction="vertical">
+            <Steps.Step title="关联单据" description="" />
+          </Steps>
+
+          <div style={{marginBottom:'16px',marginLeft:'60px'}}>
+            <Button>+ 关联申请单</Button>
+            <div style={{marginTop:'8px'}}>
+              申请单号:JK1234123412 申请单总金额:CNY 23,000.00
+            </div>
+          </div>
+          <div style={{marginBottom:'8px',marginLeft:'60px'}}>
+            <Button>+ 关联合同</Button>
+            <div style={{marginTop:'8px'}}>
+              合同单号：JK1234123412   付款计划序号： 序号1  付款计划日期：2017-12-12
+            </div>
+          </div>
+
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
             <Button onClick={this.onCancel}>取消</Button>

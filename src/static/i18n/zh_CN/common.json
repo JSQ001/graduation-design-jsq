@@ -31,6 +31,7 @@
   "common.fold": "收起",
   "common.help": "帮助提示",
   "common.baseInfo": "基本信息",
-  "common.sequence": "序号"
+  "common.sequence": "序号",
+  "common.error": "哦呼，服务器出了点问题，请联系管理员或稍后再试:("
 }
 

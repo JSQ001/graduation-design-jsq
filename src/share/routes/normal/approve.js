@@ -1,5 +1,5 @@
-import ApproveContract from 'containers/approve/contract'
-import ApproveContractDetail from 'containers/approve/contract-detail'
+import ApproveContract from 'containers/approve/contract/contract'
+import ApproveContractDetail from 'containers/approve/contract/contract-detail'
 import BudgetJournalCheck from 'containers/approve/budget-journl-check/budget-journal-check'
 import BudgetJournalCheckDetail from 'containers/approve/budget-journl-check/budget-journal-check-detail'
 

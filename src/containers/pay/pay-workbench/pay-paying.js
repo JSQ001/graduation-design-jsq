@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Breadcrumb, Table, Pagination, message, Alert } from 'antd'
+import menuRoute from 'share/menuRoute'
+import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu, Modal, Form, DatePicker } from 'antd'
+const FormItem = Form.Item;
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -35,32 +37,60 @@ class PayPaying extends React.Component {
       ],
       searchParams: {},
       columns: [
-        {title: '付款流水号', dataIndex: 'billcode'},
-        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '付款流水号', dataIndex: 'billcode', render: (value, record) => <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item><a>{value}</a></Breadcrumb.Item>
-              <Breadcrumb.Item>{record.documentCategory}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
+              <span className="ant-divider"/>
+              {record.documentCategoryName}
+            </div>
           )}
         },
-        {title: '工号 | 申请人', dataIndex: 'employeeName'},
-        {title: '币种', dataIndex: 'currency'},
-        {title: '本次支付金额', dataIndex: 'currentPayAmount'},
-        {title: '付款方式', dataIndex: 'paymentTypeName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
-            <Breadcrumb separator="|">
-              <Breadcrumb.Item>{value}</Breadcrumb.Item>
-              <Breadcrumb.Item>{record.partnerName}</Breadcrumb.Item>
-            </Breadcrumb>
+            <div>
+              {record.employeeId}
+              <span className="ant-divider"/>
+              {value}
+            </div>
           )}
         },
-        {title: '收款方账号', dataIndex: 'accountNumber'},
+        {title: '币种', dataIndex: 'currency'},
+        {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '付款方式', dataIndex: 'paymentTypeName'},
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
+          return (
+            <div>
+              {value}
+              <span className="ant-divider"/>
+              {record.partnerName}
+            </div>
+          )}
+        },
+        {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='default' text={state}/>},
-        {title: '操作', dataIndex: 'id'}
+        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='processing' text="支付中"/>},
+        {title: '操作', dataIndex: 'id', render: (id, record) => {
+          const menu = (
+            <Menu>
+              <Menu.Item>
+                <a onClick={this.handleSuccess}>确认成功</a>
+              </Menu.Item>
+              <Menu.Item>
+                <a onClick={this.handleFail}>确认失败</a>
+              </Menu.Item>
+            </Menu>
+          );
+          return (
+            <div>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>查看</a>
+              <span className="ant-divider"/>
+              <Dropdown overlay={menu} placement="bottomRight"><a>更多<Icon type="down" /></a></Dropdown>
+            </div>
+          )}
+        }
       ],
 
       /* 线上 */
@@ -82,25 +112,32 @@ class PayPaying extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
   componentWillMount() {
-    this.getOnlineCash();
-    this.getFileCash();
-    return new Promise((resolve, reject) => {
-      this.getOnlineList(resolve, reject);
-      this.getFileList(resolve, reject)
-    }).catch(() => {
-      message.error('数据加载失败，请重试')
-    });
+    this.getList()
   }
 
+  getList = () => {
+    let online = new Promise((resolve, reject) => {
+      this.getOnlineList(resolve, reject)
+    });
+    let file = new Promise((resolve, reject) => {
+      this.getFileList(resolve, reject)
+    });
+    Promise.all([ online, file ]).then(() => {
+      this.getOnlineCash();
+      this.getFileCash();
+    }).catch(() => {
+      message.error('数据加载失败，请重试')
+    })
+  };
+
   search = (values) => {
-    console.log(values);
     this.setState({ searchParams: values }, () => {
-      this.getOnlineList();
-      this.getFileList()
+      this.getList()
     })
   };
 
@@ -109,7 +146,55 @@ class PayPaying extends React.Component {
   };
 
   //查看支付流水详情
-  checkPaymentDetail = () => {};
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
+  };
+
+  //确认成功弹框
+  handleSuccess = () => {
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: { span: 8 },
+      wrapperCol: { span: 15, offset: 1 },
+    };
+    const modalTitle = (
+      <div>
+        <span style={{marginRight:10,fontSize:14}}>将付款状态更改为</span>
+        <Badge status="success" text="支付成功"/>
+      </div>
+    );
+    const modalContent = (
+      <div>
+        <div style={{fontSize:12,color:'red'}}>请通过网银或询问银行的方式确认该笔付款已成功转账</div>
+        <Form onSubmit={this.confirmSuccess}>
+          <FormItem {...formItemLayout} label="实际付款日期" style={{margin:'20px 0 10px'}}>
+            {getFieldDecorator('date', {
+              rules: [{
+                required: true,
+                message: '请选择'
+              }]
+            })(
+              <DatePicker format="YYYY-MM-DD"
+                          placeholder="请选择"
+                          allowClear={false}/>
+            )}
+          </FormItem>
+        </Form>
+      </div>
+    );
+    Modal.confirm({
+      title: modalTitle,
+      content: modalContent,
+    });
+  };
+
+  //确认成功操作
+  confirmSuccess = () => {
+
+  };
+
+  //确认失败弹框
+  handleFail = () => {};
 
   /*********************** 获取总金额 ***********************/
 
@@ -212,13 +297,15 @@ class PayPaying extends React.Component {
     const tableTitle = (
       <div>
         支付中
-        {onlineCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {onlineCash.length > 0 && <span className="ant-divider"/>}
         {onlineCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== onlineCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -231,9 +318,6 @@ class PayPaying extends React.Component {
                dataSource={onlineData}
                pagination={false}
                loading={onlineLoading}
-               onRow={record => ({
-                 onClick: () => this.checkPaymentDetail(record)
-               })}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
                bordered
@@ -256,13 +340,15 @@ class PayPaying extends React.Component {
     const tableTitle = (
       <div>
         支付中
-        {fileCash.length > 0 && <span className="ant-breadcrumb-separator">|</span>}
+        {fileCash.length > 0 && <span className="ant-divider"/>}
         {fileCash.map((item, index) => {
           return (
-            <Breadcrumb key={index}  separator="|" style={{display:'inline-block'}}>
-              <Breadcrumb.Item>金额：{item.curreny} <span className="num-style">{this.filterMoney(item.totalAmount)}</span></Breadcrumb.Item>
-              <Breadcrumb.Item>单据数：<span className="num-style">{item.documentNumber}笔</span></Breadcrumb.Item>
-            </Breadcrumb>
+            <div key={index} style={{display:'inline-block'}}>
+              金额：{item.currency} <span className="num-style">{this.filterMoney(item.totalAmount)}</span>
+              <span className="ant-divider"/>
+              单据数：<span className="num-style">{item.documentNumber}笔</span>
+              {index !== fileCash.length - 1 && <span className="ant-divider"/>}
+            </div>
           )
         })}
       </div>
@@ -315,8 +401,14 @@ class PayPaying extends React.Component {
 
 }
 
+PayPaying.contextTypes = {
+  router: React.PropTypes.object
+};
+
 function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(PayPaying));
+const wrappedPayPaying = Form.create()(injectIntl(PayPaying));
+
+export default connect(mapStateToProps)(wrappedPayPaying);

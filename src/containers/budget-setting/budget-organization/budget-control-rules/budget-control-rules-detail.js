@@ -160,12 +160,12 @@ class BudgetControlRulesDetail extends React.Component{
 
   handleCloseSlideCreate = (params) => {
     if(params) {
-      this.setState({loading: true});
+      this.setState({
+        loading: true,
+        showSlideFrameCreate: false
+      });
       this.getList();
     }
-    this.setState({
-      showSlideFrameCreate: false
-    })
   };
 
   handleCloseSlideUpdate = (changed)=>{
@@ -274,7 +274,9 @@ class BudgetControlRulesDetail extends React.Component{
           loading={loading}
           dataSource={data}
           columns={columns}
-          onRowClick={this.handleEdit}
+          onRow={record => ({
+            onClick: () => this.handleEdit(record)
+          })}
           pagination={pagination}
           onChange={this.onChangePager}
           size="middle"

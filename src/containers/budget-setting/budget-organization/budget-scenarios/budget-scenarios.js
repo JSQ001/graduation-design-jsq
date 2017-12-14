@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Button, Table, Badge, Popover } from 'antd'
+import { Button, Table, Badge, Popover, message } from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
@@ -27,19 +27,22 @@ class BudgetScenarios extends React.Component {
       },
       loading: true,
       columns: [
-        // {title: '预算组织', dataIndex: 'organizationName', key: 'organizationName', render:()=>{return this.state.organizationInfo.organizationName}},
         {title: '预算场景代码', dataIndex: 'scenarioCode', key: 'scenarioCode'},
-        {title: '预算场景名称', dataIndex: 'scenarioName', key: 'scenarioName', render: desc => <Popover placement="topLeft" content={desc}>{desc}</Popover>},
-        {title: '备注', dataIndex: 'description', key: 'description', render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>},
-        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', width: '10%' , render: isDefault => <span>{isDefault ? 'Y' : '-'}</span>},
-        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
+        {title: '预算场景名称', dataIndex: 'scenarioName', key: 'scenarioName', render: desc =>
+          <Popover placement="topLeft" content={desc}>{desc}</Popover>},
+        {title: '备注', dataIndex: 'description', key: 'description', render: desc =>
+          desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'},
+        {title: '默认场景', dataIndex: 'defaultFlag', key: 'defaultFlag', width: '10%' , render: isDefault =>
+          isDefault ? 'Y' : '-'},
+        {title: '状态', dataIndex: 'isEnabled', key: 'isEnabled', width: '10%', render: isEnabled =>
+          <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
       },
       page: 0,
       pageSize: 10,
-      data: [],    //列表值
+      data: [],
       showSlideFrame: false,
       showUpdateSlideFrame: false,
     }
@@ -57,31 +60,32 @@ class BudgetScenarios extends React.Component {
     })
   }
 
-  //得到对应单据列表数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/scenarios/query?size=${this.state.pageSize}&page=${this.state.page}&organizationId=${this.state.organizationInfo.id}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+    let { page, pageSize, organizationInfo, searchParams } = this.state;
+    let url = `${config.budgetUrl}/api/budget/scenarios/query?page=${page}&size=${pageSize}&organizationId=${organizationInfo.id}`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
-    this.state.organizationInfo.id && httpFetch.get(url).then((response)=>{
-      if(response.status==200){
-        response.data.map((item, index)=>{
+    this.setState({ loading: true });
+    organizationInfo.id && httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        res.data.map((item, index) => {
           item.index = this.state.page * this.state.pageSize + index + 1;
           item.key = item.index;
         });
         this.setState({
-          data: response.data,
+          data: res.data,
           loading: false,
           pagination: {
-            total: Number(response.headers['x-total-count']) ? Number(response.headers['x-total-count']) : 0,
+            total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
             onChange: this.onChangePager,
-            current: this.state.page + 1
+            current: page + 1
           }
         })
       }
-    }).catch((e)=>{
-      console.log(e);
+    }).catch(()=>{
+      this.setState({ loading: false });
+      message.error('数据获取失败，请重试')
     })
   }
 
@@ -89,8 +93,7 @@ class BudgetScenarios extends React.Component {
   onChangePager = (page) => {
     if(page - 1 !== this.state.page)
       this.setState({
-        page: page - 1,
-        loading: true
+        page: page - 1
       }, ()=>{
         this.getList();
       })
@@ -104,7 +107,6 @@ class BudgetScenarios extends React.Component {
     };
     this.setState({
       searchParams:searchParams,
-      loading: true,
       page: 0,
       pagination: {
         current: 1
@@ -135,19 +137,17 @@ class BudgetScenarios extends React.Component {
   };
 
   handleCloseSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
   handleCloseUpdateSlide = (params) => {
-    if(params) {
-      this.getList();
-    }
     this.setState({
       showUpdateSlideFrame: false
+    },() => {
+      params && this.getList()
     })
   };
 

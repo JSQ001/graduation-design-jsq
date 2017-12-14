@@ -61,8 +61,11 @@ class UpdateBudgetRulesDetail extends React.Component{
     userSelectorItem.key = 'employeeID';
 
     let itemSelectorItem = selectorData['budget_item'];
-    itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-    itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    if(key < 2){
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    }
 
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -87,14 +90,17 @@ class UpdateBudgetRulesDetail extends React.Component{
         valueKey: 'itemName',
         codeKey: 'itemCode',
         listExtraParams: organizationIdParams,
-        selectorItem: undefined
+        selectorItem: itemSelectorItem
       },
       'CURRENCY': {
         listType: 'currency',
-        labelKey: 'id',
-        valueKey: 'currencyName',
-        codeKey: 'currency',
-        listExtraParams: organizationIdParams,
+        labelKey: 'currencyName',
+        valueKey: 'currency',
+        codeKey: undefined,
+        listExtraParams: {
+          roleType: 'TENANT',
+          language: 'chineseName'
+        },
         selectorItem: undefined
       },
       'COMPANY': {
@@ -143,6 +149,30 @@ class UpdateBudgetRulesDetail extends React.Component{
         valueKey: 'id',
         codeKey: 'id',
         listExtraParams: {},
+        selectorItem: undefined
+      },
+      'BUDGET_SCENARIO':{
+        listType: 'budget_scenario',
+        labelKey: 'scenarioName',
+        valueKey: 'id',
+        codeKey: 'scenarioCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_VERSION':{
+        listType: 'budget_versions',
+        labelKey: 'versionName',
+        valueKey: 'id',
+        codeKey: 'versionCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_STRUCTURE':{
+        listType: 'budget_structure',
+        labelKey: 'structureName',
+        valueKey: 'id',
+        codeKey: 'structureCode',
+        listExtraParams: organizationIdParams,
         selectorItem: undefined
       }
     };

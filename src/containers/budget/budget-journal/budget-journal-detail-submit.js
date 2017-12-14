@@ -135,12 +135,9 @@ class BudgetJournalDetailSubmit extends React.Component {
   //根据预算日记账编码查询预算日记账头行
   getDataByBudgetJournalCode=()=>{
     const budgetJournalCode =this.props.params.journalCode;
-    console.log(budgetJournalCode);
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/${budgetJournalCode}`).then((request)=>{
-      console.log(request.data)
       let listData = request.data.list;
       this.getDimensionByStructureId(request.data.dto.structureId);
-      console.log(listData);
       let headerData =request.data.dto;
       headerData.attachmentOID.map((item)=>{
         this.getFileByAttachmentOID(item);
@@ -157,9 +154,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
-      console.log(resp.data);
-
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
         this.getColumnsAndDimensionhandleData(resp.data);
 
     }).catch(e=>{
@@ -192,14 +187,12 @@ class BudgetJournalDetailSubmit extends React.Component {
   //返回列表页
   HandleReturn=()=>{
     let path=this.state.budgetJournalDetailReCheckPage.url;
-    console.log(path);
     this.context.router.push(path);
   }
 
   //返回状态
   getStatus=()=>{
     const infoData = this.state.infoData;
-    console.log(this.state.infoData);
     switch (infoData.status){
       case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
       case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
@@ -238,8 +231,6 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //获取附件
   getFile=()=>{
-
-    console.log(12332321312312);
     const fileList = this.state.fileList;
     let file_arr=[];
     fileList.map((link)=>{

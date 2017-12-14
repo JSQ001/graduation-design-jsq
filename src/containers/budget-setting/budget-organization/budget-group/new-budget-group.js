@@ -91,7 +91,7 @@ class NewBudgetGroup extends React.Component {
                     initialValue: true,
                     valuePropName: 'checked'
                   })(
-                    <Switch defaultChecked={true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+                    <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
                   )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('isEnabled') ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})}
                 </FormItem>
               </Col>

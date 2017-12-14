@@ -1,0 +1,81 @@
+.check-center{
+  .check-center-tab1{
+    width: 25vw;
+    height: 42vh;
+    border: 1px silver solid;
+    border-radius:5px;
+    display: inline-table;
+    .tab-img{
+    }
+    .tab-content{
+      text-align:center;
+      .tab-content-total{
+        font-family: Algerian;
+      }
+
+      .tab-content-hr{
+        margin-top: 40px;
+        width: inherit;
+      }
+
+      .table-footer{
+        margin-top: 20px;
+      }
+    }
+  }
+  .check-center-tab2{
+    width: 25vw;
+    height: 42vh;
+    border: 1px silver solid;
+    border-radius:5px;
+    display: inline-table;
+    margin-left: 23px;
+
+    .tab-img{
+    }
+    .tab-content{
+      text-align:center;
+      .tab-content-total{
+        font-family: Algerian;
+      }
+
+      .tab-content-hr{
+        margin-top: 40px;
+        width: inherit;
+      }
+
+      .table-footer{
+        margin-top: 20px;
+      }
+    }
+  }
+  .check-center-tab3{
+    width: 25vw;
+    height: 42vh;
+    border: 1px silver solid;
+    border-radius:5px;
+    display: inline-table;
+    margin-left: 23px;
+
+    .tab-img{
+    }
+    .tab-content{
+      text-align:center;
+      .tab-content-total{
+        font-family: Algerian;
+      }
+
+      .tab-content-hr{
+        margin-top: 40px;
+        width: inherit;
+      }
+
+      .table-footer{
+        margin-top: 20px;
+      }
+    }
+  }
+}
+span:active{
+  background-color:yellow
+}

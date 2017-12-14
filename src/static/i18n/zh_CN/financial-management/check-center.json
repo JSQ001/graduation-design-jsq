@@ -1,1 +1,23 @@
-{}
+{
+  "check-center.suppliers": "供应商",
+  "check-center.time": "时间",
+  "check-center.serviceType": "服务类型",
+  "check-center.clearingKey": "结算主键",
+  "check-center.linkNumber": "关联行程号",
+  "check-center.all": "全部",
+  "check-center.checked": "已确认",
+  "check-center.unchecked": "未确认",
+  "check-center.unPay": "应付",
+  "check-center.clearDate": "结算日期",
+  "check-center.price": "价格",
+  "check-center.person": "乘机人",
+  "check-center.departureCity": "出发城市",
+  "check-center.reachCity": "到达城市",
+  "check-center.type": "类型",
+  "check-center.departureTime": "起飞时间",
+  "check-center.checkStatus": "对账状态",
+  "check-center.ticket": "机票",
+  "check-center.hotel": "酒店",
+  "check-center.train": "火车"
+}
+

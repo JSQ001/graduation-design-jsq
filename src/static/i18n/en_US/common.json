@@ -31,5 +31,6 @@
   "common.fold": "Fold",
   "common.help": "Help",
   "common.baseInfo": "Base Info",
-  "common.sequence": "SN"
+  "common.sequence": "SN",
+  "common.error": "Oops, service error occurs, please try it later :("
 }

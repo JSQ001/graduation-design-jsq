@@ -179,7 +179,9 @@ class BudgetControlRules extends React.Component {
           loading={loading}
           dataSource={data}
           columns={columns}
-          onRowClick={this.handleRowClick}
+          onRow={record => ({
+            onClick: () => this.handleRowClick(record)
+          })}
           pagination={pagination}
           onChange={this.onChangePager}
           size="middle"

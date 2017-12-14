@@ -22,6 +22,7 @@ import NewDepartmentGroup from 'containers/setting/department-group/new-departme
 import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
 import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 import SupplierType from 'containers/setting/supplier-type/supplier-type'
+import AnnouncementInformation from 'containers/setting/announcement-information/announcement-information'
 
 
 //新建部门组
@@ -231,14 +232,20 @@ const subjectSheet = {
 const supplierType = {
   key: 'supplier-type',
   url: '/main/setting/supplier-type',
-  components: SupplierType,
+  components: SupplierType
+}
+//公告信息
+const announcementInformation = {
+  key: 'announcement-information',
+  url: '/main/setting/announcement-information',
+  components: AnnouncementInformation,
   parent: 'setting'
 };
 
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup, subjectSheet, supplierType],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup, subjectSheet, announcementInformation,supplierType],
   icon: 'setting',
   admin: true
 };

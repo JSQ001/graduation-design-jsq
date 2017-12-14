@@ -124,37 +124,40 @@ class SearchArea extends React.Component{
    */
   handleSearch = (e) => {
     e.preventDefault();
-    let values = this.props.form.getFieldsValue();
-    let searchForm = [].concat(this.state.searchForm);
-    searchForm.map(item => {
-      if(values[item.id] && item.entity) {
-        if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
-          values[item.id] = JSON.parse(values[item.id].title);
-        } else if (item.type === 'multiple') {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(JSON.parse(value.title));
-          });
-          values[item.id] = result;
-        }
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if(!err){
+        let searchForm = [].concat(this.state.searchForm);
+        searchForm.map(item => {
+          if(values[item.id] && item.entity) {
+            if (item.type === 'combobox' || item.type === 'select' || item.type === 'value_list') {
+              values[item.id] = JSON.parse(values[item.id].title);
+            } else if (item.type === 'multiple') {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(JSON.parse(value.title));
+              });
+              values[item.id] = result;
+            }
+          }
+          if(item.type === 'list' && values[item.id]){
+            if(item.entity){
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value);
+              });
+              values[item.id] = result;
+            } else {
+              let result = [];
+              values[item.id].map(value => {
+                result.push(value[item.valueKey]);
+              });
+              values[item.id] = result;
+            }
+          }
+        });
+        this.props.submitHandle(values)
       }
-      if(item.type === 'list' && values[item.id]){
-        if(item.entity){
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value);
-          });
-          values[item.id] = result;
-        } else {
-          let result = [];
-          values[item.id].map(value => {
-            result.push(value[item.valueKey]);
-          });
-          values[item.id] = result;
-        }
-      }
-    });
-    this.props.submitHandle(values)
+    })
   };
 
   //点击重置的事件，清空值为初始值
@@ -166,24 +169,26 @@ class SearchArea extends React.Component{
   //区域点击事件，返回事件给父级进行处理
   handleEvent = (e, item) => {
     let result = null;
-    if(item.entity && (item.type === 'value_list' || item.type === 'select' || item.type === 'combobox')){
-      item.options.map(option => {
-        if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === e.key)
-          result = option.data
-      })
-    } else if (item.entity && item.type === 'multiple'){
-      result = [];
-      e.map(value => {
+    if(e){
+      if(item.entity && (item.type === 'value_list' || item.type === 'select' || item.type === 'combobox')){
         item.options.map(option => {
-          if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === value.key)
-            result.push(option.data);
+          if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === e.key)
+            result = option.data
         })
-      })
-    } else {
-      if(item.type === 'switch')
-        result = e.target.checked;
-      else
-        result = e ? (e.target? e.target.value : e) : null;
+      } else if (item.entity && item.type === 'multiple'){
+        result = [];
+        e.map(value => {
+          item.options.map(option => {
+            if(option.data[item.type === 'value_list' ? 'code' : item.valueKey] === value.key)
+              result.push(option.data);
+          })
+        })
+      } else {
+        if(item.type === 'switch')
+          result = e.target.checked;
+        else
+          result = e ? (e.target? e.target.value : e) : null;
+      }
     }
     this.props.eventHandle(item.event, result)
   };
@@ -292,7 +297,7 @@ class SearchArea extends React.Component{
     if(index === undefined)
       searchForm = searchForm.map(searchItem => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.value + '';
+          valueWillSet[searchItem.id] = item.entity ? {key: value.value, label: value.label} : (value.value + '');
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
             searchItem.options = [];
@@ -304,15 +309,15 @@ class SearchArea extends React.Component{
         return searchItem;
       });
     else
-      searchForm[index].items = searchForm[index].items.map(searchItem => {
+      searchForm[index].items = searchForm[index].items.map((searchItem, index) => {
         if(searchItem.id === item.id){
-          valueWillSet[searchItem.id] = value.value + '';
+          valueWillSet[searchItem.id] = searchItem.entity ? {key: value[index].value, label: value[index].label} : (value[index].value + '');
           if(searchItem.options.length === 0 || (searchItem.options.length === 1 && searchItem.options[0].temp)){
             let dataOption = {};
             searchItem.options = [];
-            dataOption[item.type === 'value_list' ? 'code' : item.valueKey] = value.value;
-            dataOption[item.type === 'value_list' ? 'messageKey' : item.labelKey] = value.label;
-            searchItem.options.push({label: value.label, value: value.value, data: dataOption, temp: true})
+            dataOption[item.type === 'value_list' ? 'code' : searchItem.valueKey] = value[index].value;
+            dataOption[item.type === 'value_list' ? 'messageKey' : searchItem.labelKey] = value[index].label;
+            searchItem.options.push({label: value[index].label, value: value[index].value, data: dataOption, temp: true})
           }
         }
         return searchItem;
@@ -320,8 +325,6 @@ class SearchArea extends React.Component{
     this.setState({ searchForm }, () => {
       this.props.form.setFieldsValue(valueWillSet);
     });
-    let handle = item.event ? (event) => this.handleEvent(event,item) : ()=>{};
-    handle();
   };
 
   /**
@@ -349,7 +352,7 @@ class SearchArea extends React.Component{
       let searchForm = [].concat(this.state.searchForm);
       searchForm.map((searchItem, index) => {
         if(searchItem.id === key){
-          if((searchItem.type === 'select' || searchItem.type === 'value_list') && typeof options[key] === 'object')
+          if((searchItem.type === 'select' || searchItem.type === 'value_list') && (typeof options[key] === 'object' || options[key].splice ))
             this.onSetSelectValue(searchItem, options[key]);
           else if(searchItem.type === 'list'){
             let value = {};

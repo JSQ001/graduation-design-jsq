@@ -7,7 +7,7 @@
     left: 0;
     top: 0;
     height: 100vh;
-    overflow-x: hidden;
+    overflow: hidden;
     box-shadow: 0 0 10px 1px #000000;
     .company-name{
       height: 64px;
@@ -19,6 +19,9 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      box-shadow: 0 0 10px 5px black;
+      position: relative;
+      z-index: 1;
     }
     .menu-container{
       display: inline-block;
@@ -36,6 +39,9 @@
           font-weight: normal;
         }
       }
+    }
+    .ant-layout-sider-trigger{
+      box-shadow: -10px 0px 10px 5px black
     }
   }
   .content-layout{
@@ -95,7 +101,6 @@
       }
     }
     .breadcrumb{
-      font-family: PingFangSC-Regular;
       font-size: 12px;
       display: inline-block;
       height: 32px;

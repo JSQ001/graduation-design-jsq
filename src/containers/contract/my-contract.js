@@ -15,13 +15,14 @@ class MyContract extends React.Component{
       loading: false,
       setOfBooksId: null,
       contractStatus: {
-        CANCEL: {label: '取消', state: ''},
-        CONFIRM: {label: '确认', state: ''},
-        FINISH: {label: '完成', state: ''},
-        GENERATE: {label: '新建', state: ''},
-        HOLD: {label: '暂挂', state: ''},
-        REJECTED: {label: '拒绝', state: ''},
-        SUBMITTED: {label: '提交', state: ''},
+        CANCEL: {label: '已取消', state: 'default'},
+        FINISH: {label: '已完成', state: 'success'},
+        GENERATE: {label: '编辑中', state: 'processing'},
+        HOLD: {label: '暂挂', state: 'warning'},
+        SUBMITTED: {label: '审批中', state: 'processing'},
+        REJECTED: {label: '已驳回', state: 'error'},
+        CONFIRM: {label: '已通过', state: 'success'},
+        WITHDRAWAL: {label: '已撤回', state: 'warning'}, //字段未确认
       },
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
@@ -44,15 +45,16 @@ class MyContract extends React.Component{
         {type: 'value_list', id: 'status', label: '合同状态', valueListCode: 2201, options: []},
       ],
       columns: [
-        {title: '序号', dataIndex: 'id', render: (value, record, index) => index + 1},
+        {title: '序号', dataIndex: 'id', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '合同编号', dataIndex: 'contractNumber'},
-        {title: '公司', dataIndex: 'companyId'},
-        {title: '合同类型', dataIndex: 'contractTypeId', render: (value, record) => (record.contractCategory + ' - ' + value)},
+        {title: '公司', dataIndex: 'companyName'},
+        {title: '合同类型', dataIndex: 'contractTypeName', render: (value, record) => (record.contractCategory + ' - ' + value)},
         {title: '签署日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
-        {title: '合同方', dataIndex: 'partnerCategory', render: (value, record) => (value + ' - ' + record.partnerId)},
+        {title: '合同方', dataIndex: 'partnerCategoryName', render: (value, record) => (value + ' - ' + record.partnerName)},
         {title: '币种', dataIndex: 'currency'},
         {title: '合同金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '状态', dataIndex: 'status', render: value => <Badge status="processing" text={this.state.contractStatus[value].label} />}
+        {title: '状态', dataIndex: 'status',
+          render: value => <Badge status={this.state.contractStatus[value].state} text={this.state.contractStatus[value].label} />}
       ],
       data: [],
       page: 0,
@@ -88,7 +90,7 @@ class MyContract extends React.Component{
       if (res.status === 200) {
         this.setState({
           loading: false,
-          data: res.data,
+          data: res.data || [],
           pagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
             current: page + 1,
@@ -117,7 +119,7 @@ class MyContract extends React.Component{
 
   //新建
   handleNew = () => {
-    this.context.router.push(this.state.NewContract.url.replace(':id', 0))
+    this.context.router.push(this.state.NewContract.url)
   };
 
   //合同详情

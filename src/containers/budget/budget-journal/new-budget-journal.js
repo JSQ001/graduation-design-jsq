@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import {Button, Col, Row, Select, Form, Input, message, Card} from 'antd';
+import {Button, Col, Row, Select, Form, Input, message, Card,Affix} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -60,22 +60,18 @@ class NewBudgetJournalFrom extends React.Component {
     let defaultValueList =  this.state.defaultValueList;
     let defaultDataList = this.state.defaultDataList;
     defaultDataList.map((item)=>{
-      console.log(item);
       httpFetch.get(item.url).then((res)=>{
         let data=res.data;
-        console.log(data);
         if(item.type === "chooser"){
           defaultValueList[item.defaultValueKey]=data;
-          console.log(defaultDataList);
           this.props.from.setFieldsValue(
             defaultValueList
           )
         }
       }).catch((e)=>{
-
+          message.error(e.response.data.message)
       })
     })
-    console.log(defaultValueList);
   }
 
 
@@ -83,7 +79,6 @@ class NewBudgetJournalFrom extends React.Component {
   //获取编制期段
   getPeriodStrategy = () => {
     this.getSystemValueList(2002).then((response) => {
-      console.log(response.data);
       let periodStrategy = [];
       response.data.values.map((item) => {
         let option = {
@@ -125,20 +120,8 @@ class NewBudgetJournalFrom extends React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, value) => {
       if (!err) {
-        let formOid =null;
-        let documentType =null;
-   /*     httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value.journalTypeName[0].id}`).then((res)=>{
-          console.log(123);
-          console.log(res.data);
-            formOid = res.data.formOid;
-            documentOid =res.data.documentOid;
-        })*/
-        //${config.budgetUrl}/api/budget/journals/journalType/selectByInput
-        ///api/budget/journal/types/query
-
         let userData = {
           "dto": {
-
              "companyId": this.props.company.id,
              "companyName": this.props.company.name,
              "organizationId": this.props.organization.id,
@@ -168,7 +151,6 @@ class NewBudgetJournalFrom extends React.Component {
           ,
           "list": []
         };
-        console.log(userData);
         this.saveHeard(userData);
       }
     })
@@ -177,27 +159,19 @@ class NewBudgetJournalFrom extends React.Component {
 
   //根据预算日记账类型，获得预算表
   getStructure(value) {
-    console.log(value);
-
-    console.log(666);
-    httpFetch.get(`${config.liouliangUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
-      console.log(response.data);
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectByJournalTypeAndCompany?companyId=${this.props.company.id}&journalTypeId=${value}`).then(response => {
       response.data.map((item)=>{
         item.key=item.id;
       })
-      console.log(response.data);
       this.setState(
         {"structureGroup": response.data},()=>{
-          console.log(this.state.structureGroup);
         }
       )
     }).catch(e => {message.error(e.response.data.message)})
     let structureId = null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journal/type/assign/structures/queryDefaultStructure?journalTypeId=${value}`).then(response => {
-      console.log(response.data);
         if(response.data){
           structureId =  response.data.id;
-          console.log(structureId);
           this.props.form.setFieldsValue({
             "structureId":structureId,
             "periodStrategy":response.data.periodStrategy
@@ -213,17 +187,18 @@ class NewBudgetJournalFrom extends React.Component {
     let formOid =null;
     let documentOid =null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/journalType/selectByInput?&page=0&size=50&organizationId=${this.props.organization.id}`).then((res)=>{
-
+      console.log(4444);
       res.data.map((item)=>{
         if(item.id == value){
-          console.log(555);
+          console.log(value);
+          console.log(3333);
           formOid = item.form0id;
           documentOid = item.formType;
-          console.log(formOid);
-          console.log(documentOid);
           this.setState({
             formOid,
             documentOid
+          },()=>{
+            console.log(this.state.formOid)
           })
         }
       })
@@ -233,7 +208,6 @@ class NewBudgetJournalFrom extends React.Component {
 
   //选择预算表时，获得期间段
   handleSelectChange = (values) => {
-    console.log(values);
     this.state.structureGroup.map((item) => {
       if (item.id == values) {
         const periodStrategy = item.periodStrategy;
@@ -249,15 +223,12 @@ class NewBudgetJournalFrom extends React.Component {
   HandleClear = () => {
     let path = this.state.budgetJournalPage.url;
     this.context.router.push(path);
-  };
+  };h
 
 
   //选择预算日记账类型，设置对应的预算表选
   handleJournalType = (value) => {
-
-    console.log(value);
     if (value.length > 0) {
-      console.log(value);
      let valueData = value[0];
       this.setState({
         idSelectJournal: true,
@@ -272,18 +243,8 @@ class NewBudgetJournalFrom extends React.Component {
 
   };
 
-  getjournalTypes(value){
-    httpFetch.get(`${config.budgetUrl}/api/budget/journal/types/${value}`).then((res)=>{
-          console.log(res.data);
-          let formOid = res.data.formOid;
-          let documentOid =res.data.documentOid;
-      })
-  }
-
-
   //上传附件，获取OID
   uploadHandle = (value) => {
-    console.log(value);
     this.setState({
       attachmentOID: value
     })
@@ -499,14 +460,13 @@ class NewBudgetJournalFrom extends React.Component {
               </Col>
             </Row>
           </Card>
-          <div className="divider" style={{height:16}}> </div>
-
-          <div className="footer-operate">
-            <Button type="primary" htmlType="submit" loading={this.state.loading}
-                    style={{marginRight: '10px'}}>下一步</Button>
-            <Button style={{marginRight: '10px'}} onClick={this.HandleClear}>取消</Button>
-
-          </div>
+          <div className="divider" style={{height:40}}> </div>
+          <Affix offsetBottom={0}
+                 style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
+                   boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
+            <Button type="primary" htmlType="submit" loading={this.state.loading} style={{margin:'0 20px'}}>下一步</Button>
+            <Button onClick={this.HandleClear}>取消</Button>
+          </Affix>
         </Form>
       </div>
     )

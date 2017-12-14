@@ -14,9 +14,17 @@ class ContractDetail extends React.Component {
     this.state = {
       loading: false,
       dLoading: false,
+      submitAble: false,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
     }
   }
+
+  //获取合同状态
+  getStatus = (status) => {
+    if (status === 'GENERATE' || status === 'REJECTED' || status === 'WITHDRAWAL') {
+      this.setState({ submitAble: true })
+    }
+  };
 
   //提交
   onSubmit = () => {
@@ -56,16 +64,24 @@ class ContractDetail extends React.Component {
   };
 
   render() {
-    const { loading, dLoading } = this.state;
+    const { loading, dLoading, submitAble } = this.state;
     return (
       <div className="contract-detail background-transparent">
-        <ContractDetailCommon contractEdit={true} id={this.props.params.id} />
-        <Affix offsetBottom={0} className="bottom-bar">
-          <Button type="primary" onClick={this.onSubmit} loading={loading} style={{margin:'0 20px'}}>提 交</Button>
-          <Button onClick={this.onCancel}>保 存</Button>
-          <Button style={{marginLeft:'50px'}} onClick={this.onDelete} loading={dLoading}>删除该合同</Button>
-          <Button style={{marginLeft:'20px'}} onClick={this.onCancel}>返 回</Button>
-        </Affix>
+        <ContractDetailCommon id={this.props.params.id}
+                              getContractStatus={this.getStatus}/>
+        {submitAble && (
+          <Affix offsetBottom={0} className="bottom-bar">
+            <Button type="primary" onClick={this.onSubmit} loading={loading} style={{margin:'0 20px'}}>提 交</Button>
+            <Button onClick={this.onCancel}>保 存</Button>
+            <Button style={{marginLeft:'50px'}} onClick={this.onDelete} loading={dLoading}>删除该合同</Button>
+            <Button style={{marginLeft:'20px'}} onClick={this.onCancel}>返 回</Button>
+          </Affix>
+        )}
+        {!submitAble && (
+          <Affix offsetBottom={0} className="bottom-bar">
+            <Button style={{marginLeft:'30px'}} onClick={this.onCancel}>返 回</Button>
+          </Affix>
+        )}
       </div>
     )
   }

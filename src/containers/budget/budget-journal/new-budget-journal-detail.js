@@ -7,7 +7,6 @@ import {injectIntl} from 'react-intl';
 import { Button,Form,Row,Col,Input,Select,InputNumber} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
-import debounce from 'lodash.debounce';
 
 import 'styles/budget/budget-journal/new-budget-journal-detail.scss'
 import httpFetch from 'share/httpFetch';
@@ -36,12 +35,9 @@ class NewBudgetJournalDetail extends React.Component {
 
   //表单的联动事件处理
   handleEvent(event,e){
-    console.log(event);
-    console.log(e);
     switch (e){
       case 'periodName':{
         const eventData = JSON.parse(event);
-        console.log(eventData);
         this.props.form.setFieldsValue({
           periodYear:eventData.periodYear
         });
@@ -91,25 +87,9 @@ class NewBudgetJournalDetail extends React.Component {
     searchFrom.map((item)=>{
       if(item.id === "item" ){
         let listExtraParams = item["listExtraParams"];
-        console.log(listExtraParams);
         listExtraParams.companyId = companyId;
         item["listExtraParams"]=listExtraParams;
         item["disabled"]=false;
-        console.log(item);
-        return
-      }
-    })
-    this.setState({
-      searchFrom:searchFrom
-    })
-  }
-
-  setItemDisabled(){
-    let searchFrom =this.state.searchForm;
-    searchFrom.map((item)=>{
-      if(item.id === "item" ){
-        item["disabled"]=true;
-        console.log(item);
         return
       }
     })
@@ -143,19 +123,18 @@ class NewBudgetJournalDetail extends React.Component {
   componentWillMount(){
     let queryLineListTypeOptions = [];
     this.getSystemValueList(2021).then(res => {
-      console.log(res.data.values);
       res.data.values.map(data => {
         queryLineListTypeOptions.push({label: data.messageKey, value: data.code})
       });
-      console.log(queryLineListTypeOptions);
     });
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
       yearOptions.push({label: i, value: String(i)})
     let searchForm =[
-      {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}), labelKey: 'name',
-        valueKey: 'id',single:true,event:'company',isRequired: true, listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
+      {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}),
+        labelKey: 'name', valueKey: 'id',single:true,event:'company',isRequired: true,disabled:false,
+        listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
       {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
@@ -201,7 +180,6 @@ class NewBudgetJournalDetail extends React.Component {
         this.state.rate=nextProps.params.rate;
         rateData=nextProps.params.rate;
         if(nextProps.params.companyId ){
-          console.log(nextProps.params.companyId);
           this.setState({
             companyIdFlag:false,
           },()=>{
@@ -252,20 +230,15 @@ class NewBudgetJournalDetail extends React.Component {
     let searchForm = this.state.searchForm;
       searchForm.map(searchItem => {
       if(searchItem.id === "item"){
-          console.log(searchItem.id)
-          console.log(this.props.params.journalTypeId);
         searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
       }
     });
-    console.log(searchForm);
     this.setState({ searchForm });
   }
 
 
   //给select增加options
   getOptions = (item) => {
-    console.log(item);
-    console.log(12);
     if(item.options.length === 0 ){
       let url = item.getUrl;
       if(item.method === 'get' && item.getParams){
@@ -276,7 +249,6 @@ class NewBudgetJournalDetail extends React.Component {
         })
       }
       httpFetch[item.method](url, item.getParams).then((res) => {
-        console.log(res.data);
         let options = [];
         res.data.map(data => {
           options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
@@ -300,7 +272,6 @@ class NewBudgetJournalDetail extends React.Component {
 
   //得到值列表的值增加options
   getValueListOptions = (item) => {
-    console.log(item);
     if(item.options.length === 0){
       this.getSystemValueList(item.valueListCode).then(res => {
         let options = [];
@@ -330,7 +301,7 @@ class NewBudgetJournalDetail extends React.Component {
     switch(item.type){
       //输入组件
       case 'input':{
-        return <Input  placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} formatter={value => `${value}`}  onChange={handle} disabled={item.disabled}/>
+        return <Input  placeholder={this.props.intl.formatMessage({id: 'common.please.enter'})} onChange={handle} disabled={item.disabled}/>
       }
       //选择组件
       case 'select':{
@@ -454,8 +425,6 @@ class NewBudgetJournalDetail extends React.Component {
             const value = values[item.id];
             if (typeof value === 'string') {
               if (value.indexOf(`":"`) > 1) {
-                console.log("indexOf");
-                console.log(value.indexOf(`":"`));
                 const valueObject = JSON.parse(value);
                 valuesData[item.columnLabel] = valueObject[item.labelKey];
                 valuesData[item.columnValue] = valueObject[item.valueKey];
@@ -471,8 +440,6 @@ class NewBudgetJournalDetail extends React.Component {
                     valuesData[item.columnLabel] = oldData[item.columnLabel];
                     valuesData[item.columnValue] = oldData[item.columnValue];
                   } else {
-                    console.log(this.state.dimensionDataLists);
-                    console.log(this.state.dimensionDataLists[item.id]);
                     let name = (this.state.dimensionDataLists[item.id]).defaultDimValueName ? (this.state.dimensionDataLists[item.id]).defaultDimValueName : null;
                     let value = (this.state.dimensionDataLists[item.id]).defaultDimValueId ? (this.state.dimensionDataLists[item.id]).defaultDimValueId : null;
                     valuesData[item.columnLabel] = name;
@@ -505,7 +472,6 @@ class NewBudgetJournalDetail extends React.Component {
           }
         }
         if (item.type === 'list') {
-          console.log(values[item.id]);
           if (values[item.id]) {
             if (values[item.id].length > 0) {
               const value = values[item.id][0];
@@ -553,9 +519,6 @@ class NewBudgetJournalDetail extends React.Component {
   getDimensionByStructureId = () =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${this.props.params.structureId}`).then((resp)=>{
       this.getSearchForm(resp.data);
-      console.log(77777);
-      console.log(resp.data);
-      console.log(77777);
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
@@ -563,7 +526,6 @@ class NewBudgetJournalDetail extends React.Component {
 
   //根据预算表,set维度表单
   getSearchForm(dimension){
-    console.log("getSearchForm");
     let searchForm=this.state.searchForm;
     let dimensionList ={};
     let dimensionDataLists ={};
@@ -579,10 +541,8 @@ class NewBudgetJournalDetail extends React.Component {
         defaultDimValueId:item.defaultDimValueId?item.defaultDimValueId:null,
         defaultDimValueName:item.defaultDimValueName?item.defaultDimValueName:null
       }
-      console.log(item);
       let options=[];
       httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/by/costcenterid?costCenterId=${item.dimensionId}`).then((res)=>{
-        console.log(res.data);
         const data =res.data;
         data.map((item)=>{
           options.push({label: item.name, value: item.id, data:item})

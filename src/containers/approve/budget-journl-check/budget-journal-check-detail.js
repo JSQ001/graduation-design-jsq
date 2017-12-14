@@ -81,16 +81,6 @@ class BudgetJournalCheckDetail extends React.Component {
           /*币种*/
           title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
         },
-        /*{
-
-         title: this.props.intl.formatMessage({id: "budget.rateType"}), key: "rateType", dataIndex: 'rateType'
-         },
-         {
-
-         title: this.props.intl.formatMessage({id: "budget.rateQuotation"}),
-         key: "rateQuotation",
-         dataIndex: 'rateQuotation'
-         },    */
         {
           /*汇率*/
           title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
@@ -165,7 +155,7 @@ class BudgetJournalCheckDetail extends React.Component {
 
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?structureId=${value}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
       console.log(resp.data);
 
       this.getColumnsAndDimensionhandleData(resp.data);

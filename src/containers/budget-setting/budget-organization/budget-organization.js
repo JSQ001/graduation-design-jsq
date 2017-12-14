@@ -93,6 +93,9 @@ class BudgetOrganization extends React.Component {
           current: this.state.page + 1
         }
       })
+    }).catch(e => {
+      message.error(this.props.intl.formatMessage({id: 'common.error'}));
+      this.setState({loading: false});
     });
   }
 

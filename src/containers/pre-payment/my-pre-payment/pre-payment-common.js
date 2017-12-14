@@ -6,11 +6,11 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin,Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
 import moment from 'moment'
 import SlideFrame from 'components/slide-frame'
-import  NewPrePaymentDetail from 'containers/contract/new-pay-plan'
+import  NewPrePaymentDetail from 'containers/pre-payment/my-pre-payment/new-pre-payment-detail'
 import 'styles/pre-payment/my-pre-payment/pre-payment-detail.scss'
 
 class PrePaymentCommon extends React.Component {
@@ -41,17 +41,23 @@ class PrePaymentCommon extends React.Component {
           value ? <Popover placement="topLeft" content={value} overlayStyle={{maxWidth:300}}>{value}</Popover> : '-'
         )}},
         {title: '预付款类型', dataIndex: 'partnerCategory'},
-        {title: '收款方', dataIndex: 'currency'},
+        {title:'关联申请单',dataIndex:'123'},
         {title: '预付款金额', dataIndex: 'amount',
           render: this.filterMoney
         },
         {title: '本位币金额', dataIndex: 'fAmount',
           render: this.filterMoney
         },
-        {title: '收款账户', dataIndex: 'partnerId'},
+        {title: '收款方', dataIndex: 'currency'},
+        {title: '银行账号', dataIndex: 'partnerI'},
+        {title: '银行户名', dataIndex: 'part'},
         {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
-
-        {title: '其他', dataIndex: 'id', render: (text, record) => (
+        {title: '银行户名', dataIndex: 'part'},
+        {title: '银行户名', dataIndex: 'partvfvf'},
+        {title:'预付款方式类型',dataIndex:''},
+        {title:'关联合同',dataIndex:'ggg'},
+        {title:'合同付款计划行',dataIndex:'gtrgtrgt'},
+        {title: '操作', dataIndex: 'id', render: (text, record) => (
           <span>
             <a onClick={(e) => this.editItem(e, record)}>编辑</a>
             <span className="ant-divider"/>
@@ -181,6 +187,10 @@ class PrePaymentCommon extends React.Component {
 
   }
 
+  rowClick=()=>{
+
+  }
+
   render() {
     const { topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
@@ -277,6 +287,9 @@ class PrePaymentCommon extends React.Component {
                      columns={columns}
                      dataSource={data}
                      bordered
+                     onRow={record => ({
+                       onClick: () => this.rowClick(record)
+                     })}
                      loading={planLoading}
                      size="middle"/>
           </div>

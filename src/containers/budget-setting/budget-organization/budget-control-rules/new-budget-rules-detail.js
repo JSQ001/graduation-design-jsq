@@ -43,10 +43,13 @@ class NewBudgetRulesDetail extends React.Component{
   componentWillMount() {
     let organizationIdParams = {organizationId : this.props.organization.id, isEnabled: true};
     let userSelectorItem = selectorData['user'];
-    let itemSelectorItem = selectorData['budget_item'];
-    itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-    itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
 
+    let itemSelectorItem = selectorData['budget_item'];
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    if(key < 2){
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+    }
     userSelectorItem.key = 'employeeID';
     let paramValueMap = {
       'BUDGET_ITEM_TYPE': {
@@ -72,14 +75,17 @@ class NewBudgetRulesDetail extends React.Component{
         valueKey: 'itemName',
         codeKey: 'itemCode',
         listExtraParams: organizationIdParams,
-        selectorItem: undefined
+        selectorItem: itemSelectorItem
       },
       'CURRENCY': {
         listType: 'currency',
-        labelKey: 'id',
-        valueKey: 'currencyName',
-        codeKey: 'currency',
-        listExtraParams: organizationIdParams,
+        labelKey: 'currencyName',
+        valueKey: 'currency',
+        codeKey: undefined,
+        listExtraParams: {
+          roleType: 'TENANT',
+          language: 'chineseName'
+        },
         selectorItem: undefined
       },
       'COMPANY': {
@@ -95,7 +101,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'companyGroupName',
         codeKey: 'companyGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'UNIT': {
@@ -111,7 +117,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'id',
         valueKey: 'description',
         codeKey: 'deptGroupCode',
-        listExtraParams: organizationIdParams,
+        listExtraParams: {},
         selectorItem: undefined
       },
       'EMPLOYEE': {
@@ -128,6 +134,30 @@ class NewBudgetRulesDetail extends React.Component{
         valueKey: 'id',
         codeKey: 'id',
         listExtraParams: {},
+        selectorItem: undefined
+      },
+      'BUDGET_SCENARIO':{
+        listType: 'budget_scenario',
+        labelKey: 'scenarioName',
+        valueKey: 'id',
+        codeKey: 'scenarioCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_VERSION':{
+        listType: 'budget_versions',
+        labelKey: 'versionName',
+        valueKey: 'id',
+        codeKey: 'versionCode',
+        listExtraParams: organizationIdParams,
+        selectorItem: undefined
+      },
+      'BUDGET_STRUCTURE':{
+        listType: 'budget_structure',
+        labelKey: 'structureName',
+        valueKey: 'id',
+        codeKey: 'structureCode',
+        listExtraParams: organizationIdParams,
         selectorItem: undefined
       }
     };
@@ -194,7 +224,7 @@ class NewBudgetRulesDetail extends React.Component{
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
         values.ruleParameterOID = str[1];
-        httpFetch.post(`${config.budgetUrl}api/budget/control/rule/details`, values).then((res)=>{
+        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
           this.setState({
             loading: false,
             filtrateMethodHelp:'',
@@ -338,6 +368,7 @@ class NewBudgetRulesDetail extends React.Component{
                   },
                     {
                       validator: (item,value,callback)=>{
+                        console.log(value)
                         if(typeof value === 'undefined'){
                           validateStatusMap.ruleParameter = "error";
                           helpMap.ruleParameter = formatMessage({id:"common.please.select"})

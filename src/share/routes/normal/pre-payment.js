@@ -17,7 +17,7 @@ const prePaymentDetail = {
 //新建预付款单
 const newPrePayment = {
   key:'new-pre-payment',
-  url:'/main/pre-payment/me-pre-payment/new-pre-payment/:id',
+  url:'/main/pre-payment/me-pre-payment/new-pre-payment/:id/:prePaymentTypeId',
   components: NewPrePayment ,
   parent: 'me-pre-payment',
 };
