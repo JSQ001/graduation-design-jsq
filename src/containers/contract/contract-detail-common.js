@@ -15,11 +15,11 @@ class ContractDetailCommon extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      topLoading: false,
       detailLoading: false,
       planLoading: false,
       topTapValue: 'contractInfo',
       headerData: {},
+      contractEdit: false, //合同是否可编辑
       contractStatus: {
         CANCEL: '已取消',
         FINISH: '已完成',
@@ -28,7 +28,7 @@ class ContractDetailCommon extends React.Component {
         REJECTED: '已驳回',
         SUBMITTED: '审批中',
         CONFIRM: '已通过',
-        FINISH2: '已撤回'  //字段未确认
+        WITHDRAWAL: '已撤回'  //字段未确认
       },
       subTabsList: [
         {label: '详情', key: 'DETAIL'},
@@ -39,7 +39,7 @@ class ContractDetailCommon extends React.Component {
         {label: '支付明细', key: 'PayDETAIL'},
       ],
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => (index + 1)},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '币种', dataIndex: 'currency', width: '7%'},
         {title: '计划金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '合同方类型', dataIndex: 'partnerCategory'},
@@ -51,32 +51,21 @@ class ContractDetailCommon extends React.Component {
       ],
       data: [],
       planAmount: 0,
+      page: 0,
+      pageSize: 10,
       pagination: {
         total: 0
       },
       showSlideFrame: false,
       slideFrameTitle: '',
       record: {}, //资金计划行信息
-      NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
+      EditContract: menuRoute.getRouteItem('edit-contract', 'key'), //编辑合同
     }
   }
 
   componentWillMount() {
-    if (this.props.contractEdit) {
-      let columns = this.state.columns;
-      columns.push(
-        {title: '操作', dataIndex: 'id', render: (text, record) => (
-          <span>
-            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
-            <span className="ant-divider"/>
-            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
-          </span>)
-        }
-      );
-      this.setState({ columns })
-    }
     this.getInfo();
-    this.getPayInfo()
+    this.getPayList()
   }
 
   //获取合同信息
@@ -84,6 +73,21 @@ class ContractDetailCommon extends React.Component {
     let url = `${config.contractUrl}/contract/api/contract/header/${this.props.id}`;
     this.setState({ detailLoading: true });
     httpFetch.get(url).then(res => {
+      if (res.data.status === 'GENERATE' ||
+        res.data.status === 'REJECTED' ||
+        res.data.status === 'WITHDRAWAL') { //编辑中、已驳回、已撤回
+        let columns = this.state.columns;
+        columns.push(
+          {title: '操作', dataIndex: 'id', render: (text, record) => (
+            <span>
+            <a onClick={(e) => this.editItem(e, record)}>编辑</a>
+            <span className="ant-divider"/>
+            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>删除</a></Popconfirm>
+          </span>)
+          }
+        );
+        this.setState({ contractEdit: true, columns })
+      }
       this.setState({
         headerData: res.data,
         detailLoading: false
@@ -96,8 +100,9 @@ class ContractDetailCommon extends React.Component {
   };
 
   //获取资金计划
-  getPayInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}`;
+  getPayList = () => {
+    const { page, pageSize } = this.state;
+    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}?page=${page}&size=${pageSize}`;
     this.setState({ planLoading: true });
     httpFetch.get(url).then(res => {
       let planAmount = 0;
@@ -110,9 +115,19 @@ class ContractDetailCommon extends React.Component {
         planLoading: false,
         pagination: {
           total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+          current: page + 1,
+          onChange: this.onChangePaper
         }
       })
     })
+  };
+
+  onChangePaper = (page) => {
+    if (page - 1 !== this.state.page) {
+      this.setState({ page: page - 1 }, () => {
+        this.getPayList()
+      })
+    }
   };
 
   handleTabsChange = (tab) => {
@@ -138,12 +153,13 @@ class ContractDetailCommon extends React.Component {
     this.setState({
       showSlideFrame: false
     },() => {
-      params && this.getPayInfo();
+      params && this.getPayList();
     })
   };
+
   //编辑
   edit = () => {
-    this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
+    this.context.router.push(this.state.EditContract.url.replace(':id', this.props.id))
   };
 
   //添加资金计划行
@@ -173,23 +189,96 @@ class ContractDetailCommon extends React.Component {
     this.setState({ planLoading: true });
     httpFetch.delete(url).then(() => {
       message.success(`删除成功`);
-      this.getPayInfo()
+      this.getPayList()
     }).catch(e => {
       this.setState({ planLoading: false });
       message.error(`删除失败，${e.response.data.message}`)
     })
   };
 
+  //撤回
+  contractRecall = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/withdrawal/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('撤回成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('撤回失败，请稍后再试');
+    })
+  };
+
+  //暂挂
+  contractHold = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/hold/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('暂挂成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('暂挂失败，请稍后再试');
+    })
+  };
+
+  //取消暂挂
+  contractCancelHold = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/unHold/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('取消暂挂成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('取消暂挂失败，请稍后再试');
+    })
+  };
+
+  //取消
+  contractCancel = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/cancel/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('取消成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('取消失败，请稍后再试');
+    })
+  };
+
+  //完成
+  contractFinish = () => {
+    let url = `${config.contractUrl}/contract/api/contract/header/finish/${this.props.id}`;
+    httpFetch.put(url).then(res => {
+      if (res.status === 200) {
+        message.success('完成成功');
+        this.getInfo()
+      }
+    }).catch(() => {
+      message.error('完成失败，请稍后再试');
+    })
+  };
+
   render() {
-    const { topLoading, detailLoading, planLoading, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
+    const { detailLoading, planLoading, contractEdit, topTapValue, subTabsList, pagination, columns, data, planAmount, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
-      <Spin spinning={topLoading}>
-        <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
-          {this.props.contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
+      <Spin spinning={detailLoading}>
+        <h3 className="header-title">{headerData.contractTypeName} {headerData.contractCategory}
+          {contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
+          {!this.props.isApprovePage && headerData.status === 'SUBMITTED' && <Button type="primary" onClick={this.contractRecall}>撤 回</Button>}
+          {!this.props.isApprovePage && headerData.status === 'CONFIRM' &&
+            <div>
+              <Button type="primary" onClick={this.contractFinish}>完 成</Button>
+              <Button type="primary" onClick={this.contractCancel} style={{marginRight:10}}>取 消</Button>
+              <Button type="primary" onClick={this.contractHold} style={{marginRight:10}}>暂 挂</Button>
+            </div>}
+          {!this.props.isApprovePage && headerData.status === 'HOLD' && <Button type="primary" onClick={this.contractCancelHold}>取消暂挂</Button>}
         </h3>
         <Row>
           <Col span={6}>
-            {this.renderList('创建人', null)}
+            {this.renderList('创建人', headerData.createdName + ' - ' + headerData.createdBy)}
             {this.renderList('创建日期', moment(headerData.createdDate).format('YYYY-MM-DD'))}
           </Col>
           <Col span={6}>
@@ -198,7 +287,7 @@ class ContractDetailCommon extends React.Component {
           <Col span={12}>
             <div style={{float:'right'}}>
               <div className="amount-title">合同金额</div>
-              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount)}</div>
+              <div className="amount-content">{headerData.currency} {this.filterMoney(headerData.amount || planAmount)}</div>
             </div>
             <div style={{float:'right', marginRight:'50px'}}>
               <div className="status-title">状态</div>
@@ -245,14 +334,14 @@ class ContractDetailCommon extends React.Component {
       <div className="tab-container">
         <Spin spinning={detailLoading}>
           <h3 className="sub-header-title">合同信息
-            {this.props.contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
+            {contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
           </h3>
           <Row>
             <Col span={8}>{this.renderList('合同名称', headerData.contractName)}</Col>
             <Col span={8}>{this.renderList('签署日期', moment(headerData.signDate).format('YYYY-MM-DD'))}</Col>
           </Row>
           <Row>
-            <Col span={8}>{this.renderList('公司', headerData.companyId)}</Col>
+            <Col span={8}>{this.renderList('公司', headerData.companyName)}</Col>
             <Col span={8}>{this.renderList('有效期限',
               headerData.startDate || headerData.endDate ?
                 (
@@ -264,8 +353,8 @@ class ContractDetailCommon extends React.Component {
           </Row>
           <h3 className="margin-20-0">合同方信息</h3>
           <Row>
-            <Col span={8}>{this.renderList('合同方类型', headerData.partnerCategory)}</Col>
-            <Col span={8}>{this.renderList('合同方', headerData.partnerId)}</Col>
+            <Col span={8}>{this.renderList('合同方类型', headerData.partnerCategoryName)}</Col>
+            <Col span={8}>{this.renderList('合同方', headerData.partnerName)}</Col>
           </Row>
           <h3 className="margin-20-0">其他信息</h3>
           <Row>
@@ -285,7 +374,7 @@ class ContractDetailCommon extends React.Component {
           <h3 className="sub-header-title">付款计划</h3>
           <div className="table-header">
             <div className="table-header-buttons">
-              {this.props.contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
+              {contractEdit && <Button type="primary" onClick={this.addItem}>添 加</Button>}
             </div>
             <div style={{marginBottom:'10px'}}>
               共 {pagination.total} 条数据<span className="ant-divider"/>
@@ -297,6 +386,7 @@ class ContractDetailCommon extends React.Component {
           <Table rowKey={record => record.id}
                  columns={columns}
                  dataSource={data}
+                 pagination={pagination}
                  bordered
                  size="middle"/>
         </Spin>
@@ -349,12 +439,12 @@ class ContractDetailCommon extends React.Component {
 
 ContractDetailCommon.propTypes = {
   id: React.PropTypes.any.isRequired, //显示数据
-  contractEdit: React.PropTypes.bool,  //合同信息是否可编辑
+  isApprovePage: React.PropTypes.bool, //是否在审批页面
   getContractStatus: React.PropTypes.func, //确认合同信息状态
 };
 
 ContractDetailCommon.defaultProps = {
-  contractEdit: false,
+  isApprovePage: false,
   getContractStatus: () => {}
 };
 

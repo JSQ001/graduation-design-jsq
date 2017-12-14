@@ -1,4 +1,4 @@
-import PrePaymentType from 'containers/receipt-type-setting/pre-payment-type'
+import PrePaymentType from 'containers/receipt-type-setting/pre-payment-type/pre-payment-type'
 import ContractTypeDefine from 'containers/receipt-type-setting/contract-type-define/contract-type-define'
 import CompanyDistribution from 'containers/receipt-type-setting/contract-type-define/company-distribution'
 import NewContractType from 'containers/receipt-type-setting/contract-type-define/new-contract-type'

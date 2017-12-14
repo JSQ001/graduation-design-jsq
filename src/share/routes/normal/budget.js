@@ -88,9 +88,10 @@ const budgetBalance = {
   }
 };
 
+//预算占用调整导入详情
 const importDetail = {
   key: 'import-detail',
-  url: '/main/budget/budget-occupancy/import-detail',
+  url: '/main/budget/budget-occupancy/import-detail/:id/:batchNumber',
   components: ExportDetail,
   parent: 'budgetOccupancy'
 };
