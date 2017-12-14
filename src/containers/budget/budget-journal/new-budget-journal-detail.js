@@ -117,20 +117,20 @@ class NewBudgetJournalDetail extends React.Component {
     })
   }
 
-  getStrategyControl=()=>{
+  getStrategyControl = () =>{
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
       if(item.id === "periodYear"){
-        item["disabled"]=this.props.params.periodStrategy=="MONTH"?true:false
+        item["disabled"]=this.props.params.periodStrategy=="MONTH"?true:false;
         item["isRequired"]=true
       }
       if(item.id === "periodQuarter"){
-        item["disabled"]=this.props.params.periodStrategy=="QUARTER"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false
+        item["disabled"]=this.props.params.periodStrategy=="QUARTER"?false:true;
+        item["isRequired"]=this.props.params.periodStrategy=="QUARTER"?true:false;
       }
       if(item.id === "periodName"){
-        item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true
-        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false
+        item["disabled"]=this.props.params.periodStrategy=="MONTH"?false:true;
+        item["isRequired"]=this.props.params.periodStrategy=="MONTH"?true:false;
       }
     })
 
@@ -155,7 +155,7 @@ class NewBudgetJournalDetail extends React.Component {
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
-      yearOptions.push({label: i, value: String(i)})
+      yearOptions.push({label: i, value: String(i),key:i})
     let searchForm =[
       {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}),
         labelKey: 'name', valueKey: 'id',single:true,event:'company',isRequired: true,disabled:false,
@@ -600,6 +600,8 @@ class NewBudgetJournalDetail extends React.Component {
     this.props.form.resetFields();
     this.props.close();
   }
+
+
   render(){
     return (
       <div className="new-budget-journal-detail">

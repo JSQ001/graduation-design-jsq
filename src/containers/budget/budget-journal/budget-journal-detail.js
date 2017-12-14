@@ -435,7 +435,6 @@ class BudgetJournalDetail extends React.Component {
       });
       let data = value;
       data.journalHeaderId = this.state.headerAndListData.dto.id;
-
       httpFetch.post(`${config.budgetUrl}/api/budget/journals/insertOrUpdateLine`,data).then((req) => {
         message.success("预算日记账行保存成功");
         this.getDataByBudgetJournalCode();

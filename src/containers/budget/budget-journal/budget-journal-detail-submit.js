@@ -183,7 +183,9 @@ class BudgetJournalDetailSubmit extends React.Component {
     this.setState({
       columns,
     },()=>{
-      this.setState({spinLoading:false})
+      this.setState({
+        spinLoading:false
+      })
     })
   }
 
