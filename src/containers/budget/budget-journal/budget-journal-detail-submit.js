@@ -50,6 +50,13 @@ class BudgetJournalDetailSubmit extends React.Component {
             </Popover>)
 
         },
+        {          /*人员*/
+          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
         {
           /*预算项目*/
           title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',

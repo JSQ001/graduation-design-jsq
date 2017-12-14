@@ -481,7 +481,8 @@ const selectorData = {
 
     ],
     key: 'id'
-  }
+  },
+
 };
 
 export default selectorData;
