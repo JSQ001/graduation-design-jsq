@@ -1,18 +1,20 @@
 import React from 'react';
-import {connect} from 'react-redux'
-import {injectIntl} from 'react-intl';
+import { connect } from 'react-redux'
+import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 
-import {Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message} from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Popover } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
 import SlideFrame from "components/slide-frame"
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
+
+import EditBankAccount from './edit-bank-account'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -24,69 +26,78 @@ class WrappedCompanyMaintainDetail extends React.Component {
 
   constructor(props) {
     super(props);
+
+    const { formatMessage } = this.props.intl;
     this.state = {
-      showImportFrame:false,
+      showImportFrame: false,
       updateState: false,
       saving: false,
       loading: true,
       editing: false,
-      infoData:{},
-      selectedRowKeys:[],
-      infoList: [
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode",labelKey:'companyCode'},   /*公司代码*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.name"}), id: "name", labelKey: 'name' }, /*公司名称*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", labelKey: 'companyType'},    /*公司类型*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.setOfBooksName"}), id: "setOfBooksName", labelKey: 'setOfBooksName' },  /*账套*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.legalEntityName"}), id: "legalEntityName", labelKey: 'legalEntityName'  },  /*法人*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.companyLevelName"}), id: "companyLevelName", labelKey: 'companyLevelName' },    /*公司级别*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.parentCompanyName"}), id: "parentCompanyName", labelKey: 'parentCompanyName' },    /*上级机构*/
-        {type: 'date', label: this.props.intl.formatMessage({id: "company.startDateActive"}), id: "startDateActive",  labelKey: 'startDateActive'},  /*有效日期从*/
-        {type: 'date', label: this.props.intl.formatMessage({id: "company.endDateActive"}), id: "endDateActive",labelKey:'endDateActive'},  /*有效日期至*/
-        {type:'switch', label:'状态', id:"enabled", isRequired: true,labelKey:"enabled"},/*状态*/
-        {type: 'input', label: this.props.intl.formatMessage({id: "company.address"}), id: "address", labelKey: 'address' },   /*地址*/
-
-      ],
+      infoData: {},
+      selectedRowKeys: [],
+      showSlideFrame: false,
+      updateParams: {},
       tabs: [
-        {key: 'BANK', name: "银行账户信息"}, /*银行账户信息*/
-        {key: 'USER', name: "员工信息"}  /*公司分配*/
+        { key: 'BANK', name: formatMessage({ id: "company.maintain.bankAccountInfo" }) }, /*银行账户信息*/
+        { key: 'USER', name: formatMessage({ id: "company.maintain.userInfo" }) }  /*公司分配*/
       ],
       typeData: {},
       data: [],
       tabsData: {
-        BANK:{
-          url: ``,
-          rowSelection:null,
+        BANK: {
+          url: `${config.baseUrl}/api/CompanyBank/selectByCompanyId?companyId=${this.props.params.companyId}`,
+          rowSelection: null,
           columns:
             [
-              {title: "账户代码", key: "1", dataIndex: '1', width: '16%'},               /*账户代码*/
-              {title: "银行代码", key: "2", dataIndex: '2', width: '16%'},               /*银行代码*/
-              {title: "银行名称", key: "3", dataIndex: '3', width: '16%'},               /*银行名称*/
-              {title: "账户名称", key: "4", dataIndex: '4', width: '16%'},               /*账户名称*/
-              {title: "账号", key: "5", dataIndex: '5', width: '16%'},                   /*账号*/
-              {title: "国家", key: "6", dataIndex: '6', width: '16%'},                   /*国家*/
-              {title: "开户地", key: "7", dataIndex: '7', width: '16%'},                 /*开户地*/
+              { title: formatMessage({ id: "bank.account.bankName" }), dataIndex: 'bankName', width: '16%' },
+              { title: formatMessage({ id: "bank.account.country" }), dataIndex: 'country', width: '16%' },
+              {
+                title: formatMessage({ id: "bank.account.opening" }), dataIndex: 'city', width: '16%', render: (remark, record, index) => (
+                  <Popover content={record.province + '/' + record.city}>
+                    {record.province}/{record.city}
+                  </Popover>)
+              },
+              { title: formatMessage({ id: "bank.account.bankAddress" }), dataIndex: 'bankAddress', width: '16%' },
+              { title: formatMessage({ id: "bank.account.bankAccountName" }), dataIndex: 'bankAccountName', width: '16%' },
+              { title: formatMessage({ id: "bank.account.bankAccountNumber" }), dataIndex: 'bankAccountNumber', width: '16%' },                   /*国家*/
+              { title: formatMessage({ id: "bank.account.swiftCode" }), dataIndex: 'swiftCode', width: '16%' },
+              {
+                title: formatMessage({ id: "bank.account.remark" }), dataIndex: 'remark', width: '16%', render: remark => (
+                  <Popover content={remark}>
+                    {remark}
+                  </Popover>)
+              },
+              {
+                title: formatMessage({ id: "common.operation" }), dataIndex: 'operation', width: '14%',
+                render: (text, record) => (
+                  <span>
+                    <a style={{ marginRight: 10 }} onClick={(e) => this.rowClick(e, record)}>{formatMessage({ id: "company.maintain.detail" })}</a>
+                    <a onClick={(e) => this.editItem(e, record)}>{formatMessage({ id: "common.edit" })}</a>
+                  </span>)
+              }
             ]
         },
-        USER:{
-          rowSelection:{
-            type:'checkbox',
+        USER: {
+          rowSelection: {
+            type: 'checkbox',
             selectedRowKeys: [],
             onChange: this.onSelectChange,
           },
           url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
           columns:
             [
-              {title: "姓名", key: "fullName", dataIndex: 'fullName', width: '16%'},                   /*姓名*/
-              {title: "工号", key: "id", dataIndex: 'id', width: '8%'},                             /*工号*/
-              {title: "部门", key: "departmentName", dataIndex: 'departmentName', width: '10%'},    /*部门*/
-              {title: "联系方式", key: "mobile", dataIndex: 'mobile', width: '10%'},                /*联系方式*/
-              {title: "邮箱", key: "email", dataIndex: 'email', width: '10%'},                      /*邮箱*/
+              { title: formatMessage({ id: "company.maintain.fullName" }), key: "fullName", dataIndex: 'fullName', width: '16%' },                   /*姓名*/
+              { title: formatMessage({ id: "company.maintain.id" }), key: "id", dataIndex: 'id', width: '8%' },                             /*工号*/
+              { title: formatMessage({ id: "company.maintain.departmentName" }), key: "departmentName", dataIndex: 'departmentName', width: '10%' },    /*部门*/
+              { title: formatMessage({ id: "company.maintain.mobile" }), key: "mobile", dataIndex: 'mobile', width: '10%' },                /*联系方式*/
+              { title: formatMessage({ id: "company.maintain.email" }), key: "email", dataIndex: 'email', width: '10%' },                      /*邮箱*/
             ]
 
         },
       },
-      rowSelection:{
-        type:'checkbox',
+      rowSelection: {
+        type: 'checkbox',
         selectedRowKeys: [],
         onChange: this.onSelectChange,
       },
@@ -99,24 +110,28 @@ class WrappedCompanyMaintainDetail extends React.Component {
       showListSelector: false,
       newData: [],
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
-      newBankAccountPage:menuRoute.getRouteItem('new-bank-account','key'),                    //新建银行账户
-      bankAccountPageDetail:menuRoute.getRouteItem('bank-account-detail','key'),              //银行账户详情
+      newBankAccountPage: menuRoute.getRouteItem('new-bank-account', 'key'),                    //新建银行账户
+      bankAccountPageDetail: menuRoute.getRouteItem('bank-account-detail', 'key'),              //银行账户详情
     }
   }
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys,selectedRows) => {
-    console.log(selectedRowKeys);
-    console.log("selectedRowKeys")
+  onSelectChange = (selectedRowKeys, selectedRows) => {
     let tabsData = this.state.tabsData;
     tabsData.USER.rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({tabsData,selectedRowKeys});
+    this.setState({ tabsData, selectedRowKeys });
   };
 
 
+  //编辑
+  editItem = (e, record) => {
+    this.setState({
+      updateParams: { record },
+      showSlideFrame: true
+    })
+  }
 
   componentWillMount() {
-    this.getCompanyByCompanyOID(this.props.params.companyOId);
     this.getList(this.state.nowStatus);
   }
 
@@ -130,26 +145,13 @@ class WrappedCompanyMaintainDetail extends React.Component {
     })
   }
 
-  //根据companyDId获取公司
-  getCompanyByCompanyOID (companyOID){
-    httpFetch.get(`${config.baseUrl}/api/companies/${companyOID}`).then((response) => {
-      console.log(response.data);
-      this.setState({
-        infoData: response.data
-      })
-    }).catch((e)=>{
-      message.error(e.response.data.message);
-    })
-  }
-
-
   getList = (key) => {
     const { tabsData, page, pageSize } = this.state;
     let url = tabsData[key].url;
-    if(url){
+    if (url) {
       //&page=${page}&size=${pageSize}
-      return httpFetch.get(`${url}`).then(response => {
-        response.data.map((item, index)=>{
+      return httpFetch.get(url).then(response => {
+        response.data.map((item, index) => {
           item.key = item.id ? item.id : index;
         });
         this.setState({
@@ -166,159 +168,159 @@ class WrappedCompanyMaintainDetail extends React.Component {
   };
 
   onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
+    if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
         loading: true,
-      }, ()=>{
+      }, () => {
         this.getList(this.state.nowStatus);
       })
   };
 
-
-  //公司详情编辑
-  updateHandleInfo = (params) => {
-    this.setState({ editing: true });
-    httpFetch.put(`${config.budgetUrl}`, Object.assign(this.state.typeData, params)).then(response => {
-      message.success('修改成功');
-      let data = response.data;
-      this.setState({
-        typeData: data,
-        updateState: true,
-        editing: false
-      });
-    }).catch(e => {
-      this.setState({ editing: false })
-    });
-  };
-
   //渲染Tabs
-  renderTabs = () =>{
+  renderTabs = () => {
     return (
       this.state.tabs.map(tab => {
-        return <TabPane tab={tab.name} key={tab.key}/>
+        return <TabPane tab={tab.name} key={tab.key} />
       })
     )
   }
 
   //点击
-  onChangeTabs = (key) =>{
+  onChangeTabs = (key) => {
     this.setState({
       nowStatus: key,
       loading: true,
-      data:[],
+      data: [],
       pagination: {
         total: 0
       },
       page: 0
-    }, ()=>{
+    }, () => {
       this.getList(key);
     })
   };
 
   //新建
   handleNew = () => {
-    console.log("handleNew");
-    let path = this.state.newBankAccountPage.url;
+    let path = this.state.newBankAccountPage.url.replace(":companyId", this.props.params.companyId);
     this.context.router.push(path);
   };
 
+  //侧拉关闭后
+  handleCloseNewSlide = (params) => {
+    this.setState({
+      showSlideFrame: false
+    }, () => {
+      if (params) {
+        this.getList(this.state.nowStatus);
+      }
+    })
+  };
 
   //渲染按钮
-  renderButton = () =>{
-    const { saving,pagination,selectedRowKeys} = this.state;
-    if(this.state.nowStatus === "USER"){
+  renderButton = () => {
+    const { saving, pagination, selectedRowKeys } = this.state;
+    const { formatMessage } = this.props.intl;
+    if (this.state.nowStatus === "USER") {
       return (
         <div>
           <div className="table-header-title">共 {pagination.total} 条数据 / 已经选择了 {this.state.selectedRowKeys.length} 条数据</div>
           <div className="table-header-buttons">
             <Button type="primary">员工导入</Button>
-            <Button onClick={this.removeUser} disabled={selectedRowKeys.length<=0}>移动</Button>
+            <Button onClick={this.removeUser} disabled={selectedRowKeys.length <= 0}>移动</Button>
           </div>
-          </div>
-          )
+        </div>
+      )
     } else {
-          return(
-          <div>
+      return (
+        <div>
           <div className="table-header-title">共 {pagination.total} 条数据</div>
           <div className="table-header-buttons">
-          <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+            <Button type="primary" onClick={this.handleNew} loading={saving}>{formatMessage({ id: "common.create" })}</Button>
           </div>
-          </div>
-          )
-        }
+        </div>
+      )
+    }
   }
 
-  submitHandle = (value) =>{
+
+  //提交表单
+  submitHandle = (value) => {
     const companyOIDTo = (value.result)[0].companyOID;
-    const companyOIDFrom =this.props.params.companyOId;
+    const companyOIDFrom = this.props.params.companyOId;
     const selectedRowKeys = this.state.selectedRowKeys;
     let path = `${config.baseUrl}/api/users/move?companyOIDFrom=${companyOIDFrom}&companyOIDTo=${companyOIDTo}&selectMode=default?`
-    selectedRowKeys.map((item)=>{
-      path =`${path}&userOIDs=${item}`
+    selectedRowKeys.map((item) => {
+      path = `${path}&userOIDs=${item}`
     })
-    httpFetch.put(path).then((req)=>{
-      message.success("操作成功");
-      this.getCompanyByCompanyOID(companyOIDFrom);
+    httpFetch.put(path).then((req) => {
+      message.success(this.props.intl.formatMessage({ id: 'common.operate.success' }));
       this.setState({
-        selectedRowKeys:[],
+        selectedRowKeys: [],
       })
-    }).catch((e)=>{
+    }).catch((e) => {
       message.error(e.response.data)
     })
     this.showImport(false)
   }
 
   //员工移动
-  removeUser = () =>{
+  removeUser = () => {
     this.showImport(true)
   }
 
-  showImport = (value) =>{
-   this.setState({
-     showImportFrame:value
-   })
+  showImport = (value) => {
+    this.setState({
+      showImportFrame: value
+    })
   }
 
   CancelHandle = () => {
     this.showImport(false)
   }
 
-
+  rowClick = (e, record) => {
+    //跳转到详情页面
+    let path = this.state.bankAccountPageDetail.url.replace(":companyBankId", record.id);
+    this.context.router.push(path);
+  }
 
   render() {
-    const {infoList,selectedRowKeys, rowSelection,infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const { infoList, selectedRowKeys, rowSelection, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing, showSlideFrame, updateParams } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <div>
-        <BasicInfo infoList={infoList}
-                   infoData={infoData}
-                   updateHandle={this.updateHandleInfo}
-                   updateState={updateState}
-                   loading={editing}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
-            {this.renderButton()}
+          {this.renderButton()}
         </div>
         <Table columns={tabsData[nowStatus].columns}
-               dataSource={data}
-               pagination={pagination}
-               loading={loading}
-               bordered
-               size="middle"
-               rowKey={(reCode)=>{return reCode.userOID}}
-               rowSelection={tabsData[nowStatus].rowSelection}/>
-
-
-        <ListSelector visible={this.state.showImportFrame}
-                      onOk={this.submitHandle}
-                      onCancel={this.CancelHandle}
-                      type='user_move_select_company'
-                      single={true}
-                      extraParams={{"versionId": this.props.params.versionId}}
+          dataSource={data}
+          pagination={pagination}
+          loading={loading}
+          bordered
+          size="middle"
+          rowKey={(reCode) => { return reCode.userOID }}
+          rowSelection={tabsData[nowStatus].rowSelection}
         />
 
+        <ListSelector visible={this.state.showImportFrame}
+          onOk={this.submitHandle}
+          onCancel={this.CancelHandle}
+          type='user_move_select_company'
+          single={true}
+          extraParams={{ "versionId": this.props.params.versionId }}
+        />
+
+        <SlideFrame title={formatMessage({ id: "company.maintain.editBankAccount" })}
+          show={showSlideFrame}
+          content={EditBankAccount}
+          afterClose={this.handleCloseNewSlide}
+          onClose={() => this.setState({ showSlideFrame: false })}
+          params={updateParams} />
       </div>
     )
   }
@@ -331,7 +333,6 @@ WrappedCompanyMaintainDetail.contextTypes = {
 
 function mapStateToProps(state) {
   return {
-    organization: state.budget.organization
   }
 }
 

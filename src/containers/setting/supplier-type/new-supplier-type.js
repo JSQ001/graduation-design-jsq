@@ -10,30 +10,16 @@ const Option = Select.Option;
 
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import 'styles/pay/payment-method/new-payment-method.scss'
 
-class NewSubjectSheet extends React.Component {
+
+class NewSupplierType extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             params: {},
             loading: false,
-            // isDisabled: false
         };
-    }
-
-    componentWillMount() {
-        let params = this.props.params;
-        console.log(params);
-        // if (params && JSON.stringify(params) != "{}") {
-        //     this.setState({
-        //         isDisabled: true,
-        //     })
-        // } else {
-        //     this.setState({
-        //         isDisabled: false,
-        //     })
-        // }
     }
 
     //新建或编辑
@@ -43,15 +29,17 @@ class NewSubjectSheet extends React.Component {
             if (!err) {
                 this.setState({ loading: true });
                 if (JSON.stringify(this.props.params) === "{}") {
+
                     let toValue = {
                         ...this.props.params,
                         ...values,
                     }
-                    httpFetch.post(`${config.baseUrl}/api/account/set`, toValue).then((res) => {
+
+                    httpFetch.post(`http://139.224.2.45:11012/vendor-info-service/api/supplier/type`, toValue).then((res) => {
                         this.setState({ loading: false });
                         this.props.form.resetFields();
-                        this.props.close(true);
-                        message.success(this.props.intl.formatMessage({ id: "common.create.success" }, { name: `科目表` }));
+                        this.props.close();
+                        message.success(this.props.intl.formatMessage({ id: "common.operate.successs" }));
                     }).catch((e) => {
                         this.setState({ loading: false });
 
@@ -62,11 +50,11 @@ class NewSubjectSheet extends React.Component {
                         ...this.props.params,
                         ...values,
                     }
-                    httpFetch.put(`${config.baseUrl}/api/account/set`, toValue).then((res) => {
+                    httpFetch.put(`http://139.224.2.45:11012/vendor-info-service/api/supplier/type`, toValue).then((res) => {
                         this.setState({ loading: false });
                         this.props.form.resetFields();
                         this.props.close();
-                        message.success("编辑成功");
+                        message.success(this.props.intl.formatMessage({ id: "common.operate.success" }));
                     }).catch((e) => {
                         this.setState({ loading: false });
                         message.error(this.props.intl.formatMessage({ id: "common.save.filed" }) + `${e.response.data.message}`);
@@ -83,42 +71,43 @@ class NewSubjectSheet extends React.Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { params} = this.state;
+        const { params } = this.state;
         const formItemLayout = {
             labelCol: { span: 6, offset: 1 },
             wrapperCol: { span: 14, offset: 1 },
         };
+        const { formatMessage } = this.props.intl;
         return (
             <div className="new-payment-method">
                 <Form onSubmit={this.handleSave}>
-                    <FormItem {...formItemLayout} label="科目表代码">
-                        {getFieldDecorator('accountSetCode', {
+                    <FormItem {...formItemLayout} label={formatMessage({ id: "supplier.type.code" })}>
+                        {getFieldDecorator('supplierTypeCode', {
                             rules: [{
                                 required: true,
                                 message: this.props.intl.formatMessage({ id: "common.please.enter" })
                             }],
-                            initialValue: this.props.params.accountSetCode || ''
+                            initialValue: this.props.params.supplierTypeCode || ''
                         })(
-                            <Input disabled = { this.props.params.id ? true : false } />
+                            <Input />
                             )}
                     </FormItem>
-                    <FormItem {...formItemLayout} label="科目表名称">
-                        {getFieldDecorator('accountSetDesc', {
+                    <FormItem {...formItemLayout} label={formatMessage({ id: "supplier.type.name" })}>
+                        {getFieldDecorator('supplierTypeName', {
                             rules: [{
                                 required: true,
                                 message: this.props.intl.formatMessage({ id: "common.please.enter" })
                             }],
-                            initialValue: this.props.params.accountSetDesc || ''
+                            initialValue: this.props.params.supplierTypeName || ''
                         })(
-                            <Input disabled={this.props.params.id ? true : false} />
+                            <Input />
                             )}
                     </FormItem>
                     <FormItem {...formItemLayout} label={this.props.intl.formatMessage({ id: 'common.column.status' })}>
-                        {getFieldDecorator('enabled', {
-                            initialValue: this.props.params.id ? this.props.params.enabled : true
+                        {getFieldDecorator('isEnabled', {
+                            initialValue: this.props.params.id ? this.props.params.isEnabled : true
                         })(
-                            <Switch defaultChecked={this.props.params.id ? this.props.params.enabled : true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
-                        )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('enabled') ? this.props.intl.formatMessage({ id: "common.status.enable" }) : this.props.intl.formatMessage({ id: "common.status.disable" })}
+                            <Switch defaultChecked={this.props.params.id ? this.props.params.isEnabled : true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
+                            )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('enabled') ? this.props.intl.formatMessage({ id: "common.status.enable" }) : this.props.intl.formatMessage({ id: "common.status.disable" })}
                     </FormItem>
                     <div className="slide-footer">
                         <Button type="primary" htmlType="submit"
@@ -131,12 +120,8 @@ class NewSubjectSheet extends React.Component {
     }
 }
 
-
-
-const WrappedNewSubjectSheet = Form.create()(NewSubjectSheet);
+const WrappedNewSupplierType = Form.create()(NewSupplierType);
 function mapStateToProps(state) {
-    return {
-        company: state.login.company,
-    }
+    return {}
 }
-export default connect(mapStateToProps)(injectIntl(WrappedNewSubjectSheet));
+export default connect(mapStateToProps)(injectIntl(WrappedNewSupplierType));

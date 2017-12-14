@@ -9,6 +9,10 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area.js';
+import SlideFrame from 'components/slide-frame'
+
+import EditCompanyMaintain from './edit-company-maintain';
+import NewCompanyMaintain from './new-company-maintain';
 
 import "styles/setting/company-maintain/company-maintain.scss"
 
@@ -18,17 +22,19 @@ const journalTypeCode = [];
 class CompanyMaintain extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
       data: [],
       params: {},
       organization: {},
+      showSlideFrame:false,
+      updateParams: {},
       pagination: {
         current: 0,
         page: 0,
         total: 0,
         pageSize: 10,
-
       },
       showUpdateSlideFrame: false,
       showCreateSlideFrame: false,
@@ -53,8 +59,8 @@ class CompanyMaintain extends React.Component {
         {
           /*公司类型*/
           title: this.props.intl.formatMessage({id: "company.companyType"}),
-          key: "companyType",
-          dataIndex: 'companyType'
+          key: "companyTypeName",
+          dataIndex: 'companyTypeName'
         },
         {
           /*公司名称*/
@@ -71,7 +77,6 @@ class CompanyMaintain extends React.Component {
           title: this.props.intl.formatMessage({id: "company.legalEntityName"}),
           key: "legalEntityName",
           dataIndex: 'legalEntityName',
-
         },
         {
           /*公司级别*/
@@ -101,7 +106,15 @@ class CompanyMaintain extends React.Component {
           dataIndex: 'endDateActive',
           render(recode){
             return String(recode).substr(0,10);
-          }
+          },
+        },
+        {
+          title: "操作", dataIndex: 'operation', width: '10%', dataIndex: "id", key: "id",
+          render: (text, record) => (
+            <span>
+              <a  style={{ marginRight: 10 }} onClick={(e) => this.handleRowClick(e, record)}>详情</a>
+              <a  onClick={(e) => this.editItem(e, record)}>编辑</a>
+            </span>)
         }
       ],
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
@@ -114,9 +127,6 @@ class CompanyMaintain extends React.Component {
   componentWillMount() {
     this.getList();
   }
-
-
-
 
   //获取公司列表
   getList() {
@@ -158,12 +168,21 @@ class CompanyMaintain extends React.Component {
 
   //点击搜搜索
   handleSearch = (values) => {
-    console.log(values);
 
     this.setState({
       params: values,
     }, () => {
       this.getList()
+    })
+  };
+
+  //侧拉关闭后
+  handleCloseNewSlide = (params) => {
+    if (params) {
+      this.getList();
+    }
+    this.setState({
+      showSlideFrame: false
     })
   };
 
@@ -174,14 +193,23 @@ class CompanyMaintain extends React.Component {
   };
 
   //跳转到详情
-  HandleRowClick = (value) => {
-    console.log(value);
+  handleRowClick = (e,value) => {
     let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOID);
+    path = path.replace(":companyId", value.id);
     this.context.router.push(path);
   }
 
+  //弹出侧拉框
+  editItem = (e,record) => {
+
+    this.setState({
+      updateParams: record,
+      showSlideFrame: true
+    })
+  };
+
   render() {
-    const {loading, searchForm, data, selectedRowKeys, pagination, columns, batchCompany} = this.state;
+    const { loading, searchForm, data, selectedRowKeys, pagination, columns, batchCompany, showSlideFrame, updateParams } = this.state;
     const organization = this.props.organization;
     return (
       <div className="budget-journal">
@@ -202,9 +230,14 @@ class CompanyMaintain extends React.Component {
           pagination={pagination}
           size="middle"
           bordered
-          onRowClick={this.HandleRowClick}
           onChange={this.onChangePager}
         />
+        <SlideFrame title="编辑公司信息"
+          show={showSlideFrame}
+          content={EditCompanyMaintain}
+          afterClose={this.handleCloseNewSlide}
+          onClose={() => this.setState({ showSlideFrame: false })}
+          params={updateParams} />
       </div>
     )
   }

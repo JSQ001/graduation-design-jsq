@@ -21,6 +21,7 @@ import DepartmentGroupDetail from 'containers/setting/department-group/departmen
 import NewDepartmentGroup from 'containers/setting/department-group/new-department-group'
 import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
 import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
+import SupplierType from 'containers/setting/supplier-type/supplier-type'
 
 
 //新建部门组
@@ -174,7 +175,7 @@ const newCompanyMaintain ={
 //公司维护详情
 const companyMaintainDetail ={
   key:'company-maintain-detail',
-  url:'/main/setting/company-maintain/company-maintain-detail/:companyOId',
+  url:'/main/setting/company-maintain/company-maintain-detail/:companyOId/:companyId',
   components:CompanyMaintainDetail,
   parent: 'company-maintain'
 };
@@ -182,7 +183,7 @@ const companyMaintainDetail ={
 //新建银行账户
 const newBankAccount ={
   key:'new-bank-account',
-  url:'/main/setting/company-maintain/new-bank-account',
+  url:'/main/setting/company-maintain/new-bank-account/:companyId',
   components:NewBankAccount,
   parent: 'company-maintain'
 };
@@ -190,7 +191,7 @@ const newBankAccount ={
 //银行账户详情
 const bankAccountDetail ={
   key:'bank-account-detail',
-  url:'/main/setting/company-maintain/bank-account-detail',
+  url:'/main/setting/company-maintain/bank-account-detail/:companyBankId',
   components:BankAccountDetail,
   parent: 'company-maintain'
 };
@@ -218,7 +219,6 @@ const companyMaintain ={
   }
 };
 
-
 /*科目表定义*/
 const subjectSheet = {
   key: 'subject-sheet',
@@ -227,10 +227,18 @@ const subjectSheet = {
   parent: 'setting'
 };
 
+/*供应商类型定义*/
+const supplierType = {
+  key: 'supplier-type',
+  url: '/main/setting/supplier-type',
+  components: SupplierType,
+  parent: 'setting'
+};
+
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,subjectSheet],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup, subjectSheet, supplierType],
   icon: 'setting',
   admin: true
 };
