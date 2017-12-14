@@ -205,7 +205,9 @@ class ContractDetail extends React.Component{
     );
     return (
       <div className="contract-detail background-transparent">
-        <ContractDetailCommon id={this.props.params.id} getContractStatus={this.getStatus}/>
+        <ContractDetailCommon id={this.props.params.id}
+                              isApprovePage={true}
+                              getContractStatus={this.getStatus}/>
         {!isConfirm &&
           <Affix offsetBottom={0} className="bottom-bar" style={{height:'80px',lineHeight:'80px'}}>
             <Row>
@@ -247,6 +249,10 @@ class ContractDetail extends React.Component{
                 <Button onClick={this.goBack}>返 回</Button>
               </Col>
             </Row>
+          </Affix>}
+        {isConfirm &&
+          <Affix offsetBottom={0} className="bottom-bar" style={{height:'50px',lineHeight:'50px'}}>
+            <Button onClick={this.goBack} style={{marginLeft:30}}>返 回</Button>
           </Affix>}
       </div>
     )
