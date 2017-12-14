@@ -15,7 +15,10 @@ class NewPayPlan extends React.Component{
     this.state = {
       loading: false,
       currency: null,
-      partnerCategoryOptions: []
+      contractCategoryValue: 'EMPLOYEE',
+      partnerCategoryOptions: [], //合同方类型选项
+      employeeOptions: [], //员工选项
+      venderOptions: [], //供应商选项
     }
   }
 
@@ -23,7 +26,10 @@ class NewPayPlan extends React.Component{
     this.getSystemValueList(2107).then(res => { //合同方类型
       let partnerCategoryOptions = res.data.values || [];
       this.setState({ partnerCategoryOptions })
-    })
+    });
+    httpFetch.get(`${config.baseUrl}/api/users/v2/search`).then(res => {  //获取员工列表
+      res.status === 200 && this.setState({ employeeOptions: res.data })
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -82,7 +88,6 @@ class NewPayPlan extends React.Component{
         values.headerId = this.props.params.id;
         values.versionNumber = this.props.params.record.versionNumber;
         values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
-        values.lineNumber = 1;  //之后要删掉！！！！！！！！！！！！！！！！！！！
         let url = `${config.contractUrl}/contract/api/contract/line`;
         this.setState({loading: true});
         httpFetch.put(url, values).then(res => {
@@ -99,9 +104,15 @@ class NewPayPlan extends React.Component{
     })
   };
 
+  //选择合同方类型
+  changePartnerCategory = (value) => {
+    this.props.form.setFieldsValue({ partnerId: undefined });
+    this.setState({ contractCategoryValue: value })
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, currency, partnerCategoryOptions } = this.state;
+    const { loading, currency, partnerCategoryOptions, employeeOptions, venderOptions, contractCategoryValue } = this.state;
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 10, offset: 1 },
@@ -124,7 +135,7 @@ class NewPayPlan extends React.Component{
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={6} style={{marginLeft:3}}>
               <FormItem className="ant-col-offset-1">
                 {getFieldDecorator('amount', {
                   rules: [{
@@ -144,7 +155,7 @@ class NewPayPlan extends React.Component{
                 message: '请选择'
               }]
             })(
-              <Select placeholder="请选择">
+              <Select placeholder="请选择" onChange={this.changePartnerCategory}>
                 {partnerCategoryOptions.map((option) => {
                   return <Option key={option.value}>{option.messageKey}</Option>
                 })}
@@ -156,10 +167,18 @@ class NewPayPlan extends React.Component{
               rules: [{
                 required: true,
                 message: '请输入'
-              }],
-              initialValue: '911143733222408193'
+              }]
             })(
-              <Select></Select>
+              <Select placeholder="请选择">
+                {contractCategoryValue === 'EMPLOYEE' ?
+                  employeeOptions.map(option => {
+                    return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
+                  }) :
+                  venderOptions.map(option => {
+                    return <Option key={option.id}>{option.fullName}</Option>
+                  })
+                }
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="计划付款日期">

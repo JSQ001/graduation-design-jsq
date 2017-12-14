@@ -174,7 +174,7 @@ class AnnouncementInformationDetail extends React.Component{
   };
 
   handleSearch = (e)=>{
-    console.log(e)
+    console.log(e.target.value)
 
     console.log(this.refs.search)
   };
@@ -268,7 +268,7 @@ class AnnouncementInformationDetail extends React.Component{
                 <Search className="table-header-search"
                         ref="search"
                         placeholder={formatMessage({id:"announcement-info.searchHolder"})}
-                        onChange={this.handleSearch}
+                        onChange={e=>this.handleSearch(e)}
                         style={{ width: 200 }}/>
               </div>
             </div>

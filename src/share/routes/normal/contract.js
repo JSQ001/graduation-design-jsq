@@ -5,12 +5,20 @@ import ContractDetail from 'containers/contract/contract-detail'
 //新建合同
 const newContract = {
   key: 'new-contract',
-  url: '/main/contract/my-contract/new-contract/:id',
+  url: '/main/contract/my-contract/new-contract',
   components: NewContract,
   parent: 'my-contract'
 };
 
-//新建详情
+//编辑合同
+const editContract = {
+  key: 'edit-contract',
+  url: '/main/contract/my-contract/edit-contract/:id',
+  components: NewContract,
+  parent: 'my-contract'
+};
+
+//合同详情
 const contractDetail = {
   key: 'contract-detail',
   url: '/main/contract/my-contract/contract-detail/:id',
@@ -26,6 +34,7 @@ const myContract = {
   parent: 'contract',
   children: {
     newContract,
+    editContract,
     contractDetail
   }
 };

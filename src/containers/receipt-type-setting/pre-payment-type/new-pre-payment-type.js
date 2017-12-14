@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'antd'
+import { Form, Switch, Icon, Input, Select, Button, Row, Col, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -15,18 +15,22 @@ class NewPrePaymentType extends React.Component {
     this.state = {
       loading: false,
       options: [],
-      nowType: {}
+      nowType: {},
+      setOfBooks: []
     };
   }
 
   componentWillMount(){
-    // this.getSystemValueList().then(res => {
-    //   this.setState({options: res.data.values});
-    // });
+    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then(res => {
+      this.setState({ setOfBooks: res.data })
+    });
+    this.getSystemValueList(2105).then(res => {
+      this.setState({options: res.data.values});
+    });
   }
 
   componentWillReceiveProps(nextProps){
-    this.setState({nowType: Object.assign({}, nextProps.prePaymentType)})
+    this.setState({nowType: Object.assign({}, nextProps.params.prePaymentType)})
   }
 
   onCancel = () => {
@@ -56,22 +60,28 @@ class NewPrePaymentType extends React.Component {
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { nowType } = this.state;
+    const { nowType, options, setOfBooks } = this.state;
     const formItemLayout = {
-      labelCol: { span: 6 },
+      labelCol: { span: 8 },
       wrapperCol: { span: 10, offset: 1 },
     };
     return (
       <div>
         <Form onSubmit={this.handleSave}>
+          <div className="common-item-title">基本信息</div>
           <FormItem {...formItemLayout} label="帐套">
             {getFieldDecorator('setOfBooksId', {
               rules: [{
                 required: true
               }],
-              initialValue: nowType.setOfBooksId
+              initialValue: nowType.setOfBookId
             })(
-              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请输入 */}/>
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
+                      notFoundContent={<Spin size="small" />} disabled={!!nowType.setOfBookId}>
+                {setOfBooks.map((option)=>{
+                  return <Option key={option.id}>{option.setOfBooksCode}</Option>
+                })}
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="预付款类型代码">
@@ -91,20 +101,24 @@ class NewPrePaymentType extends React.Component {
                 required: true,
                 message: formatMessage({id: 'common.please.enter'}),  //请输入
               }],
-              initialValue: nowType.organizationName
+              initialValue: nowType.typeName
             })(
               <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="付款方式">
-            {getFieldDecorator('paymentMethodCategory', {
+          <FormItem {...formItemLayout} label="帐套">
+            {getFieldDecorator('setOfBooksId', {
               rules: [{
-                required: true,
-                message: formatMessage({id: 'common.please.select'}),  //请选择
+                required: true
               }],
-              initialValue: nowType.paymentMethodCategory
+              initialValue: nowType.setOfBookId
             })(
-              <Input placeholder={formatMessage({id: 'common.please.select'})/* 请输入 */}/>
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
+                      notFoundContent={<Spin size="small" />} disabled={!!nowType.setOfBookId}>
+                {setOfBooks.map((option)=>{
+                  return <Option key={option.id}>{option.setOfBooksCode}</Option>
+                })}
+              </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
@@ -114,6 +128,31 @@ class NewPrePaymentType extends React.Component {
             })(
               <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('isEnabled') ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})}
+          </FormItem>
+          <div className="common-item-title">付款方式</div>
+          <FormItem {...formItemLayout} label="付款方式">
+            {getFieldDecorator('paymentMethodCategory', {
+              rules: [{
+                required: true,
+                message: formatMessage({id: 'common.please.select'}),  //请选择
+              }],
+              initialValue: nowType.paymentMethodCategory
+            })(
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}>
+                {options.map(option => {
+                  return <Option key={option.value}>{option.messageKey}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
+          <div className="common-item-title">关联申请设置</div>
+          <FormItem {...formItemLayout} label="是否关联申请">
+            {getFieldDecorator('needApply', {
+              initialValue: true,
+              valuePropName: 'checked'
+            })(
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
+            )}
           </FormItem>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>

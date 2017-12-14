@@ -1,5 +1,5 @@
 import React  from 'react'
-import Importer from 'components/importer'
+import Importer from 'components/template/importer'
 import SearchArea from 'components/search-area'
 import { Button } from 'antd'
 import config from 'config'

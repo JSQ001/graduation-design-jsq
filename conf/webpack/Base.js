@@ -94,7 +94,9 @@ class WebpackBaseConfig {
           {
             enforce: 'pre',
             test: /\.js?$/,
-            include: this.srcPathAbsolute,
+            include: [
+              this.srcPathAbsolute
+            ],
             loader: 'babel-loader',
             query: {
               presets: ['es2015','stage-0']
@@ -202,7 +204,7 @@ class WebpackBaseConfig {
       },
       output: {
         path: path.resolve('./dist/assets'),
-        filename: 'app.js',
+        filename: '[name].js',
         publicPath: './assets/'
       },
       plugins: [],

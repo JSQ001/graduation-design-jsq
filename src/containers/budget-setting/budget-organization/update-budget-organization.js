@@ -56,7 +56,7 @@ class UpdateBudgetOrganization extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
     const formItemLayout = {
-      labelCol: { span: 6 },
+      labelCol: { span: 8 },
       wrapperCol: { span: 10, offset: 1 },
     };
     return (

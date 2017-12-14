@@ -19,6 +19,9 @@ class BudgetBalanceResult extends React.Component {
       loading: true,
       budgetBalancePage: menuRoute.getRouteItem('budget-balance', 'key'),
       data: [],
+      pagination: {
+        total: 0
+      },
       columns: [
         {title: '公司', dataIndex: 'companyName', render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: '预算项目类型', dataIndex: 'itemTypeName', render: recode => <Popover content={recode}>{recode}</Popover>},
@@ -69,7 +72,7 @@ class BudgetBalanceResult extends React.Component {
       let companyNumber = 0;
       res.data.queryLineList.map(item => {
         if(item.parameterCode === 'COMPANY')
-          companyNumber = item.queryParameterList.length;
+          companyNumber = item.isAll ? '全部' : `共 ${item.queryParameterList.length} 个`;
       });
       this.setState({
         condition: {
@@ -82,6 +85,15 @@ class BudgetBalanceResult extends React.Component {
       })
     });
     this.getList();
+  };
+
+  onChangePager = (page) => {
+    if (page - 1 !== this.state.page)
+      this.setState({
+        page: page - 1
+      }, () => {
+        this.getList();
+      })
   };
 
   getList = () => {
@@ -99,7 +111,12 @@ class BudgetBalanceResult extends React.Component {
       this.setState({
         loading: false,
         data,
-        total
+        total,
+        pagination: {
+          total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+          onChange: this.onChangePager,
+          current: this.state.page + 1
+        }
       })
     }).catch(e => {
       message.error(e.response.data.message);
@@ -142,7 +159,8 @@ class BudgetBalanceResult extends React.Component {
   };
 
   render(){
-    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam, budgetBalancePage } = this.state;
+    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam, budgetBalancePage, pagination } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <div className="budget-balance-result">
         <h3 className="header-title">查询结果</h3>
@@ -152,7 +170,7 @@ class BudgetBalanceResult extends React.Component {
             <Row gutter={40}>
               <Col span={8} className="info-block">
                 <div className="info-title">公司:</div>
-                <div className="info-content">共 {condition.companyNumber} 个</div>
+                <div className="info-content">{condition.companyNumber}</div>
               </Col>
               <Col span={8} className="info-block">
                 <div className="info-title">预算版本:</div>
@@ -174,10 +192,15 @@ class BudgetBalanceResult extends React.Component {
           </div>
         </div>
 
+
+        <div className="table-header">
+          <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
+        </div>
         {this.renderTotal()}
         <Table columns={columns}
                dataSource={data}
                loading={loading}
+               pagination={pagination}
                size="middle"
                bordered
                rowKey="key"
