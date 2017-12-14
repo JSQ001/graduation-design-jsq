@@ -143,8 +143,8 @@ class UpdateBudgetScenarios extends React.Component{
             )}
           </FormItem>
           <div className="slide-footer">
-            <Button type="primary" htmlType="submit" loading={loading}>保存</Button>
-            <Button onClick={this.onCancel}>取消</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>保 存</Button>
+            <Button onClick={this.onCancel}>取 消</Button>
           </div>
         </Form>
       </div>
