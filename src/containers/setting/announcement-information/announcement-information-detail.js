@@ -175,7 +175,8 @@ class AnnouncementInformationDetail extends React.Component{
 
   handleSearch = (e)=>{
     console.log(e)
-    console.log(this.refs.search.getEle)
+
+    console.log(this.refs.search)
   };
 
   //点击取消，跳转到上一页面
