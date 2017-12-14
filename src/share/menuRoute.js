@@ -183,11 +183,18 @@ const updateCurrentPage = () => {
  * @param attrName    值名称
  * @return {*}    页面项
  */
-function getRouteItem(attr, attrName){
+function getRouteItem(attr, attrName = 'key'){
   let current = null;
   this.menu.map(menuItem => {
-    if(menuItem[attrName] === attr)
+    if(menuItem[attrName] === attr) {
       current = menuItem;
+      if (menuItem.children) {
+        for (let childName in menuItem.children) {
+          if (menuItem.children[childName][attrName] === attr)
+            current = menuItem.children[childName]
+        }
+      }
+    }
     else{
       if(menuItem.subMenu){
         menuItem.subMenu.map(subMenuItem => {

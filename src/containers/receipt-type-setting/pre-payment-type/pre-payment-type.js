@@ -6,7 +6,7 @@ import { Table, Badge, Button, Popover, message } from 'antd';
 import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
 
-import NewPrePaymentType from 'containers/receipt-type-setting/new-pre-payment-type'
+import NewPrePaymentType from 'containers/receipt-type-setting/pre-payment-type/new-pre-payment-type'
 import SlideFrame from 'components/slide-frame'
 import SearchArea from 'components/search-area'
 
