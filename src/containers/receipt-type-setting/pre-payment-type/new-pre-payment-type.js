@@ -106,6 +106,21 @@ class NewPrePaymentType extends React.Component {
               <Input placeholder={formatMessage({id: 'common.please.enter'})/* 请输入 */}/>
             )}
           </FormItem>
+          <FormItem {...formItemLayout} label="帐套">
+            {getFieldDecorator('setOfBooksId', {
+              rules: [{
+                required: true
+              }],
+              initialValue: nowType.setOfBookId
+            })(
+              <Select placeholder={formatMessage({id: 'common.please.select'})/* 请选择 */}
+                      notFoundContent={<Spin size="small" />} disabled={!!nowType.setOfBookId}>
+                {setOfBooks.map((option)=>{
+                  return <Option key={option.id}>{option.setOfBooksCode}</Option>
+                })}
+              </Select>
+            )}
+          </FormItem>
           <FormItem {...formItemLayout} label={formatMessage({id: 'common.column.status'})/* 状态 */}>
             {getFieldDecorator('isEnabled', {
               initialValue: nowType.isEnabled,
@@ -128,6 +143,15 @@ class NewPrePaymentType extends React.Component {
                   return <Option key={option.value}>{option.messageKey}</Option>
                 })}
               </Select>
+            )}
+          </FormItem>
+          <div className="common-item-title">关联申请设置</div>
+          <FormItem {...formItemLayout} label="是否关联申请">
+            {getFieldDecorator('needApply', {
+              initialValue: true,
+              valuePropName: 'checked'
+            })(
+              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />}/>
             )}
           </FormItem>
           <div className="slide-footer">
