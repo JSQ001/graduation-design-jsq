@@ -102,7 +102,7 @@ class MyNewPrePayment extends React.Component{
           ...values,
           paymentReqTypeId:this.props.params.prePaymentTypeId
       }
-        let url = `http://192.168.1.72:8072/api/cash/prepayment/requisitionHead`;
+        let url = `${config.cdcUrl}/api/cash/prepayment/requisitionHead`;
         this.setState({ loading: true });
         httpFetch.post(url, dataValue).then(res => {
           if (res.status === 200) {

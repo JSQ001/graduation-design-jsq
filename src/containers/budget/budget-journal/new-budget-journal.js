@@ -187,19 +187,14 @@ class NewBudgetJournalFrom extends React.Component {
     let formOid =null;
     let documentOid =null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/journalType/selectByInput?&page=0&size=50&organizationId=${this.props.organization.id}`).then((res)=>{
-      console.log(4444);
       res.data.map((item)=>{
         if(item.id == value){
-          console.log(value);
-          console.log(3333);
           formOid = item.form0id;
           documentOid = item.formType;
           this.setState({
             formOid,
             documentOid
-          },()=>{
-            console.log(this.state.formOid)
-          })
+          },()=>{})
         }
       })
     })
@@ -342,7 +337,7 @@ class NewBudgetJournalFrom extends React.Component {
                   {getFieldDecorator('journalTypeName', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "journalTypeName"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算日记账类型"})
                     }]
                   })(
                     <Chooser
