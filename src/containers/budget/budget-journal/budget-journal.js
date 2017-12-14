@@ -109,7 +109,7 @@ class BudgetJournal extends React.Component {
   componentWillMount(){
     this.getList();
   }
-  
+
   //获取预算日记账数据
   getList(){
     this.setState({
@@ -180,13 +180,13 @@ class BudgetJournal extends React.Component {
           </div>
         </div>
         <Table
-          rowKey={(record )=>{return record.journalTypeCode}}
           loading={loading}
           dataSource={data}
           columns={columns}
           pagination={pagination}
           size="middle"
           bordered
+          rowKey={record=>record.id}
           onRow={record => ({
             onClick: () => this.HandleRowClick(record)
           })}
