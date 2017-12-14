@@ -51,8 +51,6 @@ class NewBudgetJournalFrom extends React.Component {
 
 
   componentWillMount() {
-    console.log(this.props.user);
-    console.log(this.props.company);
     this.getPeriodStrategy();
     this.getDefaultValue();
   }
@@ -196,9 +194,7 @@ class NewBudgetJournalFrom extends React.Component {
           this.setState({
             formOid,
             documentOid
-          },()=>{
-            console.log(this.state.formOid)
-          })
+          },()=>{})
         }
       })
     })
@@ -341,7 +337,7 @@ class NewBudgetJournalFrom extends React.Component {
                   {getFieldDecorator('journalTypeName', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "journalTypeName"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算日记账类型"})
                     }]
                   })(
                     <Chooser

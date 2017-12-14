@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Spin,Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps} from 'antd';
+import { Spin,Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps,Popconfirm} from 'antd';
 const Step =Steps.Step;
 
 import "styles/budget/budget-journal/budget-journal-detail-submit.scss"
@@ -114,8 +114,6 @@ class BudgetJournalDetailSubmit extends React.Component {
   }
 
   componentWillMount=()=>{
-    console.log(this.props.params.journalCode);
-
     this.getDataByBudgetJournalCode();
   }
 
@@ -199,13 +197,14 @@ class BudgetJournalDetailSubmit extends React.Component {
     switch (infoData.status){
       case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
       case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
-      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text={infoData.statusName}/> }
+      case 'SUBMIT_RETURN':{return   <Badge status="warning" text={infoData.statusName}/>}
       case 'REJECT':{ return  <Badge status="error" text={infoData.statusName} />}
-      case 'CHECKED':{return < Badge status="default" color="#234234" text={infoData.statusName}/>}
-      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={infoData.statusName}/>}
-      case 'POSTED':{return <Badge status="default"  color="#87d068" text={infoData.statusName}/>}
-      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={infoData.statusName}/>}
-      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={infoData.statusName}/>}
+      case 'CHECKED':{return < Badge status="default" text={infoData.statusName}/>}
+      case 'CHECKING':{return <Badge  status="default"text={infoData.statusName}/>}
+      case 'POSTED':{return <Badge status="default" text={infoData.statusName}/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={infoData.statusName}/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default"  text={infoData.statusName}/>}
+      default :{return <Badge status="default"  text={infoData.statusName}/>}
     }
   }
 
@@ -258,7 +257,6 @@ class BudgetJournalDetailSubmit extends React.Component {
   //撤回
   handleRevocation=()=>{
     const headerIds =[];
-    console.log(this.props.user);
     headerIds.push(this.state.headerAndListData.dto.id)
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/submit/return/by/headerIdsAndUserId?userId=${this.props.user.id}`,headerIds).then((item)=>{
       this.context.router.push(this.state.budgetJournalPage.url);
@@ -275,7 +273,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //审批中返回，撤回按钮
   getCheckingButton(){
-    return this.state.infoData.status=="SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+    return this.state.infoData.status === "SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
   }
 
   render(){
@@ -292,6 +290,7 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="base-info-title">状态:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
+                {infoData.status}
               </div>
             </Col>
             <Col span={8}>
@@ -367,7 +366,11 @@ class BudgetJournalDetailSubmit extends React.Component {
 
         <div className="footer-operate">
             <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
-            {this.getCheckingButton()}
+            {this.state.infoData.status === "SUBMIT"?
+              (   <Popconfirm placement="topLeft" title={"确认撤回"} onConfirm={this.handleRevocation} okText="确定" cancelText="取消">
+                   <Button className="button-Revocation" type="primary" >撤回</Button>
+                </Popconfirm>
+              ) :''}
 
         </div>
 

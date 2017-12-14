@@ -88,14 +88,21 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
+          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*本币今额*/
           title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
           key: "functionalAmount",
           dataIndex: 'functionalAmount',
-          render: this.filterMoney
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*数字*/

@@ -78,7 +78,7 @@ class BudgetJournal extends React.Component {
           /*创建时间*/
           title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
-            <Popover content={recode}>
+            <Popover content={String(recode).substring(0,10)}>
               {String(recode).substring(0,10)}
             </Popover>)
         },
@@ -108,8 +108,6 @@ class BudgetJournal extends React.Component {
 
   componentWillMount(){
     this.getList();
-    console.log(this.props.user);
-
   }
 
 
@@ -162,7 +160,7 @@ class BudgetJournal extends React.Component {
   //跳转到详情
   HandleRowClick=(value)=>{
     const journalCode =value.journalCode;
-    if(value.status=="NEW" || value.status=="REJECT"){
+    if(value.status=="NEW" || value.status=="SUBMIT_RETURN"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }else {

@@ -98,7 +98,7 @@ class Importer extends React.Component {
   onCancel = () => {
     this.setState({visible: false, uploading: false});
     if (this.state.uploading && this.state.transactionID) {
-      httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
+      httpFetch.delete(`${config.cdcUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
     }
   };
 

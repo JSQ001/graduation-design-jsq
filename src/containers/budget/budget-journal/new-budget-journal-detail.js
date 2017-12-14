@@ -90,7 +90,26 @@ class NewBudgetJournalDetail extends React.Component {
         listExtraParams.companyId = companyId;
         item["listExtraParams"]=listExtraParams;
         item["disabled"]=false;
-        return
+        return item;
+      }
+    })
+    this.setState({
+      searchFrom:searchFrom
+    })
+  }
+
+  //预算项目是否可以选
+  getItemAbled(value,companyId){
+    let searchFrom =this.state.searchForm;
+    searchFrom.map((item)=>{
+      if(item.id === "item" ){
+        item["disabled"]=value;
+        if(!value){
+          let listExtraParams = item["listExtraParams"];
+          listExtraParams.companyId = companyId;
+          item["listExtraParams"]=listExtraParams;
+        }
+        return item;
       }
     })
     this.setState({
@@ -121,7 +140,6 @@ class NewBudgetJournalDetail extends React.Component {
   }
 
   componentWillMount(){
-    console.log(123);
     let queryLineListTypeOptions = [];
     this.getSystemValueList(2021).then(res => {
       res.data.values.map(data => {
@@ -130,7 +148,6 @@ class NewBudgetJournalDetail extends React.Component {
     });
     let currencyOptions = [];
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`).then((res)=>{
-      console.log(res.data);
       res.data.map(data => {
         currencyOptions.push({label: data.attribute5,data: data,key:data.id})
       });
@@ -176,7 +193,7 @@ class NewBudgetJournalDetail extends React.Component {
         step:10, defaultValue:0, event:'amount'},  //金额
       {type: 'inputNumber', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
         step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}), isRequired: true,step:1,defaultValue:0,min:0}, //数量
+      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}),step:1,defaultValue:0,min:0}, //数量
       {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
     ];
     this.setState({ searchForm })
@@ -187,13 +204,6 @@ class NewBudgetJournalDetail extends React.Component {
       if(nextProps.params.isNew === false){
         this.state.rate=nextProps.params.rate;
         rateData=nextProps.params.rate;
-        if(nextProps.params.companyId ){
-          this.setState({
-            companyIdFlag:false,
-          },()=>{
-            this.setItemCompanyId(nextProps.params.companyId);
-          })
-        }
       }else {}
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
@@ -211,14 +221,25 @@ class NewBudgetJournalDetail extends React.Component {
           this.getDimensionByStructureId();
         })
       }
+      //预算项目控制
       if(nextProps.params.journalTypeId && this.state.journalTypeIdFlag){
         this.setState({
           journalTypeIdFlag:false,
         },()=>{
-          this.getItemUrl();
+          this.getItemUrl(nextProps.params.company[0].id);
         })
       }
-      if(nextProps.params.id !== this.state.params.id){
+
+      if(nextProps.params.id !== this.props.params.id){
+
+        if(nextProps.params.journalTypeId && !this.state.journalTypeIdFlag){
+           if(nextProps.params.isNew){
+               this.getItemAbled(true,'');
+             }else {
+               this.getItemAbled(false,nextProps.params.company[0].id);
+             }
+        }
+
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
           for(let name in params){
@@ -234,11 +255,17 @@ class NewBudgetJournalDetail extends React.Component {
     }
   };
 
-  getItemUrl(){
+  getItemUrl(value){
     let searchForm = this.state.searchForm;
+    let companyId = this.props.params.isNew?'':value;
       searchForm.map(searchItem => {
       if(searchItem.id === "item"){
-        searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":''};
+        searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":companyId};
+        if(this.props.params.isNew === true){
+          searchItem["disabled"]=true;
+        }else {
+          searchItem["disabled"]=false;
+        }
       }
     });
     this.setState({ searchForm });
