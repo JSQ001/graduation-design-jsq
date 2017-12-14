@@ -87,7 +87,10 @@ class NewBudgetJournalDetail extends React.Component {
     searchFrom.map((item)=>{
       if(item.id === "item" ){
         let listExtraParams = item["listExtraParams"];
-        listExtraParams.companyId = companyId;
+        if(this.props.params.journalTypeId){
+             listExtraParams.companyId = companyId;
+             listExtraParams.journalTypeId = this.props.params.journalTypeId;
+        }
         item["listExtraParams"]=listExtraParams;
         item["disabled"]=false;
         return item;
@@ -222,11 +225,13 @@ class NewBudgetJournalDetail extends React.Component {
         })
       }
       //预算项目控制
-      if(nextProps.params.journalTypeId && this.state.journalTypeIdFlag){
+      if(nextProps.params.journalTypeId && nextProps.params.company && this.state.journalTypeIdFlag){
         this.setState({
           journalTypeIdFlag:false,
         },()=>{
-          this.getItemUrl(nextProps.params.company[0].id);
+          console.log(nextProps.params.company);
+          console.log(nextProps.params.journalTypeId);
+          this.getItemUrl(nextProps.params.company[0].id,nextProps.params.journalTypeId);
         })
       }
 
@@ -255,12 +260,13 @@ class NewBudgetJournalDetail extends React.Component {
     }
   };
 
-  getItemUrl(value){
+  getItemUrl(value,journalTypeId){
+    console.log(21313123);
     let searchForm = this.state.searchForm;
     let companyId = this.props.params.isNew?'':value;
       searchForm.map(searchItem => {
       if(searchItem.id === "item"){
-        searchItem.listExtraParams ={"journalTypeId":this.props.params.journalTypeId,"companyId":companyId};
+        searchItem.listExtraParams ={"journalTypeId":journalTypeId,"companyId":companyId};
         if(this.props.params.isNew === true){
           searchItem["disabled"]=true;
         }else {
