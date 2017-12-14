@@ -30,6 +30,9 @@ class NewContract extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
+      contractCategoryValue: 'EMPLOYEE',
+      unitIdOptions: [], //责任部门选项
+      employeeIdOptions: [], //责任人选项
       selectorItem: {},
       extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
@@ -60,6 +63,12 @@ class NewContract extends React.Component{
         this.setState({ companyIdOptions })
       })
     });
+    httpFetch.get(`${config.baseUrl}/api/users/v2/search`).then(res => {  //获取员工列表
+      res.status === 200 && this.setState({ employeeOptions: res.data })
+    });
+    httpFetch.get(`${config.baseUrl}/api/departments/root/v2?flag=1001`).then(res => {  //获取责任部门列表
+      res.status === 200 && this.setState({ unitIdOptions: res.data })
+    })
   }
 
   //获取合同信息
@@ -115,14 +124,33 @@ class NewContract extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       console.log(values);
       if (!err) {
-
+        values.attachmentOID = this.state.uploadOIDs;
+        values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
+        values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
+        values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
+        values.contractTypeId = values.contractTypeId[0].id;
+        values.id = this.state.data.id;
+        values.versionNumber = this.state.data.versionNumber;
+        this.setState({ loading: true });
+        let url = `${config.contractUrl}/contract/api/contract/header`;
+        httpFetch.put(url, values).then(res => {
+          if (res.status === 200) {
+            this.setState({ loading: false });
+            message.success('修改成功');
+            this.context.router.push(this.state.contractDetail.url.replace(':id', res.data.id));
+          }
+        }).catch(e => {
+          message.error(`修改失败，${e.response.data.message}`);
+          this.setState({ loading: false })
+        })
       }
     })
   };
 
   //取消
   onCancel = () => {
-    this.context.router.push(this.state.myContract.url);
+    this.props.params.id ? this.context.router.push(this.state.contractDetail.url.replace(':id', this.props.params.id)) :
+      this.context.router.push(this.state.myContract.url)
   };
 
   //获取合同类型
@@ -156,9 +184,24 @@ class NewContract extends React.Component{
     }
   };
 
+  //选择合同方类型
+  changePartnerCategory = (value) => {
+    this.props.form.setFieldsValue({ partnerId: undefined });
+    this.setState({ contractCategoryValue: value })
+  };
+
+  //选择责任部门
+  changeUnitId = (value) => {
+    this.props.form.setFieldsValue({ employeeId: undefined });
+    let url = `${config.baseUrl}/api/departments/users/${value}`;
+    httpFetch.get(url).then(res => {
+      this.setState({ employeeIdOptions: res.data })
+    });
+  };
+
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, selectorItem, extraParams } = this.state;
     return (
       <div className="new-contract background-transparent" style={{marginBottom:40, marginTop:-35}}>
         <Spin spinning={pageLoading}>
@@ -324,7 +367,7 @@ class NewContract extends React.Component{
                       }],
                       initialValue: isNew ? (partnerCategoryOptions[0] ? partnerCategoryOptions[0].value : '') : data.partnerCategory
                     })(
-                      <Select placeholder="请选择">
+                      <Select placeholder="请选择" onChange={this.changePartnerCategory}>
                         {partnerCategoryOptions.map((option) => {
                           return <Option key={option.value}>{option.messageKey}</Option>
                         })}
@@ -342,7 +385,14 @@ class NewContract extends React.Component{
                       initialValue: isNew ? undefined : data.partnerId
                     })(
                       <Select placeholder="请选择">
-                        <Option key="911143733222408193">lucky</Option>
+                        {contractCategoryValue === 'EMPLOYEE' ?
+                          employeeOptions.map(option => {
+                            return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
+                          }) :
+                          venderOptions.map(option => {
+                            return <Option key={option.id}>{option.fullName}</Option>
+                          })
+                        }
                       </Select>
                     )}
                   </FormItem>
@@ -369,7 +419,11 @@ class NewContract extends React.Component{
                     {getFieldDecorator('unitId', {
                       initialValue: isNew ? undefined : data.unitId
                     })(
-                      <Input placeholder="请输入"/>
+                      <Select placeholder="请选择" allowClear onChange={this.changeUnitId}>
+                        {unitIdOptions.map((option) => {
+                          return <Option key={option.departmentOID}>{option.name}</Option>
+                        })}
+                      </Select>
                     )}
                   </FormItem>
                 </Col>
@@ -378,7 +432,11 @@ class NewContract extends React.Component{
                     {getFieldDecorator('employeeId', {
                       initialValue: isNew ? undefined : data.employeeId
                     })(
-                      <Input placeholder="请输入"/>
+                      <Select placeholder="请选择" allowClear>
+                        {employeeIdOptions.map((option) => {
+                          return <Option key={option.userOID}>{option.fullName} - {option.employeeID}</Option>
+                        })}
+                      </Select>
                     )}
                   </FormItem>
                 </Col>
