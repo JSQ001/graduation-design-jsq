@@ -10,11 +10,12 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import 'styles/setting/announcement-information/announcement-information-detail.scss'
+import debounce from 'lodash.debounce';
 
 const TabPane = Tabs.TabPane;
 const FormItem = Form.Item;
 const {TextArea} = Input;
-const CheckboxGroup = Checkbox.Group;
+const Search = Input.Search;
 
 class AnnouncementInformationDetail extends React.Component{
   constructor(props){
@@ -22,17 +23,12 @@ class AnnouncementInformationDetail extends React.Component{
     const {formatMessage} = this.props.intl;
     this.state = {
       loading: true,
+      upload: false,
+      btnLoading: false,
       data:[],
       companyListSelector: false,
       isEnabled: true,
-      previewVisible: false,
-      previewImage: '',
-      fileList: [{
-        uid: -1,
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }],
+      imageUrl:"",
       pagination: {
         current:0,
         page:0,
@@ -46,27 +42,34 @@ class AnnouncementInformationDetail extends React.Component{
         {key: 'detail', name: formatMessage({id:"announcement-info.infoDetail"})}, /*公告详情*/
         {key: 'company', name: formatMessage({id: "announcement-info.deliveryCompany"})} /*分配公司*/
       ],
-      selectedEntityOIDs: [],    //已选择的列表项的OIDs
-
       selectorItem:{
         title: `${formatMessage({id: "announcement-info.deliveryCompany"})}`,
         url: `${config.baseUrl}/api/company/deploy/carousel`,
         searchForm: [
-          {type: 'select', id: 'companyLevelId', label: '公司级别',defaultValue: '',options: [], getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`},
-          {type: 'select', id: 'legalEntityId', label: '法人实体',defaultValue: '',options: [], getUrl: `${config.budgetUrl}/api/all/legalentitys`},
-          {type: 'input', id: 'companyCode', label: "公司代码",defaultValue: ''},
-          {type: 'input', id: 'companyName', label: "公司名称",defaultValue: ''},
-          {type: 'input', id: 'companyCodeFrom', label: "公司代码从",defaultValue: ''},
-          {type: 'input', id: 'companyCodeTo', label: "公司代码至",defaultValue: ''},
+          {type: 'select', id: 'companyLevelId', label: formatMessage({id:"company.companyLevelName"}),defaultValue: '',options: [], getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`},
+          {type: 'select', id: 'legalEntityId', label: formatMessage({id:"company.legalEntity"}),defaultValue: '',options: [], getUrl: `${config.budgetUrl}/api/all/legalentitys`},
+          {type: 'input', id: 'companyCode', label: formatMessage({id:"company.companyCode"}),defaultValue: ''},
+          {type: 'input', id: 'companyName', label: formatMessage({id:"company.name"}),defaultValue: ''},
+          {type: 'input', id: 'companyCodeFrom', label: formatMessage({id:"structure.companyCodeFrom"}),defaultValue: ''},
+          {type: 'input', id: 'companyCodeTo', label: formatMessage({id:"structure.companyCodeTo"}),defaultValue: ''},
         ],
         columns: [
-          {title: "公司代码", dataIndex: 'companyCode'},
-          {title: "公司名称",dataIndex:"companyName"},
-          {title: "公司类型",dataIndex:"companyTypeName"},
+          {title: formatMessage({id:"company.companyCode"}), dataIndex: 'companyCode'},
+          {title: formatMessage({id:"company.name"}),dataIndex:"companyName"},
+          {title: formatMessage({id:"structure.companyType"}),dataIndex:"companyTypeName"},
         ],
         key: 'id'
-      }
-    }
+      },
+      columns: [
+        {          /*公司代码*/
+          title: formatMessage({id:"structure.companyCode"}), key: "companyCode", dataIndex: 'companyCode',width: '10%',
+        },
+        {          /*公司名称*/
+          title: formatMessage({id:"structure.companyName"}), key: "companyName", dataIndex: 'companyName'
+        },
+      ]
+    };
+    this.handleSearch = debounce(this.handleSearch,1000)
   }
 
   deleteItem = (e, record) => {
@@ -82,7 +85,7 @@ class AnnouncementInformationDetail extends React.Component{
   }
 
   getList(){
-    httpFetch.get(`${config.baseUrl}/api/carousels/enable/company?roleType=TENANT&companyOID=${this.props.company.companyOID}`).then((response)=>{
+    httpFetch.get(`${config.baseUrl}/api/carousels/company/find/distribution?carouselOID=d96fcdeb-bffa-4dcf-9e49-9ca07e946b2d&page=0&size=10`).then((response)=>{
       console.log(response)
       let i = 1;
       response.data.map((item)=>{
@@ -98,16 +101,18 @@ class AnnouncementInformationDetail extends React.Component{
 
   handleSubmit = (e)=>{
     e.preventDefault();
+    this.setState({btnLoading: true});
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values);
         values.attachmentOID ="936e0d08-ed13-4ce5-813f-84818964e3cf";
         httpFetch.post(`${config.baseUrl}/api/carousels`,values).then((response)=>{
           console.log(response)
-          message.success("保存成功")
+          message.success(`${this.props.intl.formatMessage({id:"common.save.success"},{name:""})}`);
+          this.setState({btnLoading: false})
         }).catch((e)=>{
           if(e.response){
-            message.error("保存失败")
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}`)
           }
         })
       }
@@ -148,11 +153,29 @@ class AnnouncementInformationDetail extends React.Component{
 
   handleCancel = () => this.setState({ previewVisible: false })
 
-  handleChange = ({ fileList }) =>{
-    console.log(fileList)
-    let array = [];
-    array.push(fileList[fileList.length-1]);
-    this.setState({ fileList: array })
+  getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
+
+  handleChange = (info) => {
+    if (info.file.status === 'uploading') {
+      this.setState({ upload: true });
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      this.getBase64(info.file.originFileObj, imageUrl => this.setState({
+        imageUrl,
+        loading: false,
+      }));
+    }
+  };
+
+  handleSearch = (e)=>{
+    console.log(e)
+    console.log(this.refs.search.getEle)
   };
 
   //点击取消，跳转到上一页面
@@ -160,17 +183,24 @@ class AnnouncementInformationDetail extends React.Component{
     this.context.router.push(menuRoute.getMenuItemByAttr('announcement-information', 'key').url);
   };
 
+  //控制是否弹出公司列表
+  showListSelector = (flag) =>{
+    this.setState({
+      companyListSelector: flag
+    })
+  };
+
   renderContent(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
-    const { label, isEnabled, loading, previewVisible, previewImage, fileList} = this.state;
+    const { label, isEnabled, btnLoading, imageUrl,loading, columns, data, pagination} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
     const uploadButton = (
-      <div className="announcement-information-detail-upload">
-        <Icon type="plus" />
+      <div>
+        <Icon type={this.state.upload ? 'loading' : 'plus'} />
         <div className="ant-upload-text">Upload</div>
       </div>
     );
@@ -203,15 +233,13 @@ class AnnouncementInformationDetail extends React.Component{
          </FormItem>                   {/*轮播图片*/}
          <FormItem {...formItemLayout} label= {formatMessage({id: "announcement-info.picture"})}>
            {getFieldDecorator('attachmentOID')(
-             <Upload  action="//jsonplaceholder.typicode.com/posts/"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onPreview={this.handlePreview}
-                      onChange={this.handleChange}>
-               {uploadButton}
-               <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                 <img alt="example" style={{ width: '100%' }} src={previewImage} />
-               </Modal>
+             <Upload name="avatar"
+                     listType="picture-card"
+                     className="avatar-uploader"
+                     action="//jsonplaceholder.typicode.com/posts/"
+                     showUploadList={false}
+                     onChange={this.handleChange}>
+               {imageUrl ? <img src={imageUrl} alt="" width={85} height={85}/> : uploadButton}
              </Upload>
            )}
          </FormItem>                      {/*跳转外部链接*/}
@@ -225,21 +253,40 @@ class AnnouncementInformationDetail extends React.Component{
              <TextArea placeholder={ formatMessage({id:"common.please.enter"})}/>
            )}
          </FormItem>
-         <div className="slide-footer">
-           <Button type="primary" htmlType="submit"  loading={loading}>{formatMessage({id:"common.save"})}</Button>
+         <div className="form-footer-button">
+           <Button type="primary" htmlType="submit"  loading={btnLoading}>{formatMessage({id:"common.save"})}</Button>
            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
          </div>
        </Form>
           :
-          <Table/>
+          <div className="announcement-information-detail-company">
+            <div className="table-header">
+              <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+              <div className="table-header-buttons">
+                <Button type="primary" className="table-header-btn" onClick={()=>this.showListSelector(true)}>{formatMessage({id: 'announcement-info.addCompany'})}</Button>  {/*新增分配*/}
+                <Search className="table-header-search"
+                        ref="search"
+                        placeholder={formatMessage({id:"announcement-info.searchHolder"})}
+                        onChange={this.handleSearch}
+                        style={{ width: 200 }}/>
+              </div>
+            </div>
+            <Table
+              loading={loading}
+              dataSource={data}
+              columns={columns}
+              bordered
+              size="middle"/>
+          </div>
         }
       </div>)
   }
 
 
   render(){
+    const {  selectorItem, companyListSelector} = this.state;
     return (
-      <div className="announcement-information">
+      <div className="announcement-information-detail">
         <div className="announcement-information-tabs">
           <Tabs onChange={this.onChangeTabs}>
             {this.renderTabs()}
@@ -248,7 +295,12 @@ class AnnouncementInformationDetail extends React.Component{
         <div className="announcement-information-content">
           {this.renderContent()}
         </div>
-
+        <ListSelector
+          selectorItem={selectorItem}
+          visible={companyListSelector}
+          onOk={this.handleListOk}
+          extraParams={{setOfBooksId: this.props.company.setOfBooksId,isEnabled: true}}
+          onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }
 }

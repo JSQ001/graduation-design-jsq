@@ -1,4 +1,6 @@
 {
   "setting.deptCode": "部门代码",
-  "setting.deptName": "部门名称"
+  "setting.deptName": "部门名称",
+  "setting.companyGroupCode": "公司组代码",
+  "setting.companyGroupName": "公司组名称"
 }

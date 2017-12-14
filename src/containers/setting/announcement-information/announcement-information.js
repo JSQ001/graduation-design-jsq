@@ -64,23 +64,23 @@ class AnnouncementInformation extends React.Component{
       selectedEntityOIDs: [],    //已选择的列表项的OIDs
 
       selectorItem:{
-        title: '分配公司',
+        title: `${formatMessage({id: "announcement-info.deliveryCompany"})}`,
         url: `${config.baseUrl}/api/company/deploy/carousel`,
         searchForm: [
-          {type: 'select', id: 'companyLevelId', label: '公司级别',defaultValue: '',options: [], getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`},
-          {type: 'select', id: 'legalEntityId', label: '法人实体',defaultValue: '',options: [], getUrl: `${config.budgetUrl}/api/all/legalentitys`},
-          {type: 'input', id: 'companyCode', label: "公司代码",defaultValue: ''},
-          {type: 'input', id: 'companyName', label: "公司名称",defaultValue: ''},
-          {type: 'input', id: 'companyCodeFrom', label: "公司代码从",defaultValue: ''},
-          {type: 'input', id: 'companyCodeTo', label: "公司代码至",defaultValue: ''},
+          {type: 'select', id: 'companyLevelId', label: formatMessage({id:"company.companyLevelName"}),defaultValue: '',options: [], getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`},
+          {type: 'select', id: 'legalEntityId', label: formatMessage({id:"company.legalEntity"}),defaultValue: '',options: [], getUrl: `${config.budgetUrl}/api/all/legalentitys`},
+          {type: 'input', id: 'companyCode', label: formatMessage({id:"company.companyCode"}),defaultValue: ''},
+          {type: 'input', id: 'companyName', label: formatMessage({id:"company.name"}),defaultValue: ''},
+          {type: 'input', id: 'companyCodeFrom', label: formatMessage({id:"structure.companyCodeFrom"}),defaultValue: ''},
+          {type: 'input', id: 'companyCodeTo', label: formatMessage({id:"structure.companyCodeTo"}),defaultValue: ''},
         ],
         columns: [
-          {title: "公司代码", dataIndex: 'companyCode'},
-          {title: "公司名称",dataIndex:"companyName"},
-          {title: "公司类型",dataIndex:"companyTypeName"},
+          {title: formatMessage({id:"company.companyCode"}), dataIndex: 'companyCode'},
+          {title: formatMessage({id:"company.name"}),dataIndex:"companyName"},
+          {title: formatMessage({id:"structure.companyType"}),dataIndex:"companyTypeName"},
         ],
         key: 'id'
-      }
+      },
     }
   }
 
@@ -191,7 +191,7 @@ class AnnouncementInformation extends React.Component{
       <div className="announcement-information">
         <div className="table-header">
           <span className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</span>  {/*共搜索到*条数据*/}
-          <span>&nbsp;/&nbsp;已选{selectedEntityOIDs.length}</span>
+          <span>&nbsp;/&nbsp;{this.props.intl.formatMessage({id:"announcement-info.selected"},{total:`${selectedEntityOIDs.length}`})}</span>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
             <Button disabled={batchCompany} onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'announcement-info.deliveryCompany'})}</Button>

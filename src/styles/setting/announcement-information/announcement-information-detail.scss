@@ -1,13 +1,23 @@
-.announcement-information-detail{
-  .announcement-information-detail-upload{
-    width: 220px;
-    height: 126px;
-    background: #FF0000;
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    padding: 8px;
-    border: 1px dashed
+.announcement-information-detail{;
+  .announcement-information-content{
+    .form-footer-button{
+      margin-top: 40px;
+      margin-left: 340px;
+      margin-bottom: 30px;
+      button{
+        margin: 0 5px;
+      }
+    }
+
+    .announcement-information-detail-company{
+      .table-header{
+        .table-header-buttons{
+          .table-header-search{
+            margin-left: 770px;
+          }
+        }
+      }
+    }
   }
 
 }
