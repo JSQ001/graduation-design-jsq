@@ -296,7 +296,6 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="base-info-title">状态:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
-                {infoData.status}
               </div>
             </Col>
             <Col span={8}>
