@@ -27,7 +27,7 @@ class NewContract extends React.Component{
       currencyOptions: [], //币种
       companyIdOptions: [], //公司
       contractCategoryOptions: [], //合同大类选项
-      uploadOIDs: [], //上传附件的OIDs
+      uploadOIDs: "", //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
       contractCategoryValue: 'EMPLOYEE',
@@ -180,6 +180,7 @@ class NewContract extends React.Component{
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
+      this.props.form.setFieldsValue({ contractTypeId: undefined });
       this.getContractType(value);
       this.setState({ contractTypeDisabled: false })
     }
@@ -405,7 +406,8 @@ class NewContract extends React.Component{
                 <Col span={7}>
                   <FormItem>
                     {getFieldDecorator('attachmentOIDs')(
-                      <Upload attachmentType="CONTRACT"
+                      <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload/batch`}
+                              attachmentType="CON_CONTRACT"
                               fileNum={9}
                               uploadHandle={this.handleUpload}/>
                     )}
