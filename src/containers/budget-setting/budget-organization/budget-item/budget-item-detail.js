@@ -136,27 +136,30 @@ class BudgetItemDetail extends React.Component{
 
   //处理公司弹框点击ok,分配公司
   handleListOk = (result) => {
-    let companyIds = [];
-    let resourceIds = [];
-    resourceIds.push(this.props.params.itemId);
-    result.result.map((item)=>{
-      companyIds.push(item.id)
-    });
-    let param = [];
-    param.push({"companyIds": companyIds, "resourceIds": resourceIds});
-    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      if(response.status === 200){
-        this.showListSelector(false);
-        message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
-        this.setState({
-          loading: true
-        },this.getList())
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
-      }
-    });
+    if(result.result.length>0){
+      let companyIds = [];
+      let resourceIds = [];
+      resourceIds.push(this.props.params.itemId);
+      result.result.map((item)=>{
+        companyIds.push(item.id)
+      });
+      let param = [];
+      param.push({"companyIds": companyIds, "resourceIds": resourceIds});
+      httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+        if(response.status === 200){
+          message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
+          this.setState({
+            loading: true,
+            companyListSelector: false,
+          },this.getList())
+        }
+      }).catch((e)=>{
+        if(e.response){
+          message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+        }
+      });
+    }else
+    this.showListSelector(false);
   };
 
   //返回预算项目

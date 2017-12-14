@@ -11,6 +11,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector'
+import Importer from 'components/importer'
 
 
 const itemCode = [];
@@ -222,28 +223,28 @@ class BudgetItem extends React.Component {
   //处理公司弹框点击ok
   handleListOk = (result) => {
     let companyIds = [];
-    result.result.map((item)=>{
-      companyIds.push(item.id)
-    });
-    let param = [];
-
-    param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
-    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
-      if(response.status === 200){
-        this.setState({
-          loading: true,
-          batchCompany: true
-        },this.getList())
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
-      }
-    });
-
+    if(result.result.length>0){
+      result.result.map((item)=>{
+        companyIds.push(item.id)
+      });
+      let param = [];
+      param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
+      httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+        message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
+        if(response.status === 200){
+          this.setState({
+            loading: true,
+            batchCompany: true,
+            companyListSelector: false
+          },this.getList())
+        }
+      }).catch((e)=>{
+        if(e.response){
+          message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+        }
+      });
+    }else
     this.showListSelector(false)
-
   };
 
   //点击行，进入该行详情页面
@@ -268,6 +269,12 @@ class BudgetItem extends React.Component {
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+            <Importer title={formatMessage({id:"item.itemUpload"})}
+                      templateUrl={`${config.budgetUrl}/api/budget/items/export/template`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/items/import`}
+                      errorUrl={`${config.budgetUrl}/api/budget/items/export/failed/data`}
+                      fileName={formatMessage({id:"item.itemUploadFile"})}
+                      onOk={this.handleImportOk}/>
             <Button onClick={()=>this.showListSelector(true)} disabled={batchCompany}>{formatMessage({id:"budget.item.batchCompany"})}</Button>
           </div>
         </div>

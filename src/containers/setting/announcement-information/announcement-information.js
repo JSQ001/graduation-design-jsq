@@ -118,6 +118,13 @@ class AnnouncementInformation extends React.Component{
     })
   };
 
+  //处理公司弹框点击ok
+  handleListOk = (result) => {
+    console.log(result)
+    this.showListSelector(false);
+
+  };
+
   //列表选择更改
   onSelectChange = (selectedRowKeys) => {
     this.setState({ selectedRowKeys });
@@ -209,6 +216,7 @@ class AnnouncementInformation extends React.Component{
             bordered
             size="middle"/>
         <ListSelector
+                      type='company'
                       selectorItem={selectorItem}
                       visible={companyListSelector}
                       onOk={this.handleListOk}

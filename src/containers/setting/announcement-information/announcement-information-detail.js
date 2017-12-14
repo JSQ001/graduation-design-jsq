@@ -69,7 +69,7 @@ class AnnouncementInformationDetail extends React.Component{
         },
       ]
     };
-    this.handleSearch = debounce(this.handleSearch,1000)
+    this.search = debounce(this.search,1000)
   }
 
   deleteItem = (e, record) => {
@@ -144,14 +144,12 @@ class AnnouncementInformationDetail extends React.Component{
     }))
   };
 
-  handlePreview = (file) => {
-    this.setState({
-      previewImage: file.url || file.thumbUrl,
-      previewVisible: true,
-    });
-  };
+  //处理公司弹框点击ok
+  handleListOk = (result) => {
+    console.log(result)
+    this.showListSelector(false);
 
-  handleCancel = () => this.setState({ previewVisible: false })
+  };
 
   getBase64(img, callback) {
     const reader = new FileReader();
@@ -173,10 +171,12 @@ class AnnouncementInformationDetail extends React.Component{
     }
   };
 
-  handleSearch = (e)=>{
-    console.log(e.target.value)
+  search(value){
 
-    console.log(this.refs.search)
+  }
+
+  handleSearch = (e)=>{
+    this.search(e.target.value)
   };
 
   //点击取消，跳转到上一页面
@@ -266,7 +266,6 @@ class AnnouncementInformationDetail extends React.Component{
               <div className="table-header-buttons">
                 <Button type="primary" className="table-header-btn" onClick={()=>this.showListSelector(true)}>{formatMessage({id: 'announcement-info.addCompany'})}</Button>  {/*新增分配*/}
                 <Search className="table-header-search"
-                        ref="search"
                         placeholder={formatMessage({id:"announcement-info.searchHolder"})}
                         onChange={e=>this.handleSearch(e)}
                         style={{ width: 200 }}/>
@@ -282,7 +281,6 @@ class AnnouncementInformationDetail extends React.Component{
         }
       </div>)
   }
-
 
   render(){
     const {  selectorItem, companyListSelector} = this.state;
