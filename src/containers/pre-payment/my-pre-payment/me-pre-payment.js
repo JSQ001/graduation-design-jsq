@@ -85,7 +85,7 @@ class MyPrePayment extends React.Component{
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `http://192.168.1.72:8072/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
+    let url = `${config.cdcUrl}/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
     this.setState({ loading: true });
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {

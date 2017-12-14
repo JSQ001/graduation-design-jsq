@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+import { Spin,Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
 const Step =Steps.Step;
 
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
@@ -21,6 +21,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       loading: true,
       data: [],
       params: {},
+      spinLoading:true,
       headerAndListData: {},
       pageSize: 10,
       page: 0,
@@ -38,7 +39,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',with:'16%',
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'8%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
@@ -46,7 +47,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',with:'16%',
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'8%',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
@@ -55,46 +56,52 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',with:'16%',
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
             </Popover>)
-
         },
         {
           /*期间*/
-          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',with:'8%',
+          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%',
 
         },
         {
           /*季度*/
-          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),with:'8%',
-          key: "periodQuarter",
-          dataIndex: 'periodQuarter'
+          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),width:'6%',
+          key: "periodQuarterName",
+          dataIndex: 'periodQuarterName'
         },
         {
           /*年度*/
-          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',with:'8%'
+          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'8%'
         },
         {
           /*币种*/
-          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',with:'8%'
+          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',width:'8%'
         },
         {
           /*汇率*/
-          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',with:'8%',
+          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',width:'8%',
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
+          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*本币今额*/
           title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
           key: "functionalAmount",
           dataIndex: 'functionalAmount',
-          render: this.filterMoney
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*数字*/
@@ -180,6 +187,10 @@ class BudgetJournalReCheckDetail extends React.Component {
     }
     this.setState({
       columns,
+    },()=>{
+      this.setState({
+        spinLoading:false
+      })
     })
   }
 
@@ -339,19 +350,17 @@ class BudgetJournalReCheckDetail extends React.Component {
               <div className="base-info-title">附件:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
-
           </Row>
-
-
         </div>
-
-        <Table columns={columns}
-               dataSource={data}
-               bordered
-               size="middle"
-               scroll={{ x: '150%' }}
-               rowKey={recode=>{return recode.id}}
-        />
+        <Spin spinning={this.state.spinLoading}>
+          <Table columns={columns}
+                 dataSource={data}
+                 bordered
+                 size="middle"
+                 scroll={{ x: '150%' }}
+                 rowKey={recode=>{return recode.id}}
+          />
+        </Spin>
 
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
