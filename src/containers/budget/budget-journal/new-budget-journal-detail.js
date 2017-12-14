@@ -75,13 +75,39 @@ class NewBudgetJournalDetail extends React.Component {
       if(e === "company"){
         this.setItemCompanyId(value[0].id);
         this.props.form.setFieldsValue({
-          item: []
+          "unit": [],
+          "employee":[],
+        });
+
+      }
+      if(e === "unit"){
+        console.log(value[0]);
+        this.setUntilId(value[0].id);
+        this.props.form.setFieldsValue({
+          employee:[]
         });
       }
     }
   }
 
-  //给预算项目公司ID
+  setUntilId(departmentId){
+    let searchFrom = this.state.searchForm;
+    searchFrom.map((item)=>{
+      if(item.id === "employee" ){
+        let listExtraParams = item["listExtraParams"];
+          listExtraParams.departmentId = departmentId;
+        item["listExtraParams"]=listExtraParams;
+        item["disabled"]=false;
+        return item;
+      }
+
+    })
+    this.setState({
+      searchFrom:searchFrom
+    })
+  }
+
+  //给预算项目和人员公司ID
   setItemCompanyId(companyId){
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
@@ -95,14 +121,21 @@ class NewBudgetJournalDetail extends React.Component {
         item["disabled"]=false;
         return item;
       }
+      if(item.id === "employee"){
+        let listExtraParams = item["listExtraParams"];
+          listExtraParams.companyId = companyId;
+        item["listExtraParams"]=listExtraParams;
+        item["disabled"]=false;
+        return item;
+      }
     })
     this.setState({
       searchFrom:searchFrom
     })
   }
 
-  //预算项目是否可以选
-  getItemAbled(value,companyId){
+  //编辑时，给预算项目公司id，给人员，公司id和部门id
+  getItemAbled(value,companyId,departmentId){
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
       if(item.id === "item" ){
@@ -112,8 +145,19 @@ class NewBudgetJournalDetail extends React.Component {
           listExtraParams.companyId = companyId;
           item["listExtraParams"]=listExtraParams;
         }
-        return item;
+
       }
+      if(item.id === "employee"){
+        item["disabled"]=value;
+        if(!value){
+          let listExtraParams = item["listExtraParams"];
+          listExtraParams.companyId = companyId;
+          listExtraParams.departmentId = departmentId;
+          item["listExtraParams"]=listExtraParams;
+        }
+
+      }
+      return item;
     })
     this.setState({
       searchFrom:searchFrom
@@ -170,9 +214,9 @@ class NewBudgetJournalDetail extends React.Component {
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list', id: 'employee', listType: 'user',  label:"员工",
-        labelKey: 'fullName',valueKey: 'employeeID',single:true,event:'employee',isRequired: false,disabled:false,
-        listExtraParams:{},
+      {type: 'list', id: 'employee', listType: 'journal_employee',  label:"员工",
+        labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
+        listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
       },//人员
       {type: 'list', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
@@ -246,7 +290,7 @@ class NewBudgetJournalDetail extends React.Component {
            if(nextProps.params.isNew){
                this.getItemAbled(true,'');
              }else {
-               this.getItemAbled(false,nextProps.params.company[0].id);
+               this.getItemAbled(false,nextProps.params.company[0].id,nextProps.params.company[0].departmentId);
              }
         }
 
@@ -266,7 +310,6 @@ class NewBudgetJournalDetail extends React.Component {
   };
 
   getItemUrl(value,journalTypeId){
-    console.log(21313123);
     let searchForm = this.state.searchForm;
     let companyId = this.props.params.isNew?'':value;
       searchForm.map(searchItem => {
@@ -524,8 +567,8 @@ class NewBudgetJournalDetail extends React.Component {
               valuesData[item.columnLabel] = value[item.labelKey];
               valuesData[item.columnValue] = value[item.valueKey];
             } else {
-              valuesData[item.columnLabel] = oldData[item.columnLabel];
-              valuesData[item.columnValue] = oldData[item.columnValue];
+              valuesData[item.columnLabel] = oldData[item.columnLabel]?oldData[item.columnLabel]:'';
+              valuesData[item.columnValue] = oldData[item.columnValue]?oldData[item.columnLabel]:'';
             }
           } else {
             valuesData[item.columnLabel] = null;
