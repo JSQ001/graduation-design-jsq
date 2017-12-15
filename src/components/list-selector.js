@@ -97,7 +97,7 @@ class ListSelector extends React.Component {
     }
     return httpFetch.get(url).then((response)=>{
       let data = [];
-      if(selectorItem.notJson){
+      if(selectorItem.isValue){
         response.data.map((item)=>{
           let option = {};
           option[selectorItem.key] =item;

@@ -472,14 +472,16 @@ const selectorData = {
   'year': {
     title: '年度',
     url: `${config.baseUrl}/api/periods/select/years/by/setOfBooksId`,
+    searchForm:[],
     columns: [
       {title: "年", dataIndex: 'year'},
     ],
     key: 'year',
-    notJson: true
+    isValue: true
   },
   'period': {
     title: '期间',
+    searchForm:[],
     url: `${config.baseUrl}/api/periods/query/open/periods/by/setOfBook/id`,
     columns: [
       {title: "期间名称",dataIndex:"periodName"},
@@ -488,6 +490,7 @@ const selectorData = {
   },
   'quarter': {
     title: '季度',
+    searchForm:[],
     url: `${config.baseUrl}/api/custom/enumeration/system/by/type`,
     columns: [
       {title: "季度", dataIndex: 'messageKey'},

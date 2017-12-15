@@ -11,7 +11,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector'
-import Importer from 'components/importer'
+import Importer from 'components/template/importer'
 
 
 const itemCode = [];

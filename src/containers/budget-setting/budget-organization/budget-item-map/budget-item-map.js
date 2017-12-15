@@ -12,7 +12,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import selectorData from 'share/selectorData'
-import Importer from 'components/importer'
+import Importer from 'components/template/importer'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
