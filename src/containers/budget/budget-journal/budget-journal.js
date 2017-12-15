@@ -7,7 +7,6 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal.scss"
-
 class BudgetJournal extends React.Component {
   constructor(props) {
     super(props);
@@ -35,21 +34,21 @@ class BudgetJournal extends React.Component {
 
       columns: [
         {          /*预算日记账编号*/
-          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode',
+          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode',width: '16%',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',
+          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',width:'16%',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
+          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',width:'8%'
         },
         {          /*预算表*/
           title:"预算表", key: "structureName", dataIndex: 'structureName',
@@ -78,7 +77,7 @@ class BudgetJournal extends React.Component {
           /*创建时间*/
           title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
-            <Popover content={recode}>
+            <Popover content={String(recode).substring(0,10)}>
               {String(recode).substring(0,10)}
             </Popover>)
         },
@@ -110,13 +109,12 @@ class BudgetJournal extends React.Component {
     this.getList();
   }
 
-
-
   //获取预算日记账数据
   getList(){
     this.setState({
       loading:true,
     })
+
 
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?organizationId=${this.props.organization.id}&page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
       this.setState({
@@ -160,15 +158,13 @@ class BudgetJournal extends React.Component {
   //跳转到详情
   HandleRowClick=(value)=>{
     const journalCode =value.journalCode;
-    if(value.status=="NEW" || value.status=="REJECT"){
+    if(value.status=="NEW" || value.status=="SUBMIT_RETURN"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }else {
       let path=this.state.budgetJournalDetailSubmit.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }
-
-
   }
 
   render(){
@@ -184,13 +180,13 @@ class BudgetJournal extends React.Component {
           </div>
         </div>
         <Table
-          rowKey={(record )=>{return record.journalTypeCode}}
           loading={loading}
           dataSource={data}
           columns={columns}
           pagination={pagination}
           size="middle"
           bordered
+          rowKey={record=>record.id}
           onRow={record => ({
             onClick: () => this.HandleRowClick(record)
           })}
@@ -207,6 +203,8 @@ BudgetJournal.contextTypes ={
 
 function mapStateToProps(state) {
   return {
+    user: state.login.user,
+    company: state.login.company,
     organization: state.login.organization
   }
 }
