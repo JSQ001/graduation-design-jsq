@@ -50,6 +50,13 @@ class BudgetJournalDetailSubmit extends React.Component {
             </Popover>)
 
         },
+        {          /*人员*/
+          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
         {
           /*预算项目*/
           title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
@@ -296,7 +303,6 @@ class BudgetJournalDetailSubmit extends React.Component {
               <div className="base-info-title">状态:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
-                {infoData.status}
               </div>
             </Col>
             <Col span={8}>
