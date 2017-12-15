@@ -62,7 +62,6 @@ class BudgetJournalDetail extends React.Component {
         {type: 'input', id:'remark',valueKey:'remark'}  //备注
       ],
       infoList:[
-
         /*状态*/
         {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
         /*预算日记账编号*/
