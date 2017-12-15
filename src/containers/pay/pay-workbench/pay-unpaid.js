@@ -5,7 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import moment from 'moment'
 
-import { Radio, Table, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip } from 'antd'
+import { Radio, Table, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip, DatePicker } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -99,54 +99,40 @@ class PayUnpaid extends React.Component {
         )},
         {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>}
       ],
+      buttonDisabled: true,
+      selectedRows: [],  //选中行
+      noticeAlert: null, //提示
+      errorAlert: null,  //错误
+      currency: null,    //选中行的币种
 
       /* 线上 */
       onlineLoading: false,
       onlinePage: 0,
       onlinePageSize: 10,
-      onlinePagination: {
-        total: 0,
-      },
+      onlinePagination: { total: 0 },
       onlineData: [],
-      onlineSelectedRows: [],         //选中行
-      onlineNotice: null,             //提示
-      onlineError: null,              //错误
-      payOnlineAble: false,           //支付按钮是否可用
       onlineCash: [],                 //总金额
       payWayOptions: [],
+      onlineModalVisible: false,
 
       /* 线下 */
       offlineLoading: false,
       offlinePage: 0,
       offlinePageSize: 10,
-      offlinePagination: {
-        total: 0,
-      },
+      offlinePagination: { total: 0 },
       offlineData: [],
-      offlineSelectedRowKeys: [],     //选中行
-      offlineNotice: null,            //提示
-      offlineError: null,             //错误
-      payOfflineAble: false,          //支付按钮是否可用
       offlineCash: [],                //总金额
+      offlineModalVisible: true,
 
       /* 落地文件 */
       fileLoading: false,
       filePage: 0,
       filePageSize: 10,
-      filePagination: {
-        total: 0,
-      },
+      filePagination: { total: 0 },
       fileData: [],
-      failSelectedRowKeys: [],        //选中行
-      fileNotice: null,               //提示
-      fileError: null,                //错误
-      payFileAble: false,             //支付按钮是否可用
       fileCash: [],                   //总金额
+      fileModalVisible: false,
 
-      currency: null,
-      payModalVisible: false,
-      confirmSuccessDate: null,
-      partnerCategoryOptions: [],
       paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
@@ -155,6 +141,7 @@ class PayUnpaid extends React.Component {
     this.getList();
   }
 
+  //获取列表及总金额
   getList = () => {
     let online = new Promise((resolve, reject) => {
       this.getOnlineList(resolve, reject)
@@ -192,10 +179,148 @@ class PayUnpaid extends React.Component {
   onRadioChange = (e) => {
     this.setState({
       radioValue: e.target.value,
-      onlineSelectedRows: []
+      selectedRows: []
     }, () => {
-      this.onlineNotice(this.state.onlineSelectedRows)
+      this.noticeAlert(this.state.selectedRows)
     })
+  };
+
+  //选择/取消选择某行的回调
+  handleSelectRow = (record, selected) => {
+    let selectedRows = this.state.selectedRows;
+    if(selected) {
+      selectedRows.push(record)
+    } else {
+      selectedRows.map((item, index) => {
+        item.id === record.id && (selectedRows[index] = 0)
+      });
+      selectedRows.delete(0)
+    }
+    this.setState({ selectedRows }, () => {
+      this.noticeAlert(this.state.selectedRows)
+    })
+  };
+
+  //选择/取消选择所有行的回调
+  handleSelectAllRow = (selected, selectedRow, changeRows) => {
+    let selectedRows = this.state.selectedRows;
+    if(selected){
+      changeRows.map(item => {
+        selectedRows.push(item)
+      })
+    } else {
+      selectedRows.map((row, index) => {
+        changeRows.map(item => {
+          row.id === item.id && (selectedRows[index] = 0)
+        })
+      });
+      changeRows.map(() => {
+        selectedRows.delete(0)
+      })
+    }
+    this.setState({ selectedRows }, () => {
+      this.noticeAlert(this.state.selectedRows)
+    })
+  };
+
+  //提示框显示
+  noticeAlert = (rows) => {
+    let amount = 0;
+    let errFlag = false;
+    let currency = rows[0] ? rows[0].currency : null;
+    this.setState({ currency });
+    rows.forEach(item => {
+      if (item.currency === currency) {
+        amount += item.currentPay || item.currentPayAmount
+      } else {
+        errFlag = true
+      }
+    });
+    if (!errFlag) {
+      let noticeAlert = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          本次支付金额总计：{currency} <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
+        </span>
+      );
+      this.setState({
+        noticeAlert: rows.length ? noticeAlert : null,
+        errorAlert: null,
+        buttonDisabled: !rows.length
+      });
+    } else {
+      let errorAlert = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          不同币种不可同时支付
+        </span>
+      );
+      this.setState({
+        noticeAlert: null,
+        errorAlert: errorAlert,
+        buttonDisabled: true
+      });
+    }
+  };
+
+  //修改本次支付金额
+  editCurrentPay = (value, record) => {
+    if (!value || value <= 0) {
+      message.error('本次支付金额必须大于0');
+      this.setState({ editCellError: true });
+      return
+    }
+    if (value > record.payableAmount) {
+      message.error('本次支付金额不能大于可支付金额');
+      this.setState({ editCellError: true });
+      return
+    }
+    this.setState({ editCellError: false });
+    this.state.onlineData.map(item => {
+      item.id === record.id && (item.currentPay = value)
+    });
+    this.state.offlineData.map(item => {
+      item.id === record.id && (item.currentPay = value)
+    });
+    this.state.fileData.map(item => {
+      item.id === record.id && (item.currentPay = value)
+    });
+    this.noticeAlert(this.state.selectedRows);
+    message.success('修改成功')
+  };
+
+  //修改收款账号
+  editAccount = (value, record) => {
+    let url = `${config.contractUrl}/payment/api/cash/transactionData`;
+    let params = [{
+      id: record.id,
+      accountNumber: value,
+      versionNumber: record.versionNumber
+    }];
+    httpFetch.put(url, params).then(res => {
+      if (res.status === 200) {
+        message.success('修改成功');
+        this.setState({ editCellError: false });
+        this.getOnlineList()
+      }
+    }).catch(e => {
+      this.setState({ editCellError: true });
+      message.error(`修改失败，${e.response.data.message}`);
+    })
+  };
+
+  //点击支付按钮
+  handlePayModal = () => {
+    const { radioValue } = this.state;
+    if (radioValue === 'online') {
+      this.setState({ onlineModalVisible: true })
+    } else if (radioValue === 'offline') {
+      this.setState({ offlineModalVisible: true })
+    } else {
+      this.setState({ fileModalVisible: true })
+    }
   };
 
   //查看支付流水详情
@@ -318,159 +443,60 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  /************************** 线上 **************************/
+  /********************** 弹框 - 确认支付 *********************/
 
-  //修改本次支付金额
-  editCurrentPay = (value, record) => {
-    if (!value || value <= 0) {
-      message.error('本次支付金额必须大于0');
-      this.setState({ editCellError: true });
-      return
-    }
-    if (value > record.payableAmount) {
-      message.error('本次支付金额不能大于可支付金额');
-      this.setState({ editCellError: true });
-      return
-    }
-    this.setState({ editCellError: false });
-    this.state.onlineData.map(item => {
-      if (item.id === record.id) {
-        item.currentPay = value;
-        this.onlineNotice(this.state.onlineSelectedRows);
-        message.success('修改成功')
-      }
-    })
+  //线上
+  handleOnlineModalOk = () => {
+    this.setState({ onlineModalVisible: false });
   };
 
-  //修改收款账号
-  editAccount = (value, record) => {
-    let url = `${config.contractUrl}/payment/api/cash/transactionData`;
-    let params = [{
-      id: record.id,
-      accountNumber: value,
-      versionNumber: record.versionNumber
-    }];
-    httpFetch.put(url, params).then(res => {
-      if (res.status === 200) {
-        message.success('修改成功');
-        this.setState({ editCellError: false });
-        this.getOnlineList()
-      }
-    }).catch(e => {
-      this.setState({ editCellError: true });
-      message.error(`修改失败，${e.response.data.message}`);
-    })
+  //线下
+  handleOfflineModalOk = () => {
+    this.setState({ offlineModalVisible: false });
   };
 
-  //选择/取消选择某行的回调
-  onOnlineSelectRow = (record, selected) => {
-    let onlineSelectedRows = this.state.onlineSelectedRows;
-    if(selected) {
-      onlineSelectedRows.push(record)
-    } else {
-      onlineSelectedRows.map((item, index) => {
-        item.id === record.id && (onlineSelectedRows[index] = 0)
-      });
-      onlineSelectedRows.delete(0)
-    }
-    this.setState({ onlineSelectedRows }, () => {
-      this.onlineNotice(this.state.onlineSelectedRows)
-    })
+  //落地文件
+  handleFileModalOk = () => {
+    this.setState({ fileModalVisible: false });
   };
 
-  //选择/取消选择所有行的回调
-  onOnlineSelectAllRow = (selected, selectedRows, changeRows) => {
-    let onlineSelectedRows = this.state.onlineSelectedRows;
-    if(selected){
-      changeRows.map(item => {
-        onlineSelectedRows.push(item)
-      })
-    } else {
-      onlineSelectedRows.map((row, index) => {
-        changeRows.map(item => {
-          row.id === item.id && (onlineSelectedRows[index] = 0)
-        })
-      });
-      changeRows.map(() => {
-        onlineSelectedRows.delete(0)
-      })
-    }
-    this.setState({ onlineSelectedRows }, () => {
-      this.onlineNotice(this.state.onlineSelectedRows)
-    })
-  };
+  /********************* 修改每页显示数量 *********************/
 
-  //提示框显示
-  onlineNotice = (rows) => {
-    let amount = 0;
-    let errFlag = false;
-    let currency = rows[0] ? rows[0].currency : null;
-    this.setState({ currency });
-    rows.forEach(item => {
-      if (item.currency === currency) {
-        amount += item.currentPay || item.currentPayAmount
-      } else {
-        errFlag = true
-      }
-    });
-    if (!errFlag) {
-      let onlineNotice = (
-        <span>
-          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-          <span className="ant-divider" />
-          本次支付金额总计：{currency} <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
-        </span>
-      );
-      this.setState({
-        onlineNotice: rows.length ? onlineNotice : null,
-        onlineError: null,
-        payOnlineAble: rows.length
-      });
-    } else {
-      let onlineError = (
-        <span>
-          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-          <span className="ant-divider" />
-          不同币种不可同时支付
-        </span>
-      );
-      this.setState({
-        onlineNotice: null,
-        onlineError: onlineError,
-        payOnlineAble: false
-      });
-    }
-  };
-
-  //弹框支付确认
-  handleOk = (e) => {
-    this.setState({ payModalVisible: false });
-  };
-
-  //修改每页显示数量
+  //线上
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
-      this.getOnlineList()
+      this.getOnlineList();
+      this.getOnlineCash()
     })
   };
 
-  /************************** 线下 **************************/
+  //线下
+  offlinePaginationChange = (offlinePage, offlinePageSize) => {
+    offlinePage = offlinePage - 1;
+    this.setState({ offlinePage, offlinePageSize },() => {
+      this.getOfflineList();
+      this.getOfflineCash()
+    })
+  };
 
-
-  /************************ 落地文件 ************************/
-
-  //落地文件 - 修改每页显示数量
-  filePaginationChange = () => {};
+  //落地文件
+  filePaginationChange = (filePage, filePageSize) => {
+    filePage = filePage - 1;
+    this.setState({ filePage, filePageSize },() => {
+      this.getFileList();
+      this.getFileCash()
+    })
+  };
 
   /************************ 内容渲染 ************************/
 
   //线上
   renderOnlineContent = () => {
-    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineNotice, onlineError, onlineCash } = this.state;
+    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash } = this.state;
     const rowSelection = {
-      onSelect: this.onOnlineSelectRow,
-      onSelectAll: this.onOnlineSelectAllRow
+      onSelect: this.handleSelectRow,
+      onSelectAll: this.handleSelectAllRow
     };
     const tableTitle = (
       <div>
@@ -490,14 +516,6 @@ class PayUnpaid extends React.Component {
     );
     return (
       <div className="unpaid-online">
-        <Button type="primary"
-                style={{marginBottom:10}}
-                disabled={!this.state.payOnlineAble}
-                onClick={() => this.setState({ payModalVisible: true })}>
-          {this.props.intl.formatMessage({id:"payWorkbench.payOnline"}/*线上支付*/)}
-        </Button>
-        {onlineNotice ? <Alert message={onlineNotice} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
-        {onlineError ? <Alert message={onlineError} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={onlineData}
@@ -522,10 +540,10 @@ class PayUnpaid extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineNotice, offlineError, payOfflineAble, offlineCash } = this.state;
+    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineCash } = this.state;
     const rowSelection = {
-      onSelect: this.onOnlineSelectRow,
-      onSelectAll: this.onOnlineSelectAllRow
+      onSelect: this.handleSelectRow,
+      onSelectAll: this.handleSelectAllRow
     };
     const tableTitle = (
       <div>
@@ -545,14 +563,6 @@ class PayUnpaid extends React.Component {
     );
     return (
       <div className="unpaid-offline">
-        <Button type="primary"
-                style={{marginBottom:10}}
-                disabled={!payOfflineAble}
-                onClick={() => this.setState({ payModalVisible: true })}>
-          线下支付
-        </Button>
-        {offlineNotice ? <Alert message={offlineNotice} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
-        {offlineError ? <Alert message={offlineError} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={offlineData}
@@ -568,8 +578,8 @@ class PayUnpaid extends React.Component {
                     showSizeChanger
                     pageSizeOptions={['1','2','5','10']}
                     total={offlinePagination.total}
-                    onChange={this.onlinePaginationChange}
-                    onShowSizeChange={this.onlinePaginationChange}
+                    onChange={this.offlinePaginationChange}
+                    onShowSizeChange={this.offlinePaginationChange}
                     style={{margin:'16px 0', textAlign:'right'}} />
       </div>
     )
@@ -577,10 +587,10 @@ class PayUnpaid extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { fileLoading, columns, fileData, filePageSize, filePagination, fileNotice, fileError, payFileAble, fileCash } = this.state;
+    const { fileLoading, columns, fileData, filePageSize, filePagination, fileCash } = this.state;
     const rowSelection = {
-      onSelect: this.onOnlineSelectRow,
-      onSelectAll: this.onOnlineSelectAllRow
+      onSelect: this.handleSelectRow,
+      onSelectAll: this.handleSelectAllRow
     };
     const tableTitle = (
       <div>
@@ -600,14 +610,6 @@ class PayUnpaid extends React.Component {
     );
     return (
       <div className="unpaid-file">
-        <Button type="primary"
-                style={{marginBottom:10}}
-                disabled={!payFileAble}
-                onClick={() => this.setState({ payModalVisible: true })}>
-          落地文件支付
-        </Button>
-        {fileNotice ? <Alert message={fileNotice} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
-        {fileError ? <Alert message={fileError} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}
@@ -634,31 +636,39 @@ class PayUnpaid extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, payModalVisible, radioValue, payWayOptions, currency } = this.state;
+    const { searchForm, onlineModalVisible, offlineModalVisible, fileModalVisible, radioValue, payWayOptions, currency, buttonDisabled, noticeAlert, errorAlert } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
     };
     return (
-      <div className="pay-online">
-        <SearchArea
-          searchForm={searchForm}
-          submitHandle={this.search}
-          clearHandle={this.clear}/>
+      <div className="pay-unpaid">
+        <SearchArea searchForm={searchForm}
+                    submitHandle={this.search}
+                    clearHandle={this.clear}/>
         <Radio.Group value={radioValue} style={{margin:'20px 0'}}
                      onChange={this.onRadioChange}>
           <Radio.Button value="online">线上</Radio.Button>
           <Radio.Button value="offline">线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
         </Radio.Group>
+        <Button type="primary"
+                style={{marginBottom:10, display:'block'}}
+                disabled={buttonDisabled}
+                onClick={this.handlePayModal}>
+          {radioValue === 'online' && this.props.intl.formatMessage({id:"payWorkbench.payOnline"}/*线上支付*/)}
+          {radioValue === 'offline' && '线下支付'}
+          {radioValue === 'file' && '落地文件支付'}
+        </Button>
+        {noticeAlert ? <Alert message={noticeAlert} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
+        {errorAlert ? <Alert message={errorAlert} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
-        <Modal
-          title="线上支付确认"
-          visible={payModalVisible}
-          onOk={this.handleOk}
-          onCancel={() => this.setState({ payModalVisible: false })}>
+        <Modal title="线上支付确认"
+               visible={onlineModalVisible}
+               onOk={this.handleOnlineModalOk}
+               onCancel={() => this.setState({ onlineModalVisible: false })}>
           <Form>
             <FormItem  {...formItemLayout} label="付款账户">
               {getFieldDecorator('payAccount', {
@@ -666,7 +676,129 @@ class PayUnpaid extends React.Component {
                   required: true,
                   message: '请选择'
                 }]})(
-                <Select placeholder="请选择"></Select>
+                <Select placeholder="请选择">
+
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="币种">
+              {getFieldDecorator('currency', {
+                rules: [{
+                  required: true
+                }],
+                initialValue: currency
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="付款方式">
+              {getFieldDecorator('payWay', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+                  {payWayOptions.map(option => {
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="汇率">
+              {getFieldDecorator('rate', {
+                initialValue: ''
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="备注">
+              {getFieldDecorator('description', {
+                initialValue: ''
+              })(
+                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+              )}
+            </FormItem>
+          </Form>
+        </Modal>
+        <Modal title="线下支付确认"
+               visible={offlineModalVisible}
+               onOk={this.handleOfflineModalOk}
+               onCancel={() => this.setState({ offlineModalVisible: false })}>
+          <Form>
+            <Alert message="线下支付，确认付款后，支付状态直接变为支付成功" type="info" showIcon style={{position:'relative',top:-10}} />
+            <FormItem  {...formItemLayout} label="付款日期">
+              {getFieldDecorator('payDate', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <DatePicker/>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="付款账户">
+              {getFieldDecorator('payAccount', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="币种">
+              {getFieldDecorator('currency', {
+                rules: [{
+                  required: true
+                }],
+                initialValue: currency
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="付款方式">
+              {getFieldDecorator('payWay', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+                  {payWayOptions.map(option => {
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="汇率">
+              {getFieldDecorator('rate', {
+                initialValue: ''
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="备注">
+              {getFieldDecorator('description', {
+                initialValue: ''
+              })(
+                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+              )}
+            </FormItem>
+          </Form>
+        </Modal>
+        <Modal title="落地文件支付"
+               visible={fileModalVisible}
+               onOk={this.handleFileModalOk}
+               onCancel={() => this.setState({ fileModalVisible: false })}>
+          <Form>
+            <FormItem  {...formItemLayout} label="付款账户">
+              {getFieldDecorator('payAccount', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+
+                </Select>
               )}
             </FormItem>
             <FormItem  {...formItemLayout} label="币种">
