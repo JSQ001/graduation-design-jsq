@@ -406,7 +406,7 @@ class NewContract extends React.Component{
                 <Col span={7}>
                   <FormItem>
                     {getFieldDecorator('attachmentOIDs')(
-                      <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload/batch`}
+                      <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload`}
                               attachmentType="CON_CONTRACT"
                               fileNum={9}
                               uploadHandle={this.handleUpload}/>
