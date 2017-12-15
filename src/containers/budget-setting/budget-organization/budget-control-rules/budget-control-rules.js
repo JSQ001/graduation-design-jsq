@@ -12,9 +12,6 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
-
-let controlRules = [];
-let priority = [];
 class BudgetControlRules extends React.Component {
   constructor(props) {
     super(props);
@@ -23,8 +20,8 @@ class BudgetControlRules extends React.Component {
       loading: true,
       data: [],
       searchParams: {
-        controlRuleFrom: "",
-        controlRuleTo: "",
+        controlRuleCodeFrom: "",
+        controlRuleCodeTo: "",
         priority: "",
       },
       pagination: {
@@ -37,19 +34,16 @@ class BudgetControlRules extends React.Component {
       },
       searchForm: [
         /*控制规则从*/
-        { type: 'select', id: 'controlRulesFrom',
-          label:formatMessage({id: 'budget.controlRulesFrom'}),
-          options: controlRules
+        { type: 'select', id: 'controlRuleCodeFrom', label:formatMessage({id: 'budget.controlRulesFrom'}), options:[],labelKey: 'controlRuleName',valueKey: 'controlRuleCode',
+          getUrl:`${config.budgetUrl}/api/budget/control/rules/query/all`, method: 'get', getParams: {organizationId: this.props.id},
         },
         /*控制规则到*/
-        { type: 'select', id: 'controlRulesTo',
-          label: formatMessage({id: 'budget.controlRulesTo'}),
-          options: controlRules
+        { type: 'select', id: 'controlRuleCodeTo', label: formatMessage({id: 'budget.controlRulesTo'}), options: [],labelKey: 'controlRuleName',valueKey: 'controlRuleCode',
+          getUrl:`${config.budgetUrl}/api/budget/control/rules/query/all`, method: 'get', getParams: {organizationId: this.props.id},
         },
                                                                                             /*优先级*/
-        { type: 'select', id: 'priority',
-          label: formatMessage({id: 'budget.controlRules.priority'}),
-          options: priority
+        { type: 'select', id: 'priority', label: formatMessage({id: 'budget.controlRules.priority'}), options: [],labelKey: 'priority',valueKey: 'priority',
+          getUrl:`${config.budgetUrl}/api/budget/control/rules/query/all`, method: 'get', getParams: {organizationId: this.props.id},
         }
       ],
       columns: [
@@ -86,10 +80,11 @@ class BudgetControlRules extends React.Component {
 
   handleSearch = (values) =>{
     let searchParams = {
-      controlRulesFrom: values.controlRulesFrom,
-      controlRuleTo: values.controlRuleTo,
+      controlRuleCodeFrom: values.controlRuleCodeFrom,
+      controlRuleCodeTo: values.controlRuleCodeTo,
       priority: values.priority
     };
+
     this.setState({
       searchParams:searchParams,
       loading: true,
@@ -110,16 +105,6 @@ class BudgetControlRules extends React.Component {
       if(response.status === 200){
         response.data.map((item)=>{
           item.key = item.id;
-          let control = {
-            label: item.controlRuleName,
-            value: item.controlRuleCode
-          };
-          let pop = {
-            label: item.priority,
-            value: item.priority
-          };
-          controlRules.push(control);
-          priority.push(pop);
         });
         this.setState({
           loading: false,

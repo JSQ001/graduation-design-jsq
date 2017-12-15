@@ -115,7 +115,7 @@ class BudgetStructureDetail extends React.Component{
       tabs: [
         {key: 'dimension', name: formatMessage({id:"structure.dimensionDistribute"})}, /*维度分配*/
         {key: 'company', name: formatMessage({id:"structure.companyDistribute"})}  /*公司分配*/
-        ],
+      ],
     };
     this.search = debounce(this.search,1000)
   }

@@ -209,51 +209,51 @@ class ContractDetail extends React.Component{
                               isApprovePage={true}
                               getContractStatus={this.getStatus}/>
         {!isConfirm &&
-          <Affix offsetBottom={0} className="bottom-bar" style={{height:'80px',lineHeight:'80px'}}>
-            <Row>
-              <Col span={18}>
-                <Form onSubmit={this.handleApprove}>
-                  <Row>
-                    <Col span={18}>
-                        <FormItem {...formItemLayout}
-                                  label="审批意见"
-                                  validateStatus={inputError ? "error" : ""}
-                                  help={inputError ? errorMessage : ""}
-                                  style={{position:'relative', top:'24px'}}>
-                          <Popover trigger="click"
-                                   title={fastReplyTitle}
-                                   content={fastReplyContent}
-                                   getPopupContainer={() => document.getElementsByClassName('contract-detail')[0]}
-                                   overlayStyle={{width:'49%', maxHeight:'140px'}}>
-                            {getFieldDecorator('reason')(
-                              <Input placeholder="请输入，最多200个字符" onChange={this.onChange}/>
-                            )}
-                          </Popover>
-                        </FormItem>
-                    </Col>
-                    <Col span={6} style={{lineHeight:'80px'}}>
-                      <Button type="primary"
-                              loading={passLoading}
-                              htmlType="submit"
-                              onClick={() => this.handleBtnClick('pass')}
-                              style={{margin:'0 10px'}}>通 过</Button>
-                      <Button loading={rejectLoading}
-                              htmlType="submit"
-                              onClick={() => this.handleBtnClick('reject')}
-                              style={{color:'#fff', backgroundColor:'#f04134', borderColor:'#f04134'}}>驳 回</Button>
-                    </Col>
-                  </Row>
-                </Form>
-              </Col>
-              <Col span={4}>
-                <Button onClick={this.goBack}>返 回</Button>
-              </Col>
-            </Row>
-          </Affix>}
+        <Affix offsetBottom={0} className="bottom-bar" style={{height:'80px',lineHeight:'80px'}}>
+          <Row>
+            <Col span={18}>
+              <Form onSubmit={this.handleApprove}>
+                <Row>
+                  <Col span={18}>
+                    <FormItem {...formItemLayout}
+                              label="审批意见"
+                              validateStatus={inputError ? "error" : ""}
+                              help={inputError ? errorMessage : ""}
+                              style={{position:'relative', top:'24px'}}>
+                      <Popover trigger="click"
+                               title={fastReplyTitle}
+                               content={fastReplyContent}
+                               getPopupContainer={() => document.getElementsByClassName('contract-detail')[0]}
+                               overlayStyle={{width:'49%', maxHeight:'140px'}}>
+                        {getFieldDecorator('reason')(
+                          <Input placeholder="请输入，最多200个字符" onChange={this.onChange}/>
+                        )}
+                      </Popover>
+                    </FormItem>
+                  </Col>
+                  <Col span={6} style={{lineHeight:'80px'}}>
+                    <Button type="primary"
+                            loading={passLoading}
+                            htmlType="submit"
+                            onClick={() => this.handleBtnClick('pass')}
+                            style={{margin:'0 10px'}}>通 过</Button>
+                    <Button loading={rejectLoading}
+                            htmlType="submit"
+                            onClick={() => this.handleBtnClick('reject')}
+                            style={{color:'#fff', backgroundColor:'#f04134', borderColor:'#f04134'}}>驳 回</Button>
+                  </Col>
+                </Row>
+              </Form>
+            </Col>
+            <Col span={4}>
+              <Button onClick={this.goBack}>返 回</Button>
+            </Col>
+          </Row>
+        </Affix>}
         {isConfirm &&
-          <Affix offsetBottom={0} className="bottom-bar" style={{height:'50px',lineHeight:'50px'}}>
-            <Button onClick={this.goBack} style={{marginLeft:30}}>返 回</Button>
-          </Affix>}
+        <Affix offsetBottom={0} className="bottom-bar" style={{height:'50px',lineHeight:'50px'}}>
+          <Button onClick={this.goBack} style={{marginLeft:30}}>返 回</Button>
+        </Affix>}
       </div>
     )
   }
@@ -266,5 +266,4 @@ ContractDetail.contextTypes = {
 const wrappedContractDetail = Form.create()(injectIntl(ContractDetail));
 
 export default wrappedContractDetail
-
 

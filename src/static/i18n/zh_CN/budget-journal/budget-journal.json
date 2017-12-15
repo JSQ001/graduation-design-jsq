@@ -20,6 +20,7 @@
   "budget.sourceType":"来源类型",
   "budget.journalTypeId":"预算日记账类型",
   "budget.employeeId":"申请人",
+  "budget.employee":"员工",
   "budget.positionId":"岗位",
   "budget.unitId":"部门",
   "budget.budgetItemId":"经营单位ID",

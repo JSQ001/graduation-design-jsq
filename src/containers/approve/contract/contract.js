@@ -206,5 +206,3 @@ Contract.contextTypes = {
 const wrappedContract = Form.create()(injectIntl(Contract));
 
 export default wrappedContract
-
-
