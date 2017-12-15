@@ -15,26 +15,26 @@ class BudgetJournalCheck extends React.Component{
       loading1: false,
       loading2: false,
       SearchForm: [
-        {type: 'input', id: 'journalCode', label: '日记账编号'},
-        {type: 'input', id: 'employeeId', label: '申请人姓名/工号'},
+        {type: 'input', id: 'businessCode', label: '日记账编号'},
+        {type: 'input', id: 'fullName', label: '申请人姓名/工号'},
         {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
         {type: 'items', id: 'createdDate', items: [
-          {type: 'date', id: 'createdDateStart', label: '提交日期从'},
-          {type: 'date', id: 'createdDateEnd', label: '提交日期至'}
+          {type: 'date', id: 'beginDate', label: '提交日期从'},
+          {type: 'date', id: 'endDate', label: '提交日期至'}
         ]},
 
       ],
       columns: [
         {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
-        {title: '申请人', dataIndex: 'companyId'},
-        {title: '提交时间', dataIndex: 'createdDate'},
+        {title: '申请人', dataIndex: 'applicantName'},
+        {title: '提交时间', dataIndex: 'lastSubmittedDate'},
         {title: '预算日记账类型', dataIndex: 'journalCodeTypeName'},
-        {title: '预算日记账单号', dataIndex: 'journalCode'},
-        {title: '币种', dataIndex: 'currency'},
-        {title: '金额', dataIndex: 'amount'},
-        {title: '状态', dataIndex: 'status'},
+        {title: '预算日记账单号', dataIndex: 'businessCode'},
+        {title: '币种', dataIndex: 'currencyCode'},
+        {title: '金额', dataIndex: 'totalAmount'},
+        {title: '状态', dataIndex: 'statusView'},
       ],
       budgetJournalDetailCheckDetailPage: menuRoute.getRouteItem('budget-journal-check-detail','key'),    //预算日记账复核详情
       unJournalData: [],
@@ -63,7 +63,7 @@ class BudgetJournalCheck extends React.Component{
 
   getUnJournalList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
-    let unJournalUrl = `{config.budgetUrl}/api/budget/journals/query/headers?organizationId=${this.props.organization.id}?page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    let unJournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
     this.setState({ loading1: true });
     httpFetch.get(unJournalUrl).then((res) => {
       if (res.status === 200) {

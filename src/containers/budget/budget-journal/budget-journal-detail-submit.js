@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps} from 'antd';
+import { Spin,Popover,Button,Collapse, Table,message,Icon,Badge,Row,Col,Steps,Popconfirm} from 'antd';
 const Step =Steps.Step;
 
 import "styles/budget/budget-journal/budget-journal-detail-submit.scss"
@@ -15,6 +15,7 @@ class BudgetJournalDetailSubmit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinLoading:true,
       loading: true,
       data: [],
       total:0,
@@ -34,7 +35,7 @@ class BudgetJournalDetailSubmit extends React.Component {
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',
+          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'8%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
@@ -42,61 +43,73 @@ class BudgetJournalDetailSubmit extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',
+          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'8%',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
             </Popover>)
 
         },
+        {          /*人员*/
+          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',
+          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
             </Popover>)
-
         },
         {
           /*期间*/
-          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName'
+          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%',
+
         },
         {
           /*季度*/
-          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),
-          key: "periodQuarter",
-          dataIndex: 'periodQuarter'
+          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),width:'6%',
+          key: "periodQuarterName",
+          dataIndex: 'periodQuarterName'
         },
         {
           /*年度*/
-          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear'
+          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'8%'
         },
         {
           /*币种*/
-          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency'
+          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',width:'8%'
         },
-
         {
           /*汇率*/
-          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate'
+          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',width:'8%',
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',render: this.filterMoney
+          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*本币今额*/
           title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
           key: "functionalAmount",
           dataIndex: 'functionalAmount',
-          render: this.filterMoney
+          render: recode => (
+            <Popover content={this.filterMoney(recode)}>
+              {this.filterMoney(recode)}
+            </Popover>)
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity'
+          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity',with:'8%',
         },
-
         {
           /*备注*/
           title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
@@ -106,15 +119,12 @@ class BudgetJournalDetailSubmit extends React.Component {
             </Popover>)
         },
       ],
-
       budgetJournalPage: menuRoute.getRouteItem('budget-journal','key'),    //预算日记账
 
     };
   }
 
   componentWillMount=()=>{
-    console.log(this.props.params.journalCode);
-
     this.getDataByBudgetJournalCode();
   }
 
@@ -179,6 +189,10 @@ class BudgetJournalDetailSubmit extends React.Component {
     }
     this.setState({
       columns,
+    },()=>{
+      this.setState({
+        spinLoading:false
+      })
     })
   }
 
@@ -196,13 +210,14 @@ class BudgetJournalDetailSubmit extends React.Component {
     switch (infoData.status){
       case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
       case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
-      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text={infoData.statusName}/> }
+      case 'SUBMIT_RETURN':{return   <Badge status="warning" text={infoData.statusName}/>}
       case 'REJECT':{ return  <Badge status="error" text={infoData.statusName} />}
-      case 'CHECKED':{return < Badge status="default" color="#234234" text={infoData.statusName}/>}
-      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text={infoData.statusName}/>}
-      case 'POSTED':{return <Badge status="default"  color="#87d068" text={infoData.statusName}/>}
-      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text={infoData.statusName}/>}
-      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text={infoData.statusName}/>}
+      case 'CHECKED':{return < Badge status="default" text={infoData.statusName}/>}
+      case 'CHECKING':{return <Badge  status="default"text={infoData.statusName}/>}
+      case 'POSTED':{return <Badge status="default" text={infoData.statusName}/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={infoData.statusName}/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default"  text={infoData.statusName}/>}
+      default :{return <Badge status="default"  text={infoData.statusName}/>}
     }
   }
 
@@ -254,7 +269,14 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //撤回
   handleRevocation=()=>{
-   // this.context.router.push(this.state.budgetJournalPage.url);
+    const headerIds =[];
+    headerIds.push(this.state.headerAndListData.dto.id)
+    httpFetch.post(`${config.budgetUrl}/api/budget/journals/submit/return/by/headerIdsAndUserId?userId=${this.props.user.id}`,headerIds).then((item)=>{
+      this.context.router.push(this.state.budgetJournalPage.url);
+    }).catch((e)=>{
+
+    })
+
   }
 
   //返回
@@ -264,7 +286,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //审批中返回，撤回按钮
   getCheckingButton(){
-    return this.state.infoData.status=="CHECKIMG"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+    return this.state.infoData.status === "SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
   }
 
   render(){
@@ -334,7 +356,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
 
         </div>
-
+        <Spin spinning={this.state.spinLoading}>
         <Table columns={columns}
                dataSource={data}
                bordered
@@ -343,6 +365,7 @@ class BudgetJournalDetailSubmit extends React.Component {
                rowKey={recode=>{return recode.id}}
 
         />
+        </Spin>
 
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
@@ -355,7 +378,11 @@ class BudgetJournalDetailSubmit extends React.Component {
 
         <div className="footer-operate">
             <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
-            {this.getCheckingButton()}
+            {this.state.infoData.status === "SUBMIT"?
+              (   <Popconfirm placement="topLeft" title={"确认撤回"} onConfirm={this.handleRevocation} okText="确定" cancelText="取消">
+                   <Button className="button-Revocation" type="primary" >撤回</Button>
+                </Popconfirm>
+              ) :''}
 
         </div>
 
@@ -371,8 +398,12 @@ BudgetJournalDetailSubmit.contextTypes ={
   router: React.PropTypes.object
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetJournalDetailSubmit));
