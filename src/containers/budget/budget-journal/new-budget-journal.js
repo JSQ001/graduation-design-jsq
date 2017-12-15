@@ -60,16 +60,16 @@ class NewBudgetJournalFrom extends React.Component {
     let defaultValueList =  this.state.defaultValueList;
     let defaultDataList = this.state.defaultDataList;
     defaultDataList.map((item)=>{
-      httpFetch.get(item.url).then((res)=>{
-        let data=res.data;
+      httpFetch.get(item.url).then((response)=>{
         if(item.type === "chooser"){
-          defaultValueList[item.defaultValueKey]=data;
+          defaultValueList[item.defaultValueKey]=response.data;
           this.props.from.setFieldsValue(
             defaultValueList
           )
         }
       }).catch((e)=>{
-          message.error(e.response.data.message)
+          if(e.response)
+            message.error(e.response.data.message)
       })
     })
   }
@@ -444,6 +444,7 @@ class NewBudgetJournalFrom extends React.Component {
                       <UploadFile
                         attachmentType="BUDGET_JOURNAL"
                         fileNum={5}
+                        uploadUrl={`${config.baseUrl}/api/upload/static/attachment`}
                         uploadHandle={this.uploadHandle}
                       />
                     )}

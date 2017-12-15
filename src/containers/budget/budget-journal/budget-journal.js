@@ -111,11 +111,7 @@ class BudgetJournal extends React.Component {
 
   //获取预算日记账数据
   getList(){
-    this.setState({
-      loading:true,
-    })
-
-
+    this.setState({loading:true,});
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?organizationId=${this.props.organization.id}&page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
       this.setState({
         data: response.data,
@@ -165,7 +161,7 @@ class BudgetJournal extends React.Component {
       let path=this.state.budgetJournalDetailSubmit.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }
-  }
+  };
 
   render(){
     const { loading, searchForm ,data, selectedRowKeys, pagination, columns, batchCompany} = this.state;

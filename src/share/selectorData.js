@@ -497,7 +497,7 @@ const selectorData = {
   },
   'journal_employee': {
     title: '选择人员',
-    url: `http://192.168.1.195:9083/api/DepartmentGroup/get/users/by/department/and/company`,
+    url: `${config.baseUrl}/api/DepartmentGroup/get/users/by/department/and/company`,
     searchForm: [],
     columns: [
       {title: '工号', dataIndex: 'userId'},
