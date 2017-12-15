@@ -7,7 +7,6 @@ import config from 'config'
 import menuRoute from 'share/menuRoute'
 import SearchArea from 'components/search-area.js';
 import "styles/budget/budget-journal/budget-journal.scss"
-
 class BudgetJournal extends React.Component {
   constructor(props) {
     super(props);
@@ -115,6 +114,7 @@ class BudgetJournal extends React.Component {
     this.setState({
       loading:true,
     })
+
 
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/query/headers/byInput?organizationId=${this.props.organization.id}&page=${this.state.page}&size=${this.state.pageSize}&status=${this.state.params.status||''}&journalTypeId=${this.state.params.journalTypeId||''}&journalCode=${this.state.params.journalCode||''}&periodStrategy=${this.state.params.periodStrategy||''}`).then((response)=>{
       this.setState({

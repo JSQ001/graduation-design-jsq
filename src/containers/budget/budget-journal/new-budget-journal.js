@@ -218,7 +218,7 @@ class NewBudgetJournalFrom extends React.Component {
   HandleClear = () => {
     let path = this.state.budgetJournalPage.url;
     this.context.router.push(path);
-  };h
+  };
 
 
   //选择预算日记账类型，设置对应的预算表选
@@ -250,8 +250,6 @@ class NewBudgetJournalFrom extends React.Component {
     const organization = this.props.organization;
     const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading} = this.state;
     const formItemLayout = {};
-
-
     const strategyOptions = structureGroup.map((item) => <Option value={String(item.id)}>{item.structureName}</Option>);
     const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
