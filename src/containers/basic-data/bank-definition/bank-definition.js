@@ -50,7 +50,7 @@ class BankDefinition extends React.Component{
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
           defaultValue:'中国',
-          getUrl: `https://apiuat.huilianyi.com/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
+          getUrl: `${config.uatUrl}/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
         },
         {type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
       ],
@@ -151,7 +151,7 @@ class BankDefinition extends React.Component{
   //根据国家代码获取下级城市
   getAddress(countryCode){
     let {searchForm} = this.state;
-    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+    httpFetch.get(`${config.uatUrl}/location-service/api/localization/query/all/address?code=${countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       searchForm[3].options = response.data;
       this.setState({
         accountAddress: response.data,

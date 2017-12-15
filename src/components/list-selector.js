@@ -96,7 +96,16 @@ class ListSelector extends React.Component {
       url += searchParams[paramsName] !== undefined ? `&${paramsName}=${searchParams[paramsName]}` : '';  //遍历searchParams，如果该处有值，则填入url
     }
     return httpFetch.get(url).then((response)=>{
-      let data = selectorItem.listKey ? response.data[selectorItem.listKey] : response.data;
+      let data = [];
+      if(selectorItem.isValue){
+        response.data.map((item)=>{
+          let option = {};
+          option[selectorItem.key] =item;
+          data.push(option)
+        });
+      }else {
+        data = selectorItem.listKey ? response.data[selectorItem.listKey] : selectorItem.isValueList? response.data.values : response.data;
+      }
       data.map((item)=>{
         item.key = item[selectorItem.key];
       });
