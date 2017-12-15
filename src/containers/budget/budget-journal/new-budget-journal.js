@@ -465,7 +465,6 @@ class NewBudgetJournalFrom extends React.Component {
       </div>
     )
   }
-
 }
 
 
