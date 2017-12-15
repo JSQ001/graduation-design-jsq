@@ -23,6 +23,7 @@ class AnnouncementInformationDetail extends React.Component{
     const {formatMessage} = this.props.intl;
     this.state = {
       loading: true,
+      flag: true, //默认是新建页面
       upload: false,
       btnLoading: false,
       data:[],
@@ -73,7 +74,9 @@ class AnnouncementInformationDetail extends React.Component{
   }
 
   deleteItem = (e, record) => {
-    console.log(record)
+    this.setState({
+      loading: true
+    });
     httpFetch.delete(`${config.baseUrl}/api/carousels/${record.carouselOID}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.title})); // name删除成功
       this.getList();
@@ -81,7 +84,12 @@ class AnnouncementInformationDetail extends React.Component{
   };
 
   componentWillMount(){
-    this.getList();
+    console.log(this.props)
+    if(this.props.params.id !== 'create'){
+      this.setState({
+        flag: false
+      },this.getList())
+    }
   }
 
   getList(){
@@ -92,8 +100,11 @@ class AnnouncementInformationDetail extends React.Component{
         item.key = item.id;
         item.number = i++;
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
         loading: false,
+        pagination,
         data: response.data
       })
     })
@@ -107,9 +118,10 @@ class AnnouncementInformationDetail extends React.Component{
         console.log(values);
         values.attachmentOID ="936e0d08-ed13-4ce5-813f-84818964e3cf";
         httpFetch.post(`${config.baseUrl}/api/carousels`,values).then((response)=>{
-          console.log(response)
+          console.log(response);
           message.success(`${this.props.intl.formatMessage({id:"common.save.success"},{name:""})}`);
-          this.setState({btnLoading: false})
+          this.setState({btnLoading: false});
+          this.onCancel();
         }).catch((e)=>{
           if(e.response){
             message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}`)
@@ -188,6 +200,26 @@ class AnnouncementInformationDetail extends React.Component{
   showListSelector = (flag) =>{
     this.setState({
       companyListSelector: flag
+    })
+  };
+
+  handleFormChange =()=>{
+    this.setState({
+      btnLoading: false
+    })
+  };
+
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
     })
   };
 
@@ -274,6 +306,7 @@ class AnnouncementInformationDetail extends React.Component{
             <Table
               loading={loading}
               dataSource={data}
+              onChange={this.onChangePager}
               columns={columns}
               bordered
               size="middle"/>
@@ -283,17 +316,21 @@ class AnnouncementInformationDetail extends React.Component{
   }
 
   render(){
-    const {  selectorItem, companyListSelector} = this.state;
+    const { flag, selectorItem, companyListSelector} = this.state;
     return (
       <div className="announcement-information-detail">
-        <div className="announcement-information-tabs">
-          <Tabs onChange={this.onChangeTabs}>
-            {this.renderTabs()}
-          </Tabs>
-        </div>
+        {
+          flag ? null :
+            <div className="announcement-information-tabs">
+              <Tabs onChange={this.onChangeTabs}>
+                {this.renderTabs()}
+              </Tabs>
+            </div>
+        }
         <div className="announcement-information-content">
           {this.renderContent()}
         </div>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.onCancel}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
         <ListSelector
           selectorItem={selectorItem}
           visible={companyListSelector}

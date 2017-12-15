@@ -46,14 +46,6 @@ class AnnouncementInformation extends React.Component{
                    text={enable ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )
         },
-        {
-          /*分配公司*/
-          title: formatMessage({id: "announcement-info.deliveryCompany"}),
-          key: "companyDistribute",
-          dataIndex: 'companyDistribute',
-          width: '15%',
-          render: () => (<a target="#"  onClick={()=>this.showListSelector(true)}>{formatMessage({id: 'announcement-info.deliveryCompany'})}</a>)
-        },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '10%', render: (text, record) => (
           <span>
             <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
@@ -62,7 +54,6 @@ class AnnouncementInformation extends React.Component{
           </span>)},  //操作
       ],
       selectedEntityOIDs: [],    //已选择的列表项的OIDs
-
       selectorItem:{
         title: `${formatMessage({id: "announcement-info.deliveryCompany"})}`,
         url: `${config.baseUrl}/api/company/deploy/carousel`,
@@ -104,8 +95,11 @@ class AnnouncementInformation extends React.Component{
         item.key = item.id;
         item.number = i++;
       });
+      let pagination = this.state.pagination;
+      pagination.total = Number(response.headers['x-total-count']);
       this.setState({
         loading: false,
+        pagination,
         data: response.data
       })
     })
@@ -180,9 +174,28 @@ class AnnouncementInformation extends React.Component{
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
+  //新建，跳转新建页面
+  handleCreate = ()=>{
+    this.context.router.push(menuRoute.getMenuItemByAttr('announcement-information', 'key').children.announcementInformationDetail.url.replace(':id', "create"));
+  };
+
   //跳转详情页面
   handleRowClick = (record) =>{
     this.context.router.push(menuRoute.getMenuItemByAttr('announcement-information', 'key').children.announcementInformationDetail.url.replace(':id', record.id));
+  };
+
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
+    })
   };
 
   render(){
@@ -210,6 +223,7 @@ class AnnouncementInformation extends React.Component{
             columns={columns}
             pagination={pagination}
             rowSelection={rowSelection}
+            onChange={this.onChangePager}
             onRow={record => ({
               onClick: () => this.handleRowClick(record)
             })}
