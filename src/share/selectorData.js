@@ -506,7 +506,7 @@ const selectorData = {
       {title: '工号', dataIndex: 'userId'},
       {title: '姓名', dataIndex: 'userName'},
     ],
-    key: 'employeeId'
+    key: 'userId'
   },
 };
 
