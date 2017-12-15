@@ -179,11 +179,13 @@ class BudgetControlRulesDetail extends React.Component{
   //保存编辑后的预算规则
   handleUpdate = (values)=>{
     let startTime = new Date(values.startDate);
-    let endTime = new Date(values.endDate);
     startTime.setHours(startTime.getHours()+8);
-    endTime.setHours(endTime.getHours()+8);
     values.startDate = startTime;
-    values.endDate = endTime;
+    if(values.endDate !== null){
+      let endTime = new Date(values.endDate);
+      endTime.setHours(endTime.getHours()+8);
+      values.endDate = endTime;
+    }
     values.organizationId = this.props.params.id;
     values.id = this.props.params.ruleId;
     values.versionNumber = this.state.controlRule.versionNumber;

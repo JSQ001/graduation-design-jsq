@@ -81,7 +81,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: undefined,
+        codeKey: 'currencyName',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -391,7 +391,6 @@ class NewBudgetRulesDetail extends React.Component{
                   },
                     {
                       validator: (item,value,callback)=>{
-                        console.log(value)
                         if(typeof value === 'undefined'){
                           validateStatusMap.ruleParameter = "error";
                           helpMap.ruleParameter = formatMessage({id:"common.please.select"})

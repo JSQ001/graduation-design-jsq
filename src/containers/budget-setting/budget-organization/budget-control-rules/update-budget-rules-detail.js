@@ -96,7 +96,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: undefined,
+        codeKey: 'currencyName',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
