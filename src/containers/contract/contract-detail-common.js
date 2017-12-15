@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm } from 'antd'
+import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
 
 import moment from 'moment'
@@ -363,6 +363,14 @@ class ContractDetailCommon extends React.Component {
             <Col span={8}>{this.renderList('备注', headerData.remark || '-')}</Col>
           </Row>
           <h3 className="margin-20-0">附件信息</h3>
+          {headerData.attachmentURLs && headerData.attachmentURLs.map((url, index) => {
+            return (
+              <div key={index}>
+                <Icon type="paper-clip" style={{marginRight:5}}/>
+                <a href={url} target="_blank">{url}</a>
+              </div>
+            )
+          })}
         </Spin>
       </div>
     );
