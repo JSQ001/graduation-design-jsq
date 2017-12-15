@@ -495,6 +495,16 @@ const selectorData = {
     key: 'quarter',
     isValueList: true
   },
+  'journal_employee': {
+    title: '选择人员',
+    url: `http://192.168.1.195:9083/api/DepartmentGroup/get/users/by/department/and/company`,
+    searchForm: [],
+    columns: [
+      {title: '工号', dataIndex: 'userId'},
+      {title: '姓名', dataIndex: 'userName'},
+    ],
+    key: 'employeeId'
+  },
 };
 
 export default selectorData;
