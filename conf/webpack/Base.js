@@ -204,7 +204,7 @@ class WebpackBaseConfig {
       },
       output: {
         path: path.resolve('./dist/assets'),
-        filename: '[name].js',
+        filename: this.env === 'dist' ? '[name].js' : 'app.js',
         publicPath: './assets/'
       },
       plugins: [],
