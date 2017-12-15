@@ -62,6 +62,7 @@ class BudgetJournalDetail extends React.Component {
         {type: 'input', id:'remark',valueKey:'remark'}  //备注
       ],
       infoList:[
+
         /*状态*/
         {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
         /*预算日记账编号*/
@@ -116,21 +117,21 @@ class BudgetJournalDetail extends React.Component {
 
       columns: [
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'10%',
+          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'5%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
             </Popover>)
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'10%',
+          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'5%',
           render: departmentName => (
             <Popover content={departmentName}>
               {departmentName}
             </Popover>)
         },
-        {          /*人员*/
-          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+        {          /*员工*/
+          title: this.props.intl.formatMessage({id:"budget.employee"}), key: "employeeName", dataIndex: 'employeeName',width:'5%',
           render: recode => (
             <Popover content={recode}>
               {recode}
