@@ -149,11 +149,9 @@ class ListSelector extends React.Component {
 
   checkSelectorItem(selectorItem){
     let searchParams = {};
-    if(typeof selectorItem.searchForm !== 'undefined'){
-      selectorItem.searchForm.map(form => {
-        searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searchParams
-      });
-    }
+    selectorItem.searchForm.map(form => {
+      searchParams[form.id] = form.defaultValue;  //遍历searchForm，取id组装成searchParams
+    });
     this.setState({ selectorItem, searchParams }, () => {
       this.getList();
     })
