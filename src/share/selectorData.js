@@ -469,7 +469,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-<<<<<<< HEAD
   'bank_account': {
     title: '银行信息',
     url: `${config.payUrl}/api/cash/bank/user/defineds/query`,
@@ -509,8 +508,7 @@ const selectorData = {
       { title: '姓名', dataIndex: 'userName', width: '25%' }
     ],
     key: 'userOID'
-  }
-=======
+  },
   'year': {
     title: '年度',
     url: `${config.baseUrl}/api/periods/select/years/by/setOfBooksId`,
@@ -550,7 +548,6 @@ const selectorData = {
     ],
     key: 'employeeId'
   },
->>>>>>> 291244178e1e2ccacdfa5b86c9fb043bf9dc2193
 };
 
 export default selectorData;
