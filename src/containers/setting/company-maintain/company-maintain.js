@@ -14,8 +14,6 @@ import SlideFrame from 'components/slide-frame'
 import EditCompanyMaintain from './edit-company-maintain';
 import NewCompanyMaintain from './new-company-maintain';
 
-import "styles/setting/company-maintain/company-maintain.scss"
-
 
 const journalTypeCode = [];
 
