@@ -260,11 +260,11 @@ class PayUnpaid extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ onlineLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -285,11 +285,11 @@ class PayUnpaid extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ offlineLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -310,11 +310,11 @@ class PayUnpaid extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ fileLoading: false });
-      reject()
+      reject && reject()
     })
   };
 

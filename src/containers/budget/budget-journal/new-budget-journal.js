@@ -60,16 +60,16 @@ class NewBudgetJournalFrom extends React.Component {
     let defaultValueList =  this.state.defaultValueList;
     let defaultDataList = this.state.defaultDataList;
     defaultDataList.map((item)=>{
-      httpFetch.get(item.url).then((res)=>{
-        let data=res.data;
+      httpFetch.get(item.url).then((response)=>{
         if(item.type === "chooser"){
-          defaultValueList[item.defaultValueKey]=data;
+          defaultValueList[item.defaultValueKey]=response.data;
           this.props.from.setFieldsValue(
             defaultValueList
           )
         }
       }).catch((e)=>{
-          message.error(e.response.data.message)
+          if(e.response)
+            message.error(e.response.data.message)
       })
     })
   }
@@ -187,19 +187,14 @@ class NewBudgetJournalFrom extends React.Component {
     let formOid =null;
     let documentOid =null;
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/journalType/selectByInput?&page=0&size=50&organizationId=${this.props.organization.id}`).then((res)=>{
-      console.log(4444);
       res.data.map((item)=>{
         if(item.id == value){
-          console.log(value);
-          console.log(3333);
           formOid = item.form0id;
           documentOid = item.formType;
           this.setState({
             formOid,
             documentOid
-          },()=>{
-            console.log(this.state.formOid)
-          })
+          },()=>{})
         }
       })
     })
@@ -223,7 +218,7 @@ class NewBudgetJournalFrom extends React.Component {
   HandleClear = () => {
     let path = this.state.budgetJournalPage.url;
     this.context.router.push(path);
-  };h
+  };
 
 
   //选择预算日记账类型，设置对应的预算表选
@@ -255,8 +250,6 @@ class NewBudgetJournalFrom extends React.Component {
     const organization = this.props.organization;
     const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading} = this.state;
     const formItemLayout = {};
-
-
     const strategyOptions = structureGroup.map((item) => <Option value={String(item.id)}>{item.structureName}</Option>);
     const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
@@ -342,7 +335,7 @@ class NewBudgetJournalFrom extends React.Component {
                   {getFieldDecorator('journalTypeName', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "journalTypeName"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算日记账类型"})
                     }]
                   })(
                     <Chooser
@@ -451,6 +444,7 @@ class NewBudgetJournalFrom extends React.Component {
                       <UploadFile
                         attachmentType="BUDGET_JOURNAL"
                         fileNum={5}
+                        uploadUrl={`${config.baseUrl}/api/upload/static/attachment`}
                         uploadHandle={this.uploadHandle}
                       />
                     )}
@@ -471,7 +465,6 @@ class NewBudgetJournalFrom extends React.Component {
       </div>
     )
   }
-
 }
 
 

@@ -217,7 +217,7 @@ class NewBudgetItem extends React.Component{
           onCancel={()=>this.showList(false)}
           onOk={this.handleListOk}
           selectedData={listSelectedData}
-          extraParams={{organizationId: this.props.params.id}}/>
+          extraParams={{organizationId: this.props.params.id,isEnabled: true}}/>
       </div>
     )
   }

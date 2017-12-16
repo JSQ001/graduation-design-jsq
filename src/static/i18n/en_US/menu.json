@@ -121,5 +121,6 @@
   "menu.check-center-hotel": "Hotel bills",
   "menu.check-center-train": "Train bills",
   "menu.announcement-information": "Announcement information",
-  "menu.supplier-type": "supplier type"
+  "menu.supplier-type": "supplier type",
+  "menu.announcement-information-detail": "Announcement information detail"
 }

@@ -42,7 +42,9 @@ class Contract extends React.Component{
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '币种', dataIndex: 'currency'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
-        {title: '状态', dataIndex: 'status', render: value => <Badge status="success" text={this.state.contractStatus[value].label}/>},
+        {title: '状态', dataIndex: 'status', render: value =>
+          <Badge status={this.state.contractStatus[value].state} text={this.state.contractStatus[value].label}/>
+        },
       ],
       unapprovedData: [],
       approvedData: [],
@@ -204,5 +206,3 @@ Contract.contextTypes = {
 const wrappedContract = Form.create()(injectIntl(Contract));
 
 export default wrappedContract
-
-

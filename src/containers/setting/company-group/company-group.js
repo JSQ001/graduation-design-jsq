@@ -36,8 +36,8 @@ class CompanyGroup extends React.Component {
       searchForm: [
         {type: 'select', id: 'setOfBook', label: formatMessage({id:"budget.set.of.books"}), options: [],
           getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
-        {type: 'input', id: 'companyGroupCode', label: "公司组代码" }, /*预算表代码*/
-        {type: 'input', id: 'companyGroupName', label: "公司组名称" }, /*预算表名称*/
+        {type: 'input', id: 'companyGroupCode', label:formatMessage({id:"setting.companyGroupCode"}) }, /*公司组代码*/
+        {type: 'input', id: 'companyGroupName', label: formatMessage({id:"setting.companyGroupName"})  }, /*公司组名称*/
       ],
       columns: [
         {          /*公司组代码*/

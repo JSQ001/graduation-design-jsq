@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { injectIntl } from 'react-intl'
-import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message, Spin } from 'antd'
+import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import menuRoute from 'share/menuRoute'
@@ -27,7 +27,7 @@ class NewContract extends React.Component{
       currencyOptions: [], //币种
       companyIdOptions: [], //公司
       contractCategoryOptions: [], //合同大类选项
-      uploadOIDs: [], //上传附件的OIDs
+      uploadOIDs: "", //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
       contractCategoryValue: 'EMPLOYEE',
@@ -89,7 +89,8 @@ class NewContract extends React.Component{
 
   //上传附件
   handleUpload = (OIDs) => {
-    this.setState({ uploadOIDs: OIDs })
+    let uploadOIDs = OIDs.join();
+    this.setState({ uploadOIDs })
   };
 
   //保存
@@ -97,7 +98,8 @@ class NewContract extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.attachmentOID = this.state.uploadOIDs;
+        values.amount = 0;
+        values.attachmentOIDs = this.state.uploadOIDs;
         values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
@@ -122,9 +124,8 @@ class NewContract extends React.Component{
   handleUpdate = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(values);
       if (!err) {
-        values.attachmentOID = this.state.uploadOIDs;
+        values.attachmentOIDs = this.state.uploadOIDs;
         values.signDate && (values.signDate = values.signDate.format('YYYY-MM-DD'));
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
@@ -179,6 +180,7 @@ class NewContract extends React.Component{
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
+      this.props.form.setFieldsValue({ contractTypeId: undefined });
       this.getContractType(value);
       this.setState({ contractTypeDisabled: false })
     }
@@ -217,7 +219,7 @@ class NewContract extends React.Component{
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>创建日期:</div>
-                <Input value={isNew ? moment(data.createdDate).format('YYYY-MM-DD') : new Date().format('yyyy-MM-dd')} disabled />
+                <Input value={isNew ? new Date().format('yyyy-MM-dd') : moment(data.createdDate).format('YYYY-MM-DD')} disabled />
               </Col>
             </Row>
           </Card>
@@ -270,18 +272,18 @@ class NewContract extends React.Component{
                   </FormItem>
                 </Col>
                 <Col span={7} offset={1}>
-                  <FormItem label="合同类型（请先选择公司）">
+                  <FormItem label="合同类型">
                     {getFieldDecorator('contractTypeId', {
                       rules: [{
                         required: true,
                         message: '请选择'
                       }],
-                      initialValue: isNew ? undefined : [data.contractTypeId]
+                      initialValue: isNew ? undefined : [{id: data.contractTypeId, contractTypeName: data.contractTypeName}]
                     })(
                       <Chooser disabled={isNew ? contractTypeDisabled : false}
                                selectorItem={selectorItem}
                                listExtraParams={{companyId: extraParams}}
-                               valueKey="contractTypeCode"
+                               valueKey="id"
                                labelKey="contractTypeName"
                                single/>
                     )}
@@ -313,7 +315,7 @@ class NewContract extends React.Component{
                         {getFieldDecorator('currency', {
                           initialValue: isNew ? 'CNY' : data.currency
                         })(
-                          <Select placeholder="请选择">
+                          <Select placeholder="请选择" disabled={!isNew}>
                             {currencyOptions.map((option) => {
                               return <Option key={option.currency}>{option.currency}</Option>
                             })}
@@ -324,9 +326,9 @@ class NewContract extends React.Component{
                     <Col span={16} offset={1}>
                       <FormItem label=" " colon={false}>
                         {getFieldDecorator('amount', {
-                          initialValue: isNew ? undefined : data.amount
+                          initialValue: isNew ? '0.00' : data.amount
                         })(
-                          <InputNumber placeholder="请输入" style={{width: '100%'}}/>
+                          <Input style={{width: '100%'}} disabled/>
                         )}
                       </FormItem>
                     </Col>
@@ -403,8 +405,9 @@ class NewContract extends React.Component{
               <Row>
                 <Col span={7}>
                   <FormItem>
-                    {getFieldDecorator('attachmentOID')(
-                      <Upload attachmentType="CONTRACT"
+                    {getFieldDecorator('attachmentOIDs')(
+                      <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload`}
+                              attachmentType="CON_CONTRACT"
                               fileNum={9}
                               uploadHandle={this.handleUpload}/>
                     )}
@@ -417,7 +420,7 @@ class NewContract extends React.Component{
                 <Col span={7}>
                   <FormItem label="责任部门">
                     {getFieldDecorator('unitId', {
-                      initialValue: isNew ? undefined : data.unitId
+                      initialValue: isNew ? undefined : (data.unitId || undefined)
                     })(
                       <Select placeholder="请选择" allowClear onChange={this.changeUnitId}>
                         {unitIdOptions.map((option) => {
@@ -430,7 +433,7 @@ class NewContract extends React.Component{
                 <Col span={7} offset={1}>
                   <FormItem label="责任人">
                     {getFieldDecorator('employeeId', {
-                      initialValue: isNew ? undefined : data.employeeId
+                      initialValue: isNew ? undefined : (data.employeeId || undefined)
                     })(
                       <Select placeholder="请选择" allowClear>
                         {employeeIdOptions.map((option) => {

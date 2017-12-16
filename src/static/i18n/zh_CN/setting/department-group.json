@@ -1,4 +1,20 @@
 {
   "setting.deptCode": "部门代码",
-  "setting.deptName": "部门名称"
+  "setting.deptName": "部门名称",
+  "setting.companyGroupCode": "公司组代码",
+  "setting.companyGroupName": "公司组名称",
+  "account.occur": "发生日期",
+  "account.accessory": "附件",
+  "account.expenseAttributes": "费用属性",
+  "account.currency": "币种",
+  "account.money": "金额",
+  "account.currencyMoney": "本币金额",
+  "account.createExpenseAccount": "生成报销单",
+  "account.createExpense": "新建费用",
+  "account.manuallyCreate": "手工创建",
+  "account.inputInvoice": "录入发票",
+  "account.cardConsumption": "商务卡消费",
+  "account.selected": "已选择 ",
+  "account.message": " 笔费用，总金额 CNY "
+
 }

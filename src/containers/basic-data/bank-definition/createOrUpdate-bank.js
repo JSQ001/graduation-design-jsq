@@ -69,7 +69,7 @@ class CreateOrUpdateBank extends React.Component{
 
   //根据国家代码获取省市
   getAddress(countryCode){
-    httpFetch.get(`http://192.168.1.77:13001/location-service/api/localization/query/all/address?code=${countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=> {
+    httpFetch.get(`${config.uatUrl}/location-service/api/localization/query/all/address?code=${countryCode}&language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=> {
       this.setState({
         address: response.data
       })

@@ -20,6 +20,7 @@ class BudgetStructure extends React.Component {
     this.state = {
       loading: true,
       data: [],
+      organization:{},
       searchParams: {
         structureCode: "",
         structureName: ""
@@ -72,6 +73,12 @@ class BudgetStructure extends React.Component {
     }
   }
   componentWillMount(){
+    //查出当前预算组织数据
+    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.id}`).then((response)=>{
+      this.setState({
+        organization: response.data
+      })
+    });
     this.getList();
   }
 
@@ -130,7 +137,8 @@ class BudgetStructure extends React.Component {
   };
 
   handleCreate = () =>{
-    if(this.props.organization.isEnabled) {
+
+    if(this.state.organization.isEnabled) {
       this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.newBudgetStructure.url.replace(':id', this.props.id));
     }else{
       notification["error"]({
