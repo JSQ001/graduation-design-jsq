@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Table, Pagination, message, Button, Alert } from 'antd'
+import { Form, Radio, Badge, Table, Pagination, message, Button, Alert, Modal, Select, Input, Popconfirm } from 'antd'
+const FormItem = Form.Item;
+const { TextArea } = Input;
 
 import SearchArea from 'components/search-area'
 
@@ -80,6 +82,8 @@ class PayFail extends React.Component {
         total: 0
       },
       onlineCash: [],  //总金额
+      onlineModalVisible: false,
+      payWayOptions: [],
 
       /* 落地文件 */
       fileLoading: false,
@@ -90,6 +94,7 @@ class PayFail extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
+      fileModalVisible: false,
     };
   }
 
@@ -216,10 +221,18 @@ class PayFail extends React.Component {
   };
 
   //重新支付
-  repay = () => {};
+  repay = () => {
+    if (this.state.radioValue === 'online') {
+      this.setState({ onlineModalVisible: true })
+    } else {
+      this.setState({ fileModalVisible: true })
+    }
+  };
 
   //取消支付
-  cancelPay = () => {};
+  cancelPay = () => {
+    
+  };
 
   /*********************** 获取总金额 ***********************/
 
@@ -311,6 +324,18 @@ class PayFail extends React.Component {
     this.setState({ filePage, filePageSize },() => {
       this.getFileList()
     })
+  };
+
+  /********************** 弹框 - 确认支付 *********************/
+
+  //线上
+  handleOnlineModalOk = () => {
+    this.setState({ onlineModalVisible: false });
+  };
+
+  //落地文件
+  handleFileModalOk = () => {
+    this.setState({ fileModalVisible: false });
   };
 
   /************************ 内容渲染 ************************/
@@ -412,7 +437,12 @@ class PayFail extends React.Component {
   /************************* End *************************/
 
   render(){
-    const { searchForm, radioValue, buttonDisabled, noticeAlert, errorAlert } = this.state;
+    const { getFieldDecorator } = this.props.form;
+    const { searchForm, radioValue, buttonDisabled, noticeAlert, errorAlert, onlineModalVisible, currency, payWayOptions, fileModalVisible } = this.state;
+    const formItemLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14, offset: 1 },
+    };
     return (
       <div className="pay-fail">
         <SearchArea
@@ -426,18 +456,139 @@ class PayFail extends React.Component {
           <Radio.Button value="file">落地文件</Radio.Button>
         </Radio.Group>
         <div style={{marginBottom:10}}>
+          <Button type="primary"
+                  disabled={buttonDisabled}
+                  style={{marginRight:20}}
+                  onClick={this.repay}>重新支付</Button>
+          <Popconfirm title="确定取消支付吗" onConfirm={this.cancelPay}>
             <Button type="primary"
-                    disabled={buttonDisabled}
-                    style={{marginRight:20}}
-                    onClick={this.repay}>重新支付</Button>
-            <Button type="primary"
-                    disabled={buttonDisabled}
-                    onClick={this.cancelPay}>取消支付</Button>
+                    disabled={buttonDisabled}>取消支付</Button>
+          </Popconfirm>
         </div>
         {noticeAlert ? <Alert message={noticeAlert} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
         {errorAlert ? <Alert message={errorAlert} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'file' && this.renderFileContent()}
+        <Modal title="线上重新支付确认"
+               visible={onlineModalVisible}
+               okText="确认支付"
+               onOk={this.handleOnlineModalOk}
+               onCancel={() => this.setState({ onlineModalVisible: false })}>
+          <Form>
+            <FormItem  {...formItemLayout} label="付款账户">
+              {getFieldDecorator('payAccount', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="币种">
+              {getFieldDecorator('currency', {
+                rules: [{
+                  required: true
+                }],
+                initialValue: currency
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="付款方式">
+              {getFieldDecorator('payWay', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+                  {payWayOptions.map(option => {
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="汇率">
+              {getFieldDecorator('rate', {
+                initialValue: ''
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="备注">
+              {getFieldDecorator('description', {
+                initialValue: ''
+              })(
+                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+              )}
+            </FormItem>
+          </Form>
+        </Modal>
+        <Modal title="落地文件重新支付"
+               visible={fileModalVisible}
+               okText="导出报盘文件"
+               onOk={this.handleFileModalOk}
+               onCancel={() => this.setState({ fileModalVisible: false })}>
+          <Form>
+            <div style={{marginBottom:15}}>01. 选择付款账号</div>
+            <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
+              {getFieldDecorator('payAccount', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="币种" style={{marginBottom:15}}>
+              {getFieldDecorator('currency', {
+                rules: [{
+                  required: true
+                }],
+                initialValue: currency
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <FormItem  {...formItemLayout} label="汇率" style={{marginBottom:15}}>
+              {getFieldDecorator('rate', {
+                initialValue: ''
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <div style={{marginBottom:15}}>02. 选择付款方式</div>
+            <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
+              {getFieldDecorator('payWay', {
+                rules: [{
+                  required: true,
+                  message: '请选择'
+                }]})(
+                <Select placeholder="请选择">
+                  {payWayOptions.map(option => {
+                    return <Option key={option.value}>{option.messageKey}</Option>
+                  })}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="备注" style={{marginBottom:15}}>
+              {getFieldDecorator('description', {
+                initialValue: ''
+              })(
+                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+              )}
+            </FormItem>
+            <div style={{marginBottom:15}}>03. 点击下方【导出报盘文件】按钮</div>
+            <FormItem  {...formItemLayout} style={{marginBottom:15}}>
+              <div>1.导出报盘文件后，单据状态变为【支付中】</div>
+              <div>2.可通过报盘文件，在网银中进行支付</div>
+              <div>3.支付成功后，在【等待付款结果】标签下确认支付状态</div>
+            </FormItem>
+          </Form>
+        </Modal>
       </div>
     )
   }
@@ -448,4 +599,6 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(PayFail));
+const wrappedPayFail = Form.create()(injectIntl(PayFail));
+
+export default connect(mapStateToProps)(wrappedPayFail);
