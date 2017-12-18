@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Radio, Badge, Table, Pagination, message, Button } from 'antd'
+import { Radio, Badge, Table, Pagination, message, Button, Alert } from 'antd'
 
 import SearchArea from 'components/search-area'
 
@@ -66,6 +66,11 @@ class PayFail extends React.Component {
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='error' text={state}/>},
       ],
+      selectedRows: [],  //选中行
+      noticeAlert: null, //提示
+      errorAlert: null,  //错误
+      currency: null,    //选中行的币种
+
       /* 线上 */
       onlineLoading: false,
       onlineData: [],
@@ -75,7 +80,6 @@ class PayFail extends React.Component {
         total: 0
       },
       onlineCash: [],  //总金额
-      onlineSelectedRows: [],         //选中行
 
       /* 落地文件 */
       fileLoading: false,
@@ -86,8 +90,6 @@ class PayFail extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
-
-      currency: null,
     };
   }
 
@@ -95,6 +97,7 @@ class PayFail extends React.Component {
     this.getList()
   }
 
+  //获取列表及总金额
   getList = () => {
     let online = new Promise((resolve, reject) => {
       this.getOnlineList(resolve, reject)
@@ -110,14 +113,106 @@ class PayFail extends React.Component {
     })
   };
 
+  //搜索
   search = (values) => {
     this.setState({ searchParams: values }, () => {
       this.getList()
     })
   };
 
+  //清除搜索内容
   clear = () => {
 
+  };
+
+  //选择 线上／线下／落地文件
+  onRadioChange = (e) => {
+    this.setState({
+      radioValue: e.target.value,
+      selectedRows: []
+    }, () => {
+      this.noticeAlert(this.state.selectedRows)
+    })
+  };
+
+  //选择/取消选择某行的回调
+  handleSelectRow = (record, selected) => {
+    let selectedRows = this.state.selectedRows;
+    if(selected) {
+      selectedRows.push(record)
+    } else {
+      selectedRows.map((item, index) => {
+        item.id === record.id && (selectedRows[index] = 0)
+      });
+      selectedRows.delete(0)
+    }
+    this.setState({ selectedRows }, () => {
+      this.noticeAlert(this.state.selectedRows)
+    })
+  };
+
+  //选择/取消选择所有行的回调
+  handleSelectAllRow = (selected, selectedRow, changeRows) => {
+    let selectedRows = this.state.selectedRows;
+    if(selected){
+      changeRows.map(item => {
+        selectedRows.push(item)
+      })
+    } else {
+      selectedRows.map((row, index) => {
+        changeRows.map(item => {
+          row.id === item.id && (selectedRows[index] = 0)
+        })
+      });
+      changeRows.map(() => {
+        selectedRows.delete(0)
+      })
+    }
+    this.setState({ selectedRows }, () => {
+      this.noticeAlert(this.state.selectedRows)
+    })
+  };
+
+  //提示框显示
+  noticeAlert = (rows) => {
+    let amount = 0;
+    let errFlag = false;
+    let currency = rows[0] ? rows[0].currency : null;
+    this.setState({ currency });
+    rows.forEach(item => {
+      if (item.currency === currency) {
+        amount += item.amount
+      } else {
+        errFlag = true
+      }
+    });
+    if (!errFlag) {
+      let noticeAlert = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          本次支付金额总计：{currency} <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
+        </span>
+      );
+      this.setState({
+        noticeAlert: rows.length ? noticeAlert : null,
+        errorAlert: null,
+        buttonDisabled: !rows.length
+      });
+    } else {
+      let errorAlert = (
+        <span>
+          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
+          <span className="ant-divider" />
+          不同币种不可同时支付
+        </span>
+      );
+      this.setState({
+        noticeAlert: null,
+        errorAlert: errorAlert,
+        buttonDisabled: true
+      });
+    }
   };
 
   //重新支付
@@ -128,7 +223,7 @@ class PayFail extends React.Component {
 
   /*********************** 获取总金额 ***********************/
 
-    //线上
+  //线上
   getOnlineCash = () => {
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=ONLINE_PAYMENT`;
     httpFetch.get(url).then(res => {
@@ -200,70 +295,9 @@ class PayFail extends React.Component {
     })
   };
 
-  /************************** 线上 **************************/
+  /********************* 修改每页显示数量 *********************/
 
-  //选择/取消选择某行的回调
-  onOnlineSelectRow = (record, selected) => {
-    let onlineSelectedRows = this.state.onlineSelectedRows;
-    if(selected) {
-      onlineSelectedRows.push(record)
-    } else {
-      onlineSelectedRows.map((item, index) => {
-        item.id === record.id && (onlineSelectedRows[index] = 0)
-      });
-      onlineSelectedRows.delete(0)
-    }
-    this.setState({ onlineSelectedRows }, () => {
-      this.onlineNotice(this.state.onlineSelectedRows)
-    })
-  };
-
-  //选择/取消选择所有行的回调
-  onOnlineSelectAllRow = () => {};
-
-  //提示框显示
-  onlineNotice = (rows) => {
-    let amount = 0;
-    let errFlag = false;
-    let currency = rows[0] ? rows[0].currency : null;
-    this.setState({ currency });
-    rows.forEach(item => {
-      if (item.currency === currency) {
-        amount += item.amount
-      } else {
-        errFlag = true
-      }
-    });
-    if (!errFlag) {
-      let onlineNotice = (
-        <span>
-          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-          <span className="ant-divider" />
-          本次支付金额总计：{currency} <span style={{fontWeight:'bold',fontSize:'15px'}}> {this.filterMoney(amount)} </span>
-        </span>
-      );
-      this.setState({
-        onlineNotice: rows.length ? onlineNotice : null,
-        onlineError: null,
-        payOnlineAble: rows.length
-      });
-    } else {
-      let onlineError = (
-        <span>
-          已选择<span style={{fontWeight:'bold',color:'#108EE9'}}> {rows.length} </span> 项
-          <span className="ant-divider" />
-          不同币种不可同时支付
-        </span>
-      );
-      this.setState({
-        onlineNotice: null,
-        onlineError: onlineError,
-        payOnlineAble: false
-      });
-    }
-  };
-
-  //修改每页显示数量
+  //线上
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -271,15 +305,7 @@ class PayFail extends React.Component {
     })
   };
 
-  /************************ 落地文件 ************************/
-
-  //选择/取消选择某行的回调
-  onFileSelectRow = () => {};
-
-  //选择/取消选择所有行的回调
-  onFileSelectAllRow = () => {};
-
-  //修改每页显示数量
+  //落地文件
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
@@ -293,8 +319,8 @@ class PayFail extends React.Component {
   renderOnlineContent = () => {
     const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
     const rowSelection = {
-      onSelect: this.onOnlineSelectRow,
-      onSelectAll: this.onOnlineSelectAllRow
+      onSelect: this.handleSelectRow,
+      onSelectAll: this.handleSelectAllRow
     };
     const tableTitle = (
       <div>
@@ -340,8 +366,8 @@ class PayFail extends React.Component {
   renderFileContent = () => {
     const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
     const rowSelection = {
-      onSelect: this.onFileSelectRow,
-      onSelectAll: this.onFileSelectAllRow
+      onSelect: this.handleSelectRow,
+      onSelectAll: this.handleSelectAllRow
     };
     const tableTitle = (
       <div>
@@ -386,7 +412,7 @@ class PayFail extends React.Component {
   /************************* End *************************/
 
   render(){
-    const { searchForm, radioValue, buttonDisabled } = this.state;
+    const { searchForm, radioValue, buttonDisabled, noticeAlert, errorAlert } = this.state;
     return (
       <div className="pay-fail">
         <SearchArea
@@ -394,7 +420,7 @@ class PayFail extends React.Component {
           submitHandle={this.search}
           clearHandle={this.clear}/>
         <Radio.Group value={radioValue} style={{margin:'20px 0'}}
-                     onChange={(e) => {this.setState({ radioValue: e.target.value })}}>
+                     onChange={this.onRadioChange}>
           <Radio.Button value="online">线上</Radio.Button>
           <Radio.Button value="offline" disabled>线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
@@ -408,6 +434,8 @@ class PayFail extends React.Component {
                     disabled={buttonDisabled}
                     onClick={this.cancelPay}>取消支付</Button>
         </div>
+        {noticeAlert ? <Alert message={noticeAlert} type="info" showIcon style={{marginBottom:'10px'}}/> : ''}
+        {errorAlert ? <Alert message={errorAlert} type="error" showIcon style={{marginBottom:'10px'}}/> : ''}
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'file' && this.renderFileContent()}
       </div>
