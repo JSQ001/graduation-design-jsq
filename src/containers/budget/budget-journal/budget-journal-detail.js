@@ -599,7 +599,7 @@ class BudgetJournalDetail extends React.Component {
           <Popconfirm style={{width:200}} placement="topLeft" title={this.props.intl.formatMessage({id:'budget.commit'})} onConfirm={this.handlePut} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
             <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>{this.props.intl.formatMessage({id:'budget.commit'})}</Button>
           </Popconfirm>
-          <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budget.delete.journal"})} onConfirm={this.handleDeleteJournal} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
+          <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budget.delete.journal"})} onConfirm={this.handleDeleteJournal} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
             <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>
           <Button onClick={this.handleReturn}>{this.props.intl.formatMessage({id:"budget.return"})}</Button>

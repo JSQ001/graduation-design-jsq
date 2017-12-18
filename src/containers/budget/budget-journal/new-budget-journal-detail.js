@@ -252,7 +252,6 @@ class NewBudgetJournalDetail extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && JSON.stringify(nextProps.params) !== "{}" ){
       if(nextProps.params.isNew === false){
-        console.log(nextProps.params);
         this.state.rate=nextProps.params.rate;
         if(nextProps.params.company.length>0){
           this.getItemAbled(false,nextProps.params.company[0].id,'');
@@ -274,7 +273,6 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //获取维度表单,
       if(nextProps.params.structureId  && this.state.structureIdFlag ){
-        console.log(nextProps.params.structureId);
         this.setState({
           structureIdFlag:false,
         },()=>{
