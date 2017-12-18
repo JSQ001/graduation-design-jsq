@@ -85,10 +85,10 @@ class AgencyRelation extends React.Component {
   handleSelect = (item, key) => {
     item = JSON.parse(item);
     let proxyVerify = this.state.proxyVerify;
-    if (item.status == 1002) {  //item.status:1002 待离职
+    if (item.status === 1002) {  //item.status:1002 待离职
       proxyVerify[key] = {
         status: 'warning',
-        help: this.props.intl.formatMessage({ id: 'agencySetting.leave-info', time: item.leavingDate }) //该员工将于 {time} 离职，离职后此代理将自动禁用
+        help: this.props.intl.formatMessage({ id: 'agency.setting.leave-info', time: item.leavingDate }) //该员工将于 {time} 离职，离职后此代理将自动禁用
       };
     } else {
       proxyVerify[key] = {};
@@ -439,7 +439,7 @@ class AgencyRelation extends React.Component {
           <FormItem style={{display:'inline-block',marginRight:'50px',width:'300px'}}
                     validateStatus={proxyVerify[key] ? proxyVerify[key].status : ''}
                     help={proxyVerify[key] ? proxyVerify[key].help : ''}
-                    label={formatMessage({id:'agencySetting.agent'})}>{/*代理人*/}
+                    label={formatMessage({id:'agency.setting.agent'})}>{/*代理人*/}
             {getFieldDecorator(`proxyOID-${key}`, {
               rules: [{
                 required: true,
@@ -468,7 +468,7 @@ class AgencyRelation extends React.Component {
             )}
           </FormItem>
           <FormItem style={{borderTop:'1px solid #eaeaea',paddingTop:'10px'}}
-                    label={formatMessage({id:'agencySetting.agent-bills'})}>{/*代理单据*/}
+                    label={formatMessage({id:'agency.setting.agent-bills'})}>{/*代理单据*/}
             {getFieldDecorator(`customFormDTOs-${key}`, {
               rules: [{
                 required: true,
@@ -477,14 +477,14 @@ class AgencyRelation extends React.Component {
               <div style={{marginLeft:'10px'}}>
                 <FormItem {...formItemLayout}
                           style={{marginBottom:'0'}}
-                          label={formatMessage({id:'agencySetting.expense-account'})/*报销单*/}>
+                          label={formatMessage({id:'agency.setting.expense-account'})/*报销单*/}>
                   {getFieldDecorator(`bill1-${key}`)(
                     <CheckboxGroup options={billOptions[key] ? billOptions[key].bill1Options: []}
                                    onChange={(value) => {this.onOptionsChange(value, key, 'bill1Options')}} />
                   )}
                 </FormItem>
                 <FormItem {...formItemLayout}
-                          label={formatMessage({id:'agencySetting.application-form'})/*申请单*/}>
+                          label={formatMessage({id:'agency.setting.application-form'})/*申请单*/}>
                   {getFieldDecorator(`bill2-${key}`)(
                     <CheckboxGroup options={billOptions[key] ? billOptions[key].bill2Options: []}
                                    onChange={(value) => {this.onOptionsChange(value, key, 'bill2Options')}} />
@@ -493,7 +493,7 @@ class AgencyRelation extends React.Component {
               </div>
             )}
           </FormItem>
-          <FormItem label={formatMessage({id:'agencySetting.agency-date'})}>{/*代理日期*/}
+          <FormItem label={formatMessage({id:'agency.setting.agency-date'})}>{/*代理日期*/}
             <FormItem style={{display:'inline-block',marginRight:'20px'}}>
               {getFieldDecorator(`startDate-${key}`, {
                 initialValue: moment().locale('zh-cn').utcOffset(8)
@@ -507,7 +507,7 @@ class AgencyRelation extends React.Component {
             <FormItem style={{display:'inline-block'}}>
               {getFieldDecorator(`endDate-${key}`)(
                 <DatePicker format="YYYY-MM-DD"
-                            placeholder={formatMessage({id:'agencySetting.indefinite'})/* 无限制 */}
+                            placeholder={formatMessage({id:'agency.setting.indefinite'})/* 无限制 */}
                             disabledDate={this.disabledEndDate}
                             onChange={this.onEndChange}/>
               )}
@@ -588,7 +588,7 @@ class AgencyRelation extends React.Component {
           <FormItem style={{display:'inline-block',marginRight:'50px',width:'300px'}}
                     validateStatus={proxyVerify[-1] ? proxyVerify[-1].status : ''}
                     help={proxyVerify[-1] ? proxyVerify[-1].help : ''}
-                    label={formatMessage({id:'agencySetting.agent'})}>{/*代理人*/}
+                    label={formatMessage({id:'agency.setting.agent'})}>{/*代理人*/}
             {getFieldDecorator(`proxyOID`, {
               rules: [{
                 required: true,
@@ -622,12 +622,12 @@ class AgencyRelation extends React.Component {
             )}
           </FormItem>
           <FormItem style={{borderTop:'1px solid #eaeaea',paddingTop:'10px'}}
-                    label={formatMessage({id:'agencySetting.agent-bills'})}>{/*代理单据*/}
+                    label={formatMessage({id:'agency.setting.agent-bills'})}>{/*代理单据*/}
             {getFieldDecorator(`customFormDTOs`)(
               <div style={{marginLeft:'10px'}}>
                 <FormItem {...formItemLayout}
                           style={{marginBottom:'0'}}
-                          label={formatMessage({id:'agencySetting.expense-account'})/*报销单*/}>
+                          label={formatMessage({id:'agency.setting.expense-account'})/*报销单*/}>
                   {getFieldDecorator(`bill1`, {
                     initialValue: editBillSelectedOID[index].bill1
                   })(
@@ -636,7 +636,7 @@ class AgencyRelation extends React.Component {
                   )}
                 </FormItem>
                 <FormItem {...formItemLayout}
-                          label={formatMessage({id:'agencySetting.application-form'})/*申请单*/}>
+                          label={formatMessage({id:'agency.setting.application-form'})/*申请单*/}>
                   {getFieldDecorator(`bill2`, {
                     initialValue: editBillSelectedOID[index].bill2
                   })(
@@ -647,7 +647,7 @@ class AgencyRelation extends React.Component {
               </div>
             )}
           </FormItem>
-          <div label={formatMessage({id:'agencySetting.agency-date'})}>{/*代理日期*/}
+          <div label={formatMessage({id:'agency.setting.agency-date'})}>{/*代理日期*/}
             <FormItem style={{display:'inline-block',marginRight:'20px'}}>
               {getFieldDecorator(`startDate`, {
                 initialValue: moment(new Date(item.startDate).format('yyyy-MM-dd'))
@@ -663,7 +663,7 @@ class AgencyRelation extends React.Component {
                 initialValue: item.proxyTimeRange == 102 ? moment(new Date(item.endDate).format('yyyy-MM-dd')) : null
               })(
                 <DatePicker format="YYYY-MM-DD"
-                            placeholder={formatMessage({id:'agencySetting.indefinite'})/* 无限制 */}
+                            placeholder={formatMessage({id:'agency.setting.indefinite'})/* 无限制 */}
                             disabledDate={this.disabledEndDate}
                             onChange={this.onEndChange}/>
               )}
@@ -682,8 +682,8 @@ class AgencyRelation extends React.Component {
     });
     return (
       <div className="agency-relation">
-        <h3 className="header-title">{formatMessage({id:'agencySetting.agency-relation'})}</h3>{/*代理关系*/}
-        <p style={{color:'#999'}}>{formatMessage({id:'agencySetting.agency-relation-intro'})}</p>{/*选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配*/}
+        <h3 className="header-title">{formatMessage({id:'agency.setting.agency-relation'})}</h3>{/*代理关系*/}
+        <p style={{color:'#999'}}>{formatMessage({id:'agency.setting.agency-relation-intro'})}</p>{/*选择哪些员工可以帮被代理人提交单据 | 单据可按照被代理人的需求进行分配*/}
         {agencyInfo}
         {forms}
         <Button type="dashed" className="new-relation-btn" onClick={this.add}>
