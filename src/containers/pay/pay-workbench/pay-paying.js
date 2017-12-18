@@ -265,8 +265,9 @@ class PayPaying extends React.Component {
     })
   };
 
-  /************************** 线上 **************************/
-  // 修改每页显示数量
+  /********************* 修改每页显示数量 *********************/
+
+  //线上
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -274,9 +275,7 @@ class PayPaying extends React.Component {
     })
   };
 
-  /************************ 落地文件 ************************/
-
-  //修改每页显示数量
+  //落地文件
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
@@ -307,7 +306,6 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-online">
-        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={onlineData}
@@ -350,7 +348,6 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-file">
-        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}
@@ -358,6 +355,7 @@ class PayPaying extends React.Component {
                loading={fileLoading}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
+               rowClassName={record => record.id === "10" ? 'row-warning' : ''}
                bordered
                size="middle"/>
         <Pagination size="small"
@@ -393,6 +391,7 @@ class PayPaying extends React.Component {
           <Radio.Button value="offline" disabled>线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
         </Radio.Group>
+        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'file' && this.renderFileContent()}
         <Modal visible={okModalVisible}

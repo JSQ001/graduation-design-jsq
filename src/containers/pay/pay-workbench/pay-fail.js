@@ -231,7 +231,18 @@ class PayFail extends React.Component {
 
   //取消支付
   cancelPay = () => {
-
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund`;
+    httpFetch.delete(url, this.state.selectedRows).then(res => {
+      if (res.status === 200) {
+        message.success('取消支付成功');
+        this.getList();
+        this.setState({ selectedRows: [] }, () => {
+          this.noticeAlert(this.state.selectedRows)
+        })
+      }
+    }).catch(() => {
+      message.error('取消支付失败，请重试');
+    })
   };
 
   /*********************** 获取总金额 ***********************/

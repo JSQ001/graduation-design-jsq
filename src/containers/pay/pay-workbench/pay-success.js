@@ -234,9 +234,9 @@ class PaySuccess extends React.Component {
     })
   };
 
-  /************************** 线上 **************************/
+  /********************* 修改每页显示数量 *********************/
 
-  //修改每页显示数量
+  //线上
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -244,9 +244,7 @@ class PaySuccess extends React.Component {
     })
   };
 
-  /************************** 线下 **************************/
-
-  //修改每页显示数量
+  //线下
   offlinePaginationChange = (offlinePage, offlinePageSize) => {
     offlinePage = offlinePage - 1;
     this.setState({ offlinePage, offlinePageSize },() => {
@@ -254,9 +252,7 @@ class PaySuccess extends React.Component {
     })
   };
 
-  /************************ 落地文件 ************************/
-
-  //修改每页显示数量
+  //落地文件
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize }, () => {
@@ -405,10 +401,9 @@ class PaySuccess extends React.Component {
     const { searchForm, radioValue } = this.state;
     return (
       <div className="pay-success">
-        <SearchArea
-          searchForm={searchForm}
-          submitHandle={this.search}
-          clearHandle={this.clear}/>
+        <SearchArea searchForm={searchForm}
+                    submitHandle={this.search}
+                    clearHandle={this.clear}/>
         <Radio.Group value={radioValue} style={{margin:'20px 0'}}
                      onChange={(e) => {this.setState({ radioValue: e.target.value })}}>
           <Radio.Button value="online">线上</Radio.Button>
