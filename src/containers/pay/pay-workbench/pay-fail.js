@@ -17,14 +17,14 @@ class PayFail extends React.Component {
       radioValue: 'online',
       buttonDisabled: true,
       searchForm: [
-        {type: 'input', id: 'documentNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})}, //单据编号
-        {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "payWorkbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
-        {type: 'select', id: 'employeeId', label: formatMessage({id: "payWorkbench.applicant"}), options: []}, //申请人
+        {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
+        {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
+        {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
         {type: 'items', id: 'mountRange', items: [
           {type: 'input', id: 'mountFrom', label: '支付金额从'},
           {type: 'input', id: 'mountTo', label: '支付金额至'}
         ]},
-        {type: 'items', id: 'payee', label: formatMessage({id: "payWorkbench.payee"}), items: [
+        {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
           {type: 'select', id: 'partnerId', label: '收款方', options: []}
         ]},
@@ -231,7 +231,7 @@ class PayFail extends React.Component {
 
   //取消支付
   cancelPay = () => {
-    
+
   };
 
   /*********************** 获取总金额 ***********************/
