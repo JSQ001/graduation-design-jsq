@@ -21,7 +21,7 @@
   }
 
   .security-setting-formItem{
-     margin-left: -43px;
+    margin-left: -43px;
     .formItem-label{
       width: 100px;
       display:-moz-inline-box;
@@ -30,15 +30,12 @@
     .formItem-value{
       margin-left:33px;
     }
-    .formItem-label-2{
-      width: 100px;
-      display:-moz-inline-box;
-      display:inline-block;
-    }
     .formItem-value-2{
-      margin-left:33px;
-      display:-moz-inline-box;
-      display:inline-block;
+      margin-left: 136px;
+      margin-top: -28px;
+      .ant-checkbox-group-item:last-child{
+        margin-right: 300px;
+      }
     }
     .formItem-label-info{
       width: 100px;

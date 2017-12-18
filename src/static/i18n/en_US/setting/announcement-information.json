@@ -1,0 +1,16 @@
+{
+  "announcement.info.number": "Ordinal number",
+  "announcement.info.createDate": "The new date",
+  "announcement.info.title": "Title",
+  "announcement.info.deliveryCompany": "Distribution company",
+  "announcement.info.infoDetail": "Announcement of the details",
+  "announcement.info.picture": "roasting",
+  "announcement.info.link": "Jump external links",
+  "announcement.info.content": "Body text",
+  "announcement.info.addCompany": "The new distribution",
+  "announcement.info.searchHolder": "Please enter the company name/code",
+  "company.legalEntity": "Legal entity",
+  "announcement.info.selected": "selected{total}"
+}
+
+
