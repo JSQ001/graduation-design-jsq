@@ -138,8 +138,8 @@ class BudgetItemMap extends React.Component {
     let itemSelectorItem = selectorData['budget_item'];
     let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
     if(key < 2){
-      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
     }
 
     let paramValueMap = {
@@ -408,3 +408,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetItemMap));
+

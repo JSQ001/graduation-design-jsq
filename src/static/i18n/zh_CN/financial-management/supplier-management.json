@@ -1,0 +1,15 @@
+{
+  "supplier.management.type": "供应商类型",
+  "supplier.management.code": "供应商代码",
+  "supplier.management.name": "供应商名称",
+  "supplier.bank.account": "银行账号",
+  "supplier.management.status": "供应商状态",
+  "supplier.management.all": "全部",
+  "supplier.management.using": "使用中",
+  "supplier.management.disuse": "已停用",
+  "supplier.management.total": "共搜索到 {total} 个供应商",
+  "supplier.management.total.disuse": "，{total}个已停用",
+  "supplier.management.deliveryCompany": "分配公司",
+  "supplier.management.outerId": "外部标识ID",
+  "supplier.management.updateLog": "更新日志"
+}

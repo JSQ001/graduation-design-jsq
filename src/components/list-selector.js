@@ -113,7 +113,7 @@ class ListSelector extends React.Component {
         data: data,
         loading: false,
         pagination: {
-          total: Number(response.headers['x-total-count']),
+          total: Number(typeof response.headers['x-total-count']==='undefined') ? response.data.values.length : Number(response.headers['x-total-count']),
           onChange: this.onChangePager,
           current: this.state.page + 1
         }

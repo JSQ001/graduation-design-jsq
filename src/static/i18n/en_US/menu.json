@@ -122,5 +122,6 @@
   "menu.check-center-train": "Train bills",
   "menu.announcement-information": "Announcement information",
   "menu.supplier-type": "supplier type",
-  "menu.announcement-information-detail": "Announcement information detail"
+  "menu.announcement-information-detail": "Announcement information detail",
+  "menu.supplier-management": "Supplier management"
 }
