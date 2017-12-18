@@ -726,7 +726,7 @@ class PayUnpaid extends React.Component {
                onCancel={() => this.setState({ offlineModalVisible: false })}>
           <Form>
             <Alert message="线下支付，确认付款后，支付状态直接变为支付成功" type="info" showIcon style={{position:'relative',top:-10}} />
-            <FormItem  {...formItemLayout} label="付款日期">
+            <FormItem  {...formItemLayout} label="付款日期" style={{marginBottom:15}}>
               {getFieldDecorator('payDate', {
                 rules: [{
                   required: true,
@@ -735,7 +735,7 @@ class PayUnpaid extends React.Component {
                 <DatePicker/>
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="付款账户">
+            <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
               {getFieldDecorator('payAccount', {
                 rules: [{
                   required: true,
@@ -746,7 +746,7 @@ class PayUnpaid extends React.Component {
                 </Select>
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="币种">
+            <FormItem  {...formItemLayout} label="币种" style={{marginBottom:15}}>
               {getFieldDecorator('currency', {
                 rules: [{
                   required: true
@@ -756,7 +756,7 @@ class PayUnpaid extends React.Component {
                 <Input disabled />
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="付款方式">
+            <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
               {getFieldDecorator('payWay', {
                 rules: [{
                   required: true,
@@ -769,14 +769,14 @@ class PayUnpaid extends React.Component {
                 </Select>
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="汇率">
+            <FormItem  {...formItemLayout} label="汇率" style={{marginBottom:15}}>
               {getFieldDecorator('rate', {
                 initialValue: ''
               })(
                 <Input disabled />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="备注">
+            <FormItem {...formItemLayout} label="备注" style={{marginBottom:15}}>
               {getFieldDecorator('description', {
                 initialValue: ''
               })(
