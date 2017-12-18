@@ -85,7 +85,8 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:this.props.organization.id},
           disabled: true
         },
-        {type: 'select', id:'budgetStructure', label: this.props.intl.formatMessage({id: 'budget.budget.structureId'}), options: [], method: 'get',disabled: true,
+        /*预算表*/
+        {type: 'select', id:'budgetStructure', label: this.props.intl.formatMessage({id: 'budget.structureId'}), options: [], method: 'get',disabled: true,
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
@@ -94,7 +95,7 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'versionName',
           valueKey: 'id',
           single:true,
-          label:this.props.intl.formatMessage({id: 'budget.version'}),  /*预算版本*/
+          label:this.props.intl.formatMessage({id: 'budget.version'}),
           listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*预算场景*/
@@ -522,6 +523,7 @@ class BudgetJournalDetail extends React.Component {
               "id":value.id,
                "structureId":this.state.headerAndListData.dto.structureId,
               "journalTypeId":this.state.headerAndListData.dto.journalTypeId,
+               "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
               "versionNumber":value.id,
               "isNew":false,
               "oldData":value,

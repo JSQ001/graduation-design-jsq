@@ -261,10 +261,10 @@ class NewBudgetJournalDetail extends React.Component {
         }
       }else if (nextProps.params != this.props.params) {
         this.getItemAbled(true,'','');
-
       }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
+        console.log(12345);
         this.setState({
           periodStrategyFlag:false,
         },()=>{
