@@ -1,15 +1,15 @@
 {
-  "financeView.search.application": "申请人姓名/工号",
-  "financeView.search.businessCode": "请输入父单/子单/借款单号",
-  "financeView.search.dateFrom": "提交日期从",
-  "financeView.search.dateTo": "提交日期至",
-  "financeView.search.submitted": "审批中",
-  "financeView.search.pass": "已通过",
-  "financeView.search.reject": "已驳回",
-  "financeView.search.auditPass": "审核通过",
-  "financeView.search.auditReject": "审核驳回",
-  "financeView.search.paying": "付款中",
-  "financeView.search.payed": "已付款",
-  "financeView.search.refund": "还款中",
-  "financeView.search.chargeOff": "已核销"
+  "finance.view.search.application": "申请人姓名/工号",
+  "finance.view.search.businessCode": "父单/子单/借款单号",
+  "finance.view.search.dateFrom": "提交日期从",
+  "finance.view.search.dateTo": "提交日期至",
+  "finance.view.search.submitted": "审批中",
+  "finance.view.search.pass": "已通过",
+  "finance.view.search.reject": "已驳回",
+  "finance.view.search.auditPass": "审核通过",
+  "finance.view.search.auditReject": "审核驳回",
+  "finance.view.search.paying": "付款中",
+  "finance.view.search.payed": "已付款",
+  "finance.view.search.refund": "还款中",
+  "finance.view.search.chargeOff": "已核销"
 }
