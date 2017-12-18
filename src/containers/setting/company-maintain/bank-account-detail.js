@@ -3,21 +3,22 @@
  */
 //bank-account-detail.js //BankAccountDetail
 import React from 'react';
-import {connect} from 'react-redux'
-import {injectIntl} from 'react-intl';
+import { connect } from 'react-redux'
+import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 
 
-import {Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message} from 'antd'
+import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Popconfirm } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure-detail.scss';
 import SlideFrame from "components/slide-frame"
 import NewDimension from 'containers/budget-setting/budget-organization/budget-structure/new-dimension'
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
-
+import AddAuthorization from './add-authorization'
+import AddPayWay from './add-pay-way'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
@@ -28,125 +29,87 @@ class BankAccountDetail extends React.Component {
 
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
-      showImportFrame:false,
+      showImportFrame: false,
       updateState: false,
       saving: false,
       loading: true,
       editing: false,
-      infoData:{},
-      selectedRowKeys:[],
-      infoList: [
-        {
-          /*开户银行*/
-          type: 'select', label:"开户银行", id: "11", options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true
-        },
-        {
-          /*银行代码*/
-          type: 'select', label: "银行代码",id: "12", options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true   },
-        {
-          /*开户行联行号*/
-          type: 'value_list', label:"开户行联行号", id: "companyType", options: [], valueListCode:1011,isRequired: true
-        },
-        {
-          /*开户支行名称*/
-          type: 'select', label: "开户支行名称", id: "13", options: [], method: 'get',
-          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`,
-          labelKey: 'setOfBooksCode', valueKey: 'id', isRequired: true
-        },
-        {
-          /*开户行所在地——国家*/
-          type: 'select', label: "开户行所在地——国家", id: "14", options: [], method: 'get',
-          getUrl: `${config.baseUrl}/api/all/legalentitys`,
-          labelKey: 'entityName', valueKey: 'id',isRequired: true
-        },
-        {
-          /*省/市/县*/
-          type: 'select', label:"省/市/县", id: "15", options: [], method: 'get',
-          getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
-          labelKey: 'description', valueKey: 'id', isRequired: true
-        },
-        {
-          /*开户支行Swift Code*/
-          type: 'input', label:"开户支行Swift Code", id: "1", isRequired: true
-        },
-        {
-          /*银行账户名称*/
-          type: 'input', label:"银行账户名称", id: "2", isRequired: true
-        },
-        {
-          /*银行账户账号*/
-          type: 'input', label:"银行账户账号", id: "3", isRequired: true
-        },
-        {
-          /*账户代码*/
-          type: 'input', label:"账户代码", id: "4", isRequired: true
-        },
-        {
-          /* 币种*/
-          type: 'select', label:"币种", id: "parentCompanyId", options: [], method: 'get',
-          getUrl: `${config.baseUrl}/api/company/by/tenant`,
-          labelKey: 'name', valueKey: 'id', isRequired: true
-        },
-        {
-          /* 银行科目*/type: 'select', label:"银行科目", id: "54", options: [], method: 'get',
-          getUrl: `${config.baseUrl}/api/company/by/tenant`,
-          labelKey: 'name', valueKey: 'id'
-        },
-
-        {/*状态*/
-          type:'switch', label:'状态', id:"enabled", defaultValue:true, isRequired: true
-        }
-        ,
-        {
-          /*备注*/
-          type: 'input', label:"备注", id: "5555",
-        },
-
-      ],
+      infoData: {},
+      selectedRowKeys: [],
+      showSlideFrame: false,    //控制授权侧拉
+      visibleSlideFrame: false,  //控制付款方式侧拉
+      updateParams: {},
+      editParams: {},
       tabs: [
-        {key: 'AUTHORIZATION', name: "账户授权"}, /*账户授权*/
-        {key: 'APY_TYPE', name:"付款方式"}  /*付款方式*/
+        { key: 'AUTHORIZATION', name: formatMessage({ id: "bank.account.authorization" }) }, /*账户授权*/
+        { key: 'APY_TYPE', name: formatMessage({ id: "pay.way" }) }  /*付款方式*/
       ],
       typeData: {},
       data: [],
       tabsData: {
-        AUTHORIZATION:{
-          url: ``,
-          rowSelection:null,
+        AUTHORIZATION: {
+          url: `${config.baseUrl}/api/companyBankAuth/selectCompanyBankId?id=${this.props.params.companyBankId}`,
+          rowSelection: null,
           columns:
             [
-              {title: "公司代码", key: "1", dataIndex: '1', width: '16%'},
-              {title: "公司名称", key: "2", dataIndex: '2', width: '16%'},
-              {title: "部门代码", key: "3", dataIndex: '3', width: '16%'},
-              {title: "部门名称", key: "4", dataIndex: '4', width: '16%'},
-              {title: "职务编码", key: "5", dataIndex: '5', width: '16%'},
-              {title: "职务名称", key: "6", dataIndex: '6', width: '16%'},
-              {title: "被授权员工", key: "7", dataIndex: '7', width: '16%'},
-              {title: "有效日期从", key: "8", dataIndex: '8', width: '16%'},
-              {title: "有效日期至", key: "9", dataIndex: '9', width: '16%'},
-              {title: "状态", key: "10", dataIndex: '10', width: '16%'},
+              { title: formatMessage({ id: "bank.account.companyCode" }), dataIndex: 'companyCode', width: '16%' },
+              { title: formatMessage({ id: "bank.account.companyName" }), dataIndex: 'companyName', width: '16%' },
+              { title: formatMessage({ id: "bank.account.departmentCode" }), dataIndex: 'departmentCode', width: '16%' },
+              {
+                title: formatMessage({ id: "bank.account.departmentName" }), dataIndex: 'departmentName', width: '16%'
+              },
+              // { title: "职务编码", key: "5", dataIndex: '5', width: '16%' },
+              // { title: "职务名称", key: "6", dataIndex: '6', width: '16%' },
+              { title: formatMessage({ id: "bank.account.employeeName" }), dataIndex: 'employeeName', width: '16%' },
+              {
+                title: formatMessage({ id: "company.startDateActive" }), dataIndex: 'authorizeDateFrom', width: '16%', render(recode) {
+                  return String(recode).substr(0, 10);
+                }
+              },
+              {
+                title: formatMessage({ id: "company.endDateActive" }), dataIndex: 'authorizeDateTo', width: '16%',
+                render(recode) {
+                  return String(recode).substr(0, 10);
+                }
+              },
+              {
+                title: formatMessage({ id: "bank.account.state" }), dataIndex: 'isEnabled', width: '16%', render(enabled) {
+                  return <Badge status={enabled ? 'success' : 'error'}
+                    text={enabled ? formatMessage({ id: "common.status.enable" }) : formatMessage({ id: "common.status.disable" })} />
+                }
+              },
+              {
+                title: formatMessage({ id: "common.operation" }), dataIndex: 'id', width: '16%', render: (text, record) => (
+                  <span>
+                    <a onClick={(e) => this.handleEdit(e, record)}>{formatMessage({ id: "common.edit" })}</a>
+                  </span>)
+              }
             ]
         },
-        APY_TYPE:{
-          rowSelection:null,
-          url: `${config.baseUrl}/api/users/all/${this.props.params.companyOId}`,
+        APY_TYPE: {
+          rowSelection: null,
+          url: `${config.baseUrl}/api/comapnyBankPayment/getByBankAccountId?id=${this.props.params.companyBankId}`,
           columns:
             [
-              {title: "付款方式类型", key: "1", dataIndex: '1'},
-              {title: "付款方式代码", key: "2", dataIndex: '2'},
-              {title: "付款方式名称", key: "3", dataIndex: '3'},
-
+              { title: formatMessage({ id: "pay.way.type" }), dataIndex: 'paymentMethodCategory', key: "paymentMethodCategory" },
+              { title: formatMessage({ id: "pay.wayCode" }), dataIndex: 'paymentMethodCode', key: "paymentMethodCode" },
+              { title: formatMessage({ id: "pay.wayName" }), dataIndex: 'description', key: "description" },
+              {
+                title: formatMessage({ id: "common.operation" }), dataIndex: 'id', render: (text, record) => (
+                  <span>
+                    <a onClick={(e) => this.handleEdit(e, record)}>{formatMessage({ id: "common.edit" })}</a>
+                    <span className="ant-divider" />
+                    <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteItem(e, record)}><a>{formatMessage({ id:"common.delete"})}</a></Popconfirm>
+                  </span>)
+              }
             ]
 
         },
       },
-      rowSelection:{
-        type:'checkbox',
+      rowSelection: {
+        type: 'checkbox',
         selectedRowKeys: [],
         onChange: this.onSelectChange,
       },
@@ -158,59 +121,53 @@ class BankAccountDetail extends React.Component {
       nowStatus: 'AUTHORIZATION',
       showListSelector: false,
       newData: [],
+      addText: formatMessage({ id:"bank.account.addAuthorization"}),
       companyMaintainPage: menuRoute.getRouteItem('company-maintain', 'key'),                 //公司维护
-      newBankAccountPage:menuRoute.getRouteItem('new-bank-account','key'),                    //新建银行账户
-      bankAccountPageDetail:menuRoute.getRouteItem('bank-account-detail','key'),              //银行账户详情
+      newBankAccountPage: menuRoute.getRouteItem('new-bank-account', 'key'),                    //新建银行账户
+      bankAccountPageDetail: menuRoute.getRouteItem('bank-account-detail', 'key'),              //银行账户详情
     }
   }
 
   //选项改变时的回调，重置selection
-  onSelectChange = (selectedRowKeys,selectedRows) => {
-    console.log(selectedRowKeys);
-    console.log("selectedRowKeys")
+  onSelectChange = (selectedRowKeys, selectedRows) => {
     let tabsData = this.state.tabsData;
     tabsData.APY_TYPE.rowSelection.selectedRowKeys = selectedRowKeys;
-    this.setState({tabsData,selectedRowKeys});
+
+
+    this.setState({ tabsData, selectedRowKeys });
   };
 
 
-
   componentWillMount() {
-    this.getCompanyByCompanyOID(this.props.params.companyOId);
-    this.getList(this.state.nowStatus);
+    this.getCompanyBankByCompanyBankId(this.props.params.companyBankId);
+    this.getList();
   }
 
-  //根据companyCode获取公司
-  getCompanyByCode = (companyCode) => {
-    httpFetch.get(`${config.baseUrl}/api/company/by/term?companyCode=${companyCode}`).then((response) => {
-      console.log(response.data);
-      this.setState({
-        infoData: response.data
-      })
-    })
-  }
+  //根据companyBankId获取公司银行信息
+  getCompanyBankByCompanyBankId(companyBankId) {
+    httpFetch.get(`${config.baseUrl}/api/CompanyBank/selectById?companyBankId=${companyBankId}`).then((response) => {
 
-  //根据companyDId获取公司
-  getCompanyByCompanyOID (companyOID){
-    httpFetch.get(`${config.baseUrl}/api/companies/${companyOID}`).then((response) => {
-      console.log(response.data);
+      response.data.enabled = response.data.enabled ? this.props.intl.formatMessage({ id: "common.status.enable" }) : this.props.intl.formatMessage({ id: "common.status.disable" });
+      //开户地
+      response.data.openAddress = `${response.data.province}/${response.data.city}`
       this.setState({
-        infoData: response.data
+        infoData: response.data,
       })
-    }).catch((e)=>{
-      message.error(e.response.data.message);
+    }).catch((e) => {
+      message.error(e);
     })
   }
 
 
-  getList = (key) => {
-    const { tabsData, page, pageSize } = this.state;
-    let url = tabsData[key].url;
-    if(url){
+  getList = () => {
+    const { tabsData, page, pageSize, nowStatus } = this.state;
+
+    let url = tabsData[nowStatus].url;
+    if (url) {
       //&page=${page}&size=${pageSize}
       return httpFetch.get(`${url}`).then(response => {
-        response.data.map((item, index)=>{
-          item.key = item.id ? item.id : index;
+        response.data.map((item, index) => {
+          item.nowStatus = item.id ? item.id : index;
         });
         this.setState({
           data: response.data,
@@ -226,21 +183,35 @@ class BankAccountDetail extends React.Component {
   };
 
   onChangePager = (page) => {
-    if(page - 1 !== this.state.page)
+    if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
         loading: true,
-      }, ()=>{
-        this.getList(this.state.nowStatus);
+      }, () => {
+        this.getList();
       })
   };
 
 
+  //删除一个付款方式
+  deleteItem = (e, record) => {
+    httpFetch.delete(`${config.baseUrl}/api/comapnyBankPayment/deleteById?id=${record.id}`).then(res => {
+      message.success(this.props.intl.formatMessage({ id: 'common.operate.success' }));
+      this.getList();
+    }).catch(e => {
+      message.error(e.response.data.message);
+    })
+  }
+
   //公司详情编辑
   updateHandleInfo = (params) => {
     this.setState({ editing: true });
-    httpFetch.put(`${config.budgetUrl}`, Object.assign(this.state.typeData, params)).then(response => {
-      message.success('修改成功');
+    params.enabled = true;
+    params.bankCode = this.state.infoData.bankCode;
+    params.companyId = this.state.infoData.companyId;
+
+    httpFetch.post(`${config.baseUrl}/api/CompanyBank/insertOrUpdate`, Object.assign(this.state.typeData, params)).then(response => {
+      message.success(this.props.intl.formatMessage({ id: 'common.operate.success' }));
       let data = response.data;
       this.setState({
         typeData: data,
@@ -253,68 +224,90 @@ class BankAccountDetail extends React.Component {
   };
 
   //渲染Tabs
-  renderTabs = () =>{
+  renderTabs = () => {
     return (
       this.state.tabs.map(tab => {
-        return <TabPane tab={tab.name} key={tab.key}/>
+        return <TabPane tab={tab.name} key={tab.key} />
       })
     )
   }
 
   //点击
-  onChangeTabs = (key) =>{
+  onChangeTabs = (key) => {
+
     this.setState({
       nowStatus: key,
       loading: true,
-      data:[],
+      addText: key == 'AUTHORIZATION' ? this.props.intl.formatMessage({ id: "bank.account.addAuthorization" }) : this.props.intl.formatMessage({ id: "common.add" }),
+      data: [],
       pagination: {
         total: 0
       },
       page: 0
-    }, ()=>{
-      this.getList(key);
+    }, () => {
+      this.getList();
     })
   };
 
   //新建
   handleNew = () => {
-   if(this.state.nowStatus === "APY_TYPE"){
 
-   }else {
+    if (this.state.nowStatus == "AUTHORIZATION") {
+      let companyBankId = this.props.params.companyBankId;
+      this.setState({ updateParams: { companyBankId: companyBankId }, showSlideFrame: true, });
+    }
+    else {
+      let companyBankId = this.props.params.companyBankId;
+      this.setState({ editParams: { companyBankId: companyBankId }, visibleSlideFrame: true, });
+    }
 
-   }
   };
 
+  //编辑
+  handleEdit = (e, record) => {
 
+    if (this.state.nowStatus == "AUTHORIZATION") {
+      let companyBankId = this.props.params.companyBankId;
+      record.companyBankId = companyBankId;
+      this.setState({ updateParams: record, showSlideFrame: true, });
+    }
+    else {
+      let companyBankId = this.props.params.companyBankId;
+      record.companyBankId = companyBankId;
+      this.setState({ editParams: record, visibleSlideFrame: true, });
+    }
 
-  submitHandle = (value) =>{
+  };
+
+  //提交表单
+  submitHandle = (value) => {
     const companyOIDTo = (value.result)[0].companyOID;
-    const companyOIDFrom =this.props.params.companyOId;
+    const companyOIDFrom = this.props.params.companyOId;
     const selectedRowKeys = this.state.selectedRowKeys;
     let path = `${config.baseUrl}/api/users/move?companyOIDFrom=${companyOIDFrom}&companyOIDTo=${companyOIDTo}&selectMode=default?`
-    selectedRowKeys.map((item)=>{
-      path =`${path}&userOIDs=${item}`
+    selectedRowKeys.map((item) => {
+      path = `${path}&userOIDs=${item}`
     })
-    httpFetch.put(path).then((req)=>{
-      message.success("操作成功");
+    httpFetch.put(path).then((req) => {
+      message.success(this.props.intl.formatMessage({ id: 'common.operate.success' }));
       this.getCompanyByCompanyOID(companyOIDFrom);
       this.setState({
-        selectedRowKeys:[],
+        selectedRowKeys: [],
       })
-    }).catch((e)=>{
+    }).catch((e) => {
       message.error(e.response.data)
     })
     this.showImport(false)
   }
 
   //员工移动
-  removeUser = () =>{
+  removeUser = () => {
     this.showImport(true)
   }
 
-  showImport = (value) =>{
+  showImport = (value) => {
     this.setState({
-      showImportFrame:value
+      showImportFrame: value
     })
   }
 
@@ -322,17 +315,34 @@ class BankAccountDetail extends React.Component {
     this.showImport(false)
   }
 
+  handleCloseSlide = (params) => {
+    
 
+    if (this.state.nowStatus == "AUTHORIZATION") {
+      this.setState({
+        showSlideFrame: false
+      },() => {
+        if (params) {
+          this.getList();
+        }
+      })
+    }
+    else {
+      this.setState({
+        visibleSlideFrame: false
+      }, () => {
+        if (params) {
+          this.getList();
+        }
+      })
+    }
+  }
 
   render() {
-    const {infoList,selectedRowKeys, rowSelection,infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing} = this.state;
+    const { infoList, selectedRowKeys, rowSelection, infoData, tabsData, loading, pagination, nowStatus, data, showListSelector, saving, newData, updateState, editing, showSlideFrame, updateParams, addText, visibleSlideFrame, editParams } = this.state;
+    const { formatMessage } = this.props.intl;
     return (
       <div>
-        <BasicInfo infoList={infoList}
-                   infoData={infoData}
-                   updateHandle={this.updateHandleInfo}
-                   updateState={updateState}
-                   loading={editing}/>
         <Tabs onChange={this.onChangeTabs} style={{ marginTop: 20 }}>
           {this.renderTabs()}
         </Tabs>
@@ -340,27 +350,42 @@ class BankAccountDetail extends React.Component {
           <div>
             <div className="table-header-title">共 {pagination.total} 条数据</div>
             <div className="table-header-buttons">
-              <Button type="primary" onClick={this.handleNew} loading={saving}>新建</Button>
+              <Button type="primary" onClick={this.handleNew} loading={saving}>{addText}</Button>
             </div>
           </div>
         </div>
         <Table columns={tabsData[nowStatus].columns}
-               dataSource={data}
-               pagination={pagination}
-               loading={loading}
-               bordered
-               size="middle"
-               rowKey={(reCode)=>{return reCode.id}}
-               rowSelection={tabsData[nowStatus].rowSelection}/>
+          dataSource={data}
+          pagination={pagination}
+          loading={loading}
+          bordered
+          size="middle"
+          rowKey={(reCode) => { return reCode.id }}
+          rowSelection={tabsData[nowStatus].rowSelection}
+        />
 
 
         <ListSelector visible={this.state.showImportFrame}
-                      onOk={this.submitHandle}
-                      onCancel={this.CancelHandle}
-                      type='user_move_select_company'
-                      single={true}
-                      extraParams={{"versionId": this.props.params.versionId}}
+          onOk={this.submitHandle}
+          onCancel={this.CancelHandle}
+          type='user_move_select_company'
+          single={true}
+          extraParams={{ "versionId": this.props.params.versionId }}
         />
+
+        <SlideFrame title= {JSON.stringify(updateParams) == "{}"?formatMessage({ id: "bank.account.addAuthorization"}):formatMessage({ id: "bank.account.editAuthorization"})}
+          show={showSlideFrame}
+          content={AddAuthorization}
+          afterClose={this.handleCloseSlide}
+          onClose={() => this.setState({ showSlideFrame: false })}
+          params={updateParams} />
+
+        <SlideFrame title= {JSON.stringify(updateParams) == "{}"?formatMessage({ id: "bank.account.addPayWay"}):formatMessage({ id: "bank.account.editPayWay"})}
+          show={visibleSlideFrame}
+          content={AddPayWay}
+          afterClose={this.handleCloseSlide}
+          onClose={() => this.setState({ visibleSlideFrame: false })}
+          params={editParams} />
 
       </div>
     )
