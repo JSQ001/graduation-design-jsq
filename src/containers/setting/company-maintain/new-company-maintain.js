@@ -12,12 +12,12 @@ import config from 'config'
 class WrappedNewCompanyMaintain extends React.Component {
   constructor(props) {
     super(props);
+    const { formatMessage } = this.props.intl;
     this.state = {
       searchForm: [
-
         {
           /*公司代码*/
-          type: 'input', label: this.props.intl.formatMessage({id: "company.companyCode"}), id: "companyCode", isRequired: true
+          type: 'input', label: this.props.intl.formatMessage({ id: "company.companyCode" }), id: "companyCode", isRequired: true
         },
         {
           /*公司名称*/
@@ -25,7 +25,7 @@ class WrappedNewCompanyMaintain extends React.Component {
         },
         {
           /*公司类型*/
-          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011,isRequired: true
+          type: 'value_list', label: this.props.intl.formatMessage({id: "company.companyType"}), id: "companyType", options: [], valueListCode:1011, isRequired: true,entity:true
         },
         {
           /*账套*/
@@ -61,7 +61,7 @@ class WrappedNewCompanyMaintain extends React.Component {
           getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`,
           labelKey: 'description',
           valueKey: 'id',
-          isRequired: true
+          isRequired: false
         },
         {
           /*上级机构*/
@@ -97,7 +97,6 @@ class WrappedNewCompanyMaintain extends React.Component {
           isRequired: true
         }
 
-
       ],
       startDateActive: null,
       endDateActive: null,
@@ -113,7 +112,7 @@ class WrappedNewCompanyMaintain extends React.Component {
 
 
   componentWillMount() {
-
+   
   }
 
   //处理表单事件
@@ -155,7 +154,7 @@ class WrappedNewCompanyMaintain extends React.Component {
       this.getSystemValueList(item.valueListCode).then(res => {
         let options = [];
         res.data.values.map(data => {
-          options.push({label: data.messageKey, value: data.code, data: data})
+          options.push({label: data.messageKey, value: data.id, data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -280,15 +279,14 @@ class WrappedNewCompanyMaintain extends React.Component {
       //值列表选择组件
       case 'value_list': {
         return (
-          <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
-                  onChange={handle}
-                  disabled={item.disabled}
-                  allowClear
-                  labelInValue={!!item.entity}
-                  onFocus={() => this.getValueListOptions(item)}>
+          <Select placeholder={this.props.intl.formatMessage({ id: 'common.please.select' })}
+            onChange={handle}
+            allowClear
+            disabled={item.disabled}
+            labelInValue={!!item.entity}
+            onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option) => {
-              return <Option key={option.value}
-                             title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} title={option.data && !!item.entity ? JSON.stringify(option.data) : ''}>{option.label}</Option>
             })}
           </Select>
         )
@@ -343,19 +341,24 @@ class WrappedNewCompanyMaintain extends React.Component {
         ...values,
         "startDateActive": values['startDateActive'] ? values['startDateActive'].format('YYYY-MM-DD') : '',
         "endDateActive": values['endDateActive'] ? values['endDateActive'].format('YYYY-MM-DD') : '',
+        companyTypeId: values.companyType.key,
+        companyTypeName: values.companyType.label,
       }
-      console.log(valuesData);
 
       if (!err) {
         this.setState({loading: true});
+        
         httpFetch.post(`${config.baseUrl}/api/refactor/tenant/company/register`, valuesData).then((res) => {
           this.setState({loading: false});
-          message.success(`公司新建成功`);
-          let path = this.state.companyMaintainDetailPage.url.replace(":companyOId", value.companyOId);
+
+          message.success(this.props.intl.formatMessage({ id:"common.operate.success"}));
+
+          let path = this.state.companyMaintainPage.url;
+
           this.context.router.push(path);
         }).catch((e) => {
           if (e.response) {
-            message.error(`新建失败`);
+            message.error(`common.create.filed`);
             this.setState({loading: false});
           } else {
             console.log(e)
@@ -379,13 +382,12 @@ class WrappedNewCompanyMaintain extends React.Component {
             </Row>
             <Row type="flex" align="top">
               <Col span={24}>
-                <FormItem {...formItemLayout} label="地址">
+                <FormItem {...formItemLayout} label={formatMessage({ id:"company.maintain.address"})}>
                   {getFieldDecorator('address', {
                     rules: [{
                       required: true,
-                      message: '请输入',
+                      message: formatMessage({ id: "common.please.enter"}),
                     }],
-
                   })(
                     <Input  />
                   )}
@@ -394,10 +396,10 @@ class WrappedNewCompanyMaintain extends React.Component {
             </Row>
             <Row type="flex" align="top">
               <Col span={8}>
-                <Button htmlType="submit" type="primary">保存</Button>
+                <Button htmlType="submit" type="primary">{formatMessage({ id:"common.save"})}</Button>
                 <Button style={{marginLeft: 8}} onClick={() => {
                   this.context.router.push(this.state.budgetOrganization.url.replace(":id", this.props.organization.id) + '?tab=JOURNAL_TYPE');
-                }}>取消</Button>
+                }}>{formatMessage({ id: "common.cancel" })}</Button>
               </Col>
             </Row>
           </Form>
