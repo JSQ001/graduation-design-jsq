@@ -85,7 +85,7 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{organizationId:this.props.organization.id},
           disabled: true
         },
-        {type: 'select', id:'budgetStructure', label: '预算表', options: [], method: 'get',disabled: true,
+        {type: 'select', id:'budgetStructure', label: this.props.intl.formatMessage({id: 'budget.budget.structureId'}), options: [], method: 'get',disabled: true,
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
@@ -107,9 +107,9 @@ class BudgetJournalDetail extends React.Component {
           listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*编辑期段*/
-        {type: 'value_list', id: 'periodStrategy', label: '编制期段', options: [], valueListCode: 2002,disabled: true},
+        {type: 'value_list', id: 'periodStrategy', label: this.props.intl.formatMessage({id: 'budget.periodStrategy'}), options: [], valueListCode: 2002,disabled: true},
         /*附件*/
-        {type:'file',label:'附件',id:'file',disabled: true},
+        {type:'file',label:this.props.intl.formatMessage({id: 'budget.attachment'}),id:'file',disabled: true},
 
       ],
       dimensionList:[],
@@ -242,7 +242,7 @@ class BudgetJournalDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`查询附件失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id:"budget.getAttachmentFail"})},${e.response.data.message}`);
     })
   }
 
@@ -256,7 +256,7 @@ class BudgetJournalDetail extends React.Component {
         this.getColumnsAndDimensionhandleData();
       })
     }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id:"budget.getDimensionFail"})},${e.response.data.message}`);
     })
   }
 

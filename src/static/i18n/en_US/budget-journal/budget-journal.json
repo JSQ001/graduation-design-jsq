@@ -71,6 +71,7 @@
   "budget.attachment":"附件",
   "budget.commit":"提交",
   "budget.getDimensionFail":"获得维度失败",
+  "budget.getAttachmentFail":"获取附件失败",
   "budget.journalDetail":"用于预算录入，提交审批",
   "budget.basicInformation":"基本信息",
   "budget.budgetInformation":"预算信息",
