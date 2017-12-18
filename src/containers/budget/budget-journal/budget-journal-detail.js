@@ -417,7 +417,7 @@ class BudgetJournalDetail extends React.Component {
   showSlideFrameNewData=()=> {
     let params = {
       "isNew": true,
-      "periodStrategy": this.state.headerAndListData.dto.periodStrategy?this.state.headerAndListData.dto.periodStrategy:'',
+      "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
       "structureId":this.state.headerAndListData.dto.structureId,
       "journalTypeId":this.state.headerAndListData.dto.journalTypeId,
     }

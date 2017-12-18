@@ -262,14 +262,6 @@ class NewBudgetJournalDetail extends React.Component {
         }
       }else if (nextProps.params != this.props.params) {
         this.getItemAbled(true,'','');
-        let defaultData ={}
-        let searchForm = this.state.searchForm;
-        searchForm.map((item)=>{
-          if(String(item.id).indexOf("dimension")>=0){
-            defaultData[item.id] =item["defaultValue"]||'';
-          }
-          this.props.form.setFieldsValue(defaultData);
-        })
 
       }
       //获取编制期段的控制
@@ -300,11 +292,15 @@ class NewBudgetJournalDetail extends React.Component {
       if(nextProps.params.id !== this.props.params.id){
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
-          for(let name in params){
-            let result = {};
-            result[name] = nextProps.params[name];
-            this.props.form.setFieldsValue(result)
-          }
+          let result = {};
+          if(!nextProps.params.isNew){
+            for(let name in params){
+              result[name] = nextProps.params[name];
+            }
+            this.props.form.setFieldsValue(result);
+          }else {
+            this.props.form.resetFields();
+          }ww
         });
       }
     }
