@@ -428,19 +428,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-  'budget_scenario':{
-    title: '预算场景',
-    url: `${config.budgetUrl}/api/budget/scenarios/queryAll`,
-    searchForm: [
-      {type: 'input', id: 'scenarioCode', label: "预算场景代码",defaultValue: ''},
-      {type: 'input', id: 'scenarioName', label: "预算场景名称",defaultValue: ''},
-    ],
-    columns: [
-      {title: "预算场景代码", dataIndex: 'scenarioCode'},
-      {title: "预算场景名称",dataIndex:"scenarioName"},
-    ],
-    key: 'id'
-  },
   'budget_structure':{
     title: '预算表',
     url: `${config.budgetUrl}/api/budget/structures/query`,
@@ -482,17 +469,45 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'year': {
+    title: '年度',
+    url: `${config.baseUrl}/api/periods/select/years/by/setOfBooksId`,
+    searchForm:[],
+    columns: [
+      {title: "年", dataIndex: 'year'},
+    ],
+    key: 'year',
+    isValue: true
+  },
+  'period': {
+    title: '期间',
+    searchForm:[],
+    url: `${config.baseUrl}/api/periods/query/open/periods/by/setOfBook/id`,
+    columns: [
+      {title: "期间名称",dataIndex:"periodName"},
+    ],
+    key: 'id'
+  },
+  'quarter': {
+    title: '季度',
+    searchForm:[],
+    url: `${config.baseUrl}/api/custom/enumeration/system/by/type`,
+    columns: [
+      {title: "季度", dataIndex: 'messageKey'},
+    ],
+    key: 'quarter',
+    isValueList: true
+  },
   'journal_employee': {
     title: '选择人员',
-    url: `http://192.168.1.195:9083/api/DepartmentGroup/get/users/by/department/and/company`,
+    url: `${config.baseUrl}/api/DepartmentGroup/get/users/by/department/and/company`,
     searchForm: [],
     columns: [
       {title: '工号', dataIndex: 'userId'},
       {title: '姓名', dataIndex: 'userName'},
     ],
-    key: 'employeeId'
+    key: 'userId'
   },
-
 };
 
 export default selectorData;

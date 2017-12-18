@@ -12,13 +12,13 @@ import 'styles/budget/budget-journal/new-budget-journal-detail.scss'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import Chooser from 'components/chooser'
-let rateData=1;
+
 
 class NewBudgetJournalDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rate:0,
+      rate:Number(1),
       loading:false,
       searchForm:[],
       dimensionList:{},
@@ -30,7 +30,6 @@ class NewBudgetJournalDetail extends React.Component {
       companyIdFlag:true,
       journalTypeId:null,
     };
-
   }
 
   //表单的联动事件处理
@@ -49,7 +48,6 @@ class NewBudgetJournalDetail extends React.Component {
       }
       case 'currency':{
         const eventData = JSON.parse(event);
-        rateData =eventData.attribute11;
         let rate =eventData.attribute11;
         this.setState({ rate })
         this.props.form.setFieldsValue({
@@ -60,7 +58,7 @@ class NewBudgetJournalDetail extends React.Component {
         return;
       }
       case 'amount':{
-        let functionalAmount = event*rateData;
+        let functionalAmount = event*Number(this.state.rate);
         this.props.form.setFieldsValue({
           functionalAmount:functionalAmount,
         });
@@ -81,7 +79,6 @@ class NewBudgetJournalDetail extends React.Component {
 
       }
       if(e === "unit"){
-        console.log(value[0]);
         this.setUntilId(value[0].id);
         this.props.form.setFieldsValue({
           employee:[]
@@ -107,7 +104,7 @@ class NewBudgetJournalDetail extends React.Component {
     })
   }
 
-  //给预算项目和人员公司ID
+  //给 预算项目和人员, 公司ID
   setItemCompanyId(companyId){
     let searchFrom =this.state.searchForm;
     searchFrom.map((item)=>{
@@ -204,59 +201,77 @@ class NewBudgetJournalDetail extends React.Component {
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
       yearOptions.push({label: i, value: String(i),key:i})
     let searchForm =[
-      {type: 'list', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}),
+      {type: 'list',key:'company', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}),
         labelKey: 'name', valueKey: 'id',single:true,event:'company',isRequired: true,disabled:false,
         listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
-      {type: 'list', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
+      {type: 'list',key:'unit', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
         labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false,
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list', id: 'employee', listType: 'journal_employee',  label:"员工",
+      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee',  label:"员工",
         labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
         listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
       },//人员
-      {type: 'list', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
+      {type: 'list',key:'item', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
         labelKey:'itemName',valueKey:'id',disabled:true,single:true, listExtraParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
-      {type: 'select', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
+      {type: 'select',key:'periodName', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
         labelKey:'periodName',valueKey:'periodName',event:'periodName',
         getUrl:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
         columnLabel:'periodName',columnValue:'periodName'
       }, //期间
-      {type: 'select_year', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
+      {type: 'select_year',key:'periodQuarter', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
         options: queryLineListTypeOptions, disabled:true,
         columnLabel:'periodQuarterName',columnValue:'periodQuarter'
       }, //季度
-      {type: 'select_year', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
+      {type: 'select_year',key:'periodYear', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
         disabled:true, options: yearOptions,event: 'YEAR_CHANGE',
         columnLabel:'periodYear',columnValue:'periodYear'
       }, //年度
-      {type: 'select', id:'currency',label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options:currencyOptions,event:'currency',
+      {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options:currencyOptions,event:'currency',
         labelKey:'attribute5',valueKey:'attribute4',
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'inputNumber', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
-      {type: 'inputNumber', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
+      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber',key:'amount', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
         step:10, defaultValue:0, event:'amount'},  //金额
-      {type: 'inputNumber', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
+      {type: 'inputNumber',key:'functionalAmount', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
         step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}),step:1,defaultValue:0,min:0}, //数量
-      {type: 'input', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
+      {type: 'inputNumber',key:'quantity', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}),step:1,defaultValue:0,min:0}, //数量
+      {type: 'input',key:'remark', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
     ];
     this.setState({ searchForm })
   }
 
+
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && JSON.stringify(nextProps.params) !== "{}" ){
       if(nextProps.params.isNew === false){
+        console.log(nextProps.params);
         this.state.rate=nextProps.params.rate;
-        rateData=nextProps.params.rate;
-      }else {}
+        if(nextProps.params.company.length>0){
+          this.getItemAbled(false,nextProps.params.company[0].id,'');
+        }
+        if(nextProps.params.unit.length>0){
+          this.getItemAbled(false,nextProps.params.company[0].id,nextProps.params.company[0].id);
+        }
+      }else if (nextProps.params != this.props.params) {
+        this.getItemAbled(true,'','');
+        let defaultData ={}
+        let searchForm = this.state.searchForm;
+        searchForm.map((item)=>{
+          if(String(item.id).indexOf("dimension")>=0){
+            defaultData[item.id] =item["defaultValue"]||'';
+          }
+          this.props.form.setFieldsValue(defaultData);
+        })
+
+      }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
         this.setState({
@@ -278,22 +293,11 @@ class NewBudgetJournalDetail extends React.Component {
         this.setState({
           journalTypeIdFlag:false,
         },()=>{
-          console.log(nextProps.params.company);
-          console.log(nextProps.params.journalTypeId);
           this.getItemUrl(nextProps.params.company[0].id,nextProps.params.journalTypeId);
         })
       }
 
       if(nextProps.params.id !== this.props.params.id){
-
-        if(nextProps.params.journalTypeId && !this.state.journalTypeIdFlag){
-           if(nextProps.params.isNew){
-               this.getItemAbled(true,'');
-             }else {
-               this.getItemAbled(false,nextProps.params.company[0].id,nextProps.params.company[0].departmentId);
-             }
-        }
-
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
           for(let name in params){
@@ -474,9 +478,9 @@ class NewBudgetJournalDetail extends React.Component {
     };
 
     const children = [];
-    this.state.searchForm.map((item, i)=>{
+    this.state.searchForm.map((item)=>{
       children.push(
-        <Col span={20} key={i}>
+        <Col span={20} key={item.id}>
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label} colon={false}>
               {getFieldDecorator(item.id, {
@@ -561,7 +565,7 @@ class NewBudgetJournalDetail extends React.Component {
           }
         }
         if (item.type === 'list') {
-          if (values[item.id]) {
+          if (values[item.id].length>0) {
             if (values[item.id].length > 0) {
               const value = values[item.id][0];
               valuesData[item.columnLabel] = value[item.labelKey];
@@ -611,7 +615,7 @@ class NewBudgetJournalDetail extends React.Component {
     }).catch(e=>{
       message.error(`获得维度失败,${e.response.data.message}`);
     })
-  }
+  };
 
   //根据预算表,set维度表单
   getSearchForm(dimension){
@@ -629,20 +633,20 @@ class NewBudgetJournalDetail extends React.Component {
       dimensionDataLists[dimensionListKey[4]]={
         defaultDimValueId:item.defaultDimValueId?item.defaultDimValueId:null,
         defaultDimValueName:item.defaultDimValueName?item.defaultDimValueName:null
-      }
+      };
       let options=[];
       httpFetch.get(`${config.baseUrl}/api/my/cost/center/items/by/costcenterid?costCenterId=${item.dimensionId}`).then((res)=>{
         const data =res.data;
         data.map((item)=>{
           options.push({label: item.name, value: item.id, data:item})
         })
-      })
+      });
       const searchFormItem={type: 'select_dimension', label:`${item.dimensionName}`, options:options,
         labelKey:'name',valueKey:'id',defaultValue:item.defaultDimValueName,
         columnLabel:`dimension${priority}ValueName`,columnValue:`dimension${priority}ValueId`
       };
-      searchFormItem["id"]="dimension"+priority,
-        searchFormItem["dimensionId"]=item.id;
+      searchFormItem["id"]="dimension"+priority;
+      searchFormItem["dimensionId"]=item.id;
       searchForm.push(
         searchFormItem
       )

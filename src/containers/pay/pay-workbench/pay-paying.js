@@ -76,10 +76,10 @@ class PayPaying extends React.Component {
           const menu = (
             <Menu>
               <Menu.Item>
-                <a onClick={this.handleSuccess}>确认成功</a>
+                <a onClick={() => this.handleSuccess(record)}>确认成功</a>
               </Menu.Item>
               <Menu.Item>
-                <a onClick={this.handleFail}>确认失败</a>
+                <a onClick={() => this.handleFail(record)}>确认失败</a>
               </Menu.Item>
             </Menu>
           );
@@ -94,6 +94,7 @@ class PayPaying extends React.Component {
       ],
       okModalVisible: false, //确认成功modal
       failModalVisible: false, //确认失败modal
+      record: {}, //点击行信息
 
       /* 线上 */
       onlineLoading: false,
@@ -153,9 +154,9 @@ class PayPaying extends React.Component {
   };
 
   //确认成功弹框
-  handleSuccess = () => {
+  handleSuccess = (record) => {
     this.props.form.setFieldsValue({ date: undefined });
-    this.setState({ okModalVisible: true })
+    this.setState({ record, okModalVisible: true })
   };
 
   //确认成功操作
@@ -168,13 +169,26 @@ class PayPaying extends React.Component {
   };
 
   //确认失败弹框
-  handleFail = () => {
-    this.setState({ failModalVisible: true })
+  handleFail = (record) => {
+    this.setState({ record, failModalVisible: true })
   };
 
   //确认失败操作
   confirmFail = () => {
-
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/PayFail`;
+    let params = {
+      detailIds: [this.state.record.id],
+      versionNumbers: [this.state.record.versionNumber]
+    };
+    httpFetch.post(url, params).then(res => {
+      if (res.status === 200) {
+        message.success('操作成功');
+        this.setState({ failModalVisible: false });
+        this.getList()
+      }
+    }).catch(() => {
+      message.success('操作失败，请稍后再试');
+    })
   };
 
   /*********************** 获取总金额 ***********************/
@@ -388,12 +402,12 @@ class PayPaying extends React.Component {
                width={400}>
           <div style={{height:110}}>
             <span style={{marginRight:10,fontSize:14}}>
-              <Icon type="exclamation-circle" style={{color:'#faad14', fontSize:22, marginRight:12}}/>
+              <Icon type="exclamation-circle" style={{color:'#faad14', fontSize:22, marginRight:8, position:'relative', top:2}}/>
               将付款状态更改为
             </span>
             <Badge status="success" text="支付成功"/>
-            <div style={{fontSize:12,color:'red',marginLeft:33}}>请通过网银或询问银行的方式确认该笔付款已成功转账</div>
-            <Form style={{marginLeft:33}}>
+            <div style={{fontSize:12,color:'red',marginLeft:29}}>请通过网银或询问银行的方式确认该笔付款已成功转账</div>
+            <Form style={{marginLeft:29}}>
               <FormItem {...formItemLayout}
                         label="实际付款日期"
                         style={{margin:'20px 0 10px'}}>
@@ -418,11 +432,11 @@ class PayPaying extends React.Component {
                width={400}>
           <div style={{height:80, paddingTop:20}}>
             <span style={{marginRight:10,fontSize:14}}>
-              <Icon type="exclamation-circle" style={{color:'#faad14', fontSize:22, marginRight:12}}/>
+              <Icon type="exclamation-circle" style={{color:'#faad14', fontSize:22, marginRight:8, position:'relative', top:2}}/>
               将付款状态更改为
             </span>
             <Badge status="error" text="支付失败"/>
-            <div style={{fontSize:12,color:'red',marginLeft:33}}>请务必向银行确认该付款支付失败，以免产生重复支付</div>
+            <div style={{fontSize:12,color:'red',marginLeft:29}}>请务必向银行确认该付款支付失败，以免产生重复支付</div>
           </div>
         </Modal>
       </div>

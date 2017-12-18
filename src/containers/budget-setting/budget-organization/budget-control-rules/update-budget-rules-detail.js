@@ -96,7 +96,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: undefined,
+        codeKey: 'currencyName',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -152,7 +152,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         selectorItem: undefined
       },
       'BUDGET_SCENARIO':{
-        listType: 'budget_scenario',
+        listType: 'budget_scenarios',
         labelKey: 'scenarioName',
         valueKey: 'id',
         codeKey: 'scenarioCode',
@@ -174,7 +174,30 @@ class UpdateBudgetRulesDetail extends React.Component{
         codeKey: 'structureCode',
         listExtraParams: organizationIdParams,
         selectorItem: undefined
-      }
+      },
+      'YEAR':{
+        listType: 'year',
+        labelKey: 'year',
+        codeKey: 'year',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
+      'QUARTER':{
+        listType: 'quarter',
+        labelKey: 'messageKey',
+        valueKey: 'id',
+        codeKey: 'messageKey',
+        listExtraParams: {systemCustomEnumerationType: 2021},
+        selectorItem: undefined
+      },
+      'MONTH':{
+        listType: 'period',
+        labelKey: 'periodName',
+        valueKey: 'id',
+        codeKey: 'periodName',
+        listExtraParams: {setOfBooksId: this.props.company.setOfBooksId},
+        selectorItem: undefined
+      },
     };
 
     this.getValueList(valueListMap.ruleParamType, ruleParameterTypeArray);
@@ -199,6 +222,7 @@ class UpdateBudgetRulesDetail extends React.Component{
       lov.disabled　= false;
       lov.type = param.ruleParameterType;
       this.setState({
+        loading: false,
         ruleParamDetail: param,
         paramValueMap: paramValueMap,
         lov
@@ -279,7 +303,6 @@ class UpdateBudgetRulesDetail extends React.Component{
      loading: true
      });
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(ruleParamDetail)
       values.id = ruleParamDetail.id;
       values.controlRuleId = ruleParamDetail.controlRuleId;
       values.versionNumber = ruleParamDetail.versionNumber;
@@ -290,8 +313,6 @@ class UpdateBudgetRulesDetail extends React.Component{
       if(ruleParamDetail.ruleParameterDescription === values.ruleParameter){
         values.ruleParameter = ruleParamDetail.ruleParameter;
         values.ruleParameterOID = ruleParamDetail.ruleParameterOID
-        console.log(ruleParamDetail.ruleParameterOID)
-
       }else {
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
@@ -316,6 +337,7 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   onCancel = (flag) =>{
     this.setState({
+      loading: false,
       limitParam:{
         parameterLowerLimit: true,
         parameterUpperLimit: true
@@ -354,7 +376,6 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   //选择规则参数
   handleChangeParam = (value)=>{
-    console.log(value)
     const {paramValueMap,lov} = this.state;
     let temp={};
     if(lov.type === 'BGT_RULE_PARAMETER_DIM'){
@@ -504,33 +525,6 @@ class UpdateBudgetRulesDetail extends React.Component{
           </Row>
           <Row gutter={30}>
             <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
-                        validateStatus={validateStatusMap.parameterUpperLimit}
-                        help={helpMap.parameterUpperLimit}>
-                {getFieldDecorator('parameterUpperLimit', {
-                  initialValue: ruleParamDetail.parameterUpperLimit,
-                  rules: [
-                    {
-                      required: true, message: formatMessage({id:"common.please.select"})
-                    },
-                    {
-                      validator:(item,value,callback)=>{
-                        callback();
-                      }
-                    }
-                  ]
-                })(
-                  <Selput type={lov.listType}
-                          valueKey={ lov.codeKey}
-                          listExtraParams={lov.listExtraParams}
-                          disabled={lov.disabled}
-                          onChange={()=>{}}/>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
                         validateStatus={validateStatusMap.parameterLowerLimit}
                         help={helpMap.parameterLowerLimit}>
@@ -559,6 +553,33 @@ class UpdateBudgetRulesDetail extends React.Component{
           </Row>
           <Row gutter={30}>
             <Col span={20}>
+              <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterUpperLimit'})  /*上限值*/}
+                        validateStatus={validateStatusMap.parameterUpperLimit}
+                        help={helpMap.parameterUpperLimit}>
+                {getFieldDecorator('parameterUpperLimit', {
+                  initialValue: ruleParamDetail.parameterUpperLimit,
+                  rules: [
+                    {
+                      required: true, message: formatMessage({id:"common.please.select"})
+                    },
+                    {
+                      validator:(item,value,callback)=>{
+                        callback();
+                      }
+                    }
+                  ]
+                })(
+                  <Selput type={lov.listType}
+                          valueKey={ lov.codeKey}
+                          listExtraParams={lov.listExtraParams}
+                          disabled={lov.disabled}
+                          onChange={()=>{}}/>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={30}>
+            <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.invalidDate'})  /*失效日期*/}>
                 {getFieldDecorator('invalidDate', {
                   initialValue: ruleParamDetail.invalidDate ? moment( ruleParamDetail.invalidDate, 'YYYY-MM-DD') : null
@@ -570,7 +591,7 @@ class UpdateBudgetRulesDetail extends React.Component{
           </Row>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={loading}>{formatMessage({id:"common.save"})}</Button>
-            <Button onClick={this.onCancel}>{formatMessage({id:"common.cancel"})}</Button>
+            <Button onClick={()=>this.onCancel(false)}>{formatMessage({id:"common.cancel"})}</Button>
             <input ref="blur" style={{ position: 'absolute', top: '-100vh' }}/> {/* 隐藏的input标签，用来取消list控件的focus事件  */}
           </div>
         </Form>

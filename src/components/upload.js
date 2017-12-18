@@ -93,7 +93,7 @@ class UploadFile extends React.Component{
 }
 
 UploadFile.propTypes = {
-  uploadUrl: React.PropTypes.string.isRequired,  //上传URL
+  uploadUrl: React.PropTypes.string,  //上传URL
   attachmentType: React.PropTypes.string.isRequired,  //附件类型
   extensionName: React.PropTypes.string,  //附件支持的扩展名
   fileNum: React.PropTypes.number,  //最大上传文件的数量
@@ -101,6 +101,7 @@ UploadFile.propTypes = {
 };
 
 UploadFile.defaultProps={
+  uploadUrl: `${config.baseUrl}/api/upload/attachment`,
   extensionName: '.rar .zip .doc .docx .pdf .jpg...',
   fileNum: 0,
   uploadHandle: () => {}

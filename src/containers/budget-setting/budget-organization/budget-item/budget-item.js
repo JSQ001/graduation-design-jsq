@@ -11,6 +11,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector'
+import Importer from 'components/template/importer'
 
 
 const itemCode = [];
@@ -45,7 +46,7 @@ class BudgetItem extends React.Component {
         {type: 'select', id: 'itemTypeName',options:[], labelKey: 'itemTypeName',valueKey: 'id',
           label: formatMessage({id: 'budget.itemType'}),  /*预算项目类型*/
           listExtraParams:{organizationId: this.props.id},
-          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.id,isEnabled: true}
+          getUrl: `${config.budgetUrl}/api/budget/itemType/query/all`, method: 'get', getParams: {organizationId: this.props.id}
         },
         {type: 'select', id: 'itemCodeFrom',
           label: formatMessage({id: 'budget.itemCodeFrom'}),  /*预算项目代码从*/
@@ -73,10 +74,7 @@ class BudgetItem extends React.Component {
             <span>{description ? <Popover content={description}>{description} </Popover> : '-'} </span>)
         },
         {           /*状态*/
-          title: formatMessage({id:"common.column.status"}),
-          key: 'status',
-          width: '10%',
-          dataIndex: 'isEnabled',
+          title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'}
                    text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
@@ -225,28 +223,28 @@ class BudgetItem extends React.Component {
   //处理公司弹框点击ok
   handleListOk = (result) => {
     let companyIds = [];
-    result.result.map((item)=>{
-      companyIds.push(item.id)
-    });
-    let param = [];
-
-    param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
-    httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
-      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
-      if(response.status === 200){
-        this.setState({
-          loading: true,
-          batchCompany: true
-        },this.getList())
-      }
-    }).catch((e)=>{
-      if(e.response){
-        message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
-      }
-    });
-
+    if(result.result.length>0){
+      result.result.map((item)=>{
+        companyIds.push(item.id)
+      });
+      let param = [];
+      param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
+      httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+        message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
+        if(response.status === 200){
+          this.setState({
+            loading: true,
+            batchCompany: true,
+            companyListSelector: false
+          },this.getList())
+        }
+      }).catch((e)=>{
+        if(e.response){
+          message.error(`${this.props.intl.formatMessage({id:"common.operate.filed"})},${e.response.data.message}`)
+        }
+      });
+    }else
     this.showListSelector(false)
-
   };
 
   //点击行，进入该行详情页面
@@ -271,6 +269,12 @@ class BudgetItem extends React.Component {
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+            <Importer title={formatMessage({id:"item.itemUpload"})}
+                      templateUrl={`${config.budgetUrl}/api/budget/items/export/template`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/items/import`}
+                      errorUrl={`${config.budgetUrl}/api/budget/items/export/failed/data`}
+                      fileName={formatMessage({id:"item.itemUploadFile"})}
+                      onOk={this.handleImportOk}/>
             <Button onClick={()=>this.showListSelector(true)} disabled={batchCompany}>{formatMessage({id:"budget.item.batchCompany"})}</Button>
           </div>
         </div>

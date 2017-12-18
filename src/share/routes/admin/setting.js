@@ -22,7 +22,7 @@ import NewDepartmentGroup from 'containers/setting/department-group/new-departme
 import SubjectSheet from 'containers/setting/subject-sheet/subject-sheet'
 import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 import AnnouncementInformation from 'containers/setting/announcement-information/announcement-information'
-
+import AnnouncementInformationDetail from 'containers/setting/announcement-information/announcement-information-detail'
 
 //新建部门组
 const newDepartmentGroup = {
@@ -228,18 +228,31 @@ const subjectSheet = {
   parent: 'setting'
 };
 
+
+//公告信息详情
+const announcementInformationDetail = {
+  key: 'announcement-information-detail',
+  url: '/main/setting/announcement-information/announcement-information-detail/:id',
+  components: AnnouncementInformationDetail,
+  parent: 'setting'
+};
+
 //公告信息
 const announcementInformation = {
   key: 'announcement-information',
   url: '/main/setting/announcement-information',
   components: AnnouncementInformation,
-  parent: 'setting'
+  parent: 'setting',
+  children:{
+    announcementInformationDetail
+  }
 };
+
 
 //设置
 const setting = {
   key:'setting',
-  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,subjectSheet, announcementInformation],
+  subMenu: [valueList, securitySetting, callbackSetting, codingRuleObject, companyMaintain, companyGroup, departmentGroup,subjectSheet, announcementInformation, ],
   icon: 'setting',
   admin: true
 };

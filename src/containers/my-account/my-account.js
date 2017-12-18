@@ -1,63 +1,118 @@
 import React  from 'react'
 import Importer from 'components/template/importer'
-import SearchArea from 'components/search-area'
-import { Button } from 'antd'
+import { Button, Table, Menu, Dropdown, Icon } from 'antd'
 import config from 'config'
+import { injectIntl } from 'react-intl';
+import 'styles/my-account/my-account.scss'
 
 class MyAccount extends React.Component{
-    constructor(props){
-      super(props);
-      this.state = {
-        searchForm: [
-          {id: 'user', label: '人员', type: 'list', listType: 'user', labelKey: 'fullName', valueKey: 'userOID', event: 'USER_CHANGE'},
-          {type: 'value_list', id:'flag', label: '金额 / 数量', isRequired: true, options: [], valueListCode: 2019, event: 'FLAG_CHANGE', entity: true},
-          {type: 'select', id: 'setOfBooksId', label: '帐套', options: [], event: 'SET_OF_BOOKS_CHANGE', entity: true,
-            getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', labelKey: 'setOfBooksCode', valueKey: 'id', getParams: {roleType: 'TENANT'}},
-          {
-            type: 'combobox', id: 'combobox', label: '员工', placeholder: '请输入姓名／工号', options: [], searchUrl: `${config.baseUrl}/api/search/users`,
-            method: 'get', searchKey: 'keyword', labelKey: 'fullName', valueKey: 'userOID', event: 'USER_COMBOBOX_CHANGE', entity: true
-          },
-          {
-            type: 'multiple', id: 'legalEntity', label: '法人实体', options: [], getUrl: `${config.baseUrl}/api/v2/my/company/receipted/invoices?page=0&size=100`,
-            method: 'get', labelKey: 'companyName', valueKey: 'companyReceiptedOID', event: 'ENTITY_CHANGE', entity: true
-          }
-        ]
-      };
-    }
-
-    handleOk = (result) => {
-      console.log(result)
+  constructor(props){
+    super(props);
+    const { formatMessage } = this.props.intl;
+    this.state = {
+      loading: false,
+      dropDownLabel: formatMessage({id: "account.createExpense"}),
+      data: [],
+      dropDown: [
+        {label: formatMessage({id: "account.createExpense"}), value: '0'},
+        {label: formatMessage({id: "account.manuallyCreate"}), value: '1'},
+        {label: formatMessage({id: "account.inputInvoice"}), value: '2'},
+        {label: formatMessage({id: "account.cardConsumption"}), value: '3'}
+      ],
+      columns:[
+        {          /*序号*/
+          title: formatMessage({id:"announcement-info.number"}), key: "number", dataIndex: 'number',width: '10%',
+        },
+        {          /*费用类型*/
+          title: formatMessage({id:"itemMap.expenseType"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*发生日期*/
+          title: formatMessage({id:"account.occur"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*备注*/
+          title: formatMessage({id:"budget.structureDescription"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*附件*/
+          title: formatMessage({id:"account.accessory"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*费用属性*/
+          title: formatMessage({id:"account.expenseAttributes"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*币种*/
+          title: formatMessage({id:"account.currency"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*金额*/
+          title: formatMessage({id:"account.money"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {          /*本币金额*/
+          title: formatMessage({id:"account.currencyMoney"}), key: "itemCode", dataIndex: 'itemCode'
+        },
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+          <span>
+          <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+            <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
+          </Popconfirm>
+        </span>)},  //操作
+      ]
     };
+  }
 
-    eventHandle = (value, event) => {
-      console.log(value, event)
-    };
+  componentWillMount(){
+    this.getList();
+  }
 
-    ok = (e) => {
-      console.log(e)
-    };
+  getList(){
 
-    componentDidMount(){
-      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
-        setOfBooksId: {label: '测试', value: '123'}
-      });
-    }
+  }
 
-    render(){
-      const { searchForm } = this.state;
-      return(
-        <div>
+  //生成报销单
+  handleExpenseAccount = ()=>{
 
-          <SearchArea searchForm={searchForm}
-                      eventHandle={this.eventHandle}
-                      submitHandle={this.ok}
-                      wrappedComponentRef={(inst) => this.formRef = inst}/>
+  };
 
-          <Importer onOk={this.handleOk} title="导入数据"/>
+  handleButtonClick = ()=>{
+    console.log('click', e);
+  };
 
+  handleMenuClick = (e)=>{
+    console.log(e)
+    this.setState({
+      dropDownLabel: this.state.dropDown[e.key].label
+    })
+  };
+
+  render(){
+    const { loading, data, pagination, columns, dropDown, dropDownLabel } = this.state;
+    const { formatMessage } = this.props.intl;
+    const menu = (
+      <Menu onClick={this.handleMenuClick}>
+        {dropDown.map((item)=>(<Menu.Item key={item.value}>{item.label}</Menu.Item>))}
+      </Menu>
+    );
+    return(
+      <div className="my-account">
+        <div className="my-account-table-header">
+          <Button type="primary" className="table-header-button" onClick={this.handleExpenseAccount}>{formatMessage({id: "account.createExpenseAccount"})}</Button>
+          <Dropdown.Button  className="table-header-dropDown" onClick={this.handleButtonClick} overlay={menu}>
+            {dropDownLabel}
+          </Dropdown.Button>
+          <div className="table-header-message">
+            <span><Icon className="table-header-message-img" type="info-circle" style={{color: '#1890ff' }}/></span>
+            <span>{formatMessage({id: "account.selected"})}</span>
+            <span className="table-header-message-number"> 1</span>
+            <span>{ formatMessage({id:"account.message"})}</span>
+            <span className="table-header-message-number">500.9</span>
+          </div>
         </div>
-      )
-    }
+        <Table
+          loading={loading}
+          dataSource={data}
+          columns={columns}
+          bordered
+          size="middle"/>
+      </div>
+    )
+  }
 }
 
-export default MyAccount;
+export default injectIntl(MyAccount);
