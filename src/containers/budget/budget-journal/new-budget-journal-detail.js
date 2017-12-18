@@ -407,7 +407,7 @@ class NewBudgetJournalDetail extends React.Component {
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}
           >
             {item.options.map((option)=>{
-              return <Option value={option.data?JSON.stringify(option.data) : ''} lable={option.label} title={option.data?JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.data[item.valueKey]} value={option.data?JSON.stringify(option.data) : ''} lable={option.label} >{option.label}</Option>
             })}
           </Select>
         )
@@ -436,7 +436,7 @@ class NewBudgetJournalDetail extends React.Component {
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} value={option.value}>{option.label}</Option>
             })}
           </Select>
         )
@@ -446,7 +446,7 @@ class NewBudgetJournalDetail extends React.Component {
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
-              return <Option value={option.value} >{option.label}</Option>
+              return <Option value={option.value} key={option.value}>{option.label}</Option>
             })}
           </Select>
         )
