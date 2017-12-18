@@ -33,7 +33,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }},  //序号
-        {title: formatMessage({id: 'account-period-define.rule.periodAdditionalName'}),
+        {title: formatMessage({id: 'account.period.define.rule.periodAdditionalName'}),
           dataIndex: 'periodAdditionalName', key: 'periodAdditionalName', width: '25%', render:(count)=>{
           return this.state.ruleIsDefine ? count : (
             <FormItem hasFeedback>
@@ -52,7 +52,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }}, //期间名附加
-        {title: formatMessage({id: 'account-period-define.rule.monthFrom'}),
+        {title: formatMessage({id: 'account.period.define.rule.monthFrom'}),
           dataIndex: 'monthFrom', key: 'monthFrom', render:(count) => {
           let options = [];
           let maxValue = 12;
@@ -78,7 +78,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }}, //月份从
-        {title: formatMessage({id: 'account-period-define.rule.dateFrom'}),
+        {title: formatMessage({id: 'account.period.define.rule.dateFrom'}),
           dataIndex: 'dateFrom', key: 'dateFrom', render:(count) => {
           let maxValue;
           const monthFromVal = this.state.monthFrom[count];
@@ -116,7 +116,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }}, //日期从
-        {title: formatMessage({id: 'account-period-define.rule.monthTo'}),
+        {title: formatMessage({id: 'account.period.define.rule.monthTo'}),
           dataIndex: 'monthTo', key: 'monthTo', render:(count) => {
           let options = [];
           const monthFromVal = this.state.monthFrom[count];
@@ -152,8 +152,8 @@ class NewAccountPeriod extends React.Component {
                       dateFrom[count + 1] = 1;
                     } else if (value == 12 && dateToVal == 31 && count < this.state.period.totalPeriodNum) {
                       Modal.error({
-                        title: formatMessage({id :'account-period-define.rule.modal.error.title'}),  //截止日期不对
-                        content: formatMessage({id: 'account-period-define.rule.modal.error.content'}),  //截止日期不能为 12月31日
+                        title: formatMessage({id :'account.period.define.rule.modal.error.title'}),  //截止日期不对
+                        content: formatMessage({id: 'account.period.define.rule.modal.error.content'}),  //截止日期不能为 12月31日
                       });
                       return;
                     } else if (dateToVal == 31) {
@@ -177,7 +177,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }}, //月份到
-        {title: formatMessage({id: 'account-period-define.rule.dateTo'}),
+        {title: formatMessage({id: 'account.period.define.rule.dateTo'}),
           dataIndex: 'dateTo', key: 'dateTo', render:(count) => {
           let maxValue;
           let minValue;
@@ -250,7 +250,7 @@ class NewAccountPeriod extends React.Component {
               )}
             </FormItem>)
         }}, //日期到
-        {title: formatMessage({id: 'account-period-define.rule.quarter'}),
+        {title: formatMessage({id: 'account.period.define.rule.quarter'}),
           dataIndex: 'quarterNum', key: 'quarterNum', render:(count) => {
           return this.state.ruleIsDefine ? count : (
             <FormItem>
@@ -370,8 +370,8 @@ class NewAccountPeriod extends React.Component {
         }
         if (this.state.count < this.state.period.totalPeriodNum) {
           Modal.error({
-            title: formatMessage({id: 'account-period-define.rule.totalPeriodNum.error.title'}), //期间数量不对
-            content: formatMessage({id: 'account-period-define.rule.totalPeriodNum.error.content'}) //期间数应该等于 期间总数
+            title: formatMessage({id: 'account.period.define.rule.totalPeriodNum.error.title'}), //期间数量不对
+            content: formatMessage({id: 'account.period.define.rule.totalPeriodNum.error.content'}) //期间数应该等于 期间总数
           });
           return;
         }
@@ -485,28 +485,28 @@ class NewAccountPeriod extends React.Component {
     let button;
     let modal;
     if (ruleIsDefine) {
-      button = <Button type="primary" onClick={this.createPeriod}>{formatMessage({id: 'account-period-define.rule.create-period'})/* 生成期间 */}</Button>;
-      modal = <Modal title={formatMessage({id: 'account-period-define.rule.period.create'})/* 创建期间 */}
+      button = <Button type="primary" onClick={this.createPeriod}>{formatMessage({id: 'account.period.define.rule.create-period'})/* 生成期间 */}</Button>;
+      modal = <Modal title={formatMessage({id: 'account.period.define.rule.period.create'})/* 创建期间 */}
                      confirmLoading={loading}
                      visible={modalVisible}
                      onOk={this.handleModalOk}
                      onCancel={this.handleModalCancel}>
         <Form>
-          <FormItem label={formatMessage({id: 'account-period-define.code'})/* 会计期代码 */} style={{marginBottom:0}}>
+          <FormItem label={formatMessage({id: 'account.period.define.code'})/* 会计期代码 */} style={{marginBottom:0}}>
             {this.props.form.getFieldDecorator(`periodSetCode`, {
               initialValue: period ? period.periodSetCode : ''
             })(
               <Input style={{color:'rgba(0,0,0,0.65)',cursor:'text',width:'268px'}} disabled/>
             )}
           </FormItem>
-          <FormItem label={formatMessage({id: 'account-period-define.name'})/* 会计期名称 */} style={{marginBottom:0}}>
+          <FormItem label={formatMessage({id: 'account.period.define.name'})/* 会计期名称 */} style={{marginBottom:0}}>
             {this.props.form.getFieldDecorator(`periodSetName`, {
               initialValue: period ? period.periodSetName : ''
             })(
               <Input style={{color:'rgba(0,0,0,0.65)',cursor:'text',width:'268px'}} disabled/>
             )}
           </FormItem>
-          <FormItem label={formatMessage({id: 'account-period-define.rule.year.create'})/* 创建年度 */}>
+          <FormItem label={formatMessage({id: 'account.period.define.rule.year.create'})/* 创建年度 */}>
             <Col span={6} style={{marginRight:'20px'}}>
               <FormItem>
                 {this.props.form.getFieldDecorator(`yearFrom`, {
@@ -516,7 +516,7 @@ class NewAccountPeriod extends React.Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input placeholder={formatMessage({id: 'account-period-define.rule.year.from'})/* 年度从 */} />
+                  <Input placeholder={formatMessage({id: 'account.period.define.rule.year.from'})/* 年度从 */} />
                 )}
               </FormItem>
             </Col>
@@ -529,7 +529,7 @@ class NewAccountPeriod extends React.Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input placeholder={formatMessage({id: 'account-period-define.rule.year.to'})/* 年度到 */} />
+                  <Input placeholder={formatMessage({id: 'account.period.define.rule.year.to'})/* 年度到 */} />
                 )}
               </FormItem>
             </Col>
@@ -537,24 +537,24 @@ class NewAccountPeriod extends React.Component {
         </Form>
       </Modal>
     } else {
-      button = <Button type="primary" onClick={() => this.clearWrite(1)}>{formatMessage({id: 'account-period-define.rule.clear'})/* 清空已填写 */}</Button>;
+      button = <Button type="primary" onClick={() => this.clearWrite(1)}>{formatMessage({id: 'account.period.define.rule.clear'})/* 清空已填写 */}</Button>;
       modal = ""
     }
     return (
       <div className="new-account-rule">
-        <h3 className="header-title">{formatMessage({id: 'account-period-define.rule.define'})/* 会计期规则定义 */}
+        <h3 className="header-title">{formatMessage({id: 'account.period.define.rule.define'})/* 会计期规则定义 */}
           <Tag color={this.state.ruleIsDefine ? 'green-inverse' : 'red-inverse'}>
-            {this.state.ruleIsDefine ? formatMessage({id: 'account-period-define.rule.has-define'}) :
-              formatMessage({id: 'account-period-define.rule.not-define'})}
+            {this.state.ruleIsDefine ? formatMessage({id: 'account.period.define.rule.has-define'}) :
+              formatMessage({id: 'account.period.define.rule.not-define'})}
           </Tag>
         </h3>
         <Form style={{overflow:'hidden', marginBottom:'20px'}}>
-          <FormItem label={formatMessage({id: 'account-period-define.rule.total-period'})/* 期间总数 */}
+          <FormItem label={formatMessage({id: 'account.period.define.rule.total-period'})/* 期间总数 */}
                     style={{width:'20%',marginRight:'30px'}}
                     className="float-left">
             <Input value={period && period.totalPeriodNum} disabled/>
           </FormItem>
-          <FormItem label={formatMessage({id: 'account-period-define.rule.addition-name'})/* 名称附加 */}
+          <FormItem label={formatMessage({id: 'account.period.define.rule.addition-name'})/* 名称附加 */}
                     style={{width:'40%'}}
                     className="float-left">
             <Input value={period && period.periodAdditionalFlag} disabled/>
