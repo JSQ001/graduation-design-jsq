@@ -469,6 +469,46 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'bank_account': {
+    title: '银行信息',
+    url: `${config.payUrl}/api/cash/bank/user/defineds/query`,
+    searchForm: [
+      { type: 'input', id: 'keyword', label: "银行名称", defaultValue: '' },
+    ],
+    columns: [
+      { title: "银行名称", dataIndex: 'bankName' },
+      { title: "国家", dataIndex: "countryName" },
+      { title: "城市", dataIndex: "cityName" },
+      { title: "银行详细地址", dataIndex: "address" },
+    ],
+    key: 'id'
+  },
+  'select_authorization_company': {
+    title: '选择公司',
+    url: `${config.baseUrl}/api/company/available`,
+    searchForm: [
+      { type: 'input', id: 'keyword', label: "公司代码/公司名称", defaultValue: '' },
+    ],
+    columns: [
+      { title: "公司代码", dataIndex: 'companyCode' },
+      { title: "公司名称", dataIndex: 'name' },
+      { title: "描述", dataIndex: 'description' }
+    ],
+    key: 'id'
+  },
+  'select_authorization_user': {
+    title: '选择员工',
+    url: `${config.baseUrl}/api/DepartmentGroup/get/users/by/department/and/company`,
+    searchForm: [
+      { type: 'input', id: 'companyId', label: '公司', defaultValue: ''},
+      { type: 'input', id: 'departmentId', label: '部门', defaultValue: ''}
+    ],
+    columns: [
+      { title: '用户代码', dataIndex: 'userCode', width: '25%' },
+      { title: '姓名', dataIndex: 'userName', width: '25%' }
+    ],
+    key: 'userOID'
+  },
   'year': {
     title: '年度',
     url: `${config.baseUrl}/api/periods/select/years/by/setOfBooksId`,
@@ -506,7 +546,7 @@ const selectorData = {
       {title: '工号', dataIndex: 'userId'},
       {title: '姓名', dataIndex: 'userName'},
     ],
-    key: 'employeeId'
+    key: 'userId'
   },
 };
 

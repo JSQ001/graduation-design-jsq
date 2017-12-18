@@ -16,16 +16,16 @@ class AccountPeriodControl extends React.Component {
     this.state = {
       loading: false,
       searchForm: [
-        {type: 'input', id: 'sobCode', label: formatMessage({id: 'account-period-control.sobCode'})}, //账套代码
-        {type: 'input', id: 'sobName', label: formatMessage({id: 'account-period-control.sobName'})} //账套名称
+        {type: 'input', id: 'sobCode', label: formatMessage({id: 'account.period.control.sobCode'})}, //账套代码
+        {type: 'input', id: 'sobName', label: formatMessage({id: 'account.period.control.sobName'})} //账套名称
       ],
       searchParams: {},
       columns: [
-        {title: formatMessage({id: 'account-period-control.sobCode'}), key: "setOfBooksCode", dataIndex: "setOfBooksCode"}, //账套代码
-        {title: formatMessage({id: 'account-period-control.sobName'}), key: "setOfBooksName", dataIndex: 'setOfBooksName'}, //账套名称
-        {title: formatMessage({id: 'account-period-control.periodSetCode'}), key: "periodSetCode", dataIndex: 'periodSetCode'}, //会计期代码
-        {title: formatMessage({id: 'account-period-control.currencyCode'}), key: "functionalCurrencyCode", dataIndex: 'functionalCurrencyCode'}, //本位币
-        {title: formatMessage({id: 'account-period-control.accountSetCode'}), key: "accountSetCode", dataIndex: 'accountSetCode'}, //科目表
+        {title: formatMessage({id: 'account.period.control.sobCode'}), key: "setOfBooksCode", dataIndex: "setOfBooksCode"}, //账套代码
+        {title: formatMessage({id: 'account.period.control.sobName'}), key: "setOfBooksName", dataIndex: 'setOfBooksName'}, //账套名称
+        {title: formatMessage({id: 'account.period.control.periodSetCode'}), key: "periodSetCode", dataIndex: 'periodSetCode'}, //会计期代码
+        {title: formatMessage({id: 'account.period.control.currencyCode'}), key: "functionalCurrencyCode", dataIndex: 'functionalCurrencyCode'}, //本位币
+        {title: formatMessage({id: 'account.period.control.accountSetCode'}), key: "accountSetCode", dataIndex: 'accountSetCode'}, //科目表
         {title: formatMessage({id: 'common.column.status'}), key: "enabled", dataIndex: 'enabled',width: '10%',  //状态
           render: isEnabled => <Badge status={isEnabled ? 'success' : 'error'}
                                       text={isEnabled ? formatMessage({id: 'common.status.enable'}) : formatMessage({id: 'common.status.disable'})} />},
@@ -108,8 +108,8 @@ class AccountPeriodControl extends React.Component {
   handleRowClick = (record) => {
     if (!record.enabled) {
       Modal.info({
-        title: this.props.intl.formatMessage({id: 'account-period-control.disabled.info.title'}),  //该账套被禁用
-        content: this.props.intl.formatMessage({id: 'account-period-control.disabled.info.content'}),  //禁用的账套无法打开或关闭会计期间
+        title: this.props.intl.formatMessage({id: 'account.period.control.disabled.info.title'}),  //该账套被禁用
+        content: this.props.intl.formatMessage({id: 'account.period.control.disabled.info.content'}),  //禁用的账套无法打开或关闭会计期间
         maskClosable: true
       });
       return
@@ -122,7 +122,7 @@ class AccountPeriodControl extends React.Component {
     const { loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="account-period-control">
-        <h3 className="header-title">{formatMessage({id: 'account-period-control.title'})/* 账套级会计期间控制 */}</h3>
+        <h3 className="header-title">{formatMessage({id: 'account.period.control.title'})/* 账套级会计期间控制 */}</h3>
         <SearchArea
           searchForm={searchForm}
           submitHandle={this.search}
@@ -135,7 +135,9 @@ class AccountPeriodControl extends React.Component {
                pagination={pagination}
                loading={loading}
                rowKey={record => record.setOfBooksCode}
-               onRowClick={this.handleRowClick}
+               onRow={record => ({
+                 onClick: () => this.handleRowClick(record)
+               })}
                bordered
                size="middle"/>
       </div>

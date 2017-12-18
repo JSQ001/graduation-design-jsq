@@ -63,7 +63,7 @@ class NewBudgetJournalFrom extends React.Component {
       httpFetch.get(item.url).then((response)=>{
         if(item.type === "chooser"){
           defaultValueList[item.defaultValueKey]=response.data;
-          this.props.from.setFieldsValue(
+            this.props.form.setFieldsValue(
             defaultValueList
           )
         }
@@ -413,8 +413,6 @@ class NewBudgetJournalFrom extends React.Component {
                     }],
                     valuePropsName:"value",
                     initialValue:this.state.defaultValueList["scenarioName"],
-
-
                   })(
                     <Chooser
                       type='budget_scenarios'

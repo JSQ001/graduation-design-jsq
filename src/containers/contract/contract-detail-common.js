@@ -137,7 +137,7 @@ class ContractDetailCommon extends React.Component {
     return (
       <Row className="list-info">
         <Col span={6}>{title}：</Col>
-        <Col className="content" span={18}>{value}</Col>
+        <Col className="content" span={17}>{value}</Col>
       </Row>
     )
   };
@@ -367,7 +367,7 @@ class ContractDetailCommon extends React.Component {
             return (
               <div key={index}>
                 <Icon type="paper-clip" style={{marginRight:5}}/>
-                <a href={url} target="_blank">{url}</a>
+                <a href={`${config.contractUrl}${url}`} target="_blank">{url}</a>
               </div>
             )
           })}

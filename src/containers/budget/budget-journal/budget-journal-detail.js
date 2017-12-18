@@ -500,10 +500,12 @@ class BudgetJournalDetail extends React.Component {
       } else if (item.type === 'list' ){
           let result = [];
           let  itemData ={}
-          itemData[item.labelKey]=values[item.columnLabel];
-          itemData[item.valueKey]=values[item.columnValue];
-          itemData["key"]=values[item.columnValue];
-          result.push(itemData);
+          if(values[item.columnValue]){
+            itemData[item.labelKey]=values[item.columnLabel];
+            itemData[item.valueKey]=values[item.columnValue];
+            itemData["key"]=values[item.columnValue];
+            result.push(itemData);
+          }
           valuesData[item.id] = result;
         } else if (item.type === 'input' || item.type === 'inputNumber'){
           valuesData[item.id] = values[item.valueKey];
