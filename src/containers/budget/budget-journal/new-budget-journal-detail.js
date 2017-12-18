@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import { Button,Form,Row,Col,Input,Select,InputNumber} from 'antd'
+import { Button,Form,Row,Col,Input,Select,InputNumber,message} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -211,7 +211,7 @@ class NewBudgetJournalDetail extends React.Component {
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee',  label:"员工",
+      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budget.employeeId"}),
         labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
         listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
@@ -274,6 +274,7 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //获取维度表单,
       if(nextProps.params.structureId  && this.state.structureIdFlag ){
+        console.log(nextProps.params.structureId);
         this.setState({
           structureIdFlag:false,
         },()=>{
@@ -300,7 +301,7 @@ class NewBudgetJournalDetail extends React.Component {
             this.props.form.setFieldsValue(result);
           }else {
             this.props.form.resetFields();
-          }ww
+          }
         });
       }
     }
@@ -416,9 +417,11 @@ class NewBudgetJournalDetail extends React.Component {
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
           >
-            {item.options.map((option)=>{
-              return <Option  key={option.value} lable={option.lable} value={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
-            })}
+            {
+              item.options.map((option)=>{
+                return <Option  key={option.value} lable={option.lable} value={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              })
+            }
           </Select>
         )
       }
@@ -602,14 +605,12 @@ class NewBudgetJournalDetail extends React.Component {
     })
   };
 
-
-
   //根据预算表id，获得维度
   getDimensionByStructureId = () =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp) => {
       this.getSearchForm(resp.data);
-    }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
+    }).catch((e)=>{
+      message.error(`${ this.props.intl.formatMessage({id: 'budget.getDimensionFail'})}`)
     })
   };
 

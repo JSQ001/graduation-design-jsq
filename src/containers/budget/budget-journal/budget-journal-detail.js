@@ -335,7 +335,7 @@ class BudgetJournalDetail extends React.Component {
       //编制期段
       const period = headerData.periodStrategy;
       const periodStrategy={
-        "label":period=="YEAR"?"年":(period=="QUARTER"?"季度":"月"),
+        "label":period=="YEAR"?this.props.intl.formatMessage({id:'budget.year'}):(period=="QUARTER"?this.props.intl.formatMessage({id:'budget.quarter'}):this.props.intl.formatMessage({id:'budget.month'})),
         "value":period
       }
 
@@ -400,7 +400,7 @@ class BudgetJournalDetail extends React.Component {
   handleSaveJournal(){
     let headerAndListData = this.state.headerAndListData;
     httpFetch.post(`${config.budgetUrl}/api/budget/journals`,headerAndListData).then((req) => {
-      message.success("预算日记账头编辑成功");
+      message.success(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
       this.getDataByBudgetJournalCode();
     }).catch((e)=>{
       message.error(e.response.data.message)
@@ -444,7 +444,7 @@ class BudgetJournalDetail extends React.Component {
       let data = value;
       data.journalHeaderId = this.state.headerAndListData.dto.id;
       httpFetch.post(`${config.budgetUrl}/api/budget/journals/insertOrUpdateLine`,data).then((req) => {
-        message.success("预算日记账行保存成功");
+        message.success(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
         this.getDataByBudgetJournalCode();
       }).catch((e)=>{
         message.error(e.response.data.message)
@@ -456,12 +456,12 @@ class BudgetJournalDetail extends React.Component {
   handleDeleteJournal=()=> {
     const id = this.state.headerAndListData.dto.id;
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/${id}`).then((req) => {
-      message.success("成功删除该预算日记账");
+      message.success(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
       //删除完该预算日记账，跳转
       let path=this.state.budgetJournalPage.url;
       this.context.router.push(path);
     }).catch((e) => {
-      message.error("失败")
+      message.error(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
     })
   }
 
@@ -472,7 +472,7 @@ class BudgetJournalDetail extends React.Component {
     if(this.state.commitFlag) {
        let header =this.state. headerAndListData.dto;
         httpFetch.post(`${config.budgetUrl}/api/budget/journals/submitJournal/${header.id}`).then((res)=>{
-          message.success("提交成功");
+          message.success(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
             this.setState({
             listData:[],
           })
@@ -483,8 +483,8 @@ class BudgetJournalDetail extends React.Component {
         })
     }else {
       notification.open({
-        message: '行信息不能为空！',
-        description: '请添加或导入预算日记账行信息',
+        message:this.props.intl.formatMessage({id:"budget.notEmpty"}),
+        description:this.props.intl.formatMessage({id:"budget.andOrLead"}),
         icon: <Icon type="frown-circle" style={{ color: '#e93652' }} />,
       });
     }
@@ -555,18 +555,18 @@ class BudgetJournalDetail extends React.Component {
                      updateState={updateState}/>
 
           <div className="table-header">
-            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/已经选择了{this.state.selectedRowKeys.length}条数据</div>
+            <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.data.length}`})}/{this.props.intl.formatMessage({id:'common.total'},{total:`${this.state.selectedRowKeys.length}`})}</div>
             <div className="table-header-buttons">
               <Button type="primary" onClick={this.showSlideFrameNewData}>{this.props.intl.formatMessage({id:"common.add"})}</Button>
               <Importer
                 templateUrl={templateUrl}
                 uploadUrl={uploadUrl}
                 errorUrl={errorUrl}
-                title="导入"
-                fileName="预算日记账导入"
+                title={this.props.intl.formatMessage({id:'budget.leading'})}
+                fileName={this.props.intl.formatMessage({id:'budget.budget.leading'})}
                 onOk={this.onLoadOk}
               />
-              <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteLine} okText="确定" cancelText="取消">
+              <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:'common.delete'})} onConfirm={this.handleDeleteLine} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
                 <Button className="delete"    disabled={this.state.selectedRowKeys.length === 0} >{this.props.intl.formatMessage({id:"common.delete"}) }</Button>
               </Popconfirm>
             </div>
@@ -586,7 +586,7 @@ class BudgetJournalDetail extends React.Component {
 
         </div>
 
-        <SlideFrame title={"预算日记账"}
+        <SlideFrame title={this.props.intl.formatMessage({id:'budget.journal'})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetJournalDetail}
                     afterClose={this.handleAfterCloseNewSlide}
@@ -596,13 +596,13 @@ class BudgetJournalDetail extends React.Component {
         <Affix offsetBottom={0}
                style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
                  boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-          <Popconfirm style={{width:200}} placement="topLeft" title={"确认提交"} onConfirm={this.handlePut} okText="确定" cancelText="取消">
-            <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>提交</Button>
+          <Popconfirm style={{width:200}} placement="topLeft" title={this.props.intl.formatMessage({id:'budget.commit'})} onConfirm={this.handlePut} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
+            <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>{this.props.intl.formatMessage({id:'budget.commit'})}</Button>
           </Popconfirm>
-          <Popconfirm placement="topLeft" title={"确认删除"} onConfirm={this.handleDeleteJournal} okText="确定" cancelText="取消">
+          <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budget.delete.journal"})} onConfirm={this.handleDeleteJournal} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
             <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
           </Popconfirm>
-          <Button onClick={this.handleReturn}>返回</Button>
+          <Button onClick={this.handleReturn}>{this.props.intl.formatMessage({id:"budget.return"})}</Button>
         </Affix>
       </div>
     )
