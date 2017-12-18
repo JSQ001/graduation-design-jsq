@@ -2,8 +2,7 @@
   "budget.organization.name": "Organization name",
   "budget.organization": "Budget organization",
   "budget.organization.code": "Organization Code",
-  "budget.set.of.books": "Set of books",
-  "budget.are.you.sure.to.delete.organization": "Are you sure to delete {organizationName} ?",
-  "budget.edit.organization": "Edit organization",
-  "budget.new.info": "The set of books can contain only one enabled organization code,the rental contains' organization code cannot be repeated and cannot be modified after saving."
+  "budget.organization.set.of.books": "Set of books",
+  "budget.organization.edit": "Edit organization",
+  "budget.organization.new.info": "The set of books can contain only one enabled organization code,the rental contains' organization code cannot be repeated and cannot be modified after saving."
 }
