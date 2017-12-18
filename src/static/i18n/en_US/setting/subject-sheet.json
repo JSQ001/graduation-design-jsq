@@ -1,4 +1,6 @@
 {
     "subject.sheet.code": "科目表代码",
-    "subject.sheet.describe": "科目表名称"
+    "subject.sheet.describe": "科目表名称",
+    "supplier.type.code": "供应商代码",
+    "supplier.type.name": "供应商名称"
 }
