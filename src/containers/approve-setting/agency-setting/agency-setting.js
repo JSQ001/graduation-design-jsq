@@ -16,15 +16,15 @@ class AgencySetting extends React.Component {
     this.state = {
       loading: true,
       columns: [
-        {title: formatMessage({id:"agencySetting.serial-number"}), dataIndex: 'serialNumber', width: '10%', render: (text, record, index) => (
+        {title: formatMessage({id:"agency.setting.serial-number"}), dataIndex: 'serialNumber', width: '10%', render: (text, record, index) => (
           <span>{this.state.pageSize * this.state.page + index + 1}</span>
         )},  //序号
-        {title: formatMessage({id:"agencySetting.employeeId"}), dataIndex: 'emplyeeId'},  //工号
-        {title: formatMessage({id:"agencySetting.userName"}), dataIndex: 'userName', render: (name, record) => {
+        {title: formatMessage({id:"agency.setting.employeeId"}), dataIndex: 'emplyeeId'},  //工号
+        {title: formatMessage({id:"agency.setting.userName"}), dataIndex: 'userName', render: (name, record) => {
           return record.status == 1003 ? <div><span style={{color:'#108EE9'}}>离职</span> - {name}</div>  : name; //record.status:1003 已离职
         }},  //姓名
-        {title: formatMessage({id:"agencySetting.departmentName"}), dataIndex: 'departmentName'},  //部门
-        {title: formatMessage({id:"agencySetting.dutyName"}), dataIndex: 'dutyName'},  //职务
+        {title: formatMessage({id:"agency.setting.departmentName"}), dataIndex: 'departmentName'},  //部门
+        {title: formatMessage({id:"agency.setting.dutyName"}), dataIndex: 'dutyName'},  //职务
         {title: formatMessage({id:"common.column.status"}), dataIndex: 'enabled', width: '10%', render: isEnabled => (
           <Badge status={isEnabled ? 'success' : 'error'}
                  text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
@@ -100,13 +100,13 @@ class AgencySetting extends React.Component {
     const { loading, columns, data, pagination } = this.state;
     return (
       <div className="agency-setting">
-        <h3 className="header-title">{formatMessage({id:'agencySetting.principal'})}</h3>{/*被代理人*/}
+        <h3 className="header-title">{formatMessage({id:'agency.setting.principal'})}</h3>{/*被代理人*/}
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total})}</div> {/* 共total条数据 */}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.newAgency}>{formatMessage({id:"agencySetting.create-agency"})}</Button> {/* 新建代理关系 */}
+            <Button type="primary" onClick={this.newAgency}>{formatMessage({id:"agency.setting.create-agency"})}</Button> {/* 新建代理关系 */}
             <Search
-              placeholder={formatMessage({id: 'agencySetting.search.hint'})/* 请输入姓名/工号 */}
+              placeholder={formatMessage({id: 'agency.setting.search.hint'})/* 请输入姓名/工号 */}
               style={{ width:200,position:'absolute',right:0,bottom:0 }}
               onChange={(e) => this.handleSearch(e.target.value)}
             />
