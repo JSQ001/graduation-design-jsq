@@ -17,28 +17,28 @@ class FinanceView extends React.Component{
       loading: false,
       exportLoading: false,
       searchForm: [
-        {type: 'combobox', id: 'userOID', label: formatMessage({id: 'financeView.search.application'}),
-          placeholder: formatMessage({id: 'common.please.enter'}) + formatMessage({id: 'financeView.search.application'}),
+        {type: 'combobox', id: 'userOID', label: formatMessage({id: 'finance.view.search.application'}),
+          placeholder: formatMessage({id: 'common.please.enter'}) + formatMessage({id: 'finance.view.search.application'}),
           options: [], searchUrl: `${config.baseUrl}/api/search/users/all`,
           method: 'get', searchKey: 'keyword', labelKey: 'fullName', valueKey: 'userOID'}, //申请人姓名/工号
-        {type: 'combobox', id: 'businessCode', label: formatMessage({id: 'financeView.search.businessCode'}),
-          placeholder: formatMessage({id: 'common.please.enter'}) + formatMessage({id: 'financeView.search.businessCode'}),
+        {type: 'combobox', id: 'businessCode', label: formatMessage({id: 'finance.view.search.businessCode'}),
+          placeholder: formatMessage({id: 'common.please.enter'}) + formatMessage({id: 'finance.view.search.businessCode'}),
           options: [], searchUrl: `${config.baseUrl}/api/expense/report/loanApplication/search`, method: 'get',
           searchKey: 'keyword', getParams: {type: '10021008'}, labelKey: '_self', valueKey: '_self'}, //父单/子单/借款单号
         {type: 'items', id: 'dateRange', items: [
-          {type: 'date', id: 'beginDate', label: formatMessage({id: 'financeView.search.dateFrom'})}, //提交日期从
-          {type: 'date', id: 'endDate', label: formatMessage({id: 'financeView.search.dateTo'})} //提交日期至
+          {type: 'date', id: 'beginDate', label: formatMessage({id: 'finance.view.search.dateFrom'})}, //提交日期从
+          {type: 'date', id: 'endDate', label: formatMessage({id: 'finance.view.search.dateTo'})} //提交日期至
         ]},
         {type: 'checkbox', id: 'status', label: formatMessage({id: 'common.column.status'}), colSpan: 24, options: [ //状态
-          {label: formatMessage({id: 'financeView.search.submitted'}), value: 'submitted'}, //审批中
-          {label: formatMessage({id: 'financeView.search.pass'}), value: 'approval_pass'},  //已通过
-          {label: formatMessage({id: 'financeView.search.reject'}), value: 'approval_reject'}, //已驳回
-          {label: formatMessage({id: 'financeView.search.auditPass'}), value: 'audit_pass'}, //审核通过
-          {label: formatMessage({id: 'financeView.search.auditReject'}), value: 'audit_reject'}, //审核驳回
-          {label: formatMessage({id: 'financeView.search.paying'}), value: 'payment_in_process'}, //付款中
-          {label: formatMessage({id: 'financeView.search.payed'}), value: 'finance_loan'}, //已付款
-          {label: formatMessage({id: 'financeView.search.refund'}), value: 'paid_in_process'}, //还款中
-          {label: formatMessage({id: 'financeView.search.chargeOff'}), value: 'paid_finish'}, //已核销
+          {label: formatMessage({id: 'finance.view.search.submitted'}), value: 'submitted'}, //审批中
+          {label: formatMessage({id: 'finance.view.search.pass'}), value: 'approval_pass'},  //已通过
+          {label: formatMessage({id: 'finance.view.search.reject'}), value: 'approval_reject'}, //已驳回
+          {label: formatMessage({id: 'finance.view.search.auditPass'}), value: 'audit_pass'}, //审核通过
+          {label: formatMessage({id: 'finance.view.search.auditReject'}), value: 'audit_reject'}, //审核驳回
+          {label: formatMessage({id: 'finance.view.search.paying'}), value: 'payment_in_process'}, //付款中
+          {label: formatMessage({id: 'finance.view.search.payed'}), value: 'finance_loan'}, //已付款
+          {label: formatMessage({id: 'finance.view.search.refund'}), value: 'paid_in_process'}, //还款中
+          {label: formatMessage({id: 'finance.view.search.chargeOff'}), value: 'paid_finish'}, //已核销
         ]},
       ],
       checkboxListForm: [

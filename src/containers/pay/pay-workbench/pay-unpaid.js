@@ -23,18 +23,18 @@ class PayUnpaid extends React.Component {
       editCellError: false,
       searchParams: {},
       searchForm: [
-        {type: 'input', id: 'documentNumber', label: formatMessage({id: "payWorkbench.receiptNumber"})}, //单据编号
-        {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "payWorkbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
-        {type: 'select', id: 'employeeId', label: formatMessage({id: "payWorkbench.applicant"}), options: []}, //申请人
+        {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
+        {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
+        {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
         {type: 'items', id: 'dateRange', items: [
-          {type: 'date', id: 'requisitionDateFrom', label: formatMessage({id: "payWorkbench.dateFrom"})}, //申请日期从
-          {type: 'date', id: 'requisitionDateTo', label: formatMessage({id: "payWorkbench.dateTo"})} //申请日期至
+          {type: 'date', id: 'requisitionDateFrom', label: formatMessage({id: "pay.workbench.dateFrom"})}, //申请日期从
+          {type: 'date', id: 'requisitionDateTo', label: formatMessage({id: "pay.workbench.dateTo"})} //申请日期至
         ]},
         {type: 'items', id: 'amountRange', items: [
-          {type: 'input', id: 'amountFrom', label: formatMessage({id: "payWorkbench.mountFrom"})}, //总金额从
-          {type: 'input', id: 'amountTo', label: formatMessage({id: "payWorkbench.mountTo"})} //总金额至
+          {type: 'input', id: 'amountFrom', label: formatMessage({id: "pay.workbench.mountFrom"})}, //总金额从
+          {type: 'input', id: 'amountTo', label: formatMessage({id: "pay.workbench.mountTo"})} //总金额至
         ]},
-        {type: 'items', id: 'partner', label: formatMessage({id: "payWorkbench.payee"}), items: [
+        {type: 'items', id: 'partner', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
           {type: 'select', id: 'partnerId', label: '收款方', options: []}  //收款方
         ]}
@@ -76,7 +76,7 @@ class PayUnpaid extends React.Component {
           return (
             <EditableCell type="number"
                           value={value}
-                          message={formatMessage({id: "payWorkbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
+                          message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
                           onChangeError={this.state.editCellError}
                           onChange={(editValue) => this.editCurrentPay(editValue, record)} />
           )}
@@ -93,7 +93,7 @@ class PayUnpaid extends React.Component {
         },
         {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
           <EditableCell value={account}
-                        message={formatMessage({id: "payWorkbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
+                        message={formatMessage({id: "pay.workbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
@@ -122,7 +122,7 @@ class PayUnpaid extends React.Component {
       offlinePagination: { total: 0 },
       offlineData: [],
       offlineCash: [],                //总金额
-      offlineModalVisible: true,
+      offlineModalVisible: false,
 
       /* 落地文件 */
       fileLoading: false,
@@ -500,7 +500,7 @@ class PayUnpaid extends React.Component {
     };
     const tableTitle = (
       <div>
-        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {this.props.intl.formatMessage({id:"pay.workbench.Unpaid"})}
         {onlineCash.length > 0 && <span className="ant-divider"/>}
         {onlineCash.map((item, index) => {
           return (
@@ -547,7 +547,7 @@ class PayUnpaid extends React.Component {
     };
     const tableTitle = (
       <div>
-        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {this.props.intl.formatMessage({id:"pay.workbench.Unpaid"})}
         {offlineCash.length > 0 && <span className="ant-divider"/>}
         {offlineCash.map((item, index) => {
           return (
@@ -594,7 +594,7 @@ class PayUnpaid extends React.Component {
     };
     const tableTitle = (
       <div>
-        {this.props.intl.formatMessage({id:"payWorkbench.Unpaid"})}
+        {this.props.intl.formatMessage({id:"pay.workbench.Unpaid"})}
         {fileCash.length > 0 && <span className="ant-divider"/>}
         {fileCash.map((item, index) => {
           return (
@@ -656,7 +656,7 @@ class PayUnpaid extends React.Component {
                 style={{marginBottom:10, display:'block'}}
                 disabled={buttonDisabled}
                 onClick={this.handlePayModal}>
-          {radioValue === 'online' && this.props.intl.formatMessage({id:"payWorkbench.payOnline"}/*线上支付*/)}
+          {radioValue === 'online' && this.props.intl.formatMessage({id:"pay.workbench.payOnline"}/*线上支付*/)}
           {radioValue === 'offline' && '线下支付'}
           {radioValue === 'file' && '落地文件支付'}
         </Button>
@@ -667,6 +667,7 @@ class PayUnpaid extends React.Component {
         {radioValue === 'file' && this.renderFileContent()}
         <Modal title="线上支付确认"
                visible={onlineModalVisible}
+               okText="确认支付"
                onOk={this.handleOnlineModalOk}
                onCancel={() => this.setState({ onlineModalVisible: false })}>
           <Form>
@@ -722,6 +723,7 @@ class PayUnpaid extends React.Component {
         </Modal>
         <Modal title="线下支付确认"
                visible={offlineModalVisible}
+               okText="确认支付"
                onOk={this.handleOfflineModalOk}
                onCancel={() => this.setState({ offlineModalVisible: false })}>
           <Form>
@@ -787,10 +789,12 @@ class PayUnpaid extends React.Component {
         </Modal>
         <Modal title="落地文件支付"
                visible={fileModalVisible}
+               okText="导出报盘文件"
                onOk={this.handleFileModalOk}
                onCancel={() => this.setState({ fileModalVisible: false })}>
           <Form>
-            <FormItem  {...formItemLayout} label="付款账户">
+            <div style={{marginBottom:15}}>01. 选择付款账号</div>
+            <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
               {getFieldDecorator('payAccount', {
                 rules: [{
                   required: true,
@@ -801,7 +805,7 @@ class PayUnpaid extends React.Component {
                 </Select>
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="币种">
+            <FormItem  {...formItemLayout} label="币种" style={{marginBottom:15}}>
               {getFieldDecorator('currency', {
                 rules: [{
                   required: true
@@ -811,7 +815,15 @@ class PayUnpaid extends React.Component {
                 <Input disabled />
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="付款方式">
+            <FormItem  {...formItemLayout} label="汇率" style={{marginBottom:15}}>
+              {getFieldDecorator('rate', {
+                initialValue: ''
+              })(
+                <Input disabled />
+              )}
+            </FormItem>
+            <div style={{marginBottom:15}}>02. 选择付款方式</div>
+            <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
               {getFieldDecorator('payWay', {
                 rules: [{
                   required: true,
@@ -824,19 +836,18 @@ class PayUnpaid extends React.Component {
                 </Select>
               )}
             </FormItem>
-            <FormItem  {...formItemLayout} label="汇率">
-              {getFieldDecorator('rate', {
-                initialValue: ''
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="备注">
+            <FormItem {...formItemLayout} label="备注" style={{marginBottom:15}}>
               {getFieldDecorator('description', {
                 initialValue: ''
               })(
                 <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
               )}
+            </FormItem>
+            <div style={{marginBottom:15}}>03. 点击下方【导出报盘文件】按钮</div>
+            <FormItem  {...formItemLayout} style={{marginBottom:15}}>
+              <div>1.导出报盘文件后，单据状态变为【支付中】</div>
+              <div>2.可通过报盘文件，在网银中进行支付</div>
+              <div>3.支付成功后，在【等待付款结果】标签下确认支付状态</div>
             </FormItem>
           </Form>
         </Modal>

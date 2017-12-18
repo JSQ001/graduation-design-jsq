@@ -111,15 +111,15 @@ class NewAgency extends React.Component {
     const options = data.map(d => <Option key={JSON.stringify(d)}>{d.text}</Option>);
     return (
       <div className="new-agency">
-        <h3 className="header-title">{formatMessage({id:'agencySetting.chose-principal'})}</h3>{/*请选择被代理人*/}
+        <h3 className="header-title">{formatMessage({id:'agency.setting.chose-principal'})}</h3>{/*请选择被代理人*/}
         <Form onSubmit={this.handleSave}>
           <FormItem colon={false}
                     hasFeedback
                     validateStatus={principalValidateStatus}
                     help={principalHelp}
                     style={{width:'300px'}}
-                    label={<span>{formatMessage({id:'agencySetting.principal'})} :
-                      <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span></span>
+                    label={<span>{formatMessage({id:'agency.setting.principal'})} :
+                      <span style={{color:'#999'}}>{formatMessage({id:'agency.setting.principal-explain'})}</span></span>
                     }>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
             {getFieldDecorator('principalInfo', {
               rules: [{

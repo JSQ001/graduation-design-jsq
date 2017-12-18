@@ -174,8 +174,8 @@ class AgencyDetail extends React.Component {
                   validateStatus={principalValidateStatus}
                   help={principalHelp}
                   style={{width:'300px'}}
-                  label={<span>{formatMessage({id:'agencySetting.principal'})} :
-                    <span style={{color:'#999'}}>{formatMessage({id:'agencySetting.principal-explain'})}</span>
+                  label={<span>{formatMessage({id:'agency.setting.principal'})} :
+                    <span style={{color:'#999'}}>{formatMessage({id:'agency.setting.principal-explain'})}</span>
                   </span>}>{/*被代理人：需要他人帮助其填写、提交相应单据的人*/}
           {getFieldDecorator(`principalObj-${principalEditNum}`, {
             rules: [{
@@ -217,7 +217,7 @@ class AgencyDetail extends React.Component {
     if(principalInfo.status === 1003) {
       alertMessage = (
         <Alert message="请注意"
-               description={formatMessage({id: 'agencySetting.dimission-info'},
+               description={formatMessage({id: 'agency.setting.dimission-info'},
                  {name: principalInfo.userName, emplyeeId: principalInfo.emplyeeId, date: moment(principalInfo.leavingDate).format("YYYY-MM-DD")})}
                type="warning"
                showIcon
@@ -229,7 +229,7 @@ class AgencyDetail extends React.Component {
     return (
       <div className="agency-detail">
         {alertMessage}
-        <h3 className="header-title">{formatMessage({id:'agencySetting.principal'})}</h3>{/*被代理人*/}
+        <h3 className="header-title">{formatMessage({id:'agency.setting.principal'})}</h3>{/*被代理人*/}
         <Form onSubmit={this.handleSave}>
           {principalItem}
           {saveBtn}

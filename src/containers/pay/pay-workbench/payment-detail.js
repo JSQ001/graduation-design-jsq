@@ -81,7 +81,7 @@ class PaymentDetail extends React.Component {
     return (
       <div className="payment-detail">
         <Alert message={<Badge text="支付成功" status='success'/>} type="info" className="top-result" />
-        <h3 className="header-title">{formatMessage({id:"paymentDetail.bills"})}</h3>
+        <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.bills"})}</h3>
         <Table rowKey="id"
                columns={billsColumns}
                dataSource={data}
@@ -89,7 +89,7 @@ class PaymentDetail extends React.Component {
                pagination={false}
                bordered
                size="middle"/>
-        <h3 className="header-title">{formatMessage({id:"paymentDetail.detail"})}</h3>
+        <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.detail"})}</h3>
         <Table rowKey="id"
                columns={detailColumns}
                dataSource={data}
@@ -113,7 +113,7 @@ class PaymentDetail extends React.Component {
           <Card.Grid style={gridLeftStyle}>收方信息：</Card.Grid>
           <Card.Grid style={gridRightStyle}>Content</Card.Grid>
         </Card>
-        <h3 className="header-title">{formatMessage({id:"paymentDetail.finance"})}</h3>
+        <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.finance"})}</h3>
         <Table rowKey="id"
                columns={financeColumns}
                dataSource={data}
@@ -121,7 +121,7 @@ class PaymentDetail extends React.Component {
                pagination={false}
                bordered
                size="middle"/>
-        <h3 className="header-title">{formatMessage({id:"paymentDetail.log"})}</h3>
+        <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.log"})}</h3>
         <Table rowKey="id"
                columns={logColumns}
                dataSource={logData}
