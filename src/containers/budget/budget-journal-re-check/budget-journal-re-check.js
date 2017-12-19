@@ -31,7 +31,7 @@ class BudgetJournalReCheck extends React.Component {
         {type: 'input', id: 'journalCode',
           label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
         },
-        {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
+        {type: 'select', id:'journalTypeId', label: this.props.intl.formatMessage({id:"budget.journalTypeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
@@ -88,7 +88,7 @@ class BudgetJournalReCheck extends React.Component {
             </Popover>)
         },
         {          /*申请人*/
-          title: "申请人", key: "employeeName", dataIndex: 'employeeName',
+          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -96,7 +96,7 @@ class BudgetJournalReCheck extends React.Component {
         },
         {
           /*创建时间*/
-          title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
+          title: this.props.intl.formatMessage({id:"budget.createdDate"}), key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
             <Popover content={recode}>
               {String(recode).substring(0,10)}
