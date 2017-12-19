@@ -31,13 +31,13 @@ class AnnouncementInformation extends React.Component{
       },
       columns: [
         {          /*序号*/
-          title: formatMessage({id:"announcement-info.number"}), key: "number", dataIndex: 'number',width: '10%',
+          title: formatMessage({id:"announcement.info.number"}), key: "number", dataIndex: 'number',width: '10%',
         },
         {          /*新建日期*/
-          title: formatMessage({id:"announcement-info.createDate"}), key: "preferredDate", dataIndex: 'preferredDate'
+          title: formatMessage({id:"announcement.info.createDate"}), key: "preferredDate", dataIndex: 'preferredDate'
         },
         {          /*标题*/
-          title: formatMessage({id:"announcement-info.title"}), key: "title", dataIndex: 'title'
+          title: formatMessage({id:"announcement.info.title"}), key: "title", dataIndex: 'title'
         },
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'enable',
@@ -55,7 +55,7 @@ class AnnouncementInformation extends React.Component{
       ],
       selectedEntityOIDs: [],    //已选择的列表项的OIDs
       selectorItem:{
-        title: `${formatMessage({id: "announcement-info.deliveryCompany"})}`,
+        title: `${formatMessage({id: "announcement.info.deliveryCompany"})}`,
         url: `${config.baseUrl}/api/company/deploy/carousel`,
         searchForm: [
           {type: 'select', id: 'companyLevelId', label: formatMessage({id:"company.companyLevelName"}),defaultValue: '',options: [], getUrl: `${config.baseUrl}/api/companyLevel/selectByTenantId`},
@@ -76,7 +76,6 @@ class AnnouncementInformation extends React.Component{
   }
 
   deleteItem = (e, record) => {
-    console.log(record)
     httpFetch.delete(`${config.baseUrl}/api/carousels/${record.carouselOID}`).then(response => {
       message.success(this.props.intl.formatMessage({id:"common.delete.success"}, {name: record.title})); // name删除成功
       this.getList();
@@ -89,7 +88,6 @@ class AnnouncementInformation extends React.Component{
 
   getList(){
     httpFetch.get(`${config.baseUrl}/api/carousels/enable/company?roleType=TENANT&companyOID=${this.props.company.companyOID}`).then((response)=>{
-      console.log(response)
       let i = 1;
       response.data.map((item)=>{
         item.key = item.id;
@@ -114,7 +112,6 @@ class AnnouncementInformation extends React.Component{
 
   //处理公司弹框点击ok
   handleListOk = (result) => {
-    console.log(result)
     this.showListSelector(false);
 
   };
@@ -211,10 +208,10 @@ class AnnouncementInformation extends React.Component{
       <div className="announcement-information">
         <div className="table-header">
           <span className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</span>  {/*共搜索到*条数据*/}
-          <span>&nbsp;/&nbsp;{this.props.intl.formatMessage({id:"announcement-info.selected"},{total:`${selectedEntityOIDs.length}`})}</span>
+          <span>&nbsp;/&nbsp;{this.props.intl.formatMessage({id:"announcement.info.selected"},{total:`${selectedEntityOIDs.length}`})}</span>
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
-            <Button disabled={batchCompany} onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'announcement-info.deliveryCompany'})}</Button>
+            <Button disabled={batchCompany} onClick={()=>this.showListSelector(true)}>{this.props.intl.formatMessage({id: 'announcement.info.deliveryCompany'})}</Button>
           </div>
         </div>
         <Table
