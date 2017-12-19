@@ -7,7 +7,7 @@ const dashboard = {
   key:'dashboard',
   url: menuIndexUrl,
   components: Dashboard,
-  icon: 'home'
+  icon: 'dashboard'
 };
 
 export default dashboard;
