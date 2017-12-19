@@ -115,7 +115,7 @@ class ListSelector extends React.Component {
         onChange: this.onChangePager,
         current: this.state.page + 1
       };
-      if(selectorItem.listKey !=='undefined'){
+      if(typeof selectorItem.listKey !=='undefined'){
         pagination.total = response.data[selectorItem.listKey].length
       }
       this.setState({

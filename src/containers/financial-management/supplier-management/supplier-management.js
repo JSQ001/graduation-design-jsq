@@ -8,8 +8,12 @@ import { Button, Table, Badge, notification, Popover  } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-
+import ListSelector from 'components/list-selector.js'
+import SlideFrame from 'components/slide-frame'
+import NewUpdateSupplier from 'containers/financial-management/supplier-management/new-update-supplier'
+import 'styles/financial-management/supplier-management/supplier-management.scss'
 import menuRoute from 'share/menuRoute'
+import Importer from 'components/template/importer'
 
 class SupplierManagement extends React.Component{
   constructor(props){
@@ -19,6 +23,12 @@ class SupplierManagement extends React.Component{
       loading: true,
       data: [],
       batchCompany: true,
+      selectedRowKeys:[],
+      slideFrame:{
+        title: '',
+        visible: false,
+        params: {}
+      },
       pagination: {
         current: 1,
         page: 0,
@@ -52,7 +62,7 @@ class SupplierManagement extends React.Component{
           title: formatMessage({id:"supplier.management.name"}), key: "supplierName", dataIndex: 'supplierName'
         },
         {          /*供应商类型*/
-          title: formatMessage({id:"supplier.management.type"}), key: "supplierName", dataIndex: 'supplierName'
+          title: formatMessage({id:"supplier.management.type"}), key: "supplierType", dataIndex: 'supplierType'
         },
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
@@ -60,7 +70,7 @@ class SupplierManagement extends React.Component{
             <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
         },
         {          /*更新日志*/
-          title: formatMessage({id:"supplier.management.updateLog"}), key: "supplierName", dataIndex: 'supplierName'
+          title: formatMessage({id:"supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog'
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
           <span>
@@ -76,7 +86,8 @@ class SupplierManagement extends React.Component{
             }
           </span>)
         },
-      ]
+      ],
+      selectedEntityOIDs: []    //已选择的列表项的OIDs
     }
   }
 
@@ -84,9 +95,118 @@ class SupplierManagement extends React.Component{
     console.log(values)
   };
 
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
+    })
+  };
+
+  //列表选择更改
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys });
+  };
+
+  //选择一行
+  //选择逻辑：每一项设置selected属性，如果为true则为选中
+  //同时维护selectedEntityOIDs列表，记录已选择的OID，并每次分页、选择的时候根据该列表来刷新选择项
+  onSelectRow = (record, selected) => {
+    let temp = this.state.selectedEntityOIDs;
+    if(selected)
+      temp.push(record.id);
+    else
+      temp.delete(record.id);
+    this.setState({
+      selectedEntityOIDs: temp,
+      batchCompany: temp.length>0 ? false : true
+    })
+  };
+
+  //全选
+  onSelectAllRow = (selected) => {
+    let temp = this.state.selectedEntityOIDs;
+    if(selected){
+      this.state.data.map(item => {
+        temp.addIfNotExist(item.id)
+      })
+    } else {
+      this.state.data.map(item => {
+        temp.delete(item.id)
+      })
+    }
+    this.setState({
+      selectedEntityOIDs: temp,
+      batchCompany: temp.length>0 ? false : true
+    })
+  };
+
+  //换页后根据OIDs刷新选择框
+  refreshRowSelection(){
+    let selectedRowKeys = [];
+    this.state.selectedEntityOIDs.map(selectedEntityOID => {
+      this.state.data.map((item, index) => {
+        if(item.id === selectedEntityOID)
+          selectedRowKeys.push(index);
+      })
+    });
+    this.setState({ selectedRowKeys });
+  }
+
+  //清空选择框
+  clearRowSelection(){
+    this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
+  }
+
+  //新建侧滑
+  handleCreate = ()=>{
+    let slideFrame = {
+      title: this.props.intl.formatMessage({id:"supplier.management.newSupplier"}),
+      visible: true,
+      params: {}
+    };
+    this.setState({
+      slideFrame
+    })
+  };
+
+  handleOnClose = () =>{
+    let slideFrame = {
+      title: "",
+      visible: false,
+      params: {}
+    };
+    this.setState({
+      slideFrame
+    })
+  };
+
+  handleAfterClose = (params) =>{
+    let slideFrame = {
+      title: "",
+      visible: false,
+      params: {}
+    };
+    this.setState({
+      slideFrame
+    })
+  };
+
   render(){
-    const { loading, searchForm, data, columns, pagination, batchCompany} = this.state;
+    const { loading, searchForm, data, columns, pagination, batchCompany, selectedRowKeys, slideFrame} = this.state;
     const { formatMessage } = this.props.intl;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+      onSelect: this.onSelectRow,
+      onSelectAll: this.onSelectAllRow
+    };
     return(
       <div className="supplier-management">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
@@ -97,6 +217,12 @@ class SupplierManagement extends React.Component{
           </div>  {/*共搜索到*个供应商，*个已停用*/}
           <div className="table-header-buttons">
             <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+            <Importer title={formatMessage({id:"supplier.management.upload"})}
+                      templateUrl={`${config.budgetUrl}/api/budget/items/export/template`}
+                      uploadUrl={`${config.budgetUrl}/api/budget/items/import`}
+                      errorUrl={`${config.budgetUrl}/api/budget/items/export/failed/data`}
+                      fileName={formatMessage({id:"item.itemUploadFile"})}
+                      onOk={this.handleImportOk}/>
             <Button onClick={()=>this.showListSelector(true)} disabled={batchCompany}>{formatMessage({id:"supplier.management.deliveryCompany"})}</Button>
           </div>
         </div>
@@ -107,6 +233,13 @@ class SupplierManagement extends React.Component{
             pagination={pagination}
             bordered
             size="middle"/>
+        <SlideFrame
+            title={slideFrame.title}
+            show={slideFrame.visible}
+            content={NewUpdateSupplier}
+            onClose={this.handleOnClose}
+            afterClose={this.handleAfterClose}
+            params={slideFrame.params}/>
       </div>)
   }
 }

@@ -189,9 +189,6 @@ class BudgetItemMap extends React.Component {
   getList(){
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
-    }
     httpFetch.get(url).then((response)=>{
       let paramsKey = this.state.paramsKey;
       response.data.map((item,index)=>{
