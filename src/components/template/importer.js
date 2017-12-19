@@ -127,7 +127,7 @@ class Importer extends React.Component {
       hide();
     }).catch(() => {
       hide();
-      message.error('错误信息下载失败，请重试');
+      message.error('错误信息下载失败，请检查导入模板是否正确');
     })
   };
 
