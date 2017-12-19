@@ -62,12 +62,12 @@ class NewBudgetOrganization extends React.Component {
       <div className="new-budget-organization">
         <Alert
           message={formatMessage({id: 'common.help'})/*提示信息*/}
-          description={formatMessage({id: 'budget.new.info'})/*同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。*/}
+          description={formatMessage({id: 'budget.organization.new.info'})/*同一账套下只能有一个生效的预算组织代码，且同一租户下预算组织代码不允许重复。保存后不可修改。*/}
           type="info"
           showIcon
         />
         <Form onSubmit={this.handleSave}>
-          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.set.of.books'})/* 账套 */}>
+          <FormItem {...formItemLayout} label={formatMessage({id: 'budget.organization.set.of.books'})/* 账套 */}>
             {getFieldDecorator('setOfBooksId', {
               rules: [{
                 required: true,

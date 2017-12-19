@@ -1,0 +1,16 @@
+{
+  "announcement.info.number": "序号",
+  "announcement.info.createDate": "新建日期",
+  "announcement.info.title": "标题",
+  "announcement.info.deliveryCompany": "分配公司",
+  "announcement.info.infoDetail": "公告详情",
+  "announcement.info.picture": "轮播图片",
+  "announcement.info.link": "跳转外部链接",
+  "announcement.info.content": "正文",
+  "announcement.info.addCompany": "新增分配",
+  "announcement.info.searchHolder": "请输入公司名称/代码",
+  "company.legalEntity": "法人实体",
+  "announcement.info.selected": "已选{total}"
+}
+
+

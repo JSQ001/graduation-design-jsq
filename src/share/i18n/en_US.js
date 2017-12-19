@@ -4,6 +4,7 @@ import budgetOrganization from 'static/i18n/en_US/budget-setting/budget-organiza
 import login from 'static/i18n/en_US/login.json'
 import budgetStructure from 'static/i18n/en_US/budget-setting/budget-organization/budget-organization.json'
 import budgetItem from 'static/i18n/en_US/budget-setting/budget-organization/budget-item.json'
+import budgetItemMap from 'static/i18n/en_US/budget-setting/budget-organization/budget-item-map.json'
 import budgetControlRules from 'static/i18n/en_US/budget-setting/budget-organization/budget-control-rules.json'
 import payWorkbench from 'static/i18n/en_US/pay/pay-workbench.json'
 import budgetVersion from 'static/i18n/en_US/budget-setting/budget-organization/budget-version.json'
@@ -17,6 +18,7 @@ import accountPeriodControl from 'static/i18n/en_US/finance-setting/account-peri
 import companyMaintain from 'static/i18n/en_US/setting/company-maintain.json'
 import financeView from 'static/i18n/en_US/financial-management/finance-view.json'
 import departmentGroup from 'static/i18n/en_US/setting/department-group.json'
+import announcementInformation from 'static/i18n/en_US/setting/announcement-information.json'
 import paymentMethod from 'static/i18n/en_US/pay-setting/payment-method.json'
 import paymentCompanySetting from 'static/i18n/en_US/pay-setting/payment-company-setting.json'
 import cashFlowItem from 'static/i18n/en_US/pay-setting/cash-flow-item.json'
@@ -49,7 +51,9 @@ const i18nList = [
   paymentCompanySetting, //付款公司配置
   cashFlowItem,  //现金流量项
   cashTransactionClass,   //现金事物
-  checkCenter          //对账中心
+  checkCenter,          //对账中心
+  announcementInformation, //公告信息
+  budgetItemMap,           //项目映射
 ];
 
 let result = {};
