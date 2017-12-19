@@ -120,7 +120,11 @@ class PayFail extends React.Component {
 
   //搜索
   search = (values) => {
-    this.setState({ searchParams: values }, () => {
+    this.setState({
+      searchParams: values,
+      onlineCash: [],
+      fileCash: []
+    }, () => {
       this.getList()
     })
   };
@@ -249,21 +253,25 @@ class PayFail extends React.Component {
 
   //线上
   getOnlineCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=ONLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ onlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //落地文件
   getFileCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=EBANK_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ fileCash: res.data })
-    }).catch(() => {
-
     })
   };
 
@@ -286,11 +294,11 @@ class PayFail extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ onlineLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -311,11 +319,11 @@ class PayFail extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ fileLoading: false });
-      reject()
+      reject && reject()
     })
   };
 

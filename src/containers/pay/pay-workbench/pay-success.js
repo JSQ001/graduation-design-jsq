@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Badge, Radio, Table, Pagination, Alert, message } from 'antd'
+import { Badge, Radio, Table, Pagination, Alert, message, Modal, Icon, Form, DatePicker } from 'antd'
+const FormItem = Form.Item;
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'
@@ -80,6 +81,7 @@ class PaySuccess extends React.Component {
         total: 0
       },
       onlineCash: [],  //总金额
+      modalVisible: false,
 
       /* 线下 */
       offlineLoading: false,
@@ -127,42 +129,68 @@ class PaySuccess extends React.Component {
   };
 
   search = (values) => {
-    this.setState({ searchParams: values }, () => {
+    this.setState({
+      searchParams: values,
+      onlineCash: [],
+      offlineCash: [],
+      fileCash: []
+    }, () => {
       this.getList()
     })
   };
 
   clear = () => {};
 
+  //退票
+  handleRefund = () => {
+    this.props.form.setFieldsValue({ date: undefined });
+    this.setState({ modalVisible: true })
+  };
+
+  //确认退票
+  confirmRefund = () => {
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values)
+      }
+    });
+  };
+
   /*********************** 获取总金额 ***********************/
 
   //线上
   getOnlineCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=ONLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ onlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //线下
   getOfflineCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=OFFLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ offlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //落地文件
   getFileCash = () => {
+    const { searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=EBANK_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     httpFetch.get(url).then(res => {
       this.setState({ fileCash: res.data })
-    }).catch(() => {
-
     })
   };
 
@@ -182,11 +210,11 @@ class PaySuccess extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ onlineLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -204,11 +232,11 @@ class PaySuccess extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ offlineLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -226,11 +254,11 @@ class PaySuccess extends React.Component {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ fileLoading: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -267,7 +295,7 @@ class PaySuccess extends React.Component {
     const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
     let onlineColumns = [].concat(columns);
     onlineColumns.push(
-      {title: '操作', dataIndex: 'id'}
+      {title: '操作', dataIndex: 'id', render: id => <a onClick={this.handleRefund}>退票</a>}
     );
     const tableTitle = (
       <div>
@@ -287,7 +315,6 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-online">
-        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={onlineColumns}
                dataSource={onlineData}
@@ -330,7 +357,6 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-offline">
-        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={offlineData}
@@ -373,7 +399,6 @@ class PaySuccess extends React.Component {
     );
     return (
       <div className="success-file">
-        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}
@@ -398,7 +423,12 @@ class PaySuccess extends React.Component {
   /************************* End *************************/
 
   render(){
-    const { searchForm, radioValue } = this.state;
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: { span: 7 },
+      wrapperCol: { span: 15, offset: 1 },
+    };
+    const { searchForm, radioValue, modalVisible } = this.state;
     return (
       <div className="pay-success">
         <SearchArea searchForm={searchForm}
@@ -410,9 +440,40 @@ class PaySuccess extends React.Component {
           <Radio.Button value="offline">线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
         </Radio.Group>
+        <Alert message="付款相关操作，请切换上方标签至【未支付】" type="info" showIcon style={{marginBottom:20}} />
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
+        <Modal visible={modalVisible}
+               onOk={this.confirmRefund}
+               onCancel={() => this.setState({ modalVisible: false })}
+               okText="确认退票"
+               width={400}>
+          <div style={{height:110}}>
+            <span style={{marginRight:10,fontSize:14}}>
+              <Icon type="exclamation-circle" style={{color:'#faad14', fontSize:22, marginRight:8, position:'relative', top:2}}/>
+              将付款状态更改为
+            </span>
+            <Badge status="error" text="退票"/>
+            <div style={{fontSize:12,color:'red',marginLeft:29}}>请务必向银行确认该付款已退票，以免产生重复支付</div>
+            <Form style={{marginLeft:29}}>
+              <FormItem {...formItemLayout}
+                        label="退票日期"
+                        style={{margin:'20px 0 10px'}}>
+                {getFieldDecorator('date', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]
+                })(
+                  <DatePicker format="YYYY-MM-DD"
+                              placeholder="请选择"
+                              allowClear={false}/>
+                )}
+              </FormItem>
+            </Form>
+          </div>
+        </Modal>
       </div>
     )
   }
@@ -423,4 +484,6 @@ function mapStateToProps() {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(PaySuccess));
+const wrappedPaySuccess = Form.create()(injectIntl(PaySuccess));
+
+export default connect(mapStateToProps)(wrappedPaySuccess);
