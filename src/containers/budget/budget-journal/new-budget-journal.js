@@ -455,7 +455,7 @@ class NewBudgetJournalFrom extends React.Component {
                  style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
                    boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
             <Button type="primary" htmlType="submit" loading={this.state.loading} style={{margin:'0 20px'}}>{this.props.intl.formatMessage({id: "budget.lastStep"})}</Button>
-            <Button onClick={this.HandleClear}>{this.props.intl.formatMessage({id: "budget.lastStep"})}</Button>
+            <Button onClick={this.HandleClear}>{this.props.intl.formatMessage({id: "budget.return"})}</Button>
           </Affix>
         </Form>
       </div>

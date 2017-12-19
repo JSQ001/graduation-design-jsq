@@ -10,6 +10,7 @@ const Option =Select.Option;
 
 import config from 'config';
 import httpFetch from 'share/httpFetch';
+import Chooser from  'components/Chooser';
 import 'styles/pay-setting/payment-method/new-payment-method.scss'
 
 class NewPaymentCompanySetting extends React.Component {
@@ -95,6 +96,9 @@ class NewPaymentCompanySetting extends React.Component {
         this.setState({loading: true});
           let toValue = {
             ...values,
+            companyId:values["companyId"][0].id,
+            paymentCompanyId:values["paymentCompanyId"][0].id,
+
           }
           httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
@@ -112,6 +116,9 @@ class NewPaymentCompanySetting extends React.Component {
           let toValue = {
             ...this.props.params,
             ...values,
+            companyId:values["companyId"][0].id,
+            paymentCompanyId:values["paymentCompanyId"][0].id,
+
           }
           httpFetch.post(`${config.baseUrl}/api/paymentCompanyConfig/insertOrUpdate`, toValue).then((res) => {
             this.setState({loading: false});
@@ -181,7 +188,7 @@ class NewPaymentCompanySetting extends React.Component {
       <div className="new-payment-method">
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout}
-                    label={this.props.intl.formatMessage({id:"budget.set.of.books"})}>
+                    label={this.props.intl.formatMessage({id:"paymentCompanySetting.setOfBooks"})}>
             {getFieldDecorator('setOfBooksId', {
               initialValue: this.props.params.setOfBooksId||this.props.company.setOfBooksId,
               rules: [
@@ -214,11 +221,13 @@ class NewPaymentCompanySetting extends React.Component {
               rules: [{ required: true, message: '请选择' }],
               initialValue:this.props.params.companyId||''
             })(
-              <Select>
-                {this.state.companyOptions.map((option)=>{
-                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
-                })}
-              </Select>
+              <Chooser
+                type='company'
+                labelKey='name'
+                valueKey='id'
+                single={true}
+                listExtraParams={{"setOfBooksId":this.props.company.setOfBooksId,"isEnabled":true}}
+              />
             )}
           </FormItem>
 
@@ -248,7 +257,7 @@ class NewPaymentCompanySetting extends React.Component {
             )}
           </FormItem>
 
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
+      {/*    <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
             {getFieldDecorator('paymentCompanyId', {
               rules: [{ required: true, message: '请选择' }],
               initialValue:this.props.params.paymentCompanyId||''
@@ -258,6 +267,20 @@ class NewPaymentCompanySetting extends React.Component {
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
               </Select>
+            )}
+          </FormItem>*/}
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
+            {getFieldDecorator('paymentCompanyId', {
+              rules: [{ required: true, message: '请选择' }],
+              initialValue:this.props.params.paymentCompanyId||''
+            })(
+              <Chooser
+                type='company'
+                labelKey='name'
+                valueKey='id'
+                single={true}
+                listExtraParams={{"setOfBooksId":this.props.company.setOfBooksId,"isEnabled":true}}
+              />
             )}
           </FormItem>
 

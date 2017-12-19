@@ -523,7 +523,7 @@ class BudgetJournalDetail extends React.Component {
               "id":value.id,
                "structureId":this.state.headerAndListData.dto.structureId,
               "journalTypeId":this.state.headerAndListData.dto.journalTypeId,
-               "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
+              "periodStrategy": this.state.headerAndListData.dto.periodStrategy,
               "versionNumber":value.id,
               "isNew":false,
               "oldData":value,

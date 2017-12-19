@@ -50,7 +50,7 @@ class NewPaymentMethod extends React.Component {
     let paymentMethodCategoryOptions = [];
     this.getSystemValueList(2105).then(res => {
       res.data.values.map(data => {
-        paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code})
+        paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code,key:data.code})
       });
       this.setState({
         paymentMethodCategoryOptions
