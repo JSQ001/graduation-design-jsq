@@ -223,12 +223,12 @@ class BudgetJournalDetail extends React.Component {
     })
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,selectedRowKeys).then((req)=>{
       this.getDataByBudgetJournalCode();
-      message.success("删除成功");
+      message.error(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
       this.setState({
         selectedRowKeys:[]
       })
     }).catch(e=>{
-      message.error(`删除失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id:'common.operate.filed'})}`);
     })
   }
 
@@ -369,7 +369,7 @@ class BudgetJournalDetail extends React.Component {
       }
       const templateUrl = `${config.budgetUrl}/api/budget/journals/export/template?budgetJournalHeadId=${headerData.id}`;
       const uploadUrl =`${config.budgetUrl}/api/budget/journals/import?budgetJournalHeadId=${headerData.id}`;
-      const errorUrl =`${config.budgetUrl}/api/batch/transaction/logs/failed/export/budgetJournal/${headerData.id}`
+      const errorUrl =`${config.budgetUrl}/api/budget/batch/transaction/logs/failed/export/budgetJournal/${headerData.id}`
       this.setState({
         templateUrl,
         uploadUrl,
@@ -462,7 +462,7 @@ class BudgetJournalDetail extends React.Component {
       let path=this.state.budgetJournalPage.url;
       this.context.router.push(path);
     }).catch((e) => {
-      message.error(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
+      message.error(`${this.props.intl.formatMessage({id:'common.operate.filed'})}`);
     })
   }
 
