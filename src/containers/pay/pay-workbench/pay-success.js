@@ -198,8 +198,11 @@ class PaySuccess extends React.Component {
 
   //线上
   getOnlineList = (resolve, reject) => {
-    const { onlinePage, onlinePageSize } = this.state;
+    const { onlinePage, onlinePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ onlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -220,8 +223,11 @@ class PaySuccess extends React.Component {
 
   //线下
   getOfflineList = (resolve, reject) => {
-    const { offlinePage, offlinePageSize } = this.state;
+    const { offlinePage, offlinePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentTypeCode=OFFLINE_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ offlineLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -242,8 +248,11 @@ class PaySuccess extends React.Component {
 
   //落地文件
   getFileList = (resolve, reject) => {
-    const { filePage, filePageSize } = this.state;
+    const { filePage, filePageSize, searchParams } = this.state;
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
+    for(let paramsName in searchParams){
+      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
+    }
     this.setState({ fileLoading: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
