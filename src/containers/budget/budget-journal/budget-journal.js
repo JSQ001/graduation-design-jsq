@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Popover,Table, Select ,Tag,Badge} from 'antd';
+import { Button, Popover,Table, Select ,Tag,Badge,message} from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -23,7 +23,7 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-        {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
+        {type: 'select', id:'journalTypeId', label:this.props.intl.formatMessage({id:"budget.journalTypeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
         {type: 'input', id: 'journalCode', label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
@@ -122,6 +122,8 @@ class BudgetJournal extends React.Component {
           current: this.state.page + 1
         }
       })
+    }).catch((e)=>{
+      message.error(e.response.data);
     })
   }
 

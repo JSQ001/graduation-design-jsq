@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import { Button,Form,Row,Col,Input,Select,InputNumber} from 'antd'
+import { Button,Form,Row,Col,Input,Select,InputNumber,message} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -211,7 +211,7 @@ class NewBudgetJournalDetail extends React.Component {
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee',  label:"员工",
+      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budget.employeeId"}),
         labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
         listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
@@ -252,7 +252,6 @@ class NewBudgetJournalDetail extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.params && JSON.stringify(nextProps.params) !== "{}" ){
       if(nextProps.params.isNew === false){
-        console.log(nextProps.params);
         this.state.rate=nextProps.params.rate;
         if(nextProps.params.company.length>0){
           this.getItemAbled(false,nextProps.params.company[0].id,'');
@@ -262,18 +261,10 @@ class NewBudgetJournalDetail extends React.Component {
         }
       }else if (nextProps.params != this.props.params) {
         this.getItemAbled(true,'','');
-        let defaultData ={}
-        let searchForm = this.state.searchForm;
-        searchForm.map((item)=>{
-          if(String(item.id).indexOf("dimension")>=0){
-            defaultData[item.id] =item["defaultValue"]||'';
-          }
-          this.props.form.setFieldsValue(defaultData);
-        })
-
       }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
+        console.log(12345);
         this.setState({
           periodStrategyFlag:false,
         },()=>{
@@ -300,10 +291,14 @@ class NewBudgetJournalDetail extends React.Component {
       if(nextProps.params.id !== this.props.params.id){
         this.setState({ params: nextProps.params },() => {
           let params = this.props.form.getFieldsValue();
-          for(let name in params){
-            let result = {};
-            result[name] = nextProps.params[name];
-            this.props.form.setFieldsValue(result)
+          let result = {};
+          if(!nextProps.params.isNew){
+            for(let name in params){
+              result[name] = nextProps.params[name];
+            }
+            this.props.form.setFieldsValue(result);
+          }else {
+            this.props.form.resetFields();
           }
         });
       }
@@ -407,7 +402,7 @@ class NewBudgetJournalDetail extends React.Component {
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}
           >
             {item.options.map((option)=>{
-              return <Option value={option.data?JSON.stringify(option.data) : ''} lable={option.label} title={option.data?JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.data[item.valueKey]} value={option.data?JSON.stringify(option.data) : ''} lable={option.label} >{option.label}</Option>
             })}
           </Select>
         )
@@ -420,9 +415,11 @@ class NewBudgetJournalDetail extends React.Component {
                   disabled={item.disabled}
                   labelInValue={!!item.entity}
           >
-            {item.options.map((option)=>{
-              return <Option  key={option.value} lable={option.lable} value={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
-            })}
+            {
+              item.options.map((option)=>{
+                return <Option  key={option.value} lable={option.lable} value={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              })
+            }
           </Select>
         )
       }
@@ -436,7 +433,7 @@ class NewBudgetJournalDetail extends React.Component {
                   labelInValue={!!item.entity}
                   onFocus={() => this.getValueListOptions(item)}>
             {item.options.map((option)=>{
-              return <Option key={option.value} title={option.data ? JSON.stringify(option.data) : ''}>{option.label}</Option>
+              return <Option key={option.value} value={option.value}>{option.label}</Option>
             })}
           </Select>
         )
@@ -446,7 +443,7 @@ class NewBudgetJournalDetail extends React.Component {
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})} onChange={handle} disabled={item.disabled}>
             {item.options.map((option)=>{
-              return <Option value={option.value} >{option.label}</Option>
+              return <Option value={option.value} key={option.value}>{option.label}</Option>
             })}
           </Select>
         )
@@ -606,14 +603,12 @@ class NewBudgetJournalDetail extends React.Component {
     })
   };
 
-
-
   //根据预算表id，获得维度
   getDimensionByStructureId = () =>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp)=>{
+    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp) => {
       this.getSearchForm(resp.data);
-    }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
+    }).catch((e)=>{
+      message.error(`${ this.props.intl.formatMessage({id: 'budget.getDimensionFail'})}`)
     })
   };
 

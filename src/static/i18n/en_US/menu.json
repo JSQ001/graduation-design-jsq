@@ -123,5 +123,7 @@
   "menu.announcement-information": "Announcement information",
   "menu.supplier-type": "supplier type",
   "menu.announcement-information-detail": "Announcement information detail",
-  "menu.supplier-management": "Supplier management"
+  "menu.supplier-management": "Supplier management",
+  "menu.page-create": "Page Creator"
+
 }

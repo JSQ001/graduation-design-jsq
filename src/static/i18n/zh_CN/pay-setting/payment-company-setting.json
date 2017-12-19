@@ -7,5 +7,6 @@
   "paymentCompanySetting.ducumentType":"单据类型",
   "paymentCompanySetting.paymentCompany":"付款公司",
   "paymentCompanySetting.paymentCompanyCode":"付款公司代码",
-  "paymentCompanySetting.paymentCompanyName":"付款公司名称"
+  "paymentCompanySetting.paymentCompanyName":"付款公司名称",
+  "paymentCompanySetting.setOfBooks":"账套"
 }

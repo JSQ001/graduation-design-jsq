@@ -1,9 +1,12 @@
 import React  from 'react'
-import Importer from 'components/template/importer'
-import { Button, Table, Menu, Dropdown, Icon } from 'antd'
+import { connect } from 'react-redux'
+import { Button, Table, Menu, Dropdown, Icon, Row, Col, Popconfirm, Popover } from 'antd'
 import config from 'config'
 import { injectIntl } from 'react-intl';
+import httpFetch from 'share/httpFetch'
 import 'styles/my-account/my-account.scss'
+import SlideFrame from "components/slide-frame";
+import NewExpense from 'containers/my-account/new-expense'
 
 class MyAccount extends React.Component{
   constructor(props){
@@ -11,108 +14,200 @@ class MyAccount extends React.Component{
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: false,
-      dropDownLabel: formatMessage({id: "account.createExpense"}),
       data: [],
-      dropDown: [
-        {label: formatMessage({id: "account.createExpense"}), value: '0'},
-        {label: formatMessage({id: "account.manuallyCreate"}), value: '1'},
-        {label: formatMessage({id: "account.inputInvoice"}), value: '2'},
-        {label: formatMessage({id: "account.cardConsumption"}), value: '3'}
-      ],
       columns:[
-        {          /*序号*/
-          title: formatMessage({id:"announcement-info.number"}), key: "number", dataIndex: 'number',width: '10%',
-        },
-        {          /*费用类型*/
-          title: formatMessage({id:"itemMap.expenseType"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*发生日期*/
-          title: formatMessage({id:"account.occur"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*备注*/
-          title: formatMessage({id:"budget.structureDescription"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*附件*/
-          title: formatMessage({id:"account.accessory"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*费用属性*/
-          title: formatMessage({id:"account.expenseAttributes"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*币种*/
-          title: formatMessage({id:"account.currency"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*金额*/
-          title: formatMessage({id:"account.money"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {          /*本币金额*/
-          title: formatMessage({id:"account.currencyMoney"}), key: "itemCode", dataIndex: 'itemCode'
-        },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+        {title: '序号', dataIndex: 'index', width: '5%'},
+        {title: '费用类型', dataIndex: 'expenseTypeName'},
+        {title: '日期', dataIndex: 'createdDate', render: createdDate => new Date(createdDate).format('yyyy-MM-dd')},
+        {title: '备注', dataIndex: 'comment', render: comment => <Popover content={comment}>{comment}</Popover>},
+        {title: '附件', dataIndex: 'attachments', width: '5%', render: attachments => attachments.length},
+        {title: '币种', dataIndex: 'invoiceCurrencyCode', width: '5%'},
+        {title: '金额', dataIndex: 'amount', render: this.filterMoney},
+        {title: '本位币金额', dataIndex: 'actualCurrencyAmount', render: this.filterMoney},
+        {title: '操作', dataIndex: 'operate', render: record => (
           <span>
-          <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
-            <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>
-          </Popconfirm>
-        </span>)},  //操作
-      ]
+            <a>复制</a>
+            <span className="ant-divider" />
+            <Popconfirm title="确认删除吗？" onConfirm={(e) => this.deleteExpense(e, record)}><a>{formatMessage({ id:"common.delete"})}</a></Popconfirm>
+          </span>)}
+      ],
+      pagination: {
+        total: 0,
+      },
+      page: 0,
+      pageSize: 10,
+      selectedData: [],  //已经选择的数据项
+      rowSelection: {
+        selectedRowKeys: [],
+        onChange: this.onSelectChange,
+        onSelect: this.onSelectItem,
+        onSelectAll: this.onSelectAll
+      },
+      showExpenseFlag: false
     };
   }
+
+  deleteExpense = (e, record) => {
+
+  };
 
   componentWillMount(){
     this.getList();
   }
 
   getList(){
-
+    let { page, pageSize } = this.state;
+    this.setState({ loading: true });
+    httpFetch.get(`${config.baseUrl}/api/invoices/init/all/by?page=${page}&size=${pageSize}`).then(res => {
+      res.data.map((item, index) => {
+        item.index = index + page * pageSize;
+        return item;
+      });
+      this.setState({
+        loading: false,
+        data: res.data,
+        pagination: {
+          total: Number(res.headers['x-total-count']),
+          onChange: this.onChangePager,
+          current: this.state.page + 1
+        }
+      }, () => {
+        this.refreshSelected();  //刷新当页选择器
+      })
+    })
   }
 
-  //生成报销单
-  handleExpenseAccount = ()=>{
-
+  onChangePager = (page) => {
+    if(page - 1 !== this.state.page)
+      this.setState({page: page - 1,}, this.getList)
   };
 
-  handleButtonClick = ()=>{
-    console.log('click', e);
+  /**
+   * 根据selectedData刷新当页selection
+   */
+  refreshSelected(){
+    let { selectedData, data, rowSelection } = this.state;
+    let nowSelectedRowKeys = [];
+    selectedData.map(selected => {
+      data.map(item => {
+        if(item.invoiceOID === selected.invoiceOID)
+          nowSelectedRowKeys.push(item.invoiceOID)
+      })
+    });
+    rowSelection.selectedRowKeys = nowSelectedRowKeys;
+    this.setState({ rowSelection });
   };
 
-  handleMenuClick = (e)=>{
-    console.log(e)
-    this.setState({
-      dropDownLabel: this.state.dropDown[e.key].label
-    })
+  //选项改变时的回调，重置selection
+  onSelectChange = (selectedRowKeys) => {
+    let { rowSelection } = this.state;
+    rowSelection.selectedRowKeys = selectedRowKeys;
+    this.setState({ rowSelection });
+  };
+
+  /**
+   * 选择单个时的方法，遍历selectedData，根据是否选中进行插入或删除操作
+   * @param record 被改变的项
+   * @param selected 是否选中
+   */
+  onSelectItem = (record, selected) => {
+    let { selectedData } = this.state;
+    if(this.props.single){
+      selectedData = [record];
+    } else {
+      if(!selected){
+        selectedData.map((selected, index) => {
+          if(selected.invoiceOID === record.invoiceOID){
+            selectedData.splice(index, 1);
+          }
+        })
+      } else {
+        selectedData.push(record);
+      }
+    }
+    this.setState({ selectedData });
+  };
+
+  //选择当页全部时的判断
+  onSelectAll = (selected, selectedRows, changeRows) => {
+    changeRows.map(changeRow => this.onSelectItem(changeRow, selected));
+  };
+
+  handleMenuClick = (e) => {
+    switch(e.key){
+      case '1':
+        this.setState({showExpenseFlag: true});
+        break;
+      default:
+        return;
+    }
+  };
+
+  renderExpandedRow = (title, content) => {
+    return (
+      <Row gutter={20} type="flex" align="top" className="expanded-row" key={title}>
+        <Col className="expanded-title">{title}</Col>
+        <Col className="expanded-title">{content}</Col>
+      </Row>
+    )
+  };
+
+  renderAllExpandedRow = (record) => {
+    let result = [];
+    result.push(this.renderExpandedRow('汇率/金额',
+      `金额: ${record.amount.toFixed(2)}${record.originalAmount === record.amount ? '' : 
+        ((record.originalAmount > record.amount ? '-' : '+') + (Math.abs(record.originalAmount - record.amount).toFixed(2)))}` +
+      `, 汇率: ${record.companyCurrencyRate.toFixed(4)}${record.actualCurrencyRate ?
+        ((record.companyCurrencyRate > record.actualCurrencyRate ? '-%' : '+%') + 
+          (Math.abs(record.actualCurrencyRate/record.companyCurrencyRate)).toFixed(4)) : ''}` +
+      `, 折合本位币: ${record.actualCurrencyAmount.toFixed(2)}`));
+    return result;
+  };
+
+  handleCloseExpense = (params) => {
+    this.setState({showExpenseFlag: false})
   };
 
   render(){
-    const { loading, data, pagination, columns, dropDown, dropDownLabel } = this.state;
-    const { formatMessage } = this.props.intl;
+    const { loading, data, pagination, columns, rowSelection, selectedData, showExpenseFlag } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick}>
-        {dropDown.map((item)=>(<Menu.Item key={item.value}>{item.label}</Menu.Item>))}
+        <Menu.Item key="1">手工创建</Menu.Item>
+        <Menu.Item key="2">录入发票</Menu.Item>
+        <Menu.Item key="3">商务卡消费</Menu.Item>
       </Menu>
     );
     return(
       <div className="my-account">
-        <div className="my-account-table-header">
-          <Button type="primary" className="table-header-button" onClick={this.handleExpenseAccount}>{formatMessage({id: "account.createExpenseAccount"})}</Button>
-          <Dropdown.Button  className="table-header-dropDown" onClick={this.handleButtonClick} overlay={menu}>
-            {dropDownLabel}
-          </Dropdown.Button>
-          <div className="table-header-message">
-            <span><Icon className="table-header-message-img" type="info-circle" style={{color: '#1890ff' }}/></span>
-            <span>{formatMessage({id: "account.selected"})}</span>
-            <span className="table-header-message-number"> 1</span>
-            <span>{ formatMessage({id:"account.message"})}</span>
-            <span className="table-header-message-number">500.9</span>
-          </div>
+        <div className="operate-area">
+          <Button type="primary" disabled={selectedData.length === 0}>生成报销单</Button>
+          <Dropdown overlay={menu}>
+            <Button style={{ marginLeft: 8 }}>
+              新建费用 <Icon type="down" />
+            </Button>
+          </Dropdown>
         </div>
-        <Table
-          loading={loading}
-          dataSource={data}
-          columns={columns}
-          bordered
-          size="middle"/>
+        <Table dataSource={data}
+               size="middle"
+               bordered
+               expandedRowRender={this.renderAllExpandedRow}
+               rowKey="invoiceOID"
+               loading={loading}
+               rowSelection={rowSelection}
+               columns={columns}
+               pagination={pagination}/>
+        <SlideFrame show={showExpenseFlag}
+                    title="新建费用"
+                    content={NewExpense}
+                    onClose={() => this.setState({showExpenseFlag: false})}
+                    afterClose={this.handleCloseExpense}/>
       </div>
     )
   }
 }
 
-export default injectIntl(MyAccount);
+function mapStateToProps(state) {
+  return {}
+}
+
+export default connect(mapStateToProps)(injectIntl(MyAccount));
