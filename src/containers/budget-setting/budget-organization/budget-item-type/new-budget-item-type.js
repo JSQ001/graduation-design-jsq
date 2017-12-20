@@ -138,12 +138,6 @@ class NewBudgetItemType extends React.Component {
 }
 
 
-/*NewBudgetItemType.propTypes = {
- isPut:React.PropTypes.bool,
- text:React.PropTypes.object
- };*/
-
-
 const WrappedNewBudgetItemType = Form.create()(NewBudgetItemType);
 function mapStateToProps(state) {
   return {

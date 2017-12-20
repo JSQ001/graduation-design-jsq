@@ -260,7 +260,7 @@ class BudgetJournalDetailSubmit extends React.Component {
 
   //审批中返回，撤回按钮
   getCheckingButton(){
-    return this.state.infoData.status === "SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>撤回</Button>:''
+    return this.state.infoData.status === "SUBMIT"? <Button className="button-Revocation" type="primary"  onClick={this.handleRevocation}>{this.props.intl.formatMessage({id:"budget.returnCommit"})}</Button>:''
   }
 
   render(){

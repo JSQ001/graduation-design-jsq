@@ -63,7 +63,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value) {
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`, value).then((response) => {
       if(response.status === 200){
-        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: "预算版本"}));
+        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: this.props.intl.formatMessage({id: "budget.version"})}));
         this.setState({loading: false});
         this.props.close(true);
       }
@@ -157,9 +157,9 @@ class NewBudgetVersions extends React.Component {
               })(
                 <Select
                   placeholder="">
-                  <Select.Option value="NEW">新建</Select.Option>
-                  <Select.Option value="CURRENT">当前</Select.Option>
-                  <Select.Option value="HISTORY">历史</Select.Option>
+                  <Select.Option value="NEW">{this.props.intl.formatMessage({id: "budget.new"})}</Select.Option>
+                  <Select.Option value="CURRENT">{this.props.intl.formatMessage({id: "budget.current"})}</Select.Option>
+                  <Select.Option value="HISTORY">{this.props.intl.formatMessage({id: "budget.history"})}</Select.Option>
                 </Select>
               )}
             </FormItem>
@@ -190,8 +190,8 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <div className="slide-footer">
-              <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
-              <Button onClick={this.onCancel}>取消</Button>
+              <Button type="primary" htmlType="submit" loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>
+              <Button onClick={this.onCancel}>{this.handleCreate}>{this.props.intl.formatMessage({id: "common.cancel"})}</Button>
             </div>
           </Form>
         </div>

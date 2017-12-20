@@ -75,7 +75,7 @@ class BudgetJournal extends React.Component {
         },
         {
           /*创建时间*/
-          title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
+          title: this.props.intl.formatMessage({id:"budget.createdDate"}), key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
             <Popover content={String(recode).substring(0,10)}>
               {String(recode).substring(0,10)}

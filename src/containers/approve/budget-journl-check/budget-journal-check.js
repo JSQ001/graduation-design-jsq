@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Form, Tabs, Table, message } from 'antd'
+import { Form,Popover, Tabs, Table, message } from 'antd'
 const TabPane = Tabs.TabPane;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
@@ -28,13 +28,18 @@ class BudgetJournalCheck extends React.Component{
       ],
       columns: [
         {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
-        {title: '申请人', dataIndex: 'applicantName'},
-        {title: '提交时间', dataIndex: 'lastSubmittedDate'},
-        {title: '预算日记账类型', dataIndex: 'journalCodeTypeName'},
-        {title: '预算日记账单号', dataIndex: 'businessCode'},
+        {title: '申请人', dataIndex: 'applicantName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
+        },
+        {title: '提交时间', dataIndex: 'submittedDate'},
+        {title: '类型', dataIndex: 'formName'},
+        {title: '预算日记账单号', dataIndex: 'journalCode'},
         {title: '币种', dataIndex: 'currencyCode'},
-        {title: '金额', dataIndex: 'totalAmount'},
-        {title: '状态', dataIndex: 'statusView'},
+        {title: '金额', dataIndex: 'totalBudget'},
+        {title: '状态', dataIndex: 'status'},
       ],
       budgetJournalDetailCheckDetailPage: menuRoute.getRouteItem('budget-journal-check-detail','key'),    //预算日记账复核详情
       unJournalData: [],
@@ -63,12 +68,16 @@ class BudgetJournalCheck extends React.Component{
 
   getUnJournalList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
-    let unJournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    let unJournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=false&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
     this.setState({ loading1: true });
+    const budgetJournalApprovalViewArray = [];
     httpFetch.get(unJournalUrl).then((res) => {
       if (res.status === 200) {
+        res.data.map((item)=>{
+          budgetJournalApprovalViewArray.push(item.budgetJournalApprovalView);
+        })
         this.setState({
-          unJournalData: res.data,
+          unJournalData:budgetJournalApprovalViewArray,
           loading1: false,
           unJournalPagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
@@ -84,14 +93,19 @@ class BudgetJournalCheck extends React.Component{
     })
   };
 
+
   getJournalList = (resolve, reject) => {
     const { approvedPage, approvedPageSize } = this.state;
-    let JournalUrl = `${config.budgetUrl}/api/budget/journals/query/headers?organizationId=${this.props.organization.id}?page=${approvedPage}&size=${approvedPageSize}`;
+    let JournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=true&endDate&page=${approvedPage}&size=${approvedPageSize}`;
     this.setState({ loading2: true });
+    const budgetJournalApprovalViewArray = [];
     httpFetch.get(JournalUrl).then((res) => {
+      res.data.map((item)=>{
+        budgetJournalApprovalViewArray.push(item.budgetJournalApprovalView);
+      })
       if (res.status === 200) {
         this.setState({
-          journalData: res.data,
+          journalData:budgetJournalApprovalViewArray,
           loading2: false,
           journalPagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
@@ -133,6 +147,7 @@ class BudgetJournalCheck extends React.Component{
 
   //跳转到详情
   HandleRowClick=(value)=>{
+    console.log(value);
     const journalCode =value.journalCode;
     let path=this.state.budgetJournalDetailCheckDetailPage.url.replace(":journalCode",journalCode);
     this.context.router.push(path);
