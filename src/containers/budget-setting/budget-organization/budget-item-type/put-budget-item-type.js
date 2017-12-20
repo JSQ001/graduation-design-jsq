@@ -60,15 +60,12 @@ class PutBudgetItemType extends React.Component {
         }
         console.log(data);
         httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res) => {
-
           this.setState({loading: false});
           this.props.close(true);
-          message.success("操作成功");
-
-
+          message.success(  this.props.intl.formatMessage({id: "common.operate.success"}));
         }).catch((e) => {
           this.setState({loading: false});
-          message.error(e.response.data.validationErrors[0].message);
+          message.error(e.response.data.message);
         })
       }
     });

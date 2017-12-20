@@ -264,7 +264,6 @@ class NewBudgetJournalDetail extends React.Component {
       }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
-        console.log(12345);
         this.setState({
           periodStrategyFlag:false,
         },()=>{

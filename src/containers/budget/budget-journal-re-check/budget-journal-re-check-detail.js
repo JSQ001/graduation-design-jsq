@@ -143,7 +143,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`查询附件失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budget.getAttachmentFail"})},${e.response.data.message}`);
     })
   }
 
@@ -170,10 +170,9 @@ class BudgetJournalReCheckDetail extends React.Component {
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
-      console.log(resp.data);
       this.getColumnsAndDimensionhandleData(resp.data);
     }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budget.budget.getDimensionFail"})},${e.response.data.message}`);
     })
   }
 
@@ -208,13 +207,12 @@ class BudgetJournalReCheckDetail extends React.Component {
     let data =[];
     data.addIfNotExist(id);
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
-      message.success("已经通过")
-
+      message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
         let path=this.state.budgetJournalDetailReCheckPage.url;
           this.context.router.push(path);
 
     }).catch((e)=>{
-      message.error("失败");
+      message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
     })
   }
 
@@ -226,13 +224,13 @@ class BudgetJournalReCheckDetail extends React.Component {
     data.addIfNotExist(id);
 
     httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
-      message.success("已经驳回");
+      message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
       let path=this.state.budgetJournalDetailReCheckPage.url;
        this.context.router.push(path);
 
 
     }).catch((e)=>{
-      message.error("失败");
+      message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
     })
 
   }
@@ -245,18 +243,19 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   //返回状态
   getStatus=()=>{
-   const infoData = this.state.infoData;
-      switch (infoData.status){
-        case 'NEW':{ return <Badge status="processing" text="新建" />}
-        case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
-        case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
-        case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-        case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
-        case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
-        case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
-        case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
-        case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
-      }
+    const infoData = this.state.infoData;
+    switch (infoData.status){
+      case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
+      case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
+      case 'SUBMIT_RETURN':{return   <Badge status="warning" text={infoData.statusName}/>}
+      case 'REJECT':{ return  <Badge status="error" text={infoData.statusName} />}
+      case 'CHECKED':{return < Badge status="default" text={infoData.statusName}/>}
+      case 'CHECKING':{return <Badge  status="default"text={infoData.statusName}/>}
+      case 'POSTED':{return <Badge status="default" text={infoData.statusName}/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={infoData.statusName}/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default"  text={infoData.statusName}/>}
+      default :{return <Badge status="default"  text={infoData.statusName}/>}
+    }
   }
 
 
