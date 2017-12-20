@@ -5,47 +5,62 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message,Steps,Modal} from 'antd'
+import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message, Steps, Modal } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
 
 import moment from 'moment'
 
-class NewPrePaymentDetail extends React.Component{
+class NewPrePaymentDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
       currency: null,
-      partnerCategoryOptions: []
+      partnerCategoryOptions: [],
+      currencyList: [],
+      payWayTypeList: []
     }
   }
 
   componentWillMount() {
-    this.getSystemValueList(2107).then(res => { //合同方类型
-      let partnerCategoryOptions = res.data.values || [];
-      this.setState({ partnerCategoryOptions })
-    })
+    // this.getCashTransactionList();
+    this.getCurrencyList();
+    this.getPayWayTypeList();
   }
 
   componentWillReceiveProps(nextProps) {
-    const currency = nextProps.params.currency;
-    const record = nextProps.params.record;
-    this.setState({ currency });
-    if (record.id && !nextProps.params.flag) {  //编辑
-      nextProps.params.flag = true;
-      let values = this.props.form.getFieldsValue();
-      for(let name in values){
-        let result = {};
-        name !== 'currency' && (result[name] = record[name]);
-        name === 'dueDate' && (result[name] = moment(record[name]));
-        this.props.form.setFieldsValue(result)
-      }
-    } else if (!record.id && !nextProps.params.flag) {  //新建
-      nextProps.params.flag = true;
-      this.props.form.resetFields();
-    }
+
+  }
+
+
+  //获取现金事务
+  getCashTransactionList = () => {
+
+    //如果存在就不需要再获取了
+    if(this.state.partnerCategoryOptions && this.state.partnerCategoryOptions.length) return;
+
+    httpFetch.get(`http://192.168.1.195:8072/api/cash/pay/requisition/type/assign/transaction/classes/query?sobPayReqTypeId=940868530340466690`).then(res => {
+      this.setState({ partnerCategoryOptions: res.data });
+    });
+  }
+
+  //获取币种列表
+  getCurrencyList = () => {
+
+    
+
+    httpFetch.get(`${config.baseUrl}/api/company/standard/currency/getAll?language=chineseName`).then(res => {
+      this.setState({ currencyList: res.data });
+    })
+  }
+
+  //获取付款方式类型
+  getPayWayTypeList = () => {
+    this.getSystemValueList(2105).then(res => {
+      this.setState({ payWayTypeList: res.data.values });
+    })
   }
 
   onCancel = () => {
@@ -61,7 +76,7 @@ class NewPrePaymentDetail extends React.Component{
         values.lineNumber = 1;  //之后要删掉！！！！！！！！！！！！！！！！！！！
         values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
         let url = `${config.contractUrl}/contract/api/contract/line`;
-        this.setState({loading: true});
+        this.setState({ loading: true });
         httpFetch.post(url, values).then(res => {
           if (res.status === 200) {
             this.props.close(true);
@@ -69,7 +84,7 @@ class NewPrePaymentDetail extends React.Component{
             this.setState({ loading: false })
           }
         }).catch(e => {
-          this.setState({loading: false});
+          this.setState({ loading: false });
           message.error(`保存失败, ${e.response.data.message}`);
         })
       }
@@ -87,7 +102,7 @@ class NewPrePaymentDetail extends React.Component{
         values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
         values.lineNumber = 1;  //之后要删掉！！！！！！！！！！！！！！！！！！！
         let url = `${config.contractUrl}/contract/api/contract/line`;
-        this.setState({loading: true});
+        this.setState({ loading: true });
         httpFetch.put(url, values).then(res => {
           if (res.status === 200) {
             this.props.close(true);
@@ -95,7 +110,7 @@ class NewPrePaymentDetail extends React.Component{
             this.setState({ loading: false })
           }
         }).catch(e => {
-          this.setState({loading: false});
+          this.setState({ loading: false });
           message.error(`修改失败, ${e.response.data.message}`);
         })
       }
@@ -104,7 +119,7 @@ class NewPrePaymentDetail extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, currency, partnerCategoryOptions } = this.state;
+    const { loading, currency, partnerCategoryOptions, currencyList,payWayTypeList } = this.state;
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 10, offset: 1 },
@@ -117,9 +132,9 @@ class NewPrePaymentDetail extends React.Component{
           </Steps>
           <FormItem {...formItemLayout} label="事由说明">
             {getFieldDecorator('description')(
-              <TextArea autosize={{minRows: 2}}
-                        style={{minWidth:'100%'}}
-                        placeholder="请输入"/>
+              <TextArea autosize={{ minRows: 2 }}
+                style={{ minWidth: '100%' }}
+                placeholder="请输入" />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="现金事务">
@@ -129,12 +144,12 @@ class NewPrePaymentDetail extends React.Component{
                 message: '请选择'
               }]
             })(
-              <Select placeholder="请选择">
+              <Select onFocus={this.getCashTransactionList} placeholder="请选择">
                 {partnerCategoryOptions.map((option) => {
-                  return <Option key={option.value}>{option.messageKey}</Option>
+                  return <Option value={option.transactionClassId} key={option.transactionClassId}>{option.transactionClassName}</Option>
                 })}
               </Select>
-            )}
+              )}
           </FormItem>
           <Row gutter={8}>
             <Col span={8} className="ant-form-item-label label-style">收款方：</Col>
@@ -145,14 +160,11 @@ class NewPrePaymentDetail extends React.Component{
                     required: true,
                     message: '请选择'
                   }],
-                  initialValue:"人员"
+                  initialValue: ""
                 })(
                   <Select>
-                    {partnerCategoryOptions.map((option) => {
-                      return <Option key={option.value}>{option.messageKey}</Option>
-                    })}
                   </Select>
-                )}
+                  )}
               </FormItem>
             </Col>
 
@@ -167,7 +179,7 @@ class NewPrePaymentDetail extends React.Component{
                   <Select>
 
                   </Select>
-                )}
+                  )}
               </FormItem>
             </Col>
           </Row>
@@ -181,12 +193,16 @@ class NewPrePaymentDetail extends React.Component{
                     required: true,
                     message: '请选择币种'
                   }],
-                  initialValue:"RNB"
+                  initialValue: "CNY"
                 })(
                   <Select>
-
+                    {
+                      currencyList.map(item => {
+                        return <Option value={item.currency} key={item.currency}>{item.currencyName}</Option>
+                      })
+                    }
                   </Select>
-                )}
+                  )}
               </FormItem>
             </Col>
 
@@ -198,8 +214,8 @@ class NewPrePaymentDetail extends React.Component{
                     message: '请输入'
                   }]
                 })(
-                  <InputNumber placeholder="请输入" style={{width:'100%'}}/>
-                )}
+                  <InputNumber placeholder="请输入" style={{ width: '100%' }} />
+                  )}
               </FormItem>
             </Col>
           </Row>
@@ -215,7 +231,7 @@ class NewPrePaymentDetail extends React.Component{
               <Select placeholder="请选择">
 
               </Select>
-            )}
+              )}
           </FormItem>
           <FormItem {...formItemLayout} label="银行户名">
             {getFieldDecorator('partnerId', {
@@ -225,8 +241,8 @@ class NewPrePaymentDetail extends React.Component{
               }],
               initialValue: '911143733222408193'
             })(
-              <Input/>
-            )}
+              <Input />
+              )}
           </FormItem>
           <FormItem {...formItemLayout} label="银行账户">
             {getFieldDecorator('rrrr', {
@@ -236,17 +252,18 @@ class NewPrePaymentDetail extends React.Component{
               }],
               initialValue: '911143733222408193'
             })(
-              <Input/>
-            )}
+              <Input />
+              )}
           </FormItem>
           <FormItem {...formItemLayout} label="计划付款日期">
             {getFieldDecorator('dueDate', {
               rules: [{
                 required: true,
                 message: '请选择'
-              }]})(
-              <DatePicker style={{width:'100%'}}/>
-            )}
+              }]
+            })(
+              <DatePicker style={{ width: '100%' }} />
+              )}
           </FormItem>
           <FormItem {...formItemLayout} label="付款方式">
             {getFieldDecorator('payment', {
@@ -255,27 +272,29 @@ class NewPrePaymentDetail extends React.Component{
                 message: '请选择'
               }]
             })(
-              <Select placeholder="请选择">
-                {partnerCategoryOptions.map((option) => {
-                  return <Option key={option.value}>{option.messageKey}</Option>
-                })}
+              <Select>
+                {
+                  payWayTypeList.map(item => {
+                    return <Option key={item.id} value={item.id}>{item.messageKey}</Option>
+                  })
+                }
               </Select>
-            )}
+              )}
           </FormItem>
 
           <Steps direction="vertical">
             <Steps.Step title="关联单据" description="" />
           </Steps>
 
-          <div style={{marginBottom:'16px',marginLeft:'60px'}}>
+          <div style={{ marginBottom: '16px', marginLeft: '60px' }}>
             <Button>+ 关联申请单</Button>
-            <div style={{marginTop:'8px'}}>
+            <div style={{ marginTop: '8px' }}>
               申请单号:JK1234123412 申请单总金额:CNY 23,000.00
             </div>
           </div>
-          <div style={{marginBottom:'8px',marginLeft:'60px'}}>
+          <div style={{ marginBottom: '8px', marginLeft: '60px' }}>
             <Button>+ 关联合同</Button>
-            <div style={{marginTop:'8px'}}>
+            <div style={{ marginTop: '8px' }}>
               合同单号：JK1234123412   付款计划序号： 序号1  付款计划日期：2017-12-12
             </div>
           </div>

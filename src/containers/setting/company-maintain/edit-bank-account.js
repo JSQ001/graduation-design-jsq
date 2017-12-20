@@ -92,20 +92,30 @@ class WrappedNewBankAccount extends React.Component {
 
         let { searchForm } = this.state;
 
-        console.log(record.bankAddress);
-
         this.setState({ params: nextProps.record, bankCode: record.bankCode, bankName: record.bankName },() => {
             this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
                 bankName: [{ bankCode: record.bankCode, bankName: record.bankName }],
-                countryInfo: { key: "CNH000000000",value:"CNH000000000",label:"中国"},
+                countryInfo: { key: record.countryCode,value: record.countryCode,label: record.country},
                 bankAddress: record.bankAddress ? record.bankAddress : "",
                 bankAccountName: record.bankAccountName ? record.bankAccountName : "",
                 bankAccountNumber: record.bankAccountNumber ? record.bankAccountNumber : "",
                 swiftCode: record.swiftCode,
-                currencyCode: { value: record.currencyCode },
-                remark: record.remark
+                currencyCode: { value: record.currencyCode,label:record.currencyName,key:record.currencyCode },
+                remark: record.remark,
+                // accountOpening:[ record.provinceCode,record.cityCode]
             });
         });
+
+        httpFetch.get(`https://apiuat.huilianyi.com/location-service/api/localization/query/all/address?code=${value.code}`).then((response) => {
+
+          searchForm[2].options = response.data;
+
+          this.setState({
+            searchForm,
+          })
+        });
+
+        
 
         
     }

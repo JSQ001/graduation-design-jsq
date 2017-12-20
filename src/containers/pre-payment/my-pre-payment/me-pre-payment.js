@@ -48,14 +48,14 @@ class MyPrePayment extends React.Component{
       columns: [
         {title: '序号', dataIndex: 'id', render: (value, record, index) => index + 1},
         {title: '单据编号', dataIndex: 'requisitionNumber'},
-        {title:'单据类型',dataIndex:'paymentReqTypeId'},
+        {title:'单据类型',dataIndex:'typeName'},
         {title: '申请人', dataIndex: 'employeeId'},
         {title: '申请日期', dataIndex: 'timestamp', render: (value) => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '金额', dataIndex: 'amount', render: this.filterMoney},
         {title:'已核销金额',dataIndex: 'pppamount', render: this.filterMoney},
         {title:'说明',dataIndex:'description'},
-        {title: '状态', dataIndex: 'status', render: value => <Badge status="processing" text={this.state.contractStatus[value].label} />}
+        {title: '状态', dataIndex: 'statusName'}
       ],
       data: [],
       page: 0,
@@ -69,23 +69,24 @@ class MyPrePayment extends React.Component{
   }
 
   componentWillMount() {
-    let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
-    httpFetch.get(url).then((res) => {
-      if (res.status === 200) {
-        this.setState({ setOfBooksId: res.data[0].setOfBooksId }, () => {
-          this.getList();
-          httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.state.setOfBooksId}`).then((res) => {  //公司
-            // let currencyOptions = res.data;
-            // this.setState({ currencyOptions })
-          })
-        })
-      }
-    })
+    // let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
+    // httpFetch.get(url).then((res) => {
+    //   if (res.status === 200) {
+    //     this.setState({ setOfBooksId: res.data[0].setOfBooksId }, () => {
+    //       this.getList();
+    //       httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.state.setOfBooksId}`).then((res) => {  //公司
+    //         // let currencyOptions = res.data;
+    //         // this.setState({ currencyOptions })
+    //       })
+    //     })
+    //   }
+    // })
+    this.getList();
   }
 
   getList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.cdcUrl}/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
+    let url = `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead/query?page=${page}&size=${pageSize}`;
     this.setState({ loading: true });
     httpFetch.get(url).then((res) => {
       if (res.status === 200) {
@@ -95,7 +96,8 @@ class MyPrePayment extends React.Component{
           pagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
             current: page + 1,
-            onChange: this.onChangePaper
+            onChange: this.onChangePaper,
+            pageSize: pageSize,
           }
         })
       }
@@ -140,11 +142,10 @@ class MyPrePayment extends React.Component{
 
   //合同详情
   rowClick = (record) => {
-    this.context.router.push(this.state.PayRequisitionDetail.url.replace(':id', record.id))
+    this.context.router.push(this.state.PayRequisitionDetail.url.replace(':id', record.id));
   };
 
   render() {
-    const testData=[{"id":123,"status":"CANCEL"}]
     const { visible,loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="my-contract">
@@ -156,10 +157,9 @@ class MyPrePayment extends React.Component{
             <Button type="primary" onClick={()=>this.showListSelector(true)}>新 建</Button>
           </div>
         </div>
-        {this.props.company.setOfBooksId}
         <Table rowKey={record => record.id}
                columns={columns}
-               dataSource={testData}
+               dataSource={data}
                padination={pagination}
                loading={loading}
                scroll={{x: true, y: false}}
@@ -190,9 +190,7 @@ function mapStateToProps(state) {
     user: state.login.user,
     company: state.login.company,
     organization: state.login.organization
-
   }
-
 }
 
 export default connect(mapStateToProps)(injectIntl(wrappedMyPrePayment));
