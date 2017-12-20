@@ -138,8 +138,8 @@ class BudgetItemMap extends React.Component {
     let itemSelectorItem = selectorData['budget_item'];
     let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
     if(key < 2){
-      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
     }
 
     let paramValueMap = {
@@ -189,9 +189,6 @@ class BudgetItemMap extends React.Component {
   getList(){
     let params = this.state.searchParams;
     let url = `${config.budgetUrl}/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
-    }
     httpFetch.get(url).then((response)=>{
       let paramsKey = this.state.paramsKey;
       response.data.map((item,index)=>{
@@ -408,3 +405,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetItemMap));
+
