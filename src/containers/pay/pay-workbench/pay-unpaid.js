@@ -165,7 +165,12 @@ class PayUnpaid extends React.Component {
   search = (result) => {
     result.requisitionDateFrom = result.requisitionDateFrom ? moment(result.requisitionDateFrom).format('YYYY-MM-DD') : null;
     result.requisitionDateTo = result.requisitionDateTo ? moment(result.requisitionDateTo).format('YYYY-MM-DD') : null;
-    this.setState({ searchParams: result },() => {
+    this.setState({
+      searchParams: result,
+      onlineCash: [],
+      offlineCash: [],
+      fileCash: []
+    },() => {
       this.getList()
     })
   };

@@ -4,7 +4,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
-import {Button, Table, Badge} from 'antd'
+import {Button, Table,Popover, Badge} from 'antd'
 
 import config from 'config'
 import httpFetch from 'share/httpFetch'
@@ -23,6 +23,11 @@ class PaymentCompanySetting extends React.Component {
     super(props);
     this.state = {
       data: [],
+      ducumentCategoryData:{
+        "EXP_REPORT":"报销单",
+        "PAYMENT_REQUISITION":"借款单",
+        "ACP_REQUISITION":"付款申请单",
+      },
       columns: [
         {/*优先级*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.priorty"}),
@@ -34,36 +39,60 @@ class PaymentCompanySetting extends React.Component {
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"}),
           dataIndex: 'companyCode',
           key: 'companyCode',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {/*单据公司名称*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"}),
           dataIndex: 'companyName',
           key: 'companyName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {/*单据类别*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"}),
           dataIndex: 'ducumentCategory',
           key: 'ducumentCategory',
+          render: recode => (
+            <Popover content={this.state.ducumentCategoryData[recode]}>
+              {this.state.ducumentCategoryData[recode]}
+            </Popover>)
         },
         {/*单据类型*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"}),
           dataIndex: 'ducumentType',
           key: 'ducumentType',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {/*付款公司代码*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyCode"}),
           dataIndex: 'paymentCompanyCode',
           key: 'paymentCompanyCode',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
         {/*付款公司名称*/
           title: this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompanyName"}),
           dataIndex: 'paymentCompanyName',
           key: 'paymentCompanyName',
+          render: recode => (
+            <Popover content={recode}>
+              {recode}
+            </Popover>)
         },
 
       ],
       searchForm: [
-        {type: 'select', id: 'setOfBooksId', label: '账套', options: [], defaultValue: '', isRequired: true,
+        {type: 'select', id: 'setOfBooksId', label:this.props.intl.formatMessage({id: "paymentCompanySetting.setOfBooks"}), options: [], defaultValue: '', isRequired: true,
           labelKey: 'setOfBooksCode', valueKey: 'setOfBooksId'},
         {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
         {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
@@ -113,6 +142,11 @@ class PaymentCompanySetting extends React.Component {
         })
 
     })
+
+
+    this.getSystemValueList(2106).then(res => {
+     console.log(res.data);
+    });
   }
 
 //获得数据
@@ -204,8 +238,21 @@ class PaymentCompanySetting extends React.Component {
   }
 
   putItemTypeShowSlide = (recode) => {
+  const  value={
+      ...recode,
+    paymentCompanyId:[{
+      key:recode.paymentCompanyId,
+      id:recode.paymentCompanyId,
+      name:recode.paymentCompanyName
+    }],
+    companyId:[{
+      key:recode.companyId,
+      id:recode.companyId,
+      name:recode.companyName
+    }]
+    }
     this.setState({
-      updateParams: recode,
+      updateParams: value,
     }, () => {
       this.showSlideNew(true)
     })
