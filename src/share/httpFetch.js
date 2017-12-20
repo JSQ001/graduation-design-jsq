@@ -46,20 +46,20 @@ const httpFetch = {
    * @return {Promise.<TResult>}
    */
   refreshToken: function(){
-    let refreshParams = `client_id=ArtemisApp&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${localStorage.refresh_token}&grant_type=refresh_token`;
+    let refreshParams = `client_id=ArtemisApp&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${JSON.parse(localStorage.getItem('hly.token')).refresh_token}&grant_type=refresh_token`;
     return axios(encodeURI(`${config.baseUrl}/oauth/token?${refreshParams}`),{
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ' + localStorage.token
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('hly.token')).access_token
       }
     }).then(checkStatus).catch(e => {
       message.error(e.response.data.error_description);
       if(location.href.substr(8, location.href.length - 1).split('/').length !== 2)
         location.href = '/';
     }).then(response => {
-      localStorage.token = response.data.access_token;
-      localStorage.refresh_token = response.data.refresh_token;
+      localStorage.setItem('hly.token', JSON.stringify(response.data));
+
     })
   },
 
@@ -112,8 +112,7 @@ const httpFetch = {
         'Authorization': 'Basic QXJ0ZW1pc0FwcDpuTENud2RJaGl6V2J5a0h5dVpNNlRwUURkN0t3SzlJWERLOExHc2E3U09X'
       }
     }).then(checkStatus).then((response)=>{
-      localStorage.token = response.data.access_token;
-      localStorage.refresh_token = response.data.refresh_token;
+      localStorage.setItem('hly.token', JSON.stringify(response.data));
     });
   }
 };
@@ -123,7 +122,7 @@ methodList.map(method => {
   httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
+    header.Authorization = "Bearer " + JSON.parse(localStorage.getItem('hly.token')).access_token;
     let option = {
       url: url,
       method: method.toUpperCase(),

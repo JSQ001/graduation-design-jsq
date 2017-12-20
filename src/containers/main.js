@@ -268,6 +268,11 @@ class Main extends React.Component{
     this.props.dispatch(setLanguage(language));
   };
 
+  //跳转至老中控，插入token
+  skipToAdmin = () => {
+    location.href = location.origin + '/new/#/my/expense/list';
+  };
+
   onCollapse = (collapsed) => {
     this.setState({ collapsed });
   };
@@ -289,6 +294,8 @@ class Main extends React.Component{
               <img src={LogoImg}/>
             </div>
             <div className="user-area">
+              {config.appEnv === 'dist' ? <Button className="admin-button" onClick={this.skipToAdmin}>跳转至中控平台</Button> : null}
+
               <Button className="admin-button" onClick={this.handleModeChange}>{adminMode ? formatMessage({id: 'main.exit.admin.mode'}) /* 退出管理员模式*/ : formatMessage({id: 'main.admin.mode'}) /* 管理员模式*/}</Button>
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
