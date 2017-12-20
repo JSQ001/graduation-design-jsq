@@ -15,31 +15,31 @@ class BudgetJournalCheck extends React.Component{
       loading1: false,
       loading2: false,
       SearchForm: [
-        {type: 'input', id: 'businessCode', label: '日记账编号'},
-        {type: 'input', id: 'fullName', label: '申请人姓名/工号'},
-        {type: 'select', id:'journalTypeId', label: '预算日记账类型', options: [], method: 'get',
+        {type: 'input', id: 'businessCode', label: this.props.intl.formatMessage({id:"budgetJournal.budgetHistory"})},/*日记账编号*/
+        {type: 'input', id: 'fullName', label: this.props.intl.formatMessage({id:"budgetJournal.employeeNameOrNumber"})},/*申请人姓名/工号*/
+        {type: 'select', id:'journalTypeId', label: this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"}), options: [], method: 'get',/*预算日记账类型*/
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
         {type: 'items', id: 'createdDate', items: [
-          {type: 'date', id: 'beginDate', label: '提交日期从'},
-          {type: 'date', id: 'endDate', label: '提交日期至'}
+          {type: 'date', id: 'beginDate', label:  this.props.intl.formatMessage({id:"budgetJournal.beginDate"})},/*提交日期从*/
+          {type: 'date', id: 'endDate', label: this.props.intl.formatMessage({id:"budgetJournal.endDate"})}/*提交日期至*/
         ]},
 
       ],
       columns: [
-        {title: '序号', dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},
-        {title: '申请人', dataIndex: 'applicantName',
+        {title:this.props.intl.formatMessage({id:"budgetJournal.sequenceNumber"}), dataIndex: 'index', width: '7%', render:(value, record, index) => index + 1},/*序号*/
+        {title:this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), dataIndex: 'applicantName',/*申请人*/
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
-        {title: '提交时间', dataIndex: 'submittedDate'},
-        {title: '类型', dataIndex: 'formName'},
-        {title: '预算日记账单号', dataIndex: 'journalCode'},
-        {title: '币种', dataIndex: 'currencyCode'},
-        {title: '金额', dataIndex: 'totalBudget'},
-        {title: '状态', dataIndex: 'status'},
+        {title: this.props.intl.formatMessage({id:"budgetJournal.submittedDate"}), dataIndex: 'submittedDate'},/*提交时间*/
+        {title: this.props.intl.formatMessage({id:"budgetJournal.type"}), dataIndex: 'formName'},/*类型*/
+        {title: this.props.intl.formatMessage({id:"budgetJournal.journalCode"}), dataIndex: 'journalCode'},/*预算日记账编号*/
+        {title: this.props.intl.formatMessage({id:"budgetJournal.currency"}), dataIndex: 'currencyCode'},/*币种*/
+        {title:this.props.intl.formatMessage({id:"budgetJournal.amount"}), dataIndex: 'totalBudget'},/*金额*/
+        {title:this.props.intl.formatMessage({id:"budgetJournal.status"}), dataIndex: 'status'},/*状态*/
       ],
       budgetJournalDetailCheckDetailPage: menuRoute.getRouteItem('budget-journal-check-detail','key'),    //预算日记账复核详情
       unJournalData: [],
@@ -62,13 +62,13 @@ class BudgetJournalCheck extends React.Component{
       this.getUnJournalList(resolve, reject);
       this.getJournalList(resolve, reject)
     }).catch(() => {
-      message.error('数据加载失败，请重试')
+      message.error(this.props.intl.formatMessage({id:"budgetJournal.getDataFail"}))
     });
   }
 
   getUnJournalList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize } = this.state;
-    let unJournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=false&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    let unJournalUrl = `${config.baseUrl}/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=false&endDate&page=${unapprovedPage}&size=${unapprovedPageSize}`;
     this.setState({ loading1: true });
     const budgetJournalApprovalViewArray = [];
     httpFetch.get(unJournalUrl).then((res) => {
@@ -96,7 +96,7 @@ class BudgetJournalCheck extends React.Component{
 
   getJournalList = (resolve, reject) => {
     const { approvedPage, approvedPageSize } = this.state;
-    let JournalUrl = `http://116.228.77.183:25299/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=true&endDate&page=${approvedPage}&size=${approvedPageSize}`;
+    let JournalUrl = `${config.baseUrl}/api/approvals/budget/journal/filters?fullName&businessCode&beginDate&finished=true&endDate&page=${approvedPage}&size=${approvedPageSize}`;
     this.setState({ loading2: true });
     const budgetJournalApprovalViewArray = [];
     httpFetch.get(JournalUrl).then((res) => {
@@ -160,11 +160,11 @@ class BudgetJournalCheck extends React.Component{
     return (
       <div className="budget-journal">
         <Tabs onChange={this.handleTabsChange}>
-          <TabPane tab="未审批" key="unapproved">
+          <TabPane tab={this.props.intl.formatMessage({id:'budgetJournal.unapproved'})} key="unapproved">
             <SearchArea searchForm={SearchForm}
                         submitHandle={this.unapprovedSearch}/>
             <div className="table-header">
-              <div className="table-header-title">{`共搜索到 ${unJournalPagination.total} 条数据`}</div>
+              <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:` ${unJournalPagination.total} `})}</div>
             </div>
             <Table rowKey={record => record.id}
                    columns={columns}
@@ -175,11 +175,11 @@ class BudgetJournalCheck extends React.Component{
                    onRowClick={this.HandleRowClick}
                    size="middle"/>
           </TabPane>
-          <TabPane tab="已审批" key="approved">
+          <TabPane tab={this.props.intl.formatMessage({id:'budgetJournal.approved'})} key="approved">
             <SearchArea searchForm={SearchForm}
                         submitHandle={this.approvedSearch}/>
             <div className="table-header">
-              <div className="table-header-title">{`共搜索到 ${journalPagination.total} 条数据`}</div>
+              <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:` ${journalPagination.total} `})}</div>
             </div>
             <Table rowKey={record => record.id}
                    columns={columns}
