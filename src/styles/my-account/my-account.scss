@@ -1,24 +1,12 @@
 .my-account{
-  .my-account-table-header{
+  height: 100%;
+  .operate-area{
     margin-bottom: 20px;
-    .table-header-dropDown{
-      margin-left: 10px;
-    }
-    .table-header-message{
-      position: fixed;
-      display: inline-block;
-      background: #E6F7FF;
-      border: 1px solid #91d5ff;
-      margin-left: 10px;
-      border-radius:4px;
-      height: 32px;
-      width: 25vw;
-      .table-header-message-img{
-        margin: 10px;
-      }
-      .table-header-message-number{
-        color: #00B2EF;
-      }
+  }
+  .expanded-row{
+    font-size: 12px;
+    .expanded-title{
+      font-weight: 500;
     }
   }
 }

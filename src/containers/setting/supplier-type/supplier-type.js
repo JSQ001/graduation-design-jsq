@@ -6,10 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import { Table, Badge, Button, Popover, message } from 'antd';
-import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch'
-
-import UpdateBudgetOrganization from 'containers/budget-setting/budget-organization/update-budget-organization'
 import SearchArea from 'components/search-area'
 import SlideFrame from 'components/slide-frame'
 
@@ -160,7 +157,7 @@ class SupplierType extends React.Component {
         const { columns, data, loading, pagination, searchForm, updateParams, showSlideFrame, showSlideFrameNew } = this.state;
         return (
             <div className="budget-organization">
-                <h3 className="header-title">{formatMessage({ id: "menu.supplier-type" })}</h3> 
+                <h3 className="header-title">{formatMessage({ id: "menu.supplier-type" })}</h3>
                 <SearchArea
                     searchForm={searchForm}
                     submitHandle={this.search}
@@ -170,7 +167,7 @@ class SupplierType extends React.Component {
                 <div className="table-header">
                     <div className="table-header-title">{formatMessage({ id: "common.total" }, { total: pagination.total ? pagination.total : '0' })}</div> {/* 共total条数据 */}
                     <div className="table-header-buttons">
-                        <Button type="primary" onClick={this.newItemShowSlide}>{formatMessage({ id: "common.create" })}</Button> 
+                        <Button type="primary" onClick={this.newItemShowSlide}>{formatMessage({ id: "common.create" })}</Button>
                     </div>
                 </div>
 
@@ -181,7 +178,7 @@ class SupplierType extends React.Component {
                     bordered
                     onRowClick={this.editItem}
                     size="middle" />
-         
+
                 <SlideFrame title={JSON.stringify(updateParams) === "{}" ? `新建${formatMessage({ id:"menu.supplier-type"})}` : `编辑${formatMessage({ id:"menu.supplier-type"})}`}
                     show={showSlideFrameNew}
                     content={NewSubjectSheet}

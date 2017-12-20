@@ -207,7 +207,7 @@ class SearchArea extends React.Component{
       httpFetch[item.method](url, item.getParams).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
+          options.push({label: item.renderOption ? item.renderOption(data) : data[item.labelKey], value: data[item.valueKey], data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -271,7 +271,7 @@ class SearchArea extends React.Component{
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
+          options.push({label: item.renderOption ? item.renderOption(data) : data[item.labelKey], value: data[item.valueKey], data: data})
         });
         let searchForm = this.state.searchForm;
         searchForm = searchForm.map(searchItem => {
@@ -735,6 +735,7 @@ class SearchArea extends React.Component{
           single: false                ╲╲可选,当type为list时是否为单选
           valueListCode: ''             ╲╲可选，当type为value_list时的值列表code
           colSpan: ''                    ╲╲可选，自定义搜索项的宽度
+          renderOption: (option) => {}    ╲╲可选，当类型为select、coombobox、multiple、value_list时选项option的渲染规则
         }
  */
 
