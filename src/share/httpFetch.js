@@ -58,7 +58,11 @@ const httpFetch = {
       if(location.href.substr(8, location.href.length - 1).split('/').length !== 2)
         location.href = '/';
     }).then(response => {
-      localStorage.setItem('hly.token', JSON.stringify(response.data));
+      let expiredAt = new Date();
+      let token = response.data;
+      expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
+      token.expires_at = expiredAt.getTime();
+      localStorage.setItem('hly.token', JSON.stringify(token));
 
     })
   },
@@ -112,7 +116,11 @@ const httpFetch = {
         'Authorization': 'Basic QXJ0ZW1pc0FwcDpuTENud2RJaGl6V2J5a0h5dVpNNlRwUURkN0t3SzlJWERLOExHc2E3U09X'
       }
     }).then(checkStatus).then((response)=>{
-      localStorage.setItem('hly.token', JSON.stringify(response.data));
+      let expiredAt = new Date();
+      let token = response.data;
+      expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
+      token.expires_at = expiredAt.getTime();
+      localStorage.setItem('hly.token', JSON.stringify(token));
     });
   }
 };
