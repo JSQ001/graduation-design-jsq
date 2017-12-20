@@ -380,6 +380,8 @@ class BudgetJournalDetail extends React.Component {
         data:listData,
         commitFlag:listData.length>0
       })
+    }).catch((e)=>{
+      message.error(e.response.data.message);
     })
   }
 

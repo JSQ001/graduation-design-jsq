@@ -35,19 +35,19 @@ class BudgetJournalReCheck extends React.Component {
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
         {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
-        {type: 'select', id:'versionId', label: '预算版本', options: [], method: 'get',
+        {type: 'select', id:'versionId', label: this.props.intl.formatMessage({id:"budget.versionId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'versionName', valueKey: 'id'},
-        {type: 'select', id:'structureId', label: '预算表',  options: [], method: 'get',
+        {type: 'select', id:'structureId', label: this.props.intl.formatMessage({id:"budget.structureId"}),  options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
-        {type: 'select', id:'scenarioId', label: '预算场景', options: [], method: 'get',
+        {type: 'select', id:'scenarioId', label: this.props.intl.formatMessage({id:"budget.scenarioId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'scenarioName', valueKey: 'id'},
-        {type: 'select', id:'employeeId', label: '申请人', options: [], method: 'get',
+        {type: 'select', id:'employeeId',label: this.props.intl.formatMessage({id:"budget.employeeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/selectCheckedEmp`, getParams: {},
           labelKey: 'empName', valueKey: 'empOid'},
-        {type:'date',id:'createData', label: '创建时间'}
+        {type:'date',id:'createData', label:this.props.intl.formatMessage({id:"budget.createdDate"})}
       ],
 
       columns: [
@@ -65,7 +65,7 @@ class BudgetJournalReCheck extends React.Component {
           title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
         },
         {          /*预算表*/
-          title:"预算表", key: "structureName", dataIndex: 'structureName',
+          title: this.props.intl.formatMessage({id:"budget.structureId"}), key: "structureName", dataIndex: 'structureName',
           render: recode => (
             <Popover content={recode}>
               {recode}
