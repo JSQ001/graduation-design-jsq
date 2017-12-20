@@ -68,7 +68,7 @@ class UploadFile extends React.Component{
 
   render() {
     const upload_headers = {
-      'Authorization': 'Bearer ' + localStorage.token
+      'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('hly.token')).access_token
     };
     return (
       <div className="upload">

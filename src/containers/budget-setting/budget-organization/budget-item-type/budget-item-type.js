@@ -36,7 +36,9 @@ class BudgetItemType extends React.Component {
           dataIndex: 'isEnabled',
           key: 'isEnabled',
           render: (recode, text) => {
-            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+            return (<div ><Badge status={ recode ? "success" : "error"}/>
+              {recode ? this.props.intl.formatMessage({id: "common.status.enable"}) : this.props.intl.formatMessage({id: "common.status.disable"})}
+              </div>);
           }
         },
       ],
