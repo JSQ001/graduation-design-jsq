@@ -18,6 +18,7 @@ import dashboard from 'share/routes/normal/dashboard'  //仪表盘
 import myAccount from 'share/routes/normal/my-account'  //我的账本
 import expenseReport from 'share/routes/normal/expense-report'  //报销单
 import request from 'share/routes/normal/request'  //申请单
+import pageCreate from 'share/routes/normal/page-create'  //网页生成器
 import financialManagement from 'share/routes/normal/finacial-management'  //财务管理
 import budget from 'share/routes/normal/budget'  //预算
 import pay from 'share/routes/normal/pay'  //支付
@@ -55,6 +56,7 @@ const menu = [
   myAccount,  //我的账本
   expenseReport,  //报销单
   request,  //申请单
+  pageCreate,  //网页生成器
   financialManagement,  //财务管理
   budget,  //预算
   pay,  //支付

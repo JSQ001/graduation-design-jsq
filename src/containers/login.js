@@ -74,6 +74,7 @@ class Login extends React.Component{
             type="password"
             placeholder={this.props.intl.formatMessage({id: 'login.password'})}  //密码
             onChange={this.inputPasswordHandler}
+            onPressEnter={this.login}
           />
           <br/>
           <div className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</div>

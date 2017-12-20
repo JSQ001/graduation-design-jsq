@@ -15,22 +15,22 @@ class AccountPeriodDetail extends React.Component {
     this.state = {
       periodInfo: {},
       periodInfoList: [
-        {label: formatMessage({id: 'account-period-control.periodSetCode'}), id: 'periodSetCode'}, //会计期代码
-        {label: formatMessage({id: 'account-period-detail.periodSetName'}), id: 'periodSetName'}, //会计期名称
-        {label: formatMessage({id: 'account-period-detail.totalPeriodNum'}), id: 'totalPeriodNum'}, //期间总数
-        {label: formatMessage({id: 'account-period-control.sobCode'}), id: 'setOfBooksCode'}, //账套代码
-        {label: formatMessage({id: 'account-period-control.sobName'}), id: 'setOfBooksName'} //账套名称
+        {label: formatMessage({id: 'account.period.control.periodSetCode'}), id: 'periodSetCode'}, //会计期代码
+        {label: formatMessage({id: 'account.period.control.detail.periodSetName'}), id: 'periodSetName'}, //会计期名称
+        {label: formatMessage({id: 'account.period.control.detail.totalPeriodNum'}), id: 'totalPeriodNum'}, //期间总数
+        {label: formatMessage({id: 'account.period.control.sobCode'}), id: 'setOfBooksCode'}, //账套代码
+        {label: formatMessage({id: 'account.period.control.sobName'}), id: 'setOfBooksName'} //账套名称
       ],
       columns: [
-        {title: formatMessage({id: 'account-period-detail.column.year'}), key: 'periodYear', dataIndex: 'periodYear'}, //年
+        {title: formatMessage({id: 'account.period.control.detail.column.year'}), key: 'periodYear', dataIndex: 'periodYear'}, //年
         {title: formatMessage({id: 'common.sequence'}), key: 'periodNum', dataIndex: 'periodNum'},  //序号
-        {title: formatMessage({id: 'account-period-detail.column.date-from'}), key: 'startDate', dataIndex: 'startDate',
+        {title: formatMessage({id: 'account.period.control.detail.column.date-from'}), key: 'startDate', dataIndex: 'startDate',
           render: date => moment(date).format('YYYY-MM-DD')},  //日期从
-        {title: formatMessage({id: 'account-period-detail.column.date-to'}), key: 'endDate', dataIndex: 'endDate',
+        {title: formatMessage({id: 'account.period.control.detail.column.date-to'}), key: 'endDate', dataIndex: 'endDate',
           render: date => moment(date).format('YYYY-MM-DD')},  //日期至
-        {title: formatMessage({id: 'account-period-detail.column.quarter'}), key: 'quarterNum', dataIndex: 'quarterNum'},  //季度
-        {title: formatMessage({id: 'account-period-detail.column.period'}), key: 'periodName', dataIndex: 'periodName'},  //期间
-        {title: formatMessage({id: 'account-period-detail.column.period-status'}), key: 'periodStatusCode', dataIndex: 'periodStatusCode',
+        {title: formatMessage({id: 'account.period.control.detail.column.quarter'}), key: 'quarterNum', dataIndex: 'quarterNum'},  //季度
+        {title: formatMessage({id: 'account.period.control.detail.column.period'}), key: 'periodName', dataIndex: 'periodName'},  //期间
+        {title: formatMessage({id: 'account.period.control.detail.column.period-status'}), key: 'periodStatusCode', dataIndex: 'periodStatusCode',
           render: code => <Badge status={code==='O' ? 'success' : 'error'} text={code==='N' ? '未打开' : (code==='O' ? '已打开' : '已关闭')}/>},  //期间状态
         {title: formatMessage({id: 'common.operation'}), key: 'id', dataIndex: 'id',
           render: (periodId, record) =>
@@ -198,9 +198,9 @@ class AccountPeriodDetail extends React.Component {
     });
     return (
       <div className="account-period-detail">
-        <h3 className="header-title">{formatMessage({id: 'account-period-detail.title'})/* 账套期间信息 */}</h3>
+        <h3 className="header-title">{formatMessage({id: 'account.period.control.detail.title'})/* 账套期间信息 */}</h3>
         {periodRow}
-        <h3 className="header-title" style={{margin:'24px 0 10px'}}>{formatMessage({id: 'account-period-detail.title.close'})/* 会计期间-未打开 */}</h3>
+        <h3 className="header-title" style={{margin:'24px 0 10px'}}>{formatMessage({id: 'account.period.control.detail.title.close'})/* 会计期间-未打开 */}</h3>
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={dataClose}
@@ -216,7 +216,7 @@ class AccountPeriodDetail extends React.Component {
                     style={{float:'right',margin:'10px 0'}}
                     onChange={this.onChangeClosePage}
                     total={paginationClose.total} />
-        <h3 className="header-title" style={{margin:'40px 0 10px'}}>{formatMessage({id: 'account-period-detail.title.open'})/* 会计期间-已打开 */}</h3>
+        <h3 className="header-title" style={{margin:'40px 0 10px'}}>{formatMessage({id: 'account.period.control.detail.title.open'})/* 会计期间-已打开 */}</h3>
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={dataOpen}

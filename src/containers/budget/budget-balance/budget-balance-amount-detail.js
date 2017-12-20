@@ -80,13 +80,13 @@ class BudgetBalanceAmountDetail extends React.Component {
         }
       });
     })
-  }
+  };
 
   filterColumns = () => {
     const { columns } = this.state;
     let result = [];
     columns.map(column => {
-      (!column.type || column.type === this.props.params.type) && result.push(column)
+      (!column.type || column.type.indexOf(this.props.params.type) > -1) && result.push(column)
     });
     return result;
   };

@@ -167,8 +167,6 @@ class BudgetJournalDetailSubmit extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
         this.getColumnsAndDimensionhandleData(resp.data);
 
-    }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
     })
   }
 
@@ -232,18 +230,6 @@ class BudgetJournalDetailSubmit extends React.Component {
     return "CNY"+" "+sum.toFixed(2);
   }
 
-
-  getPeriodStrategy=()=>{
-    const infoData = this.state.infoData;
-    const periodStrategy =  infoData.periodStrategy;
-    switch (periodStrategy){
-      case 'MONTH':{ return `期间`}
-      case 'QUARTER':{ return `年`}
-      case 'YEAR':{ return `季度`}
-    }
-
-  }
-
   //获取附件
   getFile=()=>{
     const fileList = this.state.fileList;
@@ -254,18 +240,6 @@ class BudgetJournalDetailSubmit extends React.Component {
     return file_arr.length > 0 ? file_arr : '-';
 
   }
-
-
-  getPeriod=()=>{
-    const infoData = this.state.infoData;
-    switch (infoData.periodStrategy){
-      case 'MONTH':{ return `${infoData.periodName?infoData.periodName:''}`}
-      case 'QUARTER':{ return `${infoData.periodYear}年-第 ${infoData.periodQuarter?infoData.periodQuarter:''} 季度`}
-      case 'YEAR':{ return `${infoData.periodYear}年`}
-
-    }
-  }
-
 
   //撤回
   handleRevocation=()=>{
@@ -295,60 +269,60 @@ class BudgetJournalDetailSubmit extends React.Component {
       <div className="budget-journal-detail-submit">
         <div className="base-info">
           <div className="base-info-header">
-            基本信息
+            {this.props.intl.formatMessage({id:"budget.basicInformation"})}
           </div>
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">状态:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.status"})}:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算日记账编号:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.journalCode"})}:</div>
               <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">总金额:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.amount"})}:</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">申请人:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.employeeId"})}:</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">部门:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.unitId"})}:</div>
               <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">创建日期:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.createdDate"})}:</div>
               <div className="beep-info-text">{String(infoData.createdDate).substring(0,10)}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算项目类型:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.journalTypeId"})}:</div>
               <div className="beep-info-text">{infoData.journalTypeName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算表:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.structureId"})}:</div>
               <div className="beep-info-text">{infoData.structureName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算场景:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.scenarioId"})}:</div>
               <div className="beep-info-text">{infoData.scenario}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算版本:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.versionId"})}:</div>
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">编制期段:</div>
-              <div className="beep-info-text">{this.getPeriodStrategy()}</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.periodStrategy"})}:</div>
+              <div className="beep-info-text">{infoData.periodStrategyName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">附件:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.attachment"})}:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
 
@@ -367,20 +341,12 @@ class BudgetJournalDetailSubmit extends React.Component {
         />
         </Spin>
 
-        <div className="collapse">
-          <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Collapse.Panel header="审批历史" key="1">
-
-            </Collapse.Panel>
-
-          </Collapse>
-        </div>
 
         <div className="footer-operate">
-            <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
+            <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budget.return"})}</Button>
             {this.state.infoData.status === "SUBMIT"?
-              (   <Popconfirm placement="topLeft" title={"确认撤回"} onConfirm={this.handleRevocation} okText="确定" cancelText="取消">
-                   <Button className="button-Revocation" type="primary" >撤回</Button>
+              (   <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budget.returnCommit"})} onConfirm={this.handleRevocation} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
+                   <Button className="button-Revocation" type="primary" >{this.props.intl.formatMessage({id:"budget.returnCommit"})}</Button>)
                 </Popconfirm>
               ) :''}
 

@@ -301,7 +301,7 @@ class Main extends React.Component{
                 <img src={this.props.user.filePath ? this.props.user.filePath : UserImg}/>
               </div>
               <Tooltip placement="bottom" title={<span style={{whiteSpace: 'nowrap'}}>{formatMessage({id: 'main.logout'})}</span>}>
-                <Icon type="logout" style={{marginLeft: 20, cursor: 'pointer'}} onClick={() => {this.context.router.replace('/')}}/>
+                <Icon type="logout" style={{marginLeft: 20, cursor: 'pointer'}} onClick={() => {this.context.router.push('/')}}/>
               </Tooltip>
             </div>
             {this.renderBreadcrumb()}

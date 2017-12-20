@@ -80,8 +80,10 @@ const selectorData = {
     url: `${config.budgetUrl}/api/budget/items/query`,
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
-      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
-      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`,
+        labelKey: 'itemCode', valueKey: 'itemCode', method: 'get', renderOption: (data) => `${data.itemCode}(${data.itemName})`},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`,
+        labelKey: 'itemCode', valueKey: 'itemCode', method: 'get', renderOption: (data) => `${data.itemCode}(${data.itemName})`}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
@@ -546,7 +548,7 @@ const selectorData = {
       {title: '工号', dataIndex: 'userId'},
       {title: '姓名', dataIndex: 'userName'},
     ],
-    key: 'employeeId'
+    key: 'userId'
   },
 };
 

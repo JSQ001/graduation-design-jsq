@@ -31,7 +31,7 @@
     font-weight: bolder;
   }
 
-  .pay-online {
+  .pay-unpaid {
     .ant-breadcrumb a {
       color: #108ee9;
     }
@@ -48,6 +48,12 @@
     }
     .ant-alert-icon {
       top: 13px;
+    }
+  }
+
+  .pay-paying {
+    .row-warning {
+      background: #fff1f0;
     }
   }
 }
