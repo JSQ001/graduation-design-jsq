@@ -4,11 +4,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge, notification, Popover  } from 'antd';
+import { Button, Table, Badge, notification, Popover, Popconfirm, } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import ListSelector from 'components/list-selector.js'
 import SlideFrame from 'components/slide-frame'
 import NewUpdateSupplier from 'containers/financial-management/supplier-management/new-update-supplier'
 import 'styles/financial-management/supplier-management/supplier-management.scss'
@@ -20,8 +19,8 @@ class SupplierManagement extends React.Component{
     super(props);
     const {formatMessage} = this.props.intl;
     this.state = {
-      loading: true,
-      data: [],
+      loading: false,
+      data: [{supplierCode:123,key:1,id:1}],
       batchCompany: true,
       selectedRowKeys:[],
       slideFrame:{
@@ -72,24 +71,34 @@ class SupplierManagement extends React.Component{
         {          /*更新日志*/
           title: formatMessage({id:"supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog'
         },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '18%', render: (text, record, index) => (
           <span>
-            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record,index) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
-            {record.edit ?
-              <a href="#" style={{marginLeft: 12}}
-                 onClick={(e) => this.operateItem(e, record, index, false)} >{ formatMessage({id: "common.cancel" })}</a>
-              :
-              <Popconfirm onConfirm={(e) => this.deleteItem(e, record,index)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
-                <a href="#" style={{marginLeft: 12}}>{ formatMessage({id: "common.delete"})}</a>
-              </Popconfirm>
-
-            }
+            <a href="#" onClick={(e) => this.editItem(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
+            <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkAccount(e, record,index)}>{formatMessage({id: "supplier.bank.account"})}</a>
+           <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkCompany(e, record,index)}>{formatMessage({id: "supplier.management.deliveryCompany"})}</a>
           </span>)
         },
       ],
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     }
   }
+
+  componentWillMount() {
+    this.getList();
+  }
+
+  handleLinkAccount = (e,record,index)=>{
+    console.log(record)
+    console.log(e)
+    this.context.router.push(menuRoute.getMenuItemByAttr('supplier-bank-account', 'key').children.supplierBankAccount.url.replace('id', record.id))
+  };
+
+  handleLinkCompany = (e,record,index)=>{
+    console.log(record)
+    this.context.router.push(menuRoute.getMenuItemByAttr('supplier-bank-account', 'key').children.supplierCompanyDelivery.url.replace('id', record.id))
+  };
 
   handleSearch = (values)=>{
     console.log(values)
@@ -163,6 +172,8 @@ class SupplierManagement extends React.Component{
   clearRowSelection(){
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
+
+  getList(){}
 
   //新建侧滑
   handleCreate = ()=>{

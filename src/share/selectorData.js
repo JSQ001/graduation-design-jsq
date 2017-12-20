@@ -550,6 +550,22 @@ const selectorData = {
     ],
     key: 'userId'
   },
+  'supplier_company': {
+    title: '批量分配公司',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'select', id: 'setOfBook', label: "账套",options: [], getUrl: `${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`, labelKey: 'setOfBooksName', valueKey: 'setOfBooksCode', method: 'get'},
+      {type: 'input', id: 'keyWords', label: "公司代码/名称"},
+      {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
+      {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
+    ],
+    columns: [
+      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司名称", dataIndex: 'name'},
+      {title: "公司类型", dataIndex:'companyTypeName'}
+    ],
+    key: 'id'
+  },
 };
 
 export default selectorData;

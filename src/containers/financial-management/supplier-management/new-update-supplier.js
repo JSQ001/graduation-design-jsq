@@ -19,7 +19,7 @@ class NewUpdateSupplier extends React.Component{
     super(props);
     const {formatMessage} = this.props.intl;
     this.state = {
-      loading: true,
+      loading: false,
       basicInfo: [
         {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'supplierType',//供应商类型
           options: [],

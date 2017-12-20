@@ -286,7 +286,7 @@ class BudgetControlRulesDetail extends React.Component{
           onChange={this.onChangePager}
           size="middle"
           bordered/>
-        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
 
         <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
                     show={showSlideFrameCreate}

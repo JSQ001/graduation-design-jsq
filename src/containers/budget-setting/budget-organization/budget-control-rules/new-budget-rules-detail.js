@@ -70,7 +70,7 @@ class NewBudgetRulesDetail extends React.Component{
         selectorItem: undefined
       },
       'BUDGET_ITEM': {
-        listType: 'budget_item',
+        listType: '',
         labelKey: 'id',
         valueKey: 'itemName',
         codeKey: 'itemCode',
