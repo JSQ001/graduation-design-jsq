@@ -21,8 +21,8 @@ class NewUpdateSupplier extends React.Component{
     this.state = {
       loading: false,
       basicInfo: [
-        {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'supplierType',//供应商类型
-          options: [],
+        {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'supplierTypeCode',//供应商类型
+          options: [], url: `${config.vendorUrl}/vendor-info-service/api/supplier/type/query`, valueKey: 'supplierTypeCode', labelKey: 'supplierTypeName' ,method: 'get',
          },
         {type: 'input',flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.code"}), key: 'supplierCode' }, //供应商代码
         {type: 'input',flag: 'basic', isRequired: true,label: formatMessage({id:"supplier.management.name"}), key: 'supplierName' }, //供应商名称
@@ -85,26 +85,15 @@ class NewUpdateSupplier extends React.Component{
   };
 
   getOptions = (item)=> {
+    console.log(item)
     httpFetch[item.method](item.url).then((response) => {
       let options = [];
-      console.log(response)
       response.data.map(data => {
-        options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
+        options.push({label: item.renderOption ? item.renderOption(data) : data[item.labelKey], value: data[item.valueKey]})
       });
-      let otherInfo = this.state.otherInfo;
-      console.log(otherInfo)
-      otherInfo.map((searchItem)=>{
-        if(searchItem.key === item.key){
-          searchItem.options = options;
-        }
-        return
-      });
-      console.log(otherInfo)
-      this.setState({
-        otherInfo
-      })
-     /* if(item.flag === 'basic'){
+      if(item.flag === 'basic'){
         let basicInfo = this.state.basicInfo;
+        alert(1)
         basicInfo = basicInfo.map((searchItem)=>{
           if(searchItem.key === item.key){
             searchItem.options = options;
@@ -115,6 +104,7 @@ class NewUpdateSupplier extends React.Component{
           basicInfo
         })
       }else {
+        alert(2)
         let otherInfo = this.state.otherInfo;
         otherInfo = otherInfo.map((searchItem)=>{
           if(searchItem.key === item.key){
@@ -125,7 +115,7 @@ class NewUpdateSupplier extends React.Component{
         this.setState({
           otherInfo
         })
-      }*/
+      }
     });
   };
 
@@ -138,7 +128,7 @@ class NewUpdateSupplier extends React.Component{
       }
       //选择组件
       case 'select': {
-        if(item.key === 'country' )
+        if(item.key === 'supplierTypeCode')
           console.log(item)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
@@ -203,8 +193,8 @@ class NewUpdateSupplier extends React.Component{
   };
 
   onCancel = ()=>{
-    this.props.close();
-  };
+  this.props.close();
+};
 
   render() {
     const { basicInfo, otherInfo, loading} = this.state;

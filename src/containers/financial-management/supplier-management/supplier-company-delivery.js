@@ -68,7 +68,9 @@ class SupplierCompanyDelivery extends React.Component{
     })
   };
 
-  componentWillMount(){}
+  componentWillMount(){
+    this.getList();
+  }
 
   //控制是否弹出公司列表
   showListSelector = (flag) =>{
@@ -78,7 +80,9 @@ class SupplierCompanyDelivery extends React.Component{
   };
 
   //处理公司弹框点击ok,分配公司
-  handleListOk = (result) => {};
+  handleListOk = (result) => {
+    this.showListSelector(false)
+  };
 
   //返回
   handleBack = () => {
@@ -107,10 +111,10 @@ class SupplierCompanyDelivery extends React.Component{
           size="middle"/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{formatMessage({id:"common.back"})}</a>
 
-        <ListSelector type="company_item"
+        <ListSelector type="supplier_company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
-                      extraParams={{itemId: this.props.params.itemId}}
+                      extraParams={{setOfBooksId: this.props.company.setOfBooksId}}
                       onCancel={()=>this.showListSelector(false)}/>
       </div>)
   }
@@ -121,7 +125,9 @@ SupplierCompanyDelivery.contextTypes = {
 };
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    company: state.login.company,
+  }
 }
 
 export default connect(mapStateToProps)(injectIntl(SupplierCompanyDelivery));

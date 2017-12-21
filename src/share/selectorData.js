@@ -550,7 +550,7 @@ const selectorData = {
     ],
     key: 'userId'
   },
-  'supplier_company': {
+  'tenant_company': {
     title: '批量分配公司',
     url: `${config.baseUrl}/api/company/by/condition`,
     searchForm: [
@@ -562,7 +562,8 @@ const selectorData = {
     columns: [
       {title: "公司代码", dataIndex: 'companyCode'},
       {title: "公司名称", dataIndex: 'name'},
-      {title: "公司类型", dataIndex:'companyTypeName'}
+      {title: "公司类型", dataIndex:'companyTypeName'},
+      {title: "账套", dataIndex:'setOfBook'}
     ],
     key: 'id'
   },

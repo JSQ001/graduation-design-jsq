@@ -207,8 +207,8 @@ class NewUpdateBankAccount extends React.Component{
               </div>)}
           </FormItem>
           <div className="bank-account-tips">
-            {formatMessage({id:"bank-account-tips-left"})}
-            <a target="#"  onClick={this.handleLinkBank}>{formatMessage({id:"bank-account-tips-center"})}</a>
+            {formatMessage({id:"bank.account.tips.left"})}
+            <a target="#"  onClick={this.handleLinkBank}>{formatMessage({id:"bank.account.tips.center"})}</a>
             {formatMessage({id:"common.add"})}
           </div>
           <div className="form-footer-button">

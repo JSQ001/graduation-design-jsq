@@ -173,7 +173,11 @@ class SupplierManagement extends React.Component{
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
-  getList(){}
+  getList(){
+    httpFetch.get(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
+      console.log(response)
+    })
+  }
 
   //新建侧滑
   handleCreate = ()=>{
