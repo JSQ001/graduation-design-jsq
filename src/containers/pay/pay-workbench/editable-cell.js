@@ -12,7 +12,7 @@ class EditableCell extends React.Component {
     }
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.setState({ value: this.props.value })
   }
 

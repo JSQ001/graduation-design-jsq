@@ -71,7 +71,7 @@ class PayPaying extends React.Component {
         },
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='processing' text={state}/>},
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='processing' text={state}/>},
         {title: '操作', dataIndex: 'id', render: (id, record) => {
           const menu = (
             <Menu>
@@ -95,6 +95,8 @@ class PayPaying extends React.Component {
       okModalVisible: false, //确认成功modal
       failModalVisible: false, //确认失败modal
       record: {}, //点击行信息
+      confirmSuccessLoading: false,
+      confirmFailLoading: false,
 
       /* 线上 */
       onlineLoading: false,
@@ -169,7 +171,23 @@ class PayPaying extends React.Component {
   confirmSuccess = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        let date = moment(values.date).format('YYYY-MM-DD');
+        let params = {
+          detailIds: [this.state.record.id],
+          versionNumbers: [this.state.record.versionNumber]
+        };
+        this.setState({ confirmSuccessLoading: true });
+        let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/paySuccess/${date}`;
+        httpFetch.post(url, params).then(res => {
+          if (res.status === 200) {
+            message.success('操作成功');
+            this.setState({ confirmSuccessLoading: false, okModalVisible: false });
+            this.getList()
+          }
+        }).catch(() => {
+          this.setState({ confirmSuccessLoading: false });
+          message.error('操作失败，请重试')
+        })
       }
     })
   };
@@ -186,14 +204,16 @@ class PayPaying extends React.Component {
       detailIds: [this.state.record.id],
       versionNumbers: [this.state.record.versionNumber]
     };
+    this.setState({ confirmFailLoading: true });
     httpFetch.post(url, params).then(res => {
       if (res.status === 200) {
         message.success('操作成功');
-        this.setState({ failModalVisible: false });
+        this.setState({ failModalVisible: false, confirmFailLoading: false });
         this.getList()
       }
     }).catch(() => {
-      message.success('操作失败，请稍后再试');
+      this.setState({ confirmFailLoading: false });
+      message.success('操作失败，请重试')
     })
   };
 
@@ -419,7 +439,7 @@ class PayPaying extends React.Component {
       labelCol: { span: 8 },
       wrapperCol: { span: 15, offset: 1 },
     };
-    const { radioValue, searchForm, okModalVisible, failModalVisible, onlineWarningRows, fileWarningRows } = this.state;
+    const { radioValue, searchForm, okModalVisible, failModalVisible, onlineWarningRows, fileWarningRows, confirmSuccessLoading, confirmFailLoading } = this.state;
     let warningItems = radioValue === 'online' ? onlineWarningRows : fileWarningRows;
     let warningRows = warningItems.map(item => {
       return (
@@ -451,6 +471,7 @@ class PayPaying extends React.Component {
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'file' && this.renderFileContent()}
         <Modal visible={okModalVisible}
+               confirmLoading={confirmSuccessLoading}
                onOk={this.confirmSuccess}
                onCancel={() => this.setState({ okModalVisible: false })}
                okText="确认成功"
@@ -481,6 +502,7 @@ class PayPaying extends React.Component {
           </div>
         </Modal>
         <Modal visible={failModalVisible}
+               confirmLoading={confirmFailLoading}
                onOk={this.confirmFail}
                onCancel={() => this.setState({ failModalVisible: false })}
                okText="确认失败"
