@@ -39,7 +39,7 @@ class BudgetJournalReCheckDetail extends React.Component {
       columns: [
         {
           /*公司*/
-          title: this.props.intl.formatMessage({id: "budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'8%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.companyId"}), key: "companyName", dataIndex: 'companyName',width:'8%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
@@ -47,7 +47,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*部门*/
-          title: this.props.intl.formatMessage({id: "budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'8%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'8%',
           render: unitName => (
             <Popover content={unitName}>
               {unitName}
@@ -55,7 +55,7 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         },
         {          /*人员*/
-          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -63,7 +63,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*预算项目*/
-          title: this.props.intl.formatMessage({id: "budget.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.item"}), key: "itemName", dataIndex: 'itemName',width:'16%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
@@ -71,30 +71,30 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*期间*/
-          title: this.props.intl.formatMessage({id: "budget.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.periodName"}), key: "periodName", dataIndex: 'periodName',width:'6%',
 
         },
         {
           /*季度*/
-          title: this.props.intl.formatMessage({id: "budget.periodQuarter"}),width:'6%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.periodQuarter"}),width:'6%',
           key: "periodQuarterName",
           dataIndex: 'periodQuarterName'
         },
         {
           /*年度*/
-          title: this.props.intl.formatMessage({id: "budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'8%'
+          title: this.props.intl.formatMessage({id: "budgetJournal.periodYear"}), key: "periodYear", dataIndex: 'periodYear',width:'8%'
         },
         {
           /*币种*/
-          title: this.props.intl.formatMessage({id: "budget.currency"}), key: "currency", dataIndex: 'currency',width:'8%'
+          title: this.props.intl.formatMessage({id: "budgetJournal.currency"}), key: "currency", dataIndex: 'currency',width:'8%'
         },
         {
           /*汇率*/
-          title: this.props.intl.formatMessage({id: "budget.rate"}), key: "rate", dataIndex: 'rate',width:'8%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.rate"}), key: "rate", dataIndex: 'rate',width:'8%',
         },
         {
           /*金额*/
-          title: this.props.intl.formatMessage({id: "budget.amount"}), key: "amount", dataIndex: 'amount',
+          title: this.props.intl.formatMessage({id: "budgetJournal.amount"}), key: "amount", dataIndex: 'amount',
           render: recode => (
             <Popover content={this.filterMoney(recode)}>
               {this.filterMoney(recode)}
@@ -102,7 +102,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*本币今额*/
-          title: this.props.intl.formatMessage({id: "budget.functionalAmount"}),
+          title: this.props.intl.formatMessage({id: "budgetJournal.functionalAmount"}),
           key: "functionalAmount",
           dataIndex: 'functionalAmount',
           render: recode => (
@@ -112,11 +112,11 @@ class BudgetJournalReCheckDetail extends React.Component {
         },
         {
           /*数字*/
-          title: this.props.intl.formatMessage({id: "budget.quantity"}), key: "quantity", dataIndex: 'quantity',with:'8%',
+          title: this.props.intl.formatMessage({id: "budgetJournal.quantity"}), key: "quantity", dataIndex: 'quantity',with:'8%',
         },
         {
           /*备注*/
-          title: this.props.intl.formatMessage({id: "budget.remark"}), key: "remark", dataIndex: 'remark',
+          title: this.props.intl.formatMessage({id: "budgetJournal.remark"}), key: "remark", dataIndex: 'remark',
           render: remark => (
             <Popover content={remark}>
               {remark}
@@ -143,7 +143,7 @@ class BudgetJournalReCheckDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`${this.props.intl.formatMessage({id: "budget.getAttachmentFail"})},${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budgetJournal.getAttachmentFail"})},${e.response.data.message}`);
     })
   }
 
@@ -172,7 +172,7 @@ class BudgetJournalReCheckDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
       this.getColumnsAndDimensionhandleData(resp.data);
     }).catch(e=>{
-      message.error(`${this.props.intl.formatMessage({id: "budget.budget.getDimensionFail"})},${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budgetJournal.getDimensionFail"})},${e.response.data.message}`);
     })
   }
 
@@ -287,60 +287,60 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         <div className="base-info">
           <div className="base-info-header">
-            {this.props.intl.formatMessage({id:"budget.basicInformation"})}
+            {this.props.intl.formatMessage({id:"budgetJournal.basicInformation"})}
           </div>
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.status"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.status"})}:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.journalCode"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.journalCode"})}:</div>
               <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.amount"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.amount"})}:</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.employeeId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.employeeId"})}:</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.unitId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.unitId"})}:</div>
               <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.createdDate"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.createdDate"})}:</div>
               <div className="beep-info-text">{String(infoData.createdDate).substring(0,10)}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.journalTypeId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"})}:</div>
               <div className="beep-info-text">{infoData.journalTypeName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.structureId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.structureId"})}:</div>
               <div className="beep-info-text">{infoData.structureName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.scenarioId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.scenarioId"})}:</div>
               <div className="beep-info-text">{infoData.scenario}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.versionId"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.versionId"})}:</div>
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.periodStrategy"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"})}:</div>
               <div className="beep-info-text">{infoData.periodStrategyName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">{this.props.intl.formatMessage({id:"budget.attachment"})}:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.attachment"})}:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
           </Row>
@@ -357,7 +357,7 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Collapse.Panel header={this.props.intl.formatMessage({id:"budget.budgetHistory"})} key="1">
+            <Collapse.Panel header={this.props.intl.formatMessage({id:"budgetJournal.budgetHistory"})} key="1">
             </Collapse.Panel>
 
           </Collapse>
@@ -365,10 +365,10 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         <div className="footer-operate">
           <div className="food-input" >
-            <span>{this.props.intl.formatMessage({id:"budget.budgetOpinion"})}：&nbsp;</span><Input style={{}}/>
-            <Button type="primary" onClick={this.handlePass}>{this.props.intl.formatMessage({id:"budget.pass"})}</Button>
-            <Button className="button-reject" type="primary"   onClick={this.handleReject}>{this.props.intl.formatMessage({id:"budget.reject"})}</Button>
-            <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budget.return"})}</Button>
+            <span>{this.props.intl.formatMessage({id:"budgetJournal.budgetOpinion"})}：&nbsp;</span><Input style={{}}/>
+            <Button type="primary" onClick={this.handlePass}>{this.props.intl.formatMessage({id:"budgetJournal.pass"})}</Button>
+            <Button className="button-reject" type="primary"   onClick={this.handleReject}>{this.props.intl.formatMessage({id:"budgetJournal.reject"})}</Button>
+            <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
           </div>
           <div>
           </div>

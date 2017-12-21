@@ -55,7 +55,9 @@ class PaymentMethod extends React.Component {
           dataIndex: 'isEnabled',
           key: 'isEnabled',
           render: (recode, text) => {
-            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+            return (<div ><Badge status={ recode ? "success" : "error"}/>
+              {recode ? this.props.intl.formatMessage({id: "common.status.enable"}) : this.props.intl.formatMessage({id: "common.status.disable"})}
+            </div>);
           }
         },
       ],
@@ -145,10 +147,11 @@ class PaymentMethod extends React.Component {
   };
 
   handleCloseNewSlide = (params) => {
-    this.getList();
-  /*  this.setState({
-      showSlideFrameNew: false
-    })*/
+    if(params) {
+      this.setState({loading: true});
+      this.getList();
+    }
+    this.showSlideNew(false)
   };
 
 
@@ -211,7 +214,7 @@ class PaymentMethod extends React.Component {
           />
         </div>
 
-        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款方式":"编辑付款方式"}
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?this.props.intl.formatMessage({id: "paymentMethod.newPaymentMethod"}):this.props.intl.formatMessage({id: "paymentMethod.editPaymentMethod"})}
                     show={showSlideFrameNew}
                     content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
