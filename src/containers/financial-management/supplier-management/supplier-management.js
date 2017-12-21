@@ -20,7 +20,8 @@ class SupplierManagement extends React.Component{
     const {formatMessage} = this.props.intl;
     this.state = {
       loading: false,
-      data: [{supplierCode:123,key:1,id:1}],
+      //data: [{supplierCode:123,key:1,id:1}],
+      data: [],
       batchCompany: true,
       selectedRowKeys:[],
       slideFrame:{
@@ -174,7 +175,7 @@ class SupplierManagement extends React.Component{
   }
 
   getList(){
-    httpFetch.get(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
       console.log(response)
     })
   }
@@ -203,6 +204,7 @@ class SupplierManagement extends React.Component{
   };
 
   handleAfterClose = (params) =>{
+    console.log(params)
     let slideFrame = {
       title: "",
       visible: false,
@@ -210,7 +212,7 @@ class SupplierManagement extends React.Component{
     };
     this.setState({
       slideFrame
-    })
+    },params? this.getList() : null)
   };
 
   render(){
