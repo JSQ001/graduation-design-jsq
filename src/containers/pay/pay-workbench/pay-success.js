@@ -70,7 +70,7 @@ class PaySuccess extends React.Component {
         },
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='success' text={state}/>},
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='success' text={state}/>},
       ],
       /* 线上 */
       onlineLoading: false,
@@ -82,6 +82,8 @@ class PaySuccess extends React.Component {
       },
       onlineCash: [],  //总金额
       modalVisible: false,
+      refundRow: {},
+      confirmLoading: false,
 
       /* 线下 */
       offlineLoading: false,
@@ -142,16 +144,30 @@ class PaySuccess extends React.Component {
   clear = () => {};
 
   //退票
-  handleRefund = () => {
-    this.props.form.setFieldsValue({ date: undefined });
-    this.setState({ modalVisible: true })
+  handleRefund = (record) => {
+    this.props.form.setFieldsValue({ refundDate: undefined });
+    this.setState({ modalVisible: true, refundRow: record })
   };
 
   //确认退票
   confirmRefund = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        let params = this.state.refundRow;
+        params.refundDate = moment(values.refundDate).format('YYYY-MM-DD');
+        this.setState({ confirmLoading: true });
+        let url = `${config.contractUrl}/payment/api/cash/transaction/details/refund`;
+        httpFetch.post(url, params).then(res => {
+          if (res.status === 200) {
+            this.setState({ confirmLoading: false });
+            message.success('退票成功');
+            this.getOnlineList();
+            this.getOnlineCash()
+          }
+        }).catch(() => {
+          this.setState({ confirmLoading: false });
+          message.error('退票失败，请重试')
+        })
       }
     });
   };
@@ -304,7 +320,7 @@ class PaySuccess extends React.Component {
     const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
     let onlineColumns = [].concat(columns);
     onlineColumns.push(
-      {title: '操作', dataIndex: 'id', render: id => <a onClick={this.handleRefund}>退票</a>}
+      {title: '操作', dataIndex: 'id', render: (id, record) => <a onClick={() => this.handleRefund(record)}>退票</a>}
     );
     const tableTitle = (
       <div>
@@ -437,7 +453,7 @@ class PaySuccess extends React.Component {
       labelCol: { span: 7 },
       wrapperCol: { span: 15, offset: 1 },
     };
-    const { searchForm, radioValue, modalVisible } = this.state;
+    const { searchForm, radioValue, modalVisible, confirmLoading } = this.state;
     return (
       <div className="pay-success">
         <SearchArea searchForm={searchForm}
@@ -454,6 +470,7 @@ class PaySuccess extends React.Component {
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
         <Modal visible={modalVisible}
+               confirmLoading={confirmLoading}
                onOk={this.confirmRefund}
                onCancel={() => this.setState({ modalVisible: false })}
                okText="确认退票"
@@ -469,7 +486,7 @@ class PaySuccess extends React.Component {
               <FormItem {...formItemLayout}
                         label="退票日期"
                         style={{margin:'20px 0 10px'}}>
-                {getFieldDecorator('date', {
+                {getFieldDecorator('refundDate', {
                   rules: [{
                     required: true,
                     message: '请选择'

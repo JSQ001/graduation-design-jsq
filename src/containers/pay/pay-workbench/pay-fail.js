@@ -66,7 +66,7 @@ class PayFail extends React.Component {
           )}
         },
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
-        {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='error' text={state}/>},
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='error' text={state}/>},
       ],
       selectedRows: [],  //选中行
       noticeAlert: null, //提示

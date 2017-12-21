@@ -93,6 +93,7 @@ class PayUnpaid extends React.Component {
         {title: '操作', dataIndex: 'id', render: (id) => <a onClick={() => this.payHistory(id)}>支付历史</a>}
       ],
       buttonDisabled: true,
+      selectedRowKeys: [], //选中行key
       selectedRows: [],  //选中行
       noticeAlert: null, //提示
       errorAlert: null,  //错误
@@ -179,6 +180,7 @@ class PayUnpaid extends React.Component {
   onRadioChange = (e) => {
     this.setState({
       radioValue: e.target.value,
+      selectedRowKeys: [],
       selectedRows: []
     }, () => {
       this.noticeAlert(this.state.selectedRows)
@@ -199,6 +201,11 @@ class PayUnpaid extends React.Component {
     this.setState({ selectedRows }, () => {
       this.noticeAlert(this.state.selectedRows)
     })
+  };
+
+  //选中行的key
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys })
   };
 
   //选择/取消选择所有行的回调
@@ -503,7 +510,14 @@ class PayUnpaid extends React.Component {
             message.success('操作成功');
             this.getOnlineList();
             this.getOnlineCash();
-            this.setState({ modalVisible: false, modalLoading: false })
+            this.setState({
+              modalVisible: false,
+              modalLoading: false,
+              selectedRowKeys: [],
+              selectedRows: []
+            },() => {
+              this.noticeAlert(this.state.selectedRows)
+            })
           }
         }).catch(e => {
           message.error(`操作失败，${e.response.data.message}`);
@@ -566,8 +580,10 @@ class PayUnpaid extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash, selectedRowKeys } = this.state;
     const rowSelection = {
+      selectedRowKeys: selectedRowKeys,
+      onChange: this.onSelectChange,
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
     };
