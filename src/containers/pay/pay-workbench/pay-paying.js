@@ -43,7 +43,7 @@ class PayPaying extends React.Component {
             <div>
               <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
-              {record.documentCategoryName}
+              {record.documentTypeName}
             </div>
           )}
         },
@@ -171,7 +171,7 @@ class PayPaying extends React.Component {
       if (!err) {
         console.log(values)
       }
-    });
+    })
   };
 
   //确认失败弹框

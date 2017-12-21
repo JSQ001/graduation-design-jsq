@@ -26,22 +26,22 @@ class BudgetVersions extends React.Component {
       },
       columns: [
         {
-          title: this.props.intl.formatMessage({id: "budget.versionCode"}),
+          title: this.props.intl.formatMessage({id: "budgetVersion.versionCode"}),
           dataIndex: 'versionCode',
           key: 'versionCode',
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.versionName"}),
+          title: this.props.intl.formatMessage({id: "budgetVersion.versionName"}),
           dataIndex: 'versionName',
           key: 'versionName',
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.versionDate"}),
+          title: this.props.intl.formatMessage({id: "budgetVersion.versionDate"}),
           dataIndex: 'versionDate',
           key: 'versionDate',
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.versionDescription"}),
+          title: this.props.intl.formatMessage({id: "budgetVersion.versionDescription"}),
           dataIndex: 'description',
           key: 'description',
           render: (recode) => {
@@ -49,7 +49,7 @@ class BudgetVersions extends React.Component {
           }
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.versionStatus"}),
+          title: this.props.intl.formatMessage({id: "budgetVersion.versionStatus"}),
           dataIndex: 'status',
           key: 'status',
           render: (recode) => {
@@ -57,7 +57,7 @@ class BudgetVersions extends React.Component {
           }
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.isEnabled"}), dataIndex: 'isEnabled', key: 'isEnabled',
+          title: this.props.intl.formatMessage({id: "budgetVersion.isEnabled"}), dataIndex: 'isEnabled', key: 'isEnabled',
           render: (recode, text) => {
             return (
               <div >
@@ -74,8 +74,8 @@ class BudgetVersions extends React.Component {
         enabled: true
       },
       searchForm: [
-        {type: 'input', id: 'versionCode', label: this.props.intl.formatMessage({id: "budget.versionCode"})},
-        {type: 'input', id: 'versionName', label: this.props.intl.formatMessage({id: "budget.versionName"})},
+        {type: 'input', id: 'versionCode', label: this.props.intl.formatMessage({id: "budgetVersion.versionCode"})},
+        {type: 'input', id: 'versionName', label: this.props.intl.formatMessage({id: "budgetVersion.versionName"})},
       ],
       pageSize: 10,
       page: 0,
@@ -182,7 +182,7 @@ class BudgetVersions extends React.Component {
 //策划新建页面
   handleCreate = () => {
     let slideFrame = {};
-    slideFrame.title = this.props.intl.formatMessage({id:"budget.newVersion"});
+    slideFrame.title = this.props.intl.formatMessage({id:"budgetVersion.newVersion"});
     slideFrame.visible = true;
     slideFrame.params = {};
     this.setState({slideFrame})
@@ -191,7 +191,7 @@ class BudgetVersions extends React.Component {
   //策划编辑页面
   handleUpdate = (record) => {
     let slideFrame = {};
-    slideFrame.title = this.props.intl.formatMessage({id:"budget.updateVersion"});
+    slideFrame.title = this.props.intl.formatMessage({id:"budgetVersion.updateVersion"});
     slideFrame.visible = true;
     slideFrame.params = record;
     this.setState({slideFrame})

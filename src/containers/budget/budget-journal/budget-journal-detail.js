@@ -63,30 +63,30 @@ class BudgetJournalDetail extends React.Component {
       ],
       infoList:[
         /*状态*/
-        {type:'badge',label: this.props.intl.formatMessage({id:"budget.status"}),id:'status'},
+        {type:'badge',label: this.props.intl.formatMessage({id:"budgetJournal.status"}),id:'status'},
         /*预算日记账编号*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.journalCode"}), id: 'journalCode', disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budgetJournal.journalCode"}), id: 'journalCode', disabled: true},
         /*总金额*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.total.amount"}), id: 'totalAmount', disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budgetJournal.total.amount"}), id: 'totalAmount', disabled: true},
         /*申请人*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.employeeId"}), id: 'employeeName', disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), id: 'employeeName', disabled: true},
         /*公司*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.companyId"}), id: 'companyName', disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budgetJournal.companyId"}), id: 'companyName', disabled: true},
         /*部门*/
-        {type: 'input', label: this.props.intl.formatMessage({id:"budget.unitId"}), id: 'unitName', disabled: true},
+        {type: 'input', label: this.props.intl.formatMessage({id:"budgetJournal.unitId"}), id: 'unitName', disabled: true},
         /*创建时间*/
-        {type: 'date', label: this.props.intl.formatMessage({id:"budget.createdDate"}), id: 'createdDate', disabled: true},
+        {type: 'date', label: this.props.intl.formatMessage({id:"budgetJournal.createdDate"}), id: 'createdDate', disabled: true},
         /*预算日记账类型*/
         {type: 'list', id: 'journalType',
           listType: 'budget_journal_type',
           labelKey: 'journalTypeName',
           valueKey: 'journalTypeId',
-          label:this.props.intl.formatMessage({id: 'budget.journalTypeId'}),
+          label:this.props.intl.formatMessage({id: 'budgetJournal.journalTypeId'}),
           listExtraParams:{organizationId:this.props.organization.id},
           disabled: true
         },
         /*预算表*/
-        {type: 'select', id:'budgetStructure', label: this.props.intl.formatMessage({id: 'budget.structureId'}), options: [], method: 'get',disabled: true,
+        {type: 'select', id:'budgetStructure', label: this.props.intl.formatMessage({id: 'budgetJournal.structureId'}), options: [], method: 'get',disabled: true,
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams:{organizationId :this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
         /*预算版本*/
@@ -95,7 +95,7 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'versionName',
           valueKey: 'id',
           single:true,
-          label:this.props.intl.formatMessage({id: 'budget.version'}),
+          label:this.props.intl.formatMessage({id: 'budgetJournal.versionId'}),
           listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*预算场景*/
@@ -104,84 +104,84 @@ class BudgetJournalDetail extends React.Component {
           labelKey: 'scenarioName',
           valueKey: 'id',
           single:true,
-          label:this.props.intl.formatMessage({id: 'budget.scenarios'}),  /*预算场景*/
+          label:this.props.intl.formatMessage({id: 'budgetJournal.scenarios'}),  /*预算场景*/
           listExtraParams:{"organizationId":this.props.organization.id,"isEnabled":true}
         },
         /*编辑期段*/
-        {type: 'value_list', id: 'periodStrategy', label: this.props.intl.formatMessage({id: 'budget.periodStrategy'}), options: [], valueListCode: 2002,disabled: true},
+        {type: 'value_list', id: 'periodStrategy', label: this.props.intl.formatMessage({id: 'budgetJournal.periodStrategy'}), options: [], valueListCode: 2002,disabled: true},
         /*附件*/
-        {type:'file',label:this.props.intl.formatMessage({id: 'budget.attachment'}),id:'file',disabled: true},
+        {type:'file',label:this.props.intl.formatMessage({id: 'budgetJournal.attachment'}),id:'file',disabled: true},
 
       ],
       dimensionList:[],
 
       columns: [
         {          /*公司*/
-          title: this.props.intl.formatMessage({id:"budget.companyId"}), key: "companyName", dataIndex: 'companyName',width:'5%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.companyId"}), key: "companyName", dataIndex: 'companyName',width:'5%',
           render: companyName => (
             <Popover content={companyName}>
               {companyName}
             </Popover>)
         },
         {          /*部门*/
-          title: this.props.intl.formatMessage({id:"budget.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'5%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.unitId"}), key: "departmentName", dataIndex: 'departmentName',width:'5%',
           render: departmentName => (
             <Popover content={departmentName}>
               {departmentName}
             </Popover>)
         },
         {          /*员工*/
-          title: this.props.intl.formatMessage({id:"budget.employee"}), key: "employeeName", dataIndex: 'employeeName',width:'5%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.employee"}), key: "employeeName", dataIndex: 'employeeName',width:'5%',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*预算项目*/
-          title: this.props.intl.formatMessage({id:"budget.item"}), key: "itemName", dataIndex: 'itemName',width:'10%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.item"}), key: "itemName", dataIndex: 'itemName',width:'10%',
           render: itemName => (
             <Popover content={itemName}>
               {itemName}
             </Popover>)
         },
         {          /*期间*/
-          title: this.props.intl.formatMessage({id:"budget.periodName"}), key: "periodName", dataIndex: 'periodName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.periodName"}), key: "periodName", dataIndex: 'periodName',
         },
         {          /*季度*/
-          title: this.props.intl.formatMessage({id:"budget.periodQuarter"}), key: "periodQuarterName", dataIndex: 'periodQuarterName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.periodQuarter"}), key: "periodQuarterName", dataIndex: 'periodQuarterName',
         },
         {          /*年度*/
-          title: this.props.intl.formatMessage({id:"budget.periodYear"}), key: "periodYear", dataIndex: 'periodYear',
+          title: this.props.intl.formatMessage({id:"budgetJournal.periodYear"}), key: "periodYear", dataIndex: 'periodYear',
         },
         {          /*币种*/
-          title: this.props.intl.formatMessage({id:"budget.currency"}), key: "currency", dataIndex: 'currency',
+          title: this.props.intl.formatMessage({id:"budgetJournal.currency"}), key: "currency", dataIndex: 'currency',
         },
         {          /*汇率*/
-          title: this.props.intl.formatMessage({id:"budget.rate"}), key: "rate", dataIndex: 'rate',
+          title: this.props.intl.formatMessage({id:"budgetJournal.rate"}), key: "rate", dataIndex: 'rate',
           render: rate => (
             <Popover content={rate}>
               {rate}
             </Popover>)
         },
         {          /*金额*/
-          title: this.props.intl.formatMessage({id:"budget.amount"}), key: "amount", dataIndex: 'amount',
+          title: this.props.intl.formatMessage({id:"budgetJournal.amount"}), key: "amount", dataIndex: 'amount',
           render: recode => (
             <Popover content={this.filterMoney(recode)}>
               {this.filterMoney(recode)}
             </Popover>)
         },
         {          /*本币今额*/
-          title: this.props.intl.formatMessage({id:"budget.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',
+          title: this.props.intl.formatMessage({id:"budgetJournal.functionalAmount"}), key: "functionalAmount", dataIndex: 'functionalAmount',
           render: recode => (
             <Popover content={this.filterMoney(recode)}>
               {this.filterMoney(recode)}
             </Popover>)
         },
         {          /*数字*/
-          title: this.props.intl.formatMessage({id:"budget.quantity"}), key: "quantity", dataIndex: 'quantity',
+          title: this.props.intl.formatMessage({id:"budgetJournal.quantity"}), key: "quantity", dataIndex: 'quantity',
         },
         {          /*备注*/
-          title: this.props.intl.formatMessage({id:"budget.remark"}), key: "remark", dataIndex: 'remark',
+          title: this.props.intl.formatMessage({id:"budgetJournal.remark"}), key: "remark", dataIndex: 'remark',
           render: remark => (
             <Popover content={remark}>
               {remark}
@@ -243,7 +243,7 @@ class BudgetJournalDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`${this.props.intl.formatMessage({id:"budget.getAttachmentFail"})},${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id:"budgetJournal.getAttachmentFail"})},${e.response.data.message}`);
     })
   }
 
@@ -257,7 +257,7 @@ class BudgetJournalDetail extends React.Component {
         this.getColumnsAndDimensionhandleData();
       })
     }).catch(e=>{
-      message.error(`${this.props.intl.formatMessage({id:"budget.getDimensionFail"})},${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id:"budgetJournal.getDimensionFail"})},${e.response.data.message}`);
     })
   }
 
@@ -336,7 +336,7 @@ class BudgetJournalDetail extends React.Component {
       //编制期段
       const period = headerData.periodStrategy;
       const periodStrategy={
-        "label":period=="YEAR"?this.props.intl.formatMessage({id:'budget.year'}):(period=="QUARTER"?this.props.intl.formatMessage({id:'budget.quarter'}):this.props.intl.formatMessage({id:'budget.month'})),
+        "label":period=="YEAR"?this.props.intl.formatMessage({id:'budgetJournal.year'}):(period=="QUARTER"?this.props.intl.formatMessage({id:'budgetJournal.quarter'}):this.props.intl.formatMessage({id:'budgetJournal.month'})),
         "value":period
       }
 
@@ -486,8 +486,8 @@ class BudgetJournalDetail extends React.Component {
         })
     }else {
       notification.open({
-        message:this.props.intl.formatMessage({id:"budget.notEmpty"}),
-        description:this.props.intl.formatMessage({id:"budget.andOrLead"}),
+        message:this.props.intl.formatMessage({id:"budgetJournal.notEmpty"}),
+        description:this.props.intl.formatMessage({id:"budgetJournal.andOrLead"}),
         icon: <Icon type="frown-circle" style={{ color: '#e93652' }} />,
       });
     }
@@ -566,8 +566,8 @@ class BudgetJournalDetail extends React.Component {
                 templateUrl={templateUrl}
                 uploadUrl={uploadUrl}
                 errorUrl={errorUrl}
-                title={this.props.intl.formatMessage({id:'budget.leading'})}
-                fileName={this.props.intl.formatMessage({id:'budget.budget.leading'})}
+                title={this.props.intl.formatMessage({id:'budgetJournal.leading'})}
+                fileName={this.props.intl.formatMessage({id:'budgetJournalLeading'})}
                 onOk={this.onLoadOk}
               />
               <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:'common.delete'})} onConfirm={this.handleDeleteLine} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
@@ -590,7 +590,7 @@ class BudgetJournalDetail extends React.Component {
 
         </div>
 
-        <SlideFrame title={this.props.intl.formatMessage({id:'budget.journal'})}
+        <SlideFrame title={this.props.intl.formatMessage({id:'budgetJournal.journal'})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetJournalDetail}
                     afterClose={this.handleAfterCloseNewSlide}
@@ -600,13 +600,13 @@ class BudgetJournalDetail extends React.Component {
         <Affix offsetBottom={0}
                style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
                  boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-          <Popconfirm style={{width:200}} placement="topLeft" title={this.props.intl.formatMessage({id:'budget.commit'})} onConfirm={this.handlePut} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
-            <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>{this.props.intl.formatMessage({id:'budget.commit'})}</Button>
+          <Popconfirm style={{width:200}} placement="topLeft" title={this.props.intl.formatMessage({id:'budgetJournal.commit'})} onConfirm={this.handlePut} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
+            <Button type="primary" style={{marginLeft:'20px',marginRight:'8px'}}>{this.props.intl.formatMessage({id:'budgetJournal.commit'})}</Button>
           </Popconfirm>
-          <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budget.delete.journal"})} onConfirm={this.handleDeleteJournal} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
-            <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budget.delete.journal"})}</Button>
+          <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budgetJournal.delete.journal"})} onConfirm={this.handleDeleteJournal} okText={this.props.intl.formatMessage({id:'common.ok'})}cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
+            <Button className="delete" style={{marginRight:'8px'}}>{this.props.intl.formatMessage({id:"budgetJournal.delete.journal"})}</Button>
           </Popconfirm>
-          <Button onClick={this.handleReturn}>{this.props.intl.formatMessage({id:"budget.return"})}</Button>
+          <Button onClick={this.handleReturn}>{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
         </Affix>
       </div>
     )
