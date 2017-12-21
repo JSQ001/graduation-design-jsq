@@ -53,7 +53,7 @@ class SupplierManagement extends React.Component{
       ],
       columns: [
         {          /*供应商代码*/
-          title: formatMessage({id:"supplier.management.code"}), key: "supplierCode", dataIndex: 'supplierCode'
+          title: formatMessage({id:"supplier.management.code"}), key: "venderCode", dataIndex: 'venderCode'
         },
         {          /*外部标识ID*/
           title: formatMessage({id:"supplier.management.outerId"}), key: "outerId", dataIndex: 'outerId'
@@ -175,8 +175,15 @@ class SupplierManagement extends React.Component{
   }
 
   getList(){
-    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
-      console.log(response)
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`,{}).then((response)=>{
+      console.log(response.data.body)
+      response.data.body.map(item =>{
+        item.key = item.id
+      })
+      this.setState({
+        loading: false,
+        data: response.data.body
+      })
     })
   }
 

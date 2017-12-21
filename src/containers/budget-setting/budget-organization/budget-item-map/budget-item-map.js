@@ -24,6 +24,7 @@ class BudgetItemMap extends React.Component {
     this.state = {
       loading: true,
       params: [],
+      isSave: true,
       paramsKey:0,
       sourceType: [],
       searchParams:{
@@ -82,7 +83,8 @@ class BudgetItemMap extends React.Component {
       httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`, [record]).then((response) => {
         message.success(`${this.props.intl.formatMessage({id: "common.save.success"}, {name: ""})}`);
         this.setState({
-          loading: true
+          loading: true,
+          isSave: true,
         }, this.getList())
       }).catch((e) => {
         if (e.response) {
@@ -112,7 +114,8 @@ class BudgetItemMap extends React.Component {
     }
     params[index].edit = flag;
     this.setState({
-      params
+      params,
+      isSave: !flag
     });
   };
 
@@ -202,6 +205,7 @@ class BudgetItemMap extends React.Component {
       this.setState({
         pagination,
         loading: false,
+        isSave: true,
         params: response.data,
         paramsKey
       })
@@ -358,7 +362,7 @@ class BudgetItemMap extends React.Component {
   };
 
   render(){
-    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, } = this.state;
+    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, isSave} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-item-map">
@@ -373,7 +377,7 @@ class BudgetItemMap extends React.Component {
                       errorUrl={`${config.budgetUrl}/api/budget/itemsMapping/export/failed/data`}
                       fileName={formatMessage({id:"itemMap.itemUploadFile"})}
                       onOk={this.handleImportOk}/>
-            <Button type="primary" onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*添加*/}
+            <Button type="primary" disabled={isSave} onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*保存*/}
           </div>
         </div>
         <Form
