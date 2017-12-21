@@ -201,49 +201,49 @@ class NewBudgetJournalDetail extends React.Component {
     for(let i = nowYear - 20; i <= nowYear + 20; i++)
       yearOptions.push({label: i, value: String(i),key:i})
     let searchForm =[
-      {type: 'list',key:'company', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budget.companyId'}),
+      {type: 'list',key:'company', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budgetJournal.companyId'}),
         labelKey: 'name', valueKey: 'id',single:true,event:'company',isRequired: true,disabled:false,
         listExtraParams:{setOfBooksId:this.props.company.setOfBooksId},
         columnLabel: 'companyName', columnValue: 'companyId'
       },//公司
-      {type: 'list',key:'unit', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budget.unitId'}),
+      {type: 'list',key:'unit', id: 'unit', listType: 'journal_line_department',  label:this.props.intl.formatMessage({id: 'budgetJournal.unitId'}),
         labelKey: 'name',valueKey: 'id',single:true,event:'unit',isRequired: false,disabled:false,
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budget.employeeId"}),
+      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budgetJournal.employeeId"}),
         labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
         listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
       },//人员
-      {type: 'list',key:'item', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budget.item"}), isRequired: true, options: [],
+      {type: 'list',key:'item', id:'item',listType:'journal_item',label:  this.props.intl.formatMessage({id:"budgetJournal.item"}), isRequired: true, options: [],
         labelKey:'itemName',valueKey:'id',disabled:true,single:true, listExtraParams:{"journalTypeId":'',"companyId":''},
         columnLabel: 'itemName',columnValue: 'itemId'
       },//预算项目
-      {type: 'select',key:'periodName', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budget.periodName"}), isRequired: true,options: [],
+      {type: 'select',key:'periodName', id:'periodName', method:'get',label:  this.props.intl.formatMessage({id:"budgetJournal.periodName"}), isRequired: true,options: [],
         labelKey:'periodName',valueKey:'periodName',event:'periodName',
         getUrl:`${config.baseUrl}/api/company/group/assign/query/budget/periods?setOfBooksId=${this.props.company.setOfBooksId}`,
         columnLabel:'periodName',columnValue:'periodName'
       }, //期间
-      {type: 'select_year',key:'periodQuarter', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budget.periodQuarter"}), isRequired: true,
+      {type: 'select_year',key:'periodQuarter', id: 'periodQuarter', label: this.props.intl.formatMessage({id: "budgetJournal.periodQuarter"}), isRequired: true,
         options: queryLineListTypeOptions, disabled:true,
         columnLabel:'periodQuarterName',columnValue:'periodQuarter'
       }, //季度
-      {type: 'select_year',key:'periodYear', id:'periodYear', label:this.props.intl.formatMessage({id:"budget.periodYear"}), isRequired: true,
+      {type: 'select_year',key:'periodYear', id:'periodYear', label:this.props.intl.formatMessage({id:"budgetJournal.periodYear"}), isRequired: true,
         disabled:true, options: yearOptions,event: 'YEAR_CHANGE',
         columnLabel:'periodYear',columnValue:'periodYear'
       }, //年度
-      {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budget.currency"}), isRequired: true, options:currencyOptions,event:'currency',
+      {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budgetJournal.currency"}), isRequired: true, options:currencyOptions,event:'currency',
         labelKey:'attribute5',valueKey:'attribute4',
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budget.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
-      {type: 'inputNumber',key:'amount', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budget.amount"}), isRequired: true,
+      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber',key:'amount', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budgetJournal.amount"}), isRequired: true,
         step:10, defaultValue:0, event:'amount'},  //金额
-      {type: 'inputNumber',key:'functionalAmount', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budget.functionalAmount"}),
+      {type: 'inputNumber',key:'functionalAmount', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budgetJournal.functionalAmount"}),
         step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber',key:'quantity', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budget.quantity"}),step:1,defaultValue:0,min:0}, //数量
-      {type: 'input',key:'remark', id:'remark', label:  this.props.intl.formatMessage({id:"budget.remark"})}  //备注
+      {type: 'inputNumber',key:'quantity', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budgetJournal.quantity"}),step:1,defaultValue:0,min:0}, //数量
+      {type: 'input',key:'remark', id:'remark', label:  this.props.intl.formatMessage({id:"budgetJournal.remark"})}  //备注
     ];
     this.setState({ searchForm })
   }
@@ -607,7 +607,7 @@ class NewBudgetJournalDetail extends React.Component {
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${this.props.params.structureId}`).then((resp) => {
       this.getSearchForm(resp.data);
     }).catch((e)=>{
-      message.error(`${ this.props.intl.formatMessage({id: 'budget.getDimensionFail'})}`)
+      message.error(`${ this.props.intl.formatMessage({id: 'budgetJournal.getDimensionFail'})}`)
     })
   };
 
