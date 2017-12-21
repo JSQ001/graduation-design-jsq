@@ -40,7 +40,7 @@ class BudgetItemMap extends React.Component {
       searchForm: [
         {type: 'select', options: [], id: 'sourceType', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
         {type: 'select', id: 'itemId',options:[], labelKey: 'itemName',valueKey: 'id',
-          label: formatMessage({id: 'budget.item'}),  /*预算项目*/
+          label: formatMessage({id: 'itemMap.item'}),  /*预算项目*/
           listExtraParams:{organizationId: this.props.id},
           getUrl: `${config.budgetUrl}/api/budget/items/find/all`, method: 'get', getParams: {organizationId: this.props.id, isEnabled: true}
         },
@@ -53,7 +53,7 @@ class BudgetItemMap extends React.Component {
           title: formatMessage({id:"itemMap.detailType"}), key: "sourceItemName", dataIndex: 'sourceItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'detail')
         },
         {          /*预算项目*/
-          title: formatMessage({id:"budget.item"}), key: "budgetItemName", dataIndex: 'budgetItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'item')
+          title: formatMessage({id:"itemMap.item"}), key: "budgetItemName", dataIndex: 'budgetItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'item')
         },                            //操作
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
           <span>
@@ -208,7 +208,6 @@ class BudgetItemMap extends React.Component {
     })
   }
 
-
   handleSearch = (values) =>{
     let searchParams = this.state.searchParams;
     searchParams.sourceType = values.sourceType===undefined ? "" : values.sourceType;
@@ -314,7 +313,6 @@ class BudgetItemMap extends React.Component {
           }
         }
         case 'item':{
-
           return(
               <Chooser
                 onChange={(value) => this.handleChangeItem(value, index)}
@@ -322,7 +320,7 @@ class BudgetItemMap extends React.Component {
                 labelKey='itemName'
                 valueKey='id'
                 itemMap={true}
-                listExtraParams={{organizationId: this.props.id}}
+                listExtraParams={{organizationId: this.props.id,isEnabled: true}}
                 value={record.item}
                 single={true}/>)
         }

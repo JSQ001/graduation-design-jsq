@@ -175,7 +175,7 @@ class SupplierManagement extends React.Component{
   }
 
   getList(){
-    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
+    httpFetch.post(`${config.baseUrl}/vendor-info-service/api/ven/info/search`).then((response)=>{
       console.log(response)
     })
   }
