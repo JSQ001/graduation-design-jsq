@@ -176,8 +176,20 @@ class Main extends React.Component{
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
     } else if(path.indexOf('/budget/') > -1) {   //预算组织的默认检查
       httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/${this.props.company.setOfBooksId}`).then((response)=>{
-        this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
-        this.setState({check: true});
+        if(response.data.isEnabled){
+          this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
+          this.setState({check: true});
+        } else {
+          let modalData = {
+            content: '该帐套下没有启用的预算组织',
+            onOk: () => {
+              this.context.router.replace(menuRoute.getRouteItem('dashboard', 'key').url);
+              this.setState({check: true});
+            },
+            okText: 'Ok'
+          };
+          Modal.error(modalData);
+        }
       }).catch(e => {
         let content = (e.response && e.response.data) ? (e.response.data.message ? e.response.data.message : errorContent) : errorContent;
         this.props.dispatch(setUserOrganization({message: content}));
