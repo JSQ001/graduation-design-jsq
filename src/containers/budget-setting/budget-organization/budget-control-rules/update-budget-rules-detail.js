@@ -140,7 +140,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         labelKey: 'fullName',
         valueKey: 'employeeID',
         codeKey: 'employeeID',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: userSelectorItem
       },
       'EMPLOYEE_GROUP': {
