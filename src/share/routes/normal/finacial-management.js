@@ -8,7 +8,7 @@ import CheckCenter from 'containers/financial-management/check-center/check-cent
 import CheckCenterTicket from  'containers/financial-management/check-center/check-center-ticket'
 import CheckCenterHotel from  'containers/financial-management/check-center/check-center-hotel'
 import CheckCenterTrain from  'containers/financial-management/check-center/check-center-train'
-
+import SupplierManagement from  'containers/financial-management/supplier-management/supplier-management'
 
 
 //报销单详情
@@ -100,10 +100,19 @@ const checkCenter = {
   parent: 'financial-management'
 };
 
+//供应商
+const supplierManagement = {
+  key: 'supplier-management',
+  url: '/main/financial-management/supplier-management',
+  components: SupplierManagement,
+  children:{},
+  parent: 'financial-management'
+};
+
 //财务管理
 const financialManagement = {
   key:'financial-management',
-  subMenu: [financeReview, confirmPayment, paymentBatch, financeView, checkCenter],
+  subMenu: [financeReview, confirmPayment, paymentBatch, financeView, checkCenter, supplierManagement],
   icon: 'pay-circle-o'
 };
 

@@ -24,6 +24,7 @@ import paymentCompanySetting from 'static/i18n/en_US/pay-setting/payment-company
 import cashFlowItem from 'static/i18n/en_US/pay-setting/cash-flow-item.json'
 import cashTransactionClass from 'static/i18n/en_US/pay-setting/cash-transaction-class.json'
 import checkCenter from 'static/i18n/en_US/financial-management/check-center.json'
+import supplierManagement from 'static/i18n/en_US/financial-management/supplier-management.json'
 
 
 
@@ -54,6 +55,7 @@ const i18nList = [
   checkCenter,          //对账中心
   announcementInformation, //公告信息
   budgetItemMap,           //项目映射
+  supplierManagement,      //供应商管理
 ];
 
 let result = {};

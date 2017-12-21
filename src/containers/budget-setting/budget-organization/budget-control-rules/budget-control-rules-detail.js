@@ -141,6 +141,7 @@ class BudgetControlRulesDetail extends React.Component{
   showSlideCreate = (flag) => {
     this.setState({
       showSlideFrameCreate: flag,
+      showSlideFrameUpdate: false
     })
   };
 
@@ -148,13 +149,15 @@ class BudgetControlRulesDetail extends React.Component{
   showSlideUpdate = (flag) => {
     this.setState({
       showSlideFrameUpdate: flag,
+      showSlideFrameCreate: false
     })
   };
 
   handleEdit = (record) =>{
     this.setState({
       ruleDetail: record,
-      showSlideFrameUpdate: true
+      showSlideFrameUpdate: true,
+      showSlideFrameCreate: false
     })
   };
 

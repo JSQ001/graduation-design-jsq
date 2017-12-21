@@ -537,8 +537,8 @@ const selectorData = {
     columns: [
       {title: "季度", dataIndex: 'messageKey'},
     ],
-    key: 'quarter',
-    isValueList: true
+    key: 'id',
+    listKey: 'values',
   },
   'journal_employee': {
     title: '选择人员',
