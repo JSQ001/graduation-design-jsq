@@ -569,7 +569,7 @@ class BudgetJournalDetail extends React.Component {
                 uploadUrl={uploadUrl}
                 errorUrl={errorUrl}
                 title={this.props.intl.formatMessage({id:'budgetJournal.leading'})}
-                fileName={this.props.intl.formatMessage({id:'budgetJournalLeading'})}
+                fileName={this.props.intl.formatMessage({id:'budgetJournal.budgetJournalLeading'})}
                 onOk={this.onLoadOk}
               />
               <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:'common.delete'})} onConfirm={this.handleDeleteLine} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
