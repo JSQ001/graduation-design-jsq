@@ -183,6 +183,10 @@ class PayUnpaid extends React.Component {
       selectedRowKeys: [],
       selectedRows: []
     }, () => {
+      let values = this.props.form.getFieldsValue();
+      Object.keys(values).map(key => {
+        this.props.form.setFieldsValue({ [key]: undefined })
+      });
       this.noticeAlert(this.state.selectedRows)
     })
   };
@@ -484,8 +488,10 @@ class PayUnpaid extends React.Component {
 
   /********************** 弹框 - 确认支付 *********************/
 
-  //线上
-  handleOnlineModalOk = () => {
+  //线上&线下
+  handleLineModalOk = () => {
+    const {radioValue} = this.state;
+    let category = radioValue === 'online' ? 'ONLINE_PAYMENT' : 'OFFLINE_PAYMENT';
     let params = {};
     params.dataIds = [];
     params.versionNumbers = [];
@@ -497,19 +503,25 @@ class PayUnpaid extends React.Component {
     });
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.paymentMethodCategory = "ONLINE_PAYMENT";
+        values.paymentMethodCategory = category;
         values.payCompanyBankName = values.payCompanyBankNumber.label;
         values.payCompanyBankNumber = values.payCompanyBankNumber.key;
         values.paymentDescription = values.paymentTypeId.label;
         values.paymentTypeId = values.paymentTypeId.key;
+        values.payDate && (values.payDate = moment(values.payDate).format('YYYYMMDD'));
         params.cashPayDTO = values;
         this.setState({ modalLoading: true });
         let url = `${config.contractUrl}/payment/api/cash/transaction/details/insertBatch`;
         httpFetch.post(url, params).then(res => {
           if (res.status === 200) {
             message.success('操作成功');
-            this.getOnlineList();
-            this.getOnlineCash();
+            if (radioValue === 'online') {
+              this.getOnlineList();
+              this.getOnlineCash()
+            } else {
+              this.getOfflineList();
+              this.getOfflineCash()
+            }
             this.setState({
               modalVisible: false,
               modalLoading: false,
@@ -523,16 +535,6 @@ class PayUnpaid extends React.Component {
           message.error(`操作失败，${e.response.data.message}`);
           this.setState({ modalLoading: false })
         })
-      }
-    })
-  };
-
-  //线下
-  handleOfflineModalOk = () => {
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        console.log(values);
-        this.setState({ modalVisible: false });
       }
     })
   };
@@ -754,12 +756,12 @@ class PayUnpaid extends React.Component {
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
-        {radioValue === 'online' && (
+        {radioValue === 'online' ? (
           <Modal title="线上支付确认"
                  visible={modalVisible}
                  okText="确认支付"
                  confirmLoading={modalLoading}
-                 onOk={this.handleOnlineModalOk}
+                 onOk={this.handleLineModalOk}
                  onCancel={() => this.setState({ modalVisible: false })}>
             <Form>
               <FormItem  {...formItemLayout} label="付款账户">
@@ -773,7 +775,7 @@ class PayUnpaid extends React.Component {
                           notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}
                           labelInValue>
                     {payAccountOptions.map(option => {
-                      return <Option key={option.bankAccountNumber} payCompanyBankId={option.id}>{option.bankAccountName}</Option>
+                      return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
                     })}
                   </Select>
                 )}
@@ -815,13 +817,12 @@ class PayUnpaid extends React.Component {
               </FormItem>
             </Form>
           </Modal>
-        )}
-        {radioValue === 'offline' && (
+        ) : radioValue === 'offline' ? (
           <Modal title="线下支付确认"
                  visible={modalVisible}
                  okText="确认支付"
                  confirmLoading={modalLoading}
-                 onOk={this.handleOfflineModalOk}
+                 onOk={this.handleLineModalOk}
                  onCancel={() => this.setState({ modalVisible: false })}>
             <Form>
               <Alert message="线下支付，确认付款后，支付状态直接变为支付成功" type="info" showIcon style={{position:'relative',top:-10}} />
@@ -835,14 +836,15 @@ class PayUnpaid extends React.Component {
                 )}
               </FormItem>
               <FormItem  {...formItemLayout} label="付款账户">
-                {getFieldDecorator('payAccount', {
+                {getFieldDecorator('payCompanyBankNumber', {
                   rules: [{
                     required: true,
                     message: '请选择'
                   }]})(
                   <Select placeholder="请选择"
                           onFocus={this.getPayAccount}
-                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}>
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
                     {payAccountOptions.map(option => {
                       return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
                     })}
@@ -859,7 +861,7 @@ class PayUnpaid extends React.Component {
                 )}
               </FormItem>
               <FormItem  {...formItemLayout} label="付款方式">
-                {getFieldDecorator('payWay', {
+                {getFieldDecorator('paymentTypeId', {
                   rules: [{
                     required: true,
                     message: '请选择'
@@ -867,27 +869,27 @@ class PayUnpaid extends React.Component {
                 })(
                   <Select placeholder="请选择"
                           onFocus={this.getPayWay}
-                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}>
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
                     {payWayOptions.map(option => {
-                      return <Option key={option.paymentMethodCode}>{option.description}</Option>
+                      return <Option key={option.id}>{option.description}</Option>
                     })}
                   </Select>
                 )}
               </FormItem>
               <FormItem  {...formItemLayout} label="汇率">
-                {getFieldDecorator('rate')(
+                {getFieldDecorator('exchangeRate')(
                   <Input disabled />
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="备注">
-                {getFieldDecorator('description')(
+                {getFieldDecorator('remark')(
                   <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
                 )}
               </FormItem>
             </Form>
           </Modal>
-        )}
-        {radioValue === 'file' && (
+        ) : (
           <Modal title="落地文件支付"
                  visible={modalVisible}
                  okText="导出报盘文件"
@@ -897,7 +899,7 @@ class PayUnpaid extends React.Component {
             <Form>
               <div style={{marginBottom:15}}>01. 选择付款账号</div>
               <FormItem  {...formItemLayout} label="付款账户">
-                {getFieldDecorator('payAccount', {
+                {getFieldDecorator('payCompanyBankNumber', {
                   rules: [{
                     required: true,
                     message: '请选择'
@@ -905,7 +907,8 @@ class PayUnpaid extends React.Component {
                 })(
                   <Select placeholder="请选择"
                           onFocus={this.getPayAccount}
-                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}>
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
                     {payAccountOptions.map(option => {
                       return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
                     })}
@@ -922,13 +925,13 @@ class PayUnpaid extends React.Component {
                 )}
               </FormItem>
               <FormItem  {...formItemLayout} label="汇率">
-                {getFieldDecorator('rate')(
+                {getFieldDecorator('exchangeRate')(
                   <Input disabled />
                 )}
               </FormItem>
               <div style={{marginBottom:15}}>02. 选择付款方式</div>
               <FormItem  {...formItemLayout} label="付款方式">
-                {getFieldDecorator('payWay', {
+                {getFieldDecorator('paymentTypeId', {
                   rules: [{
                     required: true,
                     message: '请选择'
@@ -936,15 +939,16 @@ class PayUnpaid extends React.Component {
                 })(
                   <Select placeholder="请选择"
                           onFocus={this.getPayWay}
-                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}>
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
                     {payWayOptions.map(option => {
-                      return <Option key={option.paymentMethodCode}>{option.description}</Option>
+                      return <Option key={option.id}>{option.description}</Option>
                     })}
                   </Select>
                 )}
               </FormItem>
               <FormItem {...formItemLayout} label="备注">
-                {getFieldDecorator('description')(
+                {getFieldDecorator('remark')(
                   <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
                 )}
               </FormItem>

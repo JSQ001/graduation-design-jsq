@@ -153,11 +153,9 @@ class PaySuccess extends React.Component {
   confirmRefund = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        let params = this.state.refundRow;
-        params.refundDate = moment(values.refundDate).format('YYYY-MM-DD');
         this.setState({ confirmLoading: true });
-        let url = `${config.contractUrl}/payment/api/cash/transaction/details/refund`;
-        httpFetch.post(url, params).then(res => {
+        let url = `${config.contractUrl}/payment/api/cash/transaction/details/refund?refundDate=${moment(values.refundDate).format('YYYY-MM-DD')}`;
+        httpFetch.post(url, this.state.refundRow).then(res => {
           if (res.status === 200) {
             this.setState({ confirmLoading: false });
             message.success('退票成功');
