@@ -63,7 +63,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value) {
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`, value).then((response) => {
       if(response.status === 200){
-        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: this.props.intl.formatMessage({id: "budget.version"})}));
+        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: this.props.intl.formatMessage({id: "budgetVersion.version"})}));
         this.setState({loading: false});
         this.props.close(true);
       }
@@ -114,8 +114,8 @@ class NewBudgetVersions extends React.Component {
         <div className="new-budget-versions-help">
           <Alert
             message={formatMessage({id: "common.help"})}
-            description={formatMessage({id: "budget.newVersion.info"})}
-            type=""
+            description={formatMessage({id: "budgetVersion.newVersion.info"})}
+            type="info"
             showIcon
           />
         </div>
@@ -134,7 +134,7 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={formatMessage({id: "budget.versionCode"})}>
+              label={formatMessage({id: "budgetVersion.versionCode"})}>
               {getFieldDecorator('versionCode', {
                 initialValue: version.versionCode,
                 rules: [{required: true, message: formatMessage({id: "common.please.enter"})},]
@@ -142,7 +142,7 @@ class NewBudgetVersions extends React.Component {
                 <Input />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label={formatMessage({id: "budget.versionName"})}>
+            <FormItem {...formItemLayout} label={formatMessage({id: "budgetVersion.versionName"})}>
               {getFieldDecorator('versionName', {
                 initialValue: version.versionName,
                 rules: [{required: true, message: formatMessage({id: "common.please.enter"})}],
@@ -150,26 +150,26 @@ class NewBudgetVersions extends React.Component {
 
             </FormItem>
             <FormItem {...formItemLayout}
-              label={formatMessage({id: "budget.versionStatus"})}>
+              label={formatMessage({id: "budgetVersion.versionStatus"})}>
               {getFieldDecorator('status', {
                 initialValue: typeof version.id === 'undefined' ? "NEW" : version.status.value,
                 rules: [{required: true,}],
               })(
                 <Select
                   placeholder="">
-                  <Select.Option value="NEW">{this.props.intl.formatMessage({id: "budget.new"})}</Select.Option>
-                  <Select.Option value="CURRENT">{this.props.intl.formatMessage({id: "budget.current"})}</Select.Option>
-                  <Select.Option value="HISTORY">{this.props.intl.formatMessage({id: "budget.history"})}</Select.Option>
+                  <Select.Option value="NEW">{this.props.intl.formatMessage({id: "budgetVersion.new"})}</Select.Option>
+                  <Select.Option value="CURRENT">{this.props.intl.formatMessage({id: "budgetVersion.current"})}</Select.Option>
+                  <Select.Option value="HISTORY">{this.props.intl.formatMessage({id: "budgetVersion.history"})}</Select.Option>
                 </Select>
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.versionDescription"})}>
+            <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetVersion.versionDescription"})}>
               {getFieldDecorator('description', {
                 initialValue: version.description
               })(<Input />)}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={this.props.intl.formatMessage({id: "budget.versionDate"})}>
+              label={this.props.intl.formatMessage({id: "budgetVersion.versionDate"})}>
               {getFieldDecorator('versionDate',
                 {
                   initialValue:typeof version.id === 'undefined'? null: moment( version.versionDate, 'YYYY-MM-DD'),
@@ -180,7 +180,7 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+              label={this.props.intl.formatMessage({id: "budgetVersion.isEnabled"})}>
               {getFieldDecorator('isEnabled', {
                   valuePropName: "checked",
                   initialValue: typeof version.id === 'undefined' ? true: version.isEnabled,

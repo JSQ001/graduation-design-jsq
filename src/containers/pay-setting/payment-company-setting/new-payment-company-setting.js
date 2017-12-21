@@ -124,7 +124,7 @@ class NewPaymentCompanySetting extends React.Component {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
-            message.success("编辑成功");
+            message.success(this.props.intl.formatMessage({id: "common.operate.filed"}));
           }).catch((e) => {
             this.setState({loading: false});
             message.error(e.required.data.message);
@@ -206,19 +206,19 @@ class NewPaymentCompanySetting extends React.Component {
             )}
           </FormItem>
           <FormItem
-            {...formItemLayout}  label="优先级"
+            {...formItemLayout}  label={this.props.intl.formatMessage({id:"common.please.select"})}
           >
             {getFieldDecorator('priorty', {
-              rules: [{ required: true, message: '请输入' }],
+              rules: [{ required: true,   message: this.props.intl.formatMessage({id: "common.please.enter"}) }],
               initialValue:this.props.params.priorty||''
             })(
-              <InputNumber min={1} max={10} />
+              <InputNumber min={1} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.company"})}>
             {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择' }],
+              rules: [{ required: true, message: this.props.intl.formatMessage({id: "common.please.elect"}) }],
               initialValue:this.props.params.companyId||''
             })(
               <Chooser
@@ -233,10 +233,10 @@ class NewPaymentCompanySetting extends React.Component {
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"})}>
             {getFieldDecorator('ducumentCategory', {
-              rules: [{ required: true, message: '请选择' }],
+              rules: [{ required: true,message: this.props.intl.formatMessage({id: "common.please.elect"}) }],
               initialValue:this.props.params.ducumentCategory||''
             })(
-              <Select onSelect={this.handleDucumentCategory}>
+              <Select onSelect={this.handleDucumentCategory} placeholder={this.props.intl.formatMessage({id:"common.please.elect"})}>
                 {this.state.ducumentCategoryOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
@@ -246,32 +246,19 @@ class NewPaymentCompanySetting extends React.Component {
 
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentType"})}>
             {getFieldDecorator('ducumentTypeId', {
-              rules: [{ required: true, message: '请选择' }],
+              rules: [{ required: true,   message: this.props.intl.formatMessage({id: "common.please.select"}) }],
               initialValue:this.props.params.ducumentTypeId||''
             })(
-              <Select>
+              <Select placeholder={this.props.intl.formatMessage({id:"common.please.elect"})}>
                 {this.state.ducumentTypeOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
               </Select>
             )}
           </FormItem>
-
-      {/*    <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
-            {getFieldDecorator('paymentCompanyId', {
-              rules: [{ required: true, message: '请选择' }],
-              initialValue:this.props.params.paymentCompanyId||''
-            })(
-              <Select>
-                {this.state.companyOptions.map((option)=>{
-                  return <Option value={option.value} lable={option.label} >{option.label}</Option>
-                })}
-              </Select>
-            )}
-          </FormItem>*/}
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentCompanySetting.paymentCompany"})}>
             {getFieldDecorator('paymentCompanyId', {
-              rules: [{ required: true, message: '请选择' }],
+              rules: [{ required: true,  message: this.props.intl.formatMessage({id: "common.please.select"}) }],
               initialValue:this.props.params.paymentCompanyId||''
             })(
               <Chooser

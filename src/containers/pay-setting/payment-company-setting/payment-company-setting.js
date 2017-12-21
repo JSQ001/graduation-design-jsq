@@ -96,7 +96,7 @@ class PaymentCompanySetting extends React.Component {
           labelKey: 'setOfBooksCode', valueKey: 'setOfBooksId'},
         {type: 'input', id: 'companyCode', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyCode"})},
         {type: 'input', id: 'companyName', label: this.props.intl.formatMessage({id: "paymentCompanySetting.companyName"})},
-        {type: 'value_list', id: 'ducumentCategory', label: '单据类型', options: [], valueListCode: 2106}
+        {type: 'value_list', id: 'ducumentCategory', label: this.props.intl.formatMessage({id: "paymentCompanySetting.ducumentCategory"}), options: [], valueListCode: 2106}
       ],
       pageSize: 10,
       page: 0,
@@ -296,7 +296,7 @@ class PaymentCompanySetting extends React.Component {
           />
         </div>
 
-        <SlideFrame  title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款公司配置":"编辑付款公司配置"}
+        <SlideFrame  title={JSON.stringify(this.state.updateParams) === "{}"?this.props.intl.formatMessage({id: 'paymentCompanySetting.newPaymentCompanySetting'}):this.props.intl.formatMessage({id: 'paymentCompanySetting.editPaymentCompanySetting'})}
                     show={showSlideFrameNew}
                     content={NewPaymentCompanySetting}
                     afterClose={this.handleCloseNewSlide}

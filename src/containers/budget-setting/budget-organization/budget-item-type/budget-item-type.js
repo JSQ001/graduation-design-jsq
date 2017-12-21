@@ -22,17 +22,17 @@ class BudgetItemType extends React.Component {
       data: [],
       columns: [
         {
-          title: this.props.intl.formatMessage({id: "budget.itemTypeCode"}),
+          title: this.props.intl.formatMessage({id: "budgetItemType.itemTypeCode"}),
           dataIndex: 'itemTypeCode',
           key: 'itemTypeCode',
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.itemTypeName"}),
+          title: this.props.intl.formatMessage({id: "budgetItemType.itemTypeName"}),
           dataIndex: 'itemTypeName',
           key: 'itemTypeName',
         },
         {
-          title: this.props.intl.formatMessage({id: "budget.isEnabled"}),
+          title: this.props.intl.formatMessage({id: "budgetItemType.isEnabled"}),
           dataIndex: 'isEnabled',
           key: 'isEnabled',
           render: (recode, text) => {
@@ -43,8 +43,8 @@ class BudgetItemType extends React.Component {
         },
       ],
       searchForm: [
-        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id: "budget.itemTypeCode"})},
-        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id: "budget.itemTypeName"})},
+        {type: 'input', id: 'itemTypeCode', label: this.props.intl.formatMessage({id: "budgetItemType.itemTypeCode"})},
+        {type: 'input', id: 'itemTypeName', label: this.props.intl.formatMessage({id: "budgetItemType.itemTypeName"})},
       ],
       pageSize: 10,
       page: 0,
@@ -213,14 +213,14 @@ class BudgetItemType extends React.Component {
           />
         </div>
 
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.newItemType"})}
+        <SlideFrame title={this.props.intl.formatMessage({id: "budgetItemType.newItemType"})}
                     show={showSlideFrameNew}
                     content={WrappedNewBudgetItemType}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={{}}/>
 
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
+        <SlideFrame title={this.props.intl.formatMessage({id: "budgetItemType.editItemType"})}
                     show={showSlideFramePut}
                     content={WrappedPutBudgetItemType}
                     afterClose={this.handleCloseUpdateSlide}
