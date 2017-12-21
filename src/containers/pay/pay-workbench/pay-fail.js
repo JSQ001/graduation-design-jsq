@@ -40,7 +40,7 @@ class PayFail extends React.Component {
             <div>
               <a>{value}</a>
               <span className="ant-divider"/>
-              {record.documentCategory}
+              {record.documentTypeName}
             </div>
           )}
         },
