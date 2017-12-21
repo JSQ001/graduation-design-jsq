@@ -63,7 +63,8 @@ class BudgetItem extends React.Component {
           title: formatMessage({id:"budget.itemCode"}), key: "itemCode", dataIndex: 'itemCode'
         },
         {          /*预算项目名称*/
-          title: formatMessage({id:"budget.itemName"}), key: "itemName", dataIndex: 'itemName'
+          title: formatMessage({id:"budget.itemName"}), key: "itemName", dataIndex: 'itemName',
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
         {          /*预算项目类型*/
           title: formatMessage({id:"budget.itemType"}), key: "itemTypeName", dataIndex: 'itemTypeName'

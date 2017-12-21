@@ -13,6 +13,7 @@ import NewUpdateSupplier from 'containers/financial-management/supplier-manageme
 import 'styles/financial-management/supplier-management/supplier-management.scss'
 import menuRoute from 'share/menuRoute'
 import Importer from 'components/template/importer'
+import moment from 'moment'
 
 class SupplierManagement extends React.Component{
   constructor(props){
@@ -40,8 +41,8 @@ class SupplierManagement extends React.Component{
       },
       searchForm: [
         {type: 'select', id: 'supplierType', label: formatMessage({id: 'supplier.management.type'})/*供应商类型*/, options:[]},
-        {type: 'input', id: 'supplierCode', label: formatMessage({id: 'supplier.management.code'})/*供应商代码*/, },
-        {type: 'input', id: 'supplierName', label: formatMessage({id: 'supplier.management.name'})/*供应商名称*/, },
+        {type: 'input', id: 'venNickCode', label: formatMessage({id: 'supplier.management.code'})/*供应商代码*/, },
+        {type: 'input', id: 'venNickname', label: formatMessage({id: 'supplier.management.name'})/*供应商名称*/, },
         {type: 'input', id: 'bankAccount', label: formatMessage({id: 'supplier.bank.account'})/*银行账号*/, },
         {type: 'radio', id: 'supplierStatus', label: formatMessage({id: 'supplier.management.status'})/*供应商状态*/,
           options:[
@@ -56,10 +57,11 @@ class SupplierManagement extends React.Component{
           title: formatMessage({id:"supplier.management.code"}), key: "venderCode", dataIndex: 'venderCode'
         },
         {          /*外部标识ID*/
-          title: formatMessage({id:"supplier.management.outerId"}), key: "outerId", dataIndex: 'outerId'
+          title: formatMessage({id:"supplier.management.outerId"}), key: "venNickOid", dataIndex: 'venNickOid'
         },
         {          /*供应商名称*/
-          title: formatMessage({id:"supplier.management.name"}), key: "supplierName", dataIndex: 'supplierName'
+          title: formatMessage({id:"supplier.management.name"}), key: "venNickname", dataIndex: 'venNickname',
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
         {          /*供应商类型*/
           title: formatMessage({id:"supplier.management.type"}), key: "supplierType", dataIndex: 'supplierType'
@@ -69,8 +71,10 @@ class SupplierManagement extends React.Component{
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
         },
-        {          /*更新日志*/
-          title: formatMessage({id:"supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog'
+        {
+          /*更新日志*/
+          title: formatMessage({id: "supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog',
+          render: (value, record, index) => <span>{123}</span>
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '18%', render: (text, record, index) => (
           <span>

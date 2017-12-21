@@ -6,10 +6,9 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import moment from 'moment'
 import menuRoute from 'share/menuRoute'
 
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker, Popconfirm, Popover  } from 'antd'
+import { Form, Button, Select, Icon, Table, message, Popconfirm,  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail.scss';
 import SlideFrame from 'components/slide-frame'
