@@ -5,7 +5,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import moment from 'moment'
 
-import { Radio, Table, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip, DatePicker } from 'antd'
+import { Radio, Table, Badge, Modal, Form, Select, Input, Pagination, Button, Alert, message, Icon, Tooltip, DatePicker, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 const { TextArea } = Input;
@@ -40,24 +40,20 @@ class PayUnpaid extends React.Component {
         ]}
       ],
       columns: [
-        {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
-          return (
-            <div>
-              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
-              <span className="ant-divider"/>
-              {record.documentCategoryName}
-            </div>
-          )}
-        },
-        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
-          return (
-            <div>
-              {record.employeeId}
-              <span className="ant-divider"/>
-              {value}
-            </div>
-          )}
-        },
+        {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => (
+          <div>
+            <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
+            <span className="ant-divider"/>
+            {record.documentTypeName}
+          </div>
+        )},
+        {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => (
+          <div>
+            {record.employeeId}
+            <span className="ant-divider"/>
+            {value}
+          </div>
+        )},
         {title: '申请日期', dataIndex: 'requisitionDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '币种', dataIndex: 'currency'},
         {title: '总金额', dataIndex: 'amount', render: this.filterMoney},
@@ -72,38 +68,41 @@ class PayUnpaid extends React.Component {
               </div>
           )}
         },
-        {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => {
-          return (
-            <EditableCell type="number"
-                          value={value}
-                          message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
-                          onChangeError={this.state.editCellError}
-                          onChange={(editValue) => this.editCurrentPay(editValue, record)} />
-          )}
-        },
+        {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => (
+          <EditableCell type="number"
+                        value={value}
+                        message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
+                        onChangeError={this.state.editCellError}
+                        onChange={(editValue) => this.editCurrentPay(editValue, record)} />
+        )},
         {title: '付款方式', dataIndex: 'paymentMethodCategoryName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
-          return (
-            <div>
-              {value}
-              <span className="ant-divider"/>
-              {record.partnerName}
-            </div>
-          )}
-        },
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => (
+          <div>
+            {value}
+            <span className="ant-divider"/>
+            {record.partnerName}
+          </div>
+        )},
         {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
           <EditableCell value={account}
                         message={formatMessage({id: "pay.workbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
-        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>}
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>},
+        {title: '操作', dataIndex: 'id', render: (id) => <a onClick={() => this.payHistory(id)}>支付历史</a>}
       ],
       buttonDisabled: true,
       selectedRows: [],  //选中行
       noticeAlert: null, //提示
       errorAlert: null,  //错误
       currency: null,    //选中行的币种
+      payWayFetching: false,
+      payAccountFetching: false,
+      payWayOptions: [],
+      payAccountOptions: [],
+      modalVisible: false,
+      modalLoading: false,
 
       /* 线上 */
       onlineLoading: false,
@@ -112,8 +111,6 @@ class PayUnpaid extends React.Component {
       onlinePagination: { total: 0 },
       onlineData: [],
       onlineCash: [],                 //总金额
-      payWayOptions: [],
-      onlineModalVisible: false,
 
       /* 线下 */
       offlineLoading: false,
@@ -122,7 +119,6 @@ class PayUnpaid extends React.Component {
       offlinePagination: { total: 0 },
       offlineData: [],
       offlineCash: [],                //总金额
-      offlineModalVisible: false,
 
       /* 落地文件 */
       fileLoading: false,
@@ -131,7 +127,6 @@ class PayUnpaid extends React.Component {
       filePagination: { total: 0 },
       fileData: [],
       fileCash: [],                   //总金额
-      fileModalVisible: false,
 
       paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
@@ -316,16 +311,48 @@ class PayUnpaid extends React.Component {
     })
   };
 
+  //显示支付历史
+  payHistory = (id) => {
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getHistoryByDateId?id=${id}`;
+    httpFetch.get(url).then(res => {
+
+    })
+  };
+
   //点击支付按钮
   handlePayModal = () => {
+    this.setState({ payWayOptions: [], payAccountOptions: [], modalVisible: true });
+    let values = this.props.form.getFieldsValue();
+    Object.keys(values).map(key => {
+      this.props.form.setFieldsValue({ [key]: undefined });
+    });
+    this.props.form.setFieldsValue({ currency: this.state.currency })
+  };
+
+  //获取付款方式
+  getPayWay = () => {
     const { radioValue } = this.state;
-    if (radioValue === 'online') {
-      this.setState({ onlineModalVisible: true })
-    } else if (radioValue === 'offline') {
-      this.setState({ offlineModalVisible: true })
-    } else {
-      this.setState({ fileModalVisible: true })
-    }
+    if (this.state.payWayOptions.length > 0) return;
+    this.setState({ payWayFetching: true });
+    let paymentType = radioValue === 'online' ? 'ONLINE_PAYMENT' : radioValue === 'offline' ? 'OFFLINE_PAYMENT' : 'EBANK_PAYMENT';
+    let url = `${config.contractUrl}/payment/api/Cash/PaymentMethod/selectByPaymentType?paymentType=${paymentType}`;
+    httpFetch.get(url).then(res => {
+      res.status === 200 && this.setState({ payWayOptions: res.data, payWayFetching: false })
+    }).catch(() => {
+      this.setState({ payWayFetching: false })
+    })
+  };
+
+  //获取付款账户
+  getPayAccount = () => {
+    if (this.state.payAccountOptions.length > 0) return;
+    this.setState({ payAccountFetching: true });
+    let url = `${config.baseUrl}/api/companyBankAuth/selectAuthBank?empId=${this.props.user.userOID}`;
+    httpFetch.get(url).then(res => {
+      res.status === 200 && this.setState({ payAccountOptions: res.data, payAccountFetching: false })
+    }).catch(() => {
+      this.setState({ payAccountFetching: false })
+    })
   };
 
   //查看支付流水详情
@@ -452,17 +479,58 @@ class PayUnpaid extends React.Component {
 
   //线上
   handleOnlineModalOk = () => {
-    this.setState({ onlineModalVisible: false });
+    let params = {};
+    params.dataIds = [];
+    params.versionNumbers = [];
+    params.currentAmount = [];
+    this.state.selectedRows.map(row => {
+      params.dataIds.push(row.id);
+      params.versionNumbers.push(row.versionNumber);
+      params.currentAmount.push(row.currentPay || row.currentPayAmount)
+    });
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        values.paymentMethodCategory = "ONLINE_PAYMENT";
+        values.payCompanyBankName = values.payCompanyBankNumber.label;
+        values.payCompanyBankNumber = values.payCompanyBankNumber.key;
+        values.paymentDescription = values.paymentTypeId.label;
+        values.paymentTypeId = values.paymentTypeId.key;
+        params.cashPayDTO = values;
+        this.setState({ modalLoading: true });
+        let url = `${config.contractUrl}/payment/api/cash/transaction/details/insertBatch`;
+        httpFetch.post(url, params).then(res => {
+          if (res.status === 200) {
+            message.success('操作成功');
+            this.getOnlineList();
+            this.getOnlineCash();
+            this.setState({ modalVisible: false, modalLoading: false })
+          }
+        }).catch(e => {
+          message.error(`操作失败，${e.response.data.message}`);
+          this.setState({ modalLoading: false })
+        })
+      }
+    })
   };
 
   //线下
   handleOfflineModalOk = () => {
-    this.setState({ offlineModalVisible: false });
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values);
+        this.setState({ modalVisible: false });
+      }
+    })
   };
 
   //落地文件
   handleFileModalOk = () => {
-    this.setState({ fileModalVisible: false });
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values);
+        this.setState({ modalVisible: false });
+      }
+    })
   };
 
   /********************* 修改每页显示数量 *********************/
@@ -641,7 +709,7 @@ class PayUnpaid extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, onlineModalVisible, offlineModalVisible, fileModalVisible, radioValue, payWayOptions, currency, buttonDisabled, noticeAlert, errorAlert } = this.state;
+    const { searchForm, modalVisible, radioValue, payWayOptions, payAccountOptions, buttonDisabled, noticeAlert, errorAlert, payWayFetching, payAccountFetching, modalLoading } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -670,192 +738,209 @@ class PayUnpaid extends React.Component {
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
-        <Modal title="线上支付确认"
-               visible={onlineModalVisible}
-               okText="确认支付"
-               onOk={this.handleOnlineModalOk}
-               onCancel={() => this.setState({ onlineModalVisible: false })}>
-          <Form>
-            <FormItem  {...formItemLayout} label="付款账户">
-              {getFieldDecorator('payAccount', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-
-                </Select>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="币种">
-              {getFieldDecorator('currency', {
-                rules: [{
-                  required: true
-                }],
-                initialValue: currency
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="付款方式">
-              {getFieldDecorator('payWay', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-                  {payWayOptions.map(option => {
-                    return <Option key={option.value}>{option.messageKey}</Option>
-                  })}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="汇率">
-              {getFieldDecorator('rate', {
-                initialValue: ''
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="备注">
-              {getFieldDecorator('description', {
-                initialValue: ''
-              })(
-                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
-              )}
-            </FormItem>
-          </Form>
-        </Modal>
-        <Modal title="线下支付确认"
-               visible={offlineModalVisible}
-               okText="确认支付"
-               onOk={this.handleOfflineModalOk}
-               onCancel={() => this.setState({ offlineModalVisible: false })}>
-          <Form>
-            <Alert message="线下支付，确认付款后，支付状态直接变为支付成功" type="info" showIcon style={{position:'relative',top:-10}} />
-            <FormItem  {...formItemLayout} label="付款日期" style={{marginBottom:15}}>
-              {getFieldDecorator('payDate', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <DatePicker/>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
-              {getFieldDecorator('payAccount', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-
-                </Select>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="币种" style={{marginBottom:15}}>
-              {getFieldDecorator('currency', {
-                rules: [{
-                  required: true
-                }],
-                initialValue: currency
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
-              {getFieldDecorator('payWay', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-                  {payWayOptions.map(option => {
-                    return <Option key={option.value}>{option.messageKey}</Option>
-                  })}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="汇率" style={{marginBottom:15}}>
-              {getFieldDecorator('rate', {
-                initialValue: ''
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="备注" style={{marginBottom:15}}>
-              {getFieldDecorator('description', {
-                initialValue: ''
-              })(
-                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
-              )}
-            </FormItem>
-          </Form>
-        </Modal>
-        <Modal title="落地文件支付"
-               visible={fileModalVisible}
-               okText="导出报盘文件"
-               onOk={this.handleFileModalOk}
-               onCancel={() => this.setState({ fileModalVisible: false })}>
-          <Form>
-            <div style={{marginBottom:15}}>01. 选择付款账号</div>
-            <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
-              {getFieldDecorator('payAccount', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-
-                </Select>
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="币种" style={{marginBottom:15}}>
-              {getFieldDecorator('currency', {
-                rules: [{
-                  required: true
-                }],
-                initialValue: currency
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <FormItem  {...formItemLayout} label="汇率" style={{marginBottom:15}}>
-              {getFieldDecorator('rate', {
-                initialValue: ''
-              })(
-                <Input disabled />
-              )}
-            </FormItem>
-            <div style={{marginBottom:15}}>02. 选择付款方式</div>
-            <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
-              {getFieldDecorator('payWay', {
-                rules: [{
-                  required: true,
-                  message: '请选择'
-                }]})(
-                <Select placeholder="请选择">
-                  {payWayOptions.map(option => {
-                    return <Option key={option.value}>{option.messageKey}</Option>
-                  })}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="备注" style={{marginBottom:15}}>
-              {getFieldDecorator('description', {
-                initialValue: ''
-              })(
-                <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
-              )}
-            </FormItem>
-            <div style={{marginBottom:15}}>03. 点击下方【导出报盘文件】按钮</div>
-            <FormItem  {...formItemLayout} style={{marginBottom:15}}>
-              <div>1.导出报盘文件后，单据状态变为【支付中】</div>
-              <div>2.可通过报盘文件，在网银中进行支付</div>
-              <div>3.支付成功后，在【等待付款结果】标签下确认支付状态</div>
-            </FormItem>
-          </Form>
-        </Modal>
+        {radioValue === 'online' && (
+          <Modal title="线上支付确认"
+                 visible={modalVisible}
+                 okText="确认支付"
+                 confirmLoading={modalLoading}
+                 onOk={this.handleOnlineModalOk}
+                 onCancel={() => this.setState({ modalVisible: false })}>
+            <Form>
+              <FormItem  {...formItemLayout} label="付款账户">
+                {getFieldDecorator('payCompanyBankNumber', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]})(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayAccount}
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
+                    {payAccountOptions.map(option => {
+                      return <Option key={option.bankAccountNumber} payCompanyBankId={option.id}>{option.bankAccountName}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="币种">
+                {getFieldDecorator('currency', {
+                  rules: [{
+                    required: true
+                  }]
+                })(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="付款方式">
+                {getFieldDecorator('paymentTypeId', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]})(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayWay}
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
+                    {payWayOptions.map(option => {
+                      return <Option key={option.id}>{option.description}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="汇率">
+                {getFieldDecorator('exchangeRate')(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="备注">
+                {getFieldDecorator('remark')(
+                  <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+                )}
+              </FormItem>
+            </Form>
+          </Modal>
+        )}
+        {radioValue === 'offline' && (
+          <Modal title="线下支付确认"
+                 visible={modalVisible}
+                 okText="确认支付"
+                 confirmLoading={modalLoading}
+                 onOk={this.handleOfflineModalOk}
+                 onCancel={() => this.setState({ modalVisible: false })}>
+            <Form>
+              <Alert message="线下支付，确认付款后，支付状态直接变为支付成功" type="info" showIcon style={{position:'relative',top:-10}} />
+              <FormItem  {...formItemLayout} label="付款日期">
+                {getFieldDecorator('payDate', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]})(
+                  <DatePicker/>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="付款账户">
+                {getFieldDecorator('payAccount', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]})(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayAccount}
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}>
+                    {payAccountOptions.map(option => {
+                      return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="币种">
+                {getFieldDecorator('currency', {
+                  rules: [{
+                    required: true
+                  }]
+                })(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="付款方式">
+                {getFieldDecorator('payWay', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]
+                })(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayWay}
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}>
+                    {payWayOptions.map(option => {
+                      return <Option key={option.paymentMethodCode}>{option.description}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="汇率">
+                {getFieldDecorator('rate')(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="备注">
+                {getFieldDecorator('description')(
+                  <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+                )}
+              </FormItem>
+            </Form>
+          </Modal>
+        )}
+        {radioValue === 'file' && (
+          <Modal title="落地文件支付"
+                 visible={modalVisible}
+                 okText="导出报盘文件"
+                 confirmLoading={modalLoading}
+                 onOk={this.handleFileModalOk}
+                 onCancel={() => this.setState({ modalVisible: false })}>
+            <Form>
+              <div style={{marginBottom:15}}>01. 选择付款账号</div>
+              <FormItem  {...formItemLayout} label="付款账户">
+                {getFieldDecorator('payAccount', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]
+                })(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayAccount}
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}>
+                    {payAccountOptions.map(option => {
+                      return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="币种">
+                {getFieldDecorator('currency', {
+                  rules: [{
+                    required: true
+                  }]
+                })(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <FormItem  {...formItemLayout} label="汇率">
+                {getFieldDecorator('rate')(
+                  <Input disabled />
+                )}
+              </FormItem>
+              <div style={{marginBottom:15}}>02. 选择付款方式</div>
+              <FormItem  {...formItemLayout} label="付款方式">
+                {getFieldDecorator('payWay', {
+                  rules: [{
+                    required: true,
+                    message: '请选择'
+                  }]
+                })(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayWay}
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}>
+                    {payWayOptions.map(option => {
+                      return <Option key={option.paymentMethodCode}>{option.description}</Option>
+                    })}
+                  </Select>
+                )}
+              </FormItem>
+              <FormItem {...formItemLayout} label="备注">
+                {getFieldDecorator('description')(
+                  <TextArea autosize={{minRows: 2}} style={{minWidth:'100%'}} placeholder="请输入"/>
+                )}
+              </FormItem>
+              <div style={{marginBottom:15}}>03. 点击下方【导出报盘文件】按钮</div>
+              <FormItem  {...formItemLayout}>
+                <div>1.导出报盘文件后，单据状态变为【支付中】</div>
+                <div>2.可通过报盘文件，在网银中进行支付</div>
+                <div>3.支付成功后，在【等待付款结果】标签下确认支付状态</div>
+              </FormItem>
+            </Form>
+          </Modal>
+        )}
       </div>
     )
   }
@@ -866,8 +951,10 @@ PayUnpaid.contextTypes = {
   router: React.PropTypes.object
 };
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps(state) {
+  return {
+    user: state.login.user
+  }
 }
 
 const WrappedPayUnpaid = Form.create()(PayUnpaid);
