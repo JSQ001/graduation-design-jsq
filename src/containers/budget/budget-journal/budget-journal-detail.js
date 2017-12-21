@@ -346,6 +346,8 @@ class BudgetJournalDetail extends React.Component {
         statusData={'status':'processing', 'value':headerData.statusName};
       }else if(headerData.status=="SUBMIT_RETURN"){
         statusData={'status':'warning', 'value':headerData.statusName};
+      }else if(headerData.status=="REJECT") {
+        statusData = {'status': 'error', 'value': headerData.statusName};
       }else{
         statusData={'status':'default', 'value':headerData.statusName};
       }

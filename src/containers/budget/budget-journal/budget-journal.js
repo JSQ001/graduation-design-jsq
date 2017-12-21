@@ -156,7 +156,7 @@ class BudgetJournal extends React.Component {
   //跳转到详情
   HandleRowClick=(value)=>{
     const journalCode =value.journalCode;
-    if(value.status=="NEW" || value.status=="SUBMIT_RETURN"){
+    if(value.status==="NEW" || value.status==="SUBMIT_RETURN" || value.status==="REJECT"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }else {

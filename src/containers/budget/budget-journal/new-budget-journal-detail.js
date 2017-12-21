@@ -211,7 +211,7 @@ class NewBudgetJournalDetail extends React.Component {
         listExtraParams:{"companyId":''},
         columnLabel: 'departmentName',columnValue: 'unitId'
       },//部门
-      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budgetJournal.employeeId"}),
+      {type: 'list',key:'employee', id: 'employee', listType: 'journal_employee', label:this.props.intl.formatMessage({id:"budgetJournal.employee"}),
         labelKey: 'userName',valueKey: 'userId',single:true,event:'employee',isRequired: false,disabled:false,
         listExtraParams:{"departmentId":'',"companyId":''},
         columnLabel: 'employeeName',columnValue: 'employeeId'
