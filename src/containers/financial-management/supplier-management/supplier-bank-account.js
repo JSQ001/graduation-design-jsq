@@ -68,12 +68,20 @@ class SupplierBankAccount extends React.Component{
   }
 
   componentWillMount() {
+
+    this.getList();
+  }
+
+  getList(){
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/bank`,{id: this.props.params.id}).then(response=>{
+      console.log(response)
+    })
   }
 
   //新建侧滑
   handleCreate = ()=>{
     let slideFrame = {
-      title: this.props.intl.formatMessage({id:"supplier.management.newSupplier"}),
+      title: this.props.intl.formatMessage({id:"supplier.add.bank.account"}),
       visible: true,
       params: {}
     };

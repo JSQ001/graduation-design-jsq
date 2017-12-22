@@ -66,15 +66,19 @@ class SupplierManagement extends React.Component{
         {          /*供应商类型*/
           title: formatMessage({id:"supplier.management.type"}), key: "supplierType", dataIndex: 'supplierType'
         },
-        {           /*状态*/
-          title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
-          render: isEnabled => (
-            <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
-        },
         {
           /*更新日志*/
-          title: formatMessage({id: "supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog',
-          render: (value, record, index) => <span>{123}</span>
+          title: formatMessage({id: "supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog',width:'25%',
+          render: (value, record, index) =>{
+            let add = m =>m<10?'0'+m:m;
+            let time = new Date( record.updateTime);
+            return time.getFullYear()+"-"+add(time.getMonth()+1)+"-"+add(time.getDate())+" "+add(time.getHours())+":"+add(time.getMinutes())+":"+add(time.getSeconds())+" "+record.venOperatorName+"-"+record.venOperatorNumber
+          }
+        },
+        {           /*状态*/
+          title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'venType',width: '7%',
+          render: venType => (
+            <Badge status={venType===1001 ? 'success' : 'error'} text={venType===1001 ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
         },
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '18%', render: (text, record, index) => (
           <span>
@@ -180,10 +184,9 @@ class SupplierManagement extends React.Component{
 
   getList(){
     httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`,{}).then((response)=>{
-      console.log(response.data.body)
       response.data.body.map(item =>{
         item.key = item.id
-      })
+      });
       this.setState({
         loading: false,
         data: response.data.body
@@ -203,7 +206,20 @@ class SupplierManagement extends React.Component{
     })
   };
 
+  handleUpdate = (record)=>{
+    record.updateTime = moment(new Date(record.effectiveDate));
+    let slideFrame = {
+      title: this.props.intl.formatMessage({id:"supplier.management.updateSupplier"}),
+      visible: true,
+      params: record
+    };
+    this.setState({
+      slideFrame
+    })
+  };
+
   handleOnClose = () =>{
+    alert(1)
     let slideFrame = {
       title: "",
       visible: false,
@@ -216,14 +232,19 @@ class SupplierManagement extends React.Component{
 
   handleAfterClose = (params) =>{
     console.log(params)
+    alert(12)
     let slideFrame = {
       title: "",
       visible: false,
       params: {}
     };
     this.setState({
-      slideFrame
-    },params? this.getList() : null)
+      slideFrame,
+      loading: params
+    });
+    if (params){
+      this.getList()
+    }
   };
 
   render(){
@@ -258,6 +279,9 @@ class SupplierManagement extends React.Component{
             loading={loading}
             dataSource={data}
             columns={columns}
+            onRow={record => ({
+              onClick: () => this.handleUpdate(record)
+            })}
             pagination={pagination}
             bordered
             size="middle"/>

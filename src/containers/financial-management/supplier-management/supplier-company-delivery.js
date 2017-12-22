@@ -72,6 +72,8 @@ class SupplierCompanyDelivery extends React.Component{
     this.getList();
   }
 
+  getList(){};
+
   //控制是否弹出公司列表
   showListSelector = (flag) =>{
     this.setState({
@@ -111,7 +113,7 @@ class SupplierCompanyDelivery extends React.Component{
           size="middle"/>
         <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{formatMessage({id:"common.back"})}</a>
 
-        <ListSelector type="supplier_company"
+        <ListSelector type="tenant_company"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
                       extraParams={{setOfBooksId: this.props.company.setOfBooksId}}
