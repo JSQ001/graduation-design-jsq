@@ -86,6 +86,7 @@ class PayUnpaid extends React.Component {
         {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
           <EditableCell value={account}
                         message={formatMessage({id: "pay.workbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
+                        record={record}
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
