@@ -26,6 +26,9 @@ class SectionStructure extends React.Component{
         },
         {                                                                        //科目段结构代码
           type: 'input', id: 'sectionStructureCode', label: formatMessage({id: 'section.structure.code'})
+        },
+        {                                                                        //科目段结构名称
+          type: 'input', id: 'sectionStructureCName', label: formatMessage({id: 'section.structure.name'})
         }
       ]
     }
@@ -44,6 +47,7 @@ class SectionStructure extends React.Component{
           {formatMessage({id:"section.structure.header"})}
         </div>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
+
       </div>
     )
   }

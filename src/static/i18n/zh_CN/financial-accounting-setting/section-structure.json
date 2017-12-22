@@ -1,5 +1,6 @@
 {
   "section.structure.header": "通过该页面定义总账科目段段值及与系统内的值的映射关系，每个账套下只能有一个启用状态的科目段结构。",
   "section.setOfBook": "账套",
-  "section.structure.code": "科目段结构代码"
+  "section.structure.code": "科目段结构代码",
+  "section.structure.name": "科目段结构名称"
 }

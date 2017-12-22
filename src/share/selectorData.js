@@ -240,7 +240,7 @@ const selectorData = {
     title: '添加公司',
     url: `${config.budgetUrl}/api/budget/structure/assign/companies/filter`,
     searchForm: [
-      {type: 'input', id: 'code', label: "公司代码"},
+      {type: 'input', id: 'companyCode', label: "公司代码"},
       {type: 'input', id: 'companyName', label: "公司名称"},
       {type: 'input', id: 'companyCodeFrom', label:"公司代码从"},
       {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
