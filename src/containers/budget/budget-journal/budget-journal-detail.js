@@ -13,7 +13,7 @@ import menuRoute from 'share/menuRoute';
 
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';
-import WrappedNewBudgetJournalDetail from 'containers/budget/budget-journal/new-budget-journal-detail.js';
+import NewBudgetJournalDetail from 'containers/budget/budget-journal/budget-journal-detail.js';
 import Importer from 'components/template/importer.js';
 
 class BudgetJournalDetail extends React.Component {
@@ -594,7 +594,7 @@ class BudgetJournalDetail extends React.Component {
 
         <SlideFrame title={this.props.intl.formatMessage({id:'budgetJournal.journal'})}
                     show={showSlideFrameNew}
-                    content={WrappedNewBudgetJournalDetail}
+                    content={NewBudgetJournalDetail}
                     afterClose={this.handleAfterCloseNewSlide}
                     onClose={()=>this.showSlideFrameNew(false)}
                     params={this.state.params}/>
