@@ -57,7 +57,7 @@ class PayFail extends React.Component {
         {title: '币种', dataIndex: 'currency'},
         {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '付款方式', dataIndex: 'paymentTypeName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
           return (
             <div>
               {value}
