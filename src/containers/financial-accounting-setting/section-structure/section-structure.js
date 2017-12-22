@@ -21,22 +21,29 @@ class SectionStructure extends React.Component{
       loading: true,
       data: [],
       searchForm: [                                                             //账套
-        { type: 'select', id: 'controlRuleCodeFrom', label:formatMessage({id: 'budget.controlRulesFrom'}), options:[],labelKey: 'controlRuleName',valueKey: 'controlRuleCode',
-          getUrl:`${config.budgetUrl}/api/budget/control/rules/query/all`, method: 'get', getParams: {organizationId: this.props.id},
+        { type: 'select', id: 'setOfBook', label: formatMessage({id: 'section.setOfBook'}), options:[],labelKey: 'setOfBooksName',valueKey: 'id',
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', getParams: {roleType: 'TENANT'},
         },
-        {
-          type: 'select',
+        {                                                                        //科目段结构代码
+          type: 'input', id: 'sectionStructureCode', label: formatMessage({id: 'section.structure.code'})
         }
       ]
     }
   };
+
+  handleSearch = (params)=>{
+    console.log(params)
+  };
+
   render(){
     const { formatMessage} = this.props.intl;
+    const { searchForm} = this.state;
     return(
       <div className="section-structure">
         <div className="section-structure-header">
           {formatMessage({id:"section.structure.header"})}
         </div>
+        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
       </div>
     )
   }
