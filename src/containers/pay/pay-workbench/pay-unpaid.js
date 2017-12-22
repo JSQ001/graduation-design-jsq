@@ -135,7 +135,8 @@ class PayUnpaid extends React.Component {
   }
 
   componentWillMount() {
-    this.getList();
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
+    this.getList()
   }
 
   //获取列表及总金额
@@ -369,7 +370,7 @@ class PayUnpaid extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
@@ -970,6 +971,10 @@ class PayUnpaid extends React.Component {
 
 PayUnpaid.contextTypes = {
   router: React.PropTypes.object
+};
+
+PayUnpaid.propTypes = {
+  subTab: React.PropTypes.string,
 };
 
 function mapStateToProps(state) {

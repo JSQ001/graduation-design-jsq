@@ -124,6 +124,7 @@ class PayPaying extends React.Component {
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -158,7 +159,7 @@ class PayPaying extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   //确认成功弹框
@@ -524,6 +525,10 @@ class PayPaying extends React.Component {
 
 PayPaying.contextTypes = {
   router: React.PropTypes.object
+};
+
+PayPaying.propTypes = {
+  subTab: React.PropTypes.string,
 };
 
 function mapStateToProps() {

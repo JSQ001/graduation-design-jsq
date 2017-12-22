@@ -43,14 +43,13 @@ class PaymentDetail extends React.Component {
         {title: '状态', dataIndex: 'status', render: value => <Badge text={value} status='success'/>},
       ],
       logColumns: [
-        {title: '操作类型', dataIndex: 'operaType', key: 'operaType'},
-        {title: '操作人', dataIndex: 'operaPerson', key: 'operaPerson'},
-        {title: '执行结果', dataIndex: 'executionResult', key: 'executionResult', render: (result) => {
-          let status = result === '未支付' ? 'default' : (result === '成功' ? 'success' : 'error');
-          return <Badge status={status} text={result}/>
+        {title: '操作类型', dataIndex: 'operationType'},
+        {title: '操作人', dataIndex: 'operationMan'},
+        {title: '执行结果', dataIndex: 'operationResult', render: value => {
+          return <Badge status="success" text={value}/>
         }},
-        {title: '操作时间', dataIndex: 'operaTime', key: 'operaTime'},
-        {title: '备注', dataIndex: 'remark', key: 'remark', width: '35%'},
+        {title: '操作时间', dataIndex: 'operationTime', render: value => moment(value).format('YYYY-MM-DD hh:mm:ss')},
+        {title: '备注', dataIndex: 'remark', width: '30%'},
       ],
       billsData: [],
       detailData: [],
@@ -81,7 +80,7 @@ class PaymentDetail extends React.Component {
   };
 
   handleBack = () => {
-    this.context.router.replace(`${this.state.payWorkbench.url}?tab=${this.props.params.tab}`);
+    this.context.router.replace(`${this.state.payWorkbench.url}?tab=${this.props.params.tab}&subTab=${this.props.params.subTab}`);
   };
 
   render(){
@@ -146,7 +145,7 @@ class PaymentDetail extends React.Component {
                  bordered
                  size="middle"/>
           <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.log"})/*操作日志*/}</h3>
-          <Table rowKey="id"
+          <Table rowKey={(record, index) => index}
                  columns={logColumns}
                  dataSource={logData}
                  pagination={false}

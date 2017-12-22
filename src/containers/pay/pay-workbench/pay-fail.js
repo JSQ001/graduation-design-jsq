@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import { Form, Radio, Badge, Table, Pagination, message, Button, Alert, Modal, Select, Input, Popconfirm, Spin } from 'antd'
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -34,17 +35,17 @@ class PayFail extends React.Component {
       ],
       searchParams: {},
       columns: [
-        {title: '付款流水号', dataIndex: 'billcode'},
-        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '付款流水号', dataIndex: 'billcode', render: (value, record) => <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
             <div>
-              <a>{value}</a>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
               {record.documentTypeName}
             </div>
           )}
         },
+        {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
             <div>
@@ -99,10 +100,13 @@ class PayFail extends React.Component {
       },
       fileCash: [],  //总金额
       fileModalVisible: false,
+
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -277,6 +281,11 @@ class PayFail extends React.Component {
     }).catch(() => {
       this.setState({ payWayFetching: false })
     })
+  };
+
+  //查看支付流水详情
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Fail').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
@@ -653,6 +662,14 @@ class PayFail extends React.Component {
   }
 
 }
+
+PayFail.contextTypes = {
+  router: React.PropTypes.object
+};
+
+PayFail.propTypes = {
+  subTab: React.PropTypes.string,
+};
 
 function mapStateToProps(state) {
   return {
