@@ -27,6 +27,19 @@
   "supplier.management.remark": "备注",
   "supplier.management.basicInfo": "基础信息",
   "supplier.management.otherInfo": "其它信息",
-  "supplier.management.newSupplier": "新建供应商"
+  "supplier.management.newSupplier": "新建供应商",
+  "supplier.management.ordinalNumber": "序号",
+  "supplier.main.account": "主账户",
+  "supplier.bank.yes": "是",
+  "supplier.bank.no": "否",
+  "supplier.management.lastUpdate": "最近更新时间",
+  "supplier.management.bank.accountName": "银行户名",
+  "bank.account.tips.left": "如果没有想要的银行，可前往",
+  "bank.account.tips.center": "【银行定义】",
+  "supplier.company.code": "公司代码",
+  "supplier.company.name": "公司名称",
+  "supplier.company.type": "公司类型",
+  "supplier.company.setOfBook": "账套",
+  "supplier.company.payCondition": "付款条件"
 
 }

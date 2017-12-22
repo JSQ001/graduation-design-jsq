@@ -134,7 +134,7 @@ class BankDefinition extends React.Component{
     switch (event) {
       case 'COUNTRY_CHANGE':
         this.getAddress(value);break;
-      case 'ADDRESS_CHANGE':
+      case 'ADDRESS_CHANGE': break;
      }
   };
 

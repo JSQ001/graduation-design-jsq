@@ -6,10 +6,9 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import moment from 'moment'
 import menuRoute from 'share/menuRoute'
 
-import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, DatePicker, Popconfirm, Popover  } from 'antd'
+import { Form, Button, Select, Icon, Table, message, Popconfirm,  } from 'antd'
 
 import 'styles/budget-setting/budget-organization/budget-control-rules/budget-control-rules-detail.scss';
 import SlideFrame from 'components/slide-frame'
@@ -286,7 +285,7 @@ class BudgetControlRulesDetail extends React.Component{
           onChange={this.onChangePager}
           size="middle"
           bordered/>
-        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
 
         <SlideFrame title= {this.props.intl.formatMessage({id: 'budget.createRulesDetail'})}
                     show={showSlideFrameCreate}
