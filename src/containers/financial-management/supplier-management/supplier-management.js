@@ -4,23 +4,24 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge, notification, Popover  } from 'antd';
+import { Button, Table, Badge, notification, Popover, Popconfirm, } from 'antd';
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import ListSelector from 'components/list-selector.js'
 import SlideFrame from 'components/slide-frame'
 import NewUpdateSupplier from 'containers/financial-management/supplier-management/new-update-supplier'
 import 'styles/financial-management/supplier-management/supplier-management.scss'
 import menuRoute from 'share/menuRoute'
 import Importer from 'components/template/importer'
+import moment from 'moment'
 
 class SupplierManagement extends React.Component{
   constructor(props){
     super(props);
     const {formatMessage} = this.props.intl;
     this.state = {
-      loading: true,
+      loading: false,
+      //data: [{supplierCode:123,key:1,id:1}],
       data: [],
       batchCompany: true,
       selectedRowKeys:[],
@@ -40,8 +41,8 @@ class SupplierManagement extends React.Component{
       },
       searchForm: [
         {type: 'select', id: 'supplierType', label: formatMessage({id: 'supplier.management.type'})/*供应商类型*/, options:[]},
-        {type: 'input', id: 'supplierCode', label: formatMessage({id: 'supplier.management.code'})/*供应商代码*/, },
-        {type: 'input', id: 'supplierName', label: formatMessage({id: 'supplier.management.name'})/*供应商名称*/, },
+        {type: 'input', id: 'venNickCode', label: formatMessage({id: 'supplier.management.code'})/*供应商代码*/, },
+        {type: 'input', id: 'venNickname', label: formatMessage({id: 'supplier.management.name'})/*供应商名称*/, },
         {type: 'input', id: 'bankAccount', label: formatMessage({id: 'supplier.bank.account'})/*银行账号*/, },
         {type: 'radio', id: 'supplierStatus', label: formatMessage({id: 'supplier.management.status'})/*供应商状态*/,
           options:[
@@ -53,13 +54,14 @@ class SupplierManagement extends React.Component{
       ],
       columns: [
         {          /*供应商代码*/
-          title: formatMessage({id:"supplier.management.code"}), key: "supplierCode", dataIndex: 'supplierCode'
+          title: formatMessage({id:"supplier.management.code"}), key: "venderCode", dataIndex: 'venderCode'
         },
         {          /*外部标识ID*/
-          title: formatMessage({id:"supplier.management.outerId"}), key: "outerId", dataIndex: 'outerId'
+          title: formatMessage({id:"supplier.management.outerId"}), key: "venNickOid", dataIndex: 'venNickOid'
         },
         {          /*供应商名称*/
-          title: formatMessage({id:"supplier.management.name"}), key: "supplierName", dataIndex: 'supplierName'
+          title: formatMessage({id:"supplier.management.name"}), key: "venNickname", dataIndex: 'venNickname',
+          render: desc => <span>{desc ? <Popover placement="topLeft" content={desc}>{desc}</Popover> : '-'}</span>
         },
         {          /*供应商类型*/
           title: formatMessage({id:"supplier.management.type"}), key: "supplierType", dataIndex: 'supplierType'
@@ -69,27 +71,39 @@ class SupplierManagement extends React.Component{
           render: isEnabled => (
             <Badge status={isEnabled ? 'success' : 'error'} text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />)
         },
-        {          /*更新日志*/
-          title: formatMessage({id:"supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog'
+        {
+          /*更新日志*/
+          title: formatMessage({id: "supplier.management.updateLog"}), key: "updateLog", dataIndex: 'updateLog',
+          render: (value, record, index) => <span>{123}</span>
         },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '18%', render: (text, record, index) => (
           <span>
-            <a href="#" onClick={record.edit ? (e)=>this.saveItem(e,record,index) :(e) => this.operateItem(e, record,index,true)}>{formatMessage({id: record.edit ? "common.save":"common.edit"})}</a>
-            {record.edit ?
-              <a href="#" style={{marginLeft: 12}}
-                 onClick={(e) => this.operateItem(e, record, index, false)} >{ formatMessage({id: "common.cancel" })}</a>
-              :
-              <Popconfirm onConfirm={(e) => this.deleteItem(e, record,index)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
-                <a href="#" style={{marginLeft: 12}}>{ formatMessage({id: "common.delete"})}</a>
-              </Popconfirm>
-
-            }
+            <a href="#" onClick={(e) => this.editItem(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
+            <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkAccount(e, record,index)}>{formatMessage({id: "supplier.bank.account"})}</a>
+           <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkCompany(e, record,index)}>{formatMessage({id: "supplier.management.deliveryCompany"})}</a>
           </span>)
         },
       ],
       selectedEntityOIDs: []    //已选择的列表项的OIDs
     }
   }
+
+  componentWillMount() {
+    this.getList();
+  }
+
+  handleLinkAccount = (e,record,index)=>{
+    console.log(record)
+    console.log(e)
+    this.context.router.push(menuRoute.getMenuItemByAttr('supplier-bank-account', 'key').children.supplierBankAccount.url.replace('id', record.id))
+  };
+
+  handleLinkCompany = (e,record,index)=>{
+    console.log(record)
+    this.context.router.push(menuRoute.getMenuItemByAttr('supplier-bank-account', 'key').children.supplierCompanyDelivery.url.replace('id', record.id))
+  };
 
   handleSearch = (values)=>{
     console.log(values)
@@ -164,6 +178,19 @@ class SupplierManagement extends React.Component{
     this.setState({selectedEntityOIDs: [],selectedRowKeys: []});
   }
 
+  getList(){
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/search`,{}).then((response)=>{
+      console.log(response.data.body)
+      response.data.body.map(item =>{
+        item.key = item.id
+      })
+      this.setState({
+        loading: false,
+        data: response.data.body
+      })
+    })
+  }
+
   //新建侧滑
   handleCreate = ()=>{
     let slideFrame = {
@@ -188,6 +215,7 @@ class SupplierManagement extends React.Component{
   };
 
   handleAfterClose = (params) =>{
+    console.log(params)
     let slideFrame = {
       title: "",
       visible: false,
@@ -195,7 +223,7 @@ class SupplierManagement extends React.Component{
     };
     this.setState({
       slideFrame
-    })
+    },params? this.getList() : null)
   };
 
   render(){

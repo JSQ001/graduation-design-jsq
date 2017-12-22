@@ -4,7 +4,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Input, Select, Switch, Affix, DatePicker, Icon, Badge, notification, Popover, Form  } from 'antd';
+import { Button, Table, Input, Select, Switch, Affix, DatePicker, Icon, Badge, message, Form  } from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
@@ -19,15 +19,15 @@ class NewUpdateSupplier extends React.Component{
     super(props);
     const {formatMessage} = this.props.intl;
     this.state = {
-      loading: true,
+      loading: false,
       basicInfo: [
-        {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'supplierType',//供应商类型
-          options: [],
+        {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'venderTypeId',//供应商类型
+          options: [], url: `${config.vendorUrl}/vendor-info-service/api/supplier/type/query`, valueKey: 'id', labelKey: 'supplierTypeName' ,method: 'get',
          },
-        {type: 'input',flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.code"}), key: 'supplierCode' }, //供应商代码
-        {type: 'input',flag: 'basic', isRequired: true,label: formatMessage({id:"supplier.management.name"}), key: 'supplierName' }, //供应商名称
+        {type: 'input',flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.code"}), key: 'venderCode' }, //供应商代码
+        {type: 'input',flag: 'basic', isRequired: true,label: formatMessage({id:"supplier.management.name"}), key: 'venNickname' }, //供应商名称
         {type: 'date', flag: 'basic',isRequired: false, label: formatMessage({id:"supplier.management.commissionDate"}), key: 'commissionDate' }, //启用日期
-        {type: 'switch',flag: 'basic', isRequired: false, label: formatMessage({id:"common.column.status"}), key: 'commissionDate',//状态
+        {type: 'switch',flag: 'basic', isRequired: false, label: formatMessage({id:"common.column.status"}), key: 'status',//状态
           defaultValue: 'true'
          },
       ],
@@ -80,6 +80,8 @@ class NewUpdateSupplier extends React.Component{
     });
   }
 
+
+
   handleChange = (key)=>{
     //console.log(key)
   };
@@ -87,29 +89,17 @@ class NewUpdateSupplier extends React.Component{
   getOptions = (item)=> {
     httpFetch[item.method](item.url).then((response) => {
       let options = [];
-      console.log(response)
       response.data.map(data => {
-        options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
+        options.push({label: item.renderOption ? item.renderOption(data) : data[item.labelKey], value: data[item.valueKey]})
       });
-      let otherInfo = this.state.otherInfo;
-      console.log(otherInfo)
-      otherInfo.map((searchItem)=>{
-        if(searchItem.key === item.key){
-          searchItem.options = options;
-        }
-        return
-      });
-      console.log(otherInfo)
-      this.setState({
-        otherInfo
-      })
-     /* if(item.flag === 'basic'){
+      if(item.flag === 'basic'){
         let basicInfo = this.state.basicInfo;
-        basicInfo = basicInfo.map((searchItem)=>{
+        basicInfo.map((searchItem)=>{
           if(searchItem.key === item.key){
+            console.log(searchItem)
             searchItem.options = options;
+            return ;
           }
-          return basicInfo;
         });
         this.setState({
           basicInfo
@@ -125,7 +115,7 @@ class NewUpdateSupplier extends React.Component{
         this.setState({
           otherInfo
         })
-      }*/
+      }
     });
   };
 
@@ -138,8 +128,6 @@ class NewUpdateSupplier extends React.Component{
       }
       //选择组件
       case 'select': {
-        if(item.key === 'country' )
-          console.log(item)
         return (
           <Select placeholder={this.props.intl.formatMessage({id: 'common.please.select'})}
                   onChange={this.handleChange(item.key)}
@@ -182,8 +170,8 @@ class NewUpdateSupplier extends React.Component{
     let children = [];
     array.map((item=>{
       children.push(
-        <FormItem {...formItemLayout} label={item.label}>
-          {getFieldDecorator(item.key, {
+        <FormItem {...formItemLayout} key={item.key} label={item.label}>
+          {getFieldDecorator(`${item.key}`, {
             valuePropName: item.type === 'switch' ? 'checked' : 'value',
             initialValue: item.defaultValue,
             rules: [{
@@ -200,11 +188,27 @@ class NewUpdateSupplier extends React.Component{
 
   handleSubmit = (e)=>{
     e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log(values)
+        httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/insert`,values).then((response)=>{
+          console.log(response)
+          this.props.form.resetFields();
+          this.props.close(true);
+          message.success(`${this.props.intl.formatMessage({id:"common.save.success"},{name:""})}`);
+
+        }).catch(e=>{
+          if(e.response){
+            message.error(`${this.props.intl.formatMessage({id:"common.save.filed"})}, ${e.response.data.message}`);
+          }
+        })
+      }
+    })
   };
 
   onCancel = ()=>{
-    this.props.close();
-  };
+  this.props.close();
+};
 
   render() {
     const { basicInfo, otherInfo, loading} = this.state;

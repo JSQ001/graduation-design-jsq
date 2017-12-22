@@ -102,7 +102,6 @@ class NewDimension extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        console.log(values)
         values.id = this.state.dimension.id;
         values.dimensionId = values.dimensionCode[0].dimensionId;
         if(values.defaultDimensionCode.length>0){
