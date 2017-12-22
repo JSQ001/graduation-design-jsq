@@ -20,6 +20,14 @@ class SectionStructure extends React.Component{
     this.state = {
       loading: true,
       data: [],
+      pagination: {
+        current: 1,
+        page: 0,
+        total:0,
+        pageSize:10,
+        showSizeChanger:true,
+        showQuickJumper:true,
+      },
       searchForm: [                                                             //账套
         { type: 'select', id: 'setOfBook', label: formatMessage({id: 'section.setOfBook'}), options:[],labelKey: 'setOfBooksName',valueKey: 'id',
           getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', getParams: {roleType: 'TENANT'},
@@ -40,14 +48,19 @@ class SectionStructure extends React.Component{
 
   render(){
     const { formatMessage} = this.props.intl;
-    const { searchForm} = this.state;
+    const { loading, data, searchForm, pagination } = this.state;
     return(
       <div className="section-structure">
         <div className="section-structure-header">
           {formatMessage({id:"section.structure.header"})}
         </div>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
-
+        <div className="table-header">
+          <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
+          <div className="table-header-buttons">
+            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
+          </div>
+        </div>
       </div>
     )
   }
