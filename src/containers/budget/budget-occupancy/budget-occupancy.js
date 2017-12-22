@@ -15,11 +15,11 @@ class BudgetOccupancy extends React.Component{
       loading: false,
       searchParams: {},
       searchForm: [
-        {type: 'input', id: 'num', label: '导入批次号'},
-        {type: 'select', id: 'people', label: '创建人', options: [], getUrl: `${config.budgetUrl}/api/budget/reserve/adjust/getEmployee`, method: 'get'},
+        {type: 'input', id: 'batchNumber', label: '导入批次号'},
+        {type: 'select', id: 'employeeId', label: '创建人', options: [], getUrl: `${config.budgetUrl}/api/budget/reserve/adjust/getEmployee`, method: 'get', labelKey: 'employeeName', valueKey: 'employeeId', renderOption: (data) => `${data.employeeName} - ${data.employeeId}`},
         {type: 'items', id: 'rangeDate', items: [
-          {type: 'date', id: 'dateFrom', label: '导入日期从'},
-          {type: 'date', id: 'dateTo', label: '导入日期至'}
+          {type: 'date', id: 'createdDateFrom', label: '导入日期从'},
+          {type: 'date', id: 'createdDateTo', label: '导入日期至'}
         ]}
       ],
       columns: [
@@ -76,8 +76,8 @@ class BudgetOccupancy extends React.Component{
   };
 
   search = (values) => {
-    values.dateFrom = values.dateFrom ? moment(values.dateFrom).format('YYYY-MM-DD') : null;
-    values.dateTo = values.dateTo ? moment(values.dateTo).format('YYYY-MM-DD') : null;
+    values.createdDateFrom && (values.createdDateFrom = moment(values.createdDateFrom).format('YYYY-MM-DD'));
+    values.createdDateTo && (values.createdDateTo = moment(values.createdDateTo).format('YYYY-MM-DD'));
     this.setState({ searchParams: values },() => {
       this.getList()
     })

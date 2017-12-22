@@ -24,6 +24,7 @@ class NewBudgetVersions extends React.Component {
       statusError: false,
       newData: [],
       version: {},
+      statusOptions:[],
       checkoutCodeData: [],
       loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail', 'key'),    //预算版本详情的页面项
@@ -32,14 +33,23 @@ class NewBudgetVersions extends React.Component {
   }
 
   componentWillMount() {
-    console.log(this.props)
+    this.getStatusOptions();
     this.setState({
-      version: this.props.params
+      version: this.props.params,
+    })
+  }
+
+  getStatusOptions(){
+    httpFetch.get(`${config.baseUrl}/api/custom/enumeration/system/by/type?systemCustomEnumerationType=2001`).then(res => { //状态
+      let statusOptions = res.data.values || [];
+      console.log(res.data.values);
+      this.setState({
+        statusOptions
+      })
     })
   }
 
   componentWillReceiveProps = (nextProps) => {
-    console.log(nextProps)
   }
 
   //检查处理提交数据
@@ -103,7 +113,7 @@ class NewBudgetVersions extends React.Component {
     const { formatMessage } = this.props.intl;
     const {getFieldDecorator} = this.props.form;
     const versionCodeError = false;
-    const {version} = this.state;
+    const {version,statusOptions} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -155,11 +165,10 @@ class NewBudgetVersions extends React.Component {
                 initialValue: typeof version.id === 'undefined' ? "NEW" : version.status.value,
                 rules: [{required: true,}],
               })(
-                <Select
-                  placeholder="">
-                  <Select.Option value="NEW">{this.props.intl.formatMessage({id: "budgetVersion.new"})}</Select.Option>
-                  <Select.Option value="CURRENT">{this.props.intl.formatMessage({id: "budgetVersion.current"})}</Select.Option>
-                  <Select.Option value="HISTORY">{this.props.intl.formatMessage({id: "budgetVersion.history"})}</Select.Option>
+                <Select placeholder={formatMessage({id: "common.please.select"})}>
+                  {statusOptions.map((option) => {
+                    return <Option key={option.code}>{option.messageKey}</Option>
+                  })}
                 </Select>
               )}
             </FormItem>
