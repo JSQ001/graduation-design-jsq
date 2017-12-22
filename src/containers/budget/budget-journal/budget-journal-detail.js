@@ -346,6 +346,8 @@ class BudgetJournalDetail extends React.Component {
         statusData={'status':'processing', 'value':headerData.statusName};
       }else if(headerData.status=="SUBMIT_RETURN"){
         statusData={'status':'warning', 'value':headerData.statusName};
+      }else if(headerData.status=="REJECT") {
+        statusData = {'status': 'error', 'value': headerData.statusName};
       }else{
         statusData={'status':'default', 'value':headerData.statusName};
       }
@@ -567,7 +569,7 @@ class BudgetJournalDetail extends React.Component {
                 uploadUrl={uploadUrl}
                 errorUrl={errorUrl}
                 title={this.props.intl.formatMessage({id:'budgetJournal.leading'})}
-                fileName={this.props.intl.formatMessage({id:'budgetJournalLeading'})}
+                fileName={this.props.intl.formatMessage({id:'budgetJournal.budgetJournalLeading'})}
                 onOk={this.onLoadOk}
               />
               <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:'common.delete'})} onConfirm={this.handleDeleteLine} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>

@@ -71,7 +71,7 @@ class NewBudgetGroup extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="预算项目组描述">
+                <FormItem label="预算项目组名称">
                   {getFieldDecorator("itemGroupName", {
                     rules: [{
                       required: true,

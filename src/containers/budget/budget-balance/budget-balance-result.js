@@ -213,7 +213,7 @@ class BudgetBalanceResult extends React.Component {
 
         <div className="footer-operate">
           <Button type="primary" onClick={() => {this.context.router.push(budgetBalancePage.url)}}>返回修改参数</Button>
-          <Button onClick={this.getList}>重新查询结果</Button>
+          <Button onClick={this.getList} style={{ marginLeft: 10}}>重新查询结果</Button>
           <Button style={{ marginLeft: 10}}>导出CVS</Button>
         </div>
 

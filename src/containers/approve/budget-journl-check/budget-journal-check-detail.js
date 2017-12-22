@@ -400,10 +400,7 @@ class BudgetJournalCheckDetail extends React.Component {
               <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.attachment"})}:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
-
           </Row>
-
-
         </div>
 
         <Table columns={columns}
@@ -422,7 +419,6 @@ class BudgetJournalCheckDetail extends React.Component {
             </Collapse.Panel>
           </Collapse>
         </div>
-
         <div className="footer-operate">
           <div className="food-input" >
             <span>{this.props.intl.formatMessage({id:"budgetJournal.budgetOpinion"})}}：&nbsp;</span>
