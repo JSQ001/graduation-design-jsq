@@ -73,6 +73,8 @@ class PaySuccess extends React.Component {
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='success' text={state}/>},
       ],
+      pageSizeOptions: ['10', '20', '30', '50'],
+
       /* 线上 */
       onlineLoading: false,
       onlineData: [],
@@ -324,7 +326,7 @@ class PaySuccess extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, pageSizeOptions } = this.state;
     let onlineColumns = [].concat(columns);
     onlineColumns.push(
       {title: '操作', dataIndex: 'id', render: (id, record) => <a onClick={() => this.handleRefund(record)}>退票</a>}
@@ -359,7 +361,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -370,7 +372,7 @@ class PaySuccess extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { columns, offlineData, offlineLoading, offlinePageSize, offlinePagination, offlineCash } = this.state;
+    const { columns, offlineData, offlineLoading, offlinePageSize, offlinePagination, offlineCash, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付成功
@@ -401,7 +403,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={offlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={offlinePagination.total}
                     onChange={this.offlinePaginationChange}
                     onShowSizeChange={this.offlinePaginationChange}
@@ -412,7 +414,7 @@ class PaySuccess extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付成功
@@ -443,7 +445,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}

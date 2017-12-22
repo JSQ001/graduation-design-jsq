@@ -77,6 +77,7 @@ class PayFail extends React.Component {
       payAccountFetching: false,
       payWayFetching: false,
       payAccountOptions: [],
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -400,7 +401,7 @@ class PayFail extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -436,7 +437,7 @@ class PayFail extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -447,7 +448,7 @@ class PayFail extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -483,7 +484,7 @@ class PayFail extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}

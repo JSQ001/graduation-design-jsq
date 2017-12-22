@@ -105,6 +105,7 @@ class PayUnpaid extends React.Component {
       payAccountOptions: [],
       modalVisible: false,
       modalLoading: false,
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -584,7 +585,7 @@ class PayUnpaid extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash, selectedRowKeys } = this.state;
+    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash, selectedRowKeys, pageSizeOptions } = this.state;
     const rowSelection = {
       selectedRowKeys: selectedRowKeys,
       onChange: this.onSelectChange,
@@ -622,7 +623,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -633,7 +634,7 @@ class PayUnpaid extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineCash } = this.state;
+    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -669,7 +670,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={offlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={offlinePagination.total}
                     onChange={this.offlinePaginationChange}
                     onShowSizeChange={this.offlinePaginationChange}
@@ -680,7 +681,7 @@ class PayUnpaid extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { fileLoading, columns, fileData, filePageSize, filePagination, fileCash } = this.state;
+    const { fileLoading, columns, fileData, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -716,7 +717,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}

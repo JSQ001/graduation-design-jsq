@@ -97,6 +97,7 @@ class PayPaying extends React.Component {
       record: {}, //点击行信息
       confirmSuccessLoading: false,
       confirmFailLoading: false,
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -336,7 +337,7 @@ class PayPaying extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, onlineWarningRows } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, onlineWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -374,7 +375,7 @@ class PayPaying extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -385,7 +386,7 @@ class PayPaying extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, fileWarningRows } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, fileWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -423,7 +424,7 @@ class PayPaying extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
