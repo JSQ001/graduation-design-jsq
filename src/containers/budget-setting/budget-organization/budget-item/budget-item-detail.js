@@ -53,7 +53,7 @@ class BudgetItemDetail extends React.Component{
           render: desc => <span>{desc ? desc : '-'}</span>
         },
         {                        /*启用*/
-          title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
+          title:formatMessage({id:"common.status.enable"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
           render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
         },
       ],
@@ -204,8 +204,7 @@ class BudgetItemDetail extends React.Component{
           onChange={this.onChangePager}
           size="middle"
           bordered/>
-        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
-
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
         <ListSelector type="company_item"
                       visible={companyListSelector}
                       onOk={this.handleListOk}
