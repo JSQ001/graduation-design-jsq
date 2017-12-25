@@ -43,6 +43,7 @@ class NewBudgetJournalFrom extends React.Component {
       journalTypeIdFlag:true,
       file: {},
       attachmentOID: [],
+      defaultStructure:{},
       formOid:null,
       documentOid:null
     };
@@ -146,7 +147,7 @@ class NewBudgetJournalFrom extends React.Component {
              "versionNumber": "1",
              "attachmentOID": this.state.attachmentOID,
              "formOid":this.state.formOid,
-             "documentType":this.state.documentOid
+             "documentType":this.state.documentOid,
           }
           ,
           "list": []
@@ -164,8 +165,7 @@ class NewBudgetJournalFrom extends React.Component {
         item.key=item.id;
       })
       this.setState(
-        {"structureGroup": response.data},()=>{
-        }
+        {"structureGroup": response.data},()=>{}
       )
     }).catch(e => {message.error(e.response.data.message)})
     let structureId = null;
@@ -174,7 +174,8 @@ class NewBudgetJournalFrom extends React.Component {
           structureId =  response.data.id;
           this.props.form.setFieldsValue({
             "structureId":structureId,
-            "periodStrategy":response.data.periodStrategy
+            "periodStrategy":response.data.periodStrategy,
+            "defaultStructure":response.data,
           })
         }
     }).catch(e => {message.error(e.response.data.message)})
@@ -248,9 +249,11 @@ class NewBudgetJournalFrom extends React.Component {
   render() {
     const {getFieldDecorator} = this.props.form;
     const organization = this.props.organization;
-    const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading} = this.state;
+    const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading,defaultStructure} = this.state;
     const formItemLayout = {};
-    const strategyOptions = structureGroup.map((item) => <Option value={String(item.id)}>{item.structureName}</Option>);
+    const strategyOptions =structureGroup.length>0?structureGroup.map((item) =><Option value={String(item.id)}>{item.structureName}</Option>):structureGroup.push(
+      <Option value={String(defaultStructure.id)}>{defaultStructure.structureName}</Option>
+    );
     const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
     return (
