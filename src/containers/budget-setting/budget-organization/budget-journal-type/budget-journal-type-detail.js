@@ -226,6 +226,7 @@ class BudgetJournalTypeDetail extends React.Component {
       if(nowStatus === 'COMPANY'){
         item = {
           companyId: item.id,
+          companyCode: item.code,
           isEnabled: true
         };
       }
