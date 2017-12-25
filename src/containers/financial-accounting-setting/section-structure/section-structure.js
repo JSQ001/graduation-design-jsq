@@ -5,13 +5,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table} from 'antd'
-
+import SlideFrame from 'components/slide-frame'
+import NewUpdateSection from 'containers/financial-accounting-setting/section-structure/new-update-section.js'
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
 
-import 'styles/financial-accounting-setting/section-structure/section-structure.scss'
+import 'styles/financial-accounting-setting/section-structure/new-update-section.scss'
 
 class SectionStructure extends React.Component{
   constructor(props){
@@ -20,6 +20,9 @@ class SectionStructure extends React.Component{
     this.state = {
       loading: true,
       data: [],
+      lov:{
+        visible: false
+      },
       pagination: {
         current: 1,
         page: 0,
@@ -38,17 +41,68 @@ class SectionStructure extends React.Component{
         {                                                                        //科目段结构名称
           type: 'input', id: 'sectionStructureCName', label: formatMessage({id: 'section.structure.name'})
         }
+      ],
+      columns:[
+        {          /*账套*/
+          title: formatMessage({id:"section.setOfBook"}), key: "setOfBook", dataIndex: 'setOfBook'
+        },
+        {          /*科目段结构代码*/
+          title: formatMessage({id:"section.structure.code"}), key: "sectionCode", dataIndex: 'sectionCode'
+        },
+        {          /*科目段结构名称*/
+          title: formatMessage({id:"section.structure.name"}), key: "sectionName", dataIndex: 'sectionName'
+        },
+        {          /*状态*/
+          title: formatMessage({id:"common.column.status"}), key: "isEnabled", dataIndex: 'isEnabled'
+        },
+
+        {          /*操作*/
+          title: formatMessage({id:"common.operation"}), key: "operate", dataIndex: 'operate'
+        },
       ]
     }
   };
+
+  componentWillMount() {
+    this.getList();
+  }
+
+  getList(){};
 
   handleSearch = (params)=>{
     console.log(params)
   };
 
+  handleCreate = ()=>{
+    let lov = {
+      title: this.props.intl.formatMessage({id:"section.new"}),
+      visible: true,
+      params: {}
+    };
+    this.setState({
+      lov
+    })
+  };
+
+  handleAfterClose = ()=>{
+    this.setState({
+      lov:{
+        visible: false
+      }
+    })
+  };
+
+  handleShowSlide = ()=>{
+    this.setState({
+      lov:{
+        visible: false
+      }
+    })
+  };
+
   render(){
     const { formatMessage} = this.props.intl;
-    const { loading, data, searchForm, pagination } = this.state;
+    const { loading, data, columns, searchForm, pagination, lov } = this.state;
     return(
       <div className="section-structure">
         <div className="section-structure-header">
@@ -61,6 +115,19 @@ class SectionStructure extends React.Component{
             <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.create'})}</Button>  {/*新 建*/}
           </div>
         </div>
+        <Table
+            loading={loading}
+            dataSource={data}
+            columns={columns}
+            pagination={pagination}
+            bordered
+            size="middle"/>
+        <SlideFrame title= {lov.title}
+                    show={lov.visible}
+                    content={NewUpdateSection}
+                    afterClose={this.handleAfterClose}
+                    onClose={()=>this.handleShowSlide(false)}
+                    params={lov.params}/>
       </div>
     )
   }
