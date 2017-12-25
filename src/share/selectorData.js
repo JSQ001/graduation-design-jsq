@@ -35,8 +35,10 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'structureCode', label: '预算表代码'},
       {type: 'input', id: 'structureName', label: '预算表名称'},
-      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'},
-      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, labelKey: 'structureCode', valueKey: 'structureCode', method: 'get'}
+      {type: 'select', id: 'structureCodeFrom', label: '预算表代码从', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`,
+        labelKey: 'structureCode', valueKey: 'structureCode', method: 'get', renderOption: (data) => `${data.structureCode}(${data.structureName})`},
+      {type: 'select', id: 'structureCodeTo', label: '预算表代码至', options: [], getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`,
+        labelKey: 'structureCode', valueKey: 'structureCode', method: 'get', renderOption: (data) => `${data.structureCode}(${data.structureName})`}
     ],
     columns: [
       {title: '预算表代码', dataIndex: 'structureCode', width: '45%'},
@@ -50,8 +52,10 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
       {type: 'input', id: 'itemName', label: '预算项目名称'},
-      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'},
-      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`, labelKey: 'itemCode', valueKey: 'itemCode', method: 'get'}
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`,
+        labelKey: 'itemCode', valueKey: 'itemCode', method: 'get', renderOption: (data) => `${data.itemCode}(${data.itemName})`},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], getUrl: `${config.budgetUrl}/api/budget/items/find/all`,
+        labelKey: 'itemCode', valueKey: 'itemCode', method: 'get', renderOption: (data) => `${data.itemCode}(${data.itemName})`}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '45%'},
@@ -91,20 +95,6 @@ const selectorData = {
     ],
     key: 'id'
   },
-  // 'company': {
-  //   title: '添加公司',
-  //   url: `${config.baseUrl}/api/company/by/term`,
-  //   searchForm: [
-  //     {type: 'input', id: 'companyCode', label: "公司代码"},
-  //     {type: 'input', id: 'companyName', label: "公司名称"}
-  //   ],
-  //   columns: [
-  //     {title: "公司代码", dataIndex: 'companyCode'},
-  //     {title: "公司名称", dataIndex: 'name'},
-  //     {title: "公司类型", dataIndex: 'companyTypeName'}
-  //   ],
-  //   key: 'id'
-  // },
   'available_company': {
     title: '切换公司',
     url: `${config.baseUrl}/api/company/available`,

@@ -33,6 +33,15 @@ const CheckboxGroup = Checkbox.Group;
  * @param security 属性与安全
  * @requires key: 页面的唯一标识
  * @requires hash: 版本的唯一标识，高级模式后变更此值，如有变更则重新渲染页面
+ *
+ * @param layout 表单布局
+ * @params width 表单宽度，默认100%，如果小与100%则居中
+ * @params gutter 表单格间距
+ * @params justify 表单布局的水平布局方式 start end center space-around space-between
+ * @params align 表单布局的垂直布局方式 top middle bottom
+ * @params span 横向占用的栅栏比例 24基础
+ * @params labelCol 每一表单格的标题占用栅栏比例 24基础 ，如果不填则表单项为上下布局方式
+ * @params wrapperCol 每一表单格的表单项占用栅栏比例 24基础 ，如果不填则表单项为上下布局方式
  */
 class Generator extends React.Component{
   constructor(props){
@@ -48,12 +57,12 @@ class Generator extends React.Component{
   }
 
   componentWillMount(){
-    this.setState(this.props.json);
+    this.setState(JSON.parse(this.props.json));
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.json.security.id !== this.state.security.id)
-      this.setState(nextProps.json)
+    if(JSON.parse(nextProps.json).security.id !== this.state.security.id)
+      this.setState(JSON.parse(nextProps.json))
   }
 
   /**
@@ -64,7 +73,8 @@ class Generator extends React.Component{
    * @params getUrl: 如果选项是接口调用的，则次为接口地址
    * @params method: 接口的请求方法 get/post
    * @params optionKey: 接口请求成功后的数组字段，支持a.b.c的形式
-   * @params TODO labelKey: Select内选项的显示字段名，label的渲染字段或模式
+   * @params labelKey: Select内选项的显示字段名，label的渲染字段
+   * @params labelRule: Select内选项的显示字段匹配模式，字段存放在${}内,例如 "${code}-${name}"
    * @params valueKey: Select内选项的数据字段名
    */
   getOptions = (item) => {
@@ -80,28 +90,101 @@ class Generator extends React.Component{
       httpFetch[item.method](url, item.getParams).then((res) => {
         let options = [];
         res.data.map(data => {
-          //TODO: label渲染模式
-          options.push({label: data[item.labelKey], value: data[item.valueKey], data: data})
+          options.push({label: item.labelRule ? this.formatLabel(data, item.labelRule) : data[item.labelKey], key: data[item.valueKey]})
         });
-        let searchForm = this.state.searchForm;
-        searchForm = searchForm.map(searchItem => {
-          if(searchItem.id === item.id)
-            searchItem.options = options;
-          if(searchItem.type === 'items')
-            searchItem.items.map(subItem => {
-              if(subItem.id === item.id)
-                subItem.options = options;
+        let forms = this.state.forms;
+        forms = forms.map(form => {
+          if(form.id === item.id){
+            form.options = options;
+            form.fetched = true;
+          }
+          if(form.type === 'items')
+            form.items.map(subForm => {
+              if(subForm.id === item.id){
+                subForm.fetched = true;
+                subForm.options = options;
+              }
             });
-          return searchItem;
+          return form;
         });
-        this.setState({ searchForm });
+        this.setState({ forms });
       })
     }
   };
 
+  /**
+   * select内label的显示方案正则匹配，匹配字符串内 ${*} 样式的文字并替换成对象哪对应字段
+   * @param object  需要显示的对象
+   * @param rule  label规则
+   */
+  formatLabel = (object, rule) => {
+    let reg = /\${([\S]+?)}/g;
+    return rule.replace(reg, (matched, target) => object[target])
+  };
 
+  componentDidMount(){
+    this.state.forms.map(formItem => {
+      if(formItem.type === 'select' && typeof formItem.defaultValue === 'object')
+        this.setSelectDefaultValue(formItem);
+      if(formItem.type === 'items')
+        formItem.items.map(item => {
+          if(item.type === 'select' && typeof item.defaultValue === 'object')
+            this.setSelectDefaultValue(item, formItem.id)
+        })
+    })
+  }
+
+  /**
+   * 当select的defaultValue为一个对象 {label , key} 时
+   * 需要给select设置一个对应的假的选项，再设置默认key值
+   * @param item 需要设置默认值的item
+   * @param id 处于items类型内时的items id
+   */
+  setSelectDefaultValue = (item, id) => {
+    if(item.options.length === 0 && !item.fetched){
+      let valueWillSet = {};
+      let forms = this.state.forms;
+      if(id === undefined)
+        forms = forms.map(formItem => {
+          if(formItem.id === item.id){
+            valueWillSet[formItem.id] = (item.defaultValue.key + '');
+            if(formItem.options.length === 0 || (formItem.options.length === 1 && formItem.options[0].temp)){
+              formItem.options = [];
+              formItem.options.push({label: item.defaultValue.label, key: item.defaultValue.key, temp: true})
+            }
+          }
+          return formItem;
+        });
+      else{
+        forms.map(formItem => {
+          if(formItem.id === id){
+            formItem.items = formItem.items.map(subItem => {
+              if(subItem.id === item.id){
+                valueWillSet[subItem.id] = subItem.defaultValue.key + '';
+                if(subItem.options.length === 0 || (subItem.options.length === 1 && subItem.options[0].temp)){
+                  subItem.options = [];
+                  subItem.options.push({label: subItem.defaultValue.label, key: subItem.defaultValue.key, temp: true})
+                }
+              }
+              return subItem;
+            });
+          }
+        })
+      }
+      this.setState({ forms }, () => {
+        this.props.form.setFieldsValue(valueWillSet);
+      });
+    }
+  };
+
+  /**
+   * 根据forms项渲染对应的表单项
+   * @param item
+   * @return {XML}
+   */
   renderFormItem = (item) => {
     const { formatMessage } = this.props.intl;
+    const { layout } = this.state;
     switch(item.type) {
       //输入组件
       case 'input': {
@@ -112,13 +195,10 @@ class Generator extends React.Component{
       case 'select':{
         if(!item.options)
           item.options = [];
-        //TODO: fetching 下的Spin loading图标
-        // if(item.getUrl && !item.fetching && item.options.length === 0)
-        //   item.fetching = true;
-        // notFoundContent={item.fetching ? <Spin size="small" /> : null}
         return (
           <Select placeholder={formatMessage({id: 'common.please.select'})}
                   allowClear
+                  notFoundContent={item.fetched ? null : <Spin size="small" />}
                   disabled={item.disabled}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
@@ -130,19 +210,23 @@ class Generator extends React.Component{
       //同一单元格下多个表单项组件
       case 'items':{
         return (
-          <Row gutter={10} key={item.id}>
-            {item.items.map(searchItem => {
+          <Row gutter={10} key={item.id} type="flex" align={layout.align} justify={layout.justify}>
+            {item.items.map(formItem => {
+              const formItemLayout = {
+                labelCol: layout.labelCol,
+                wrapperCol: layout.wrapperCol
+              };
               return (
-                <Col span={parseInt(24 / item.items.length)} key={searchItem.id}>
-                  <FormItem label={searchItem.label}>
-                    {this.props.form.getFieldDecorator(searchItem.id, {
-                      initialValue: searchItem.defaultValue,
+                <Col span={parseInt(24 / item.items.length)} key={formItem.id}>
+                  <FormItem {...formItemLayout} label={formItem.label}>
+                    {this.props.form.getFieldDecorator(formItem.id, {
+                      initialValue: (formItem.type === 'select' && typeof formItem.defaultValue === 'object') ? undefined : formItem.defaultValue,
                       rules: [{
-                        required: searchItem.isRequired,
-                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: searchItem.label}),  //name 不可为空
+                        required: formItem.isRequired,
+                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: formItem.label}),  //name 不可为空
                       }]
                     })(
-                      this.renderFormItem(searchItem)
+                      this.renderFormItem(formItem)
                     )}
                   </FormItem>
                 </Col>
@@ -169,7 +253,7 @@ class Generator extends React.Component{
             <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
                 valuePropName: item.type === 'switch' ? 'checked' : 'value',
-                initialValue: item.defaultValue,
+                initialValue: (item.type === 'select' && typeof item.defaultValue === 'object') ? undefined : item.defaultValue,
                 rules: [{
                   required: item.isRequired,
                   message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
