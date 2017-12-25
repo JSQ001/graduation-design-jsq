@@ -20,9 +20,9 @@ class PaySuccess extends React.Component {
         {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
         {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
         {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: '支付金额从'},
-          {type: 'input', id: 'mountTo', label: '支付金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '支付金额从'},
+          {type: 'input', id: 'amountTo', label: '支付金额至'}
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
@@ -31,8 +31,8 @@ class PaySuccess extends React.Component {
         {type: 'input', id: 'billcode', label: '付款流水号'},
         {type: 'input', id: 'customerBatchNo', label: '付款批次号'},
         {type: 'items', id: 'dateRange', items: [
-          {type: 'date', id: 'dateFrom', label: '支付日期从'},
-          {type: 'date', id: 'dateTo', label: '支付日期至'}
+          {type: 'date', id: 'payDateFrom', label: '支付日期从'},
+          {type: 'date', id: 'payDateTo', label: '支付日期至'}
         ]}
       ],
       searchParams: {},
@@ -137,6 +137,8 @@ class PaySuccess extends React.Component {
   };
 
   search = (values) => {
+    values.payDateFrom && (values.payDateFrom = moment(values.payDateFrom).format('YYYY-MM-DD'));
+    values.payDateTo && (values.payDateTo = moment(values.payDateTo).format('YYYY-MM-DD'));
     this.setState({
       searchParams: values,
       onlineCash: [],

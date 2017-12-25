@@ -70,6 +70,7 @@ class PayUnpaid extends React.Component {
         },
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => (
           <EditableCell type="number"
+                        id={record.id}
                         value={value}
                         message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
                         onChangeError={this.state.editCellError}
@@ -90,8 +91,7 @@ class PayUnpaid extends React.Component {
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
-        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>},
-        {title: '操作', dataIndex: 'id', render: (id) => <a onClick={() => this.payHistory(id)}>支付历史</a>}
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>}
       ],
       buttonDisabled: true,
       selectedRowKeys: [], //选中行key
@@ -181,10 +181,25 @@ class PayUnpaid extends React.Component {
 
   //选择 线上／线下／落地文件
   onRadioChange = (e) => {
+    let onlineData = this.state.onlineData;
+    let offlineData = this.state.offlineData;
+    let fileData = this.state.fileData;
+    onlineData.map(item => {
+      item.currentPay = undefined
+    });
+    offlineData.map(item => {
+      item.currentPay = undefined
+    });
+    fileData.map(item => {
+      item.currentPay = undefined
+    });
     this.setState({
       radioValue: e.target.value,
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      onlineData,
+      offlineData,
+      fileData
     }, () => {
       let values = this.props.form.getFieldsValue();
       Object.keys(values).map(key => {
@@ -325,14 +340,6 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //显示支付历史
-  payHistory = (id) => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getHistoryByDateId?id=${id}`;
-    httpFetch.get(url).then(res => {
-
-    })
-  };
-
   //点击支付按钮
   handlePayModal = () => {
     this.setState({ payWayOptions: [], payAccountOptions: [], modalVisible: true });
@@ -340,7 +347,16 @@ class PayUnpaid extends React.Component {
     Object.keys(values).map(key => {
       this.props.form.setFieldsValue({ [key]: undefined });
     });
-    this.props.form.setFieldsValue({ currency: this.state.currency })
+    this.props.form.setFieldsValue({ currency: this.state.currency });
+    this.getExchangeRate()
+  };
+
+  //获取汇率
+  getExchangeRate = () => {
+    let url = `${config.baseUrl}/api/standardCurrency/selectStandardCurrency?base=CNY&otherCurrency=${this.state.currency}`;
+    httpFetch.get(url).then(res => {
+      this.props.form.setFieldsValue({ exchangeRate: res.data.rate });
+    })
   };
 
   //获取付款方式
