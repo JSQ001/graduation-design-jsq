@@ -55,6 +55,10 @@ class BeepFrom extends React.Component{
   render(){
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
+    const hourOption=[];
+    for(let i=0;i<=24;i++){
+      hourOption.push(<option value={i} key={i}>`${i}:00`</option>)
+    }
     const formItemLayout = {
       labelCol: { span:24 },
       wrapperCol: { span:24 },
@@ -64,6 +68,7 @@ class BeepFrom extends React.Component{
       labelCol: { span:16 },
       wrapperCol: { span:16 },
     }
+
     return (
       <div className="beep-from">
         <div className="beep-from-in">
@@ -99,9 +104,39 @@ class BeepFrom extends React.Component{
               <hr/>
               <br/>
             </Row>
-            <Row>
+            {/*定时提醒*/}
+            {this.props.type === "regularly" && <Row>
               <Col span={8}>
+                <FormItem {...formItemLayout} label="发送日期" >
+                  {getFieldDecorator('code4', {
+                    rules: [{
+                    }],
+                    initialValue: ''
+                  })(
+                    <Input />
+                  )}
+                </FormItem>
+              </Col>
 
+              <Col span={8}>
+                <FormItem {...formItemLayout} label="发送时间" >
+                  {getFieldDecorator('code4', {
+                    rules: [{
+                    }],
+                    initialValue: ''
+                  })(
+                    <select>
+                      {hourOption}
+                    </select>
+                  )}
+                </FormItem>
+              </Col>
+
+            </Row>}
+
+            {/*差旅申请单*/}
+            { this.props.type === "traver" && (<Row>
+              <Col span={8}>
                 <FormItem {...formItemLayout} label="发送日期" >
                   <span>预计还款日期前</span>
                   {getFieldDecorator('code3', {
@@ -126,8 +161,45 @@ class BeepFrom extends React.Component{
                     <Input />
                   )}
                 </FormItem>
+              </Col>
+            </Row>)}
+            {/*借款申请单*/}
+            {this.props.type === "business-card" && <Row>
+              <Col span={8}>
+                <FormItem {...formItemLayout} label="发送日期" >
+                  <span>预计还款日期前</span>
+                  {getFieldDecorator('code3', {
+                    rules: [{
+                    }],
+                    initialValue: ''
+                  })(
+                    <Input style={{width:40}} />
+                  )}
+                  <span> 天提醒员工</span>
+                </FormItem>
 
               </Col>
+
+              <Col span={8}>
+                <FormItem {...formItemLayout} label="发送时间" >
+                  {getFieldDecorator('code4', {
+                    rules: [{
+                    }],
+                    initialValue: ''
+                  })(
+                    <Input />
+                  )}
+                </FormItem>
+              </Col>
+
+            </Row>}
+
+            {/*商务卡*/}
+            {this.props.type === "business-card" && <Row>
+
+
+            </Row>}
+            <Row>
 
             </Row>
             <Row>
@@ -162,14 +234,26 @@ class BeepFrom extends React.Component{
   }
 }
 
+
+
 function mapStateToProps(state) {
   return {}
 }
 
 const WrappedBeepFrom= Form.create()(BeepFrom);
 
-export default connect(mapStateToProps)(WrappedBeepFrom);
+WrappedBeepFrom.propTypes = {
+  type: React.PropTypes.string,  //选择类型 "borrow","traver","business-card","regularly"
+  applyData:React.PropTypes.object,
+  onEdit:React.PropTypes.func
+}
+WrappedBeepFrom.defaultProps = {
+  applyData:{},
+  onEdit:()=>{}
+
+}
 
 
+export default connect(mapStateToProps)(injectIntl(WrappedBeepFrom));
 
 

@@ -1,5 +1,5 @@
 /**
- * Created by 13576 on 2017/10/16.
+ * Created by 13576 on 2017/12/26.
  */
 import React from 'react'
 import { connect } from 'react-redux'
@@ -19,7 +19,7 @@ import 'styles/finance-setting/beep-timer/apply-traver.scss'
 
 
 
-class ApplyTraver extends React.Component{
+class RegularlyRemind extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -59,8 +59,6 @@ class ApplyTraver extends React.Component{
 
   }
 
-
-
   onCancel = () =>{
     this.props.close();
   };
@@ -69,10 +67,9 @@ class ApplyTraver extends React.Component{
     const {} = this.state;
     return (
       <div className="beep-timer">
-
         <div>
           <BeepInfo
-            type={"traver"}
+            type={"regularly"}
             applyData ={{}}
           />
         </div>
@@ -81,7 +78,10 @@ class ApplyTraver extends React.Component{
             <Icon type="plus" /> 添加
           </Button>
         </div>
-        <WrappedBeepFrom/>
+        <WrappedBeepFrom
+          type={"regularly"}
+          applyData ={{}}
+        />
       </div>
 
     )
@@ -93,4 +93,4 @@ function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(ApplyTraver));
+export default connect(mapStateToProps)(injectIntl(RegularlyRemind));

@@ -16,7 +16,8 @@ class NewBudgetJournalType extends React.Component {
       budgetJournalTypeDetailPage: menuRoute.getRouteItem('budget-journal-type-detail','key'),    //项目组详情的页面项
       budgetOrganization: menuRoute.getRouteItem('budget-organization-detail', 'key'),  //预算组织详情的页面项
       loading: false,
-      businessTypeOptions: []
+      businessTypeOptions: [],
+      formOptions: []
     };
   }
 
@@ -26,6 +27,10 @@ class NewBudgetJournalType extends React.Component {
       if (!err) {
         this.setState({loading: true});
         values.organizationId = this.props.organization.id;
+        let form = JSON.parse(values.formValue);
+        values.formName = form.formName;
+        values.formType = form.formType;
+        values.form0id = form.formOID;
         httpFetch.post(`${config.budgetUrl}/api/budget/journal/types`, values).then((res)=>{
           this.setState({loading: false});
           message.success(`项目组${res.data.journalTypeName}新建成功`);
@@ -43,6 +48,9 @@ class NewBudgetJournalType extends React.Component {
   componentWillMount(){
     this.getSystemValueList(2018).then(res => {
       this.setState({ businessTypeOptions: res.data.values })
+    })
+    httpFetch.get(`${config.baseUrl}/api/custom/forms/company/my/available/all?formType=104`).then(res => {
+      this.setState({ formOptions: res.data })
     })
   }
 
@@ -102,6 +110,23 @@ class NewBudgetJournalType extends React.Component {
                     <Select placeholder="请选择">
                       {this.state.businessTypeOptions.map((option)=>{
                         return <Option key={option.code}>{option.messageKey}</Option>
+                      })}
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col span={8}>
+                <FormItem label="表单类型">
+                  {getFieldDecorator("formValue", {
+                    rules: [{
+                      required: true,
+                      message: formatMessage({id: 'common.please.select'}),  //请选择
+                    }],
+                    initialValue: ''
+                  })(
+                    <Select placeholder="请选择">
+                      {this.state.formOptions.map((option)=>{
+                        return <Option key={JSON.stringify(option)}>{option.formName}</Option>
                       })}
                     </Select>
                   )}
