@@ -236,9 +236,9 @@ const selectorData = {
       {type: 'input', id: 'companyCodeTo', label: "公司代码至"}
     ],
     columns: [
-      {title: "公司代码", dataIndex: 'companyCode'},
+      {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
-      {title: "公司类型", dataIndex: 'companyTypeName'}
+      {title: "公司类型", dataIndex: 'attribute4'}
     ],
     key: 'id'
   },
@@ -254,7 +254,7 @@ const selectorData = {
     columns: [
       {title: "公司代码", dataIndex: 'code'},
       {title: "公司名称", dataIndex: 'name'},
-      {title: "公司类型", dataIndex: 'companyTypeName'}
+      {title: "公司类型", dataIndex: 'attribute4'}
     ],
     key: 'id'
   },
@@ -557,6 +557,19 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'section':{
+    title: '科目段',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'sectionCode', label:"科目段代码"},
+      {type: 'input', id: 'sectionName', label: "科目段名称"}
+    ],
+    columns: [
+      {title: "科目段代码", dataIndex: 'sectionCode'},
+      {title: "科目段代码", dataIndex: 'sectionName'},
+    ],
+    key: 'id'
+  }
 };
 
 export default selectorData;
