@@ -45,7 +45,7 @@ class EditableCell extends React.Component {
 
   //获取收款账号
   getAccountOptions = () => {
-    let url = `${config.baseUrl}/api/DepartmentGroup/getContactBankByUserOid?userOid=7f0e82a8-29b8-49ad-93ef-8ea42e445974`;
+    let url = `${config.baseUrl}/api/DepartmentGroup/getContactBankByUserOid?userOid=7f0e82a8-29b8-49ad-93ef-8ea42e445974`; //userOid还没拿到
     this.setState({ fetching: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {
@@ -138,7 +138,7 @@ class EditableCell extends React.Component {
                   </a>
                 </Popover>
               ) : (
-                <a className="editable-cell-text-wrapper" style={{textAlign:'left'}}>
+                <a className="editable-cell-text-wrapper">
                   {value}
                   <Tooltip placement="top" title={message}>
                     <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />
