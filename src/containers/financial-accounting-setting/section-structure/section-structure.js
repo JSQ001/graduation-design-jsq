@@ -6,20 +6,20 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table} from 'antd'
 import SlideFrame from 'components/slide-frame'
-import NewUpdateSection from 'containers/financial-accounting-setting/section-structure/new-update-section.js'
+import NewUpdateSectionStructure from 'containers/financial-accounting-setting/section-structure/new-update-section-structure.js'
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-
-import 'styles/financial-accounting-setting/section-structure/new-update-section.scss'
+import menuRoute from 'share/menuRoute'
+import 'styles/financial-accounting-setting/section-structure/section-structure.scss'
 
 class SectionStructure extends React.Component{
   constructor(props){
     super(props);
     const { formatMessage } = this.props.intl;
     this.state = {
-      loading: true,
-      data: [],
+      loading: false,
+      data: [{id:1}],
       lov:{
         visible: false
       },
@@ -53,14 +53,25 @@ class SectionStructure extends React.Component{
           title: formatMessage({id:"section.structure.name"}), key: "sectionName", dataIndex: 'sectionName'
         },
         {          /*状态*/
-          title: formatMessage({id:"common.column.status"}), key: "isEnabled", dataIndex: 'isEnabled'
+          title: formatMessage({id:"common.column.status"}), key: "isEnabled", dataIndex: 'isEnabled',width:'8%'
         },
 
         {          /*操作*/
-          title: formatMessage({id:"common.operation"}), key: "operate", dataIndex: 'operate'
+          title: formatMessage({id:"common.operation"}), key: "operate", dataIndex: 'operate',width:'14%',
+          render: (text, record, index) => (
+            <span>
+            <a href="#" onClick={(e) => this.editItem(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
+            <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkSetting(e, record,index)}>{formatMessage({id: "section.setting"})}</a>
+          </span>)
         },
       ]
     }
+  };
+
+  handleLinkSetting = (e,record,index)=>{
+    console.log(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace('id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace('id', record.id))
   };
 
   componentWillMount() {
@@ -75,7 +86,7 @@ class SectionStructure extends React.Component{
 
   handleCreate = ()=>{
     let lov = {
-      title: this.props.intl.formatMessage({id:"section.new"}),
+      title: this.props.intl.formatMessage({id:"section.structure.new"}),
       visible: true,
       params: {}
     };
@@ -124,7 +135,7 @@ class SectionStructure extends React.Component{
             size="middle"/>
         <SlideFrame title= {lov.title}
                     show={lov.visible}
-                    content={NewUpdateSection}
+                    content={NewUpdateSectionStructure}
                     afterClose={this.handleAfterClose}
                     onClose={()=>this.handleShowSlide(false)}
                     params={lov.params}/>

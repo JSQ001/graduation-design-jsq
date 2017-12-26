@@ -99,8 +99,6 @@ class SupplierManagement extends React.Component{
   }
 
   handleLinkAccount = (e,record,index)=>{
-    console.log(record)
-    console.log(e)
     this.context.router.push(menuRoute.getMenuItemByAttr('supplier-bank-account', 'key').children.supplierBankAccount.url.replace('id', record.id))
   };
 

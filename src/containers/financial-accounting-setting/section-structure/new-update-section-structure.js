@@ -1,24 +1,23 @@
 /**
- * created by jsq on 2017/12/25
+ * created by jsq on 2017/12/22
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Input, Switch, Select, Form, Icon, notification, Alert, Row, Col } from 'antd'
+import { Button, Input, Switch, Select, Form, Icon, notification } from 'antd'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import 'styles/financial-accounting-setting/section-structure/new-update-section.scss'
-import Chooser from 'components/chooser.js'
+import 'styles/financial-accounting-setting/section-structure/new-update-section-structure.scss'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class NewUpdateSection extends React.Component{
+class NewUpdateSectionStructure extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       loading: false,
-      isEnabled: true,
+      isEnabled: false,
       setOfBook: [],
       section: {}
     }
@@ -44,8 +43,8 @@ class NewUpdateSection extends React.Component{
   handleSubmit = (e)=> {
     e.preventDefault();
     /*this.setState({
-     loading: true,
-     });*/
+      loading: true,
+    });*/
     this.props.form.validateFieldsAndScroll((err, values) => {
       const { formatMessage } = this.props.intl;
       if (!err){
@@ -91,15 +90,23 @@ class NewUpdateSection extends React.Component{
     };
 
     return(
-      <div className="new-update-section">
-        <Alert message={formatMessage({id:"section.help.tips"})}
-               description={formatMessage({id:"section.tips"})}
-               type="info"
-               showIcon />
-        <Form onSubmit={this.handleSubmit} className="new-update-section-form">
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.code'})  /*科目段代码*/}>
+      <div className="new-update-section-structure">
+        <Form onSubmit={this.handleSubmit}>
+          <FormItem {...formItemLayout} label={formatMessage({id:'section.setOfBook'})  /*账套*/}>
+            {getFieldDecorator('setOfBook', {
+              rules: [{
+                required: true,
+                message: formatMessage({id: "common.please.select"})
+              }]
+            })(
+              <Select className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}>
+                {
+                  setOfBook.map((item)=><Option key={item.value}>{item.label}</Option>)
+                }
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label={formatMessage({id:'section.structure.code'})  /*科目段结构代码*/}>
             {getFieldDecorator('sectionCode', {
               rules: [{
                 required: true,
@@ -109,11 +116,7 @@ class NewUpdateSection extends React.Component{
               <Input className="input-disabled-color" placeholder={ formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.name'})  /*科目段名称*/}>
+          <FormItem {...formItemLayout} label={formatMessage({id:'section.structure.name'})  /*科目段结构名称*/}>
             {getFieldDecorator('sectionName', {
               rules: [{
                 required: true,
@@ -123,39 +126,6 @@ class NewUpdateSection extends React.Component{
               <Input className="input-disabled-color" placeholder={ formatMessage({id:"common.please.enter"})}/>
             )}
           </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.field'})  /*科目段字段*/}>
-            {getFieldDecorator('sectionName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: "common.please.select"})
-              }]
-            })(
-              <Chooser
-                placeholder={formatMessage({id:"common.please.select"})}
-                type="section"
-                single={true}
-                labelKey="defaultDimValueCode"
-                valueKey="defaultDimValueId"
-                //selectorItem={selectorItem}
-               // listExtraParams={{dimensionId: dimensionCode.length>0? dimensionCode[0].dimensionId : null}}
-                onChange={()=>{}}/>
-            )}
-          </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-             <FormItem {...formItemLayout} label={formatMessage({id:'section.name'})  /*科目段名称*/}>
-            {getFieldDecorator('sectionName')(
-              <lable>{'-'}</lable>
-            )}
-          </FormItem>
-            </Col>
-          </Row>
           <FormItem {...formItemLayout}
                     label={formatMessage({id:"common.column.status"})} colon={true}>
             {getFieldDecorator('isEnabled', {
@@ -183,5 +153,5 @@ function mapStateToProps(state) {
   }
 }
 
-const WrappedNewUpdateSection = Form.create()(NewUpdateSection);
-export default connect(mapStateToProps)(injectIntl(WrappedNewUpdateSection));
+const WrappedNewUpdateSectionStructure = Form.create()(NewUpdateSectionStructure);
+export default connect(mapStateToProps)(injectIntl(WrappedNewUpdateSectionStructure));

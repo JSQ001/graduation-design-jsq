@@ -557,6 +557,19 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'section':{
+    title: '科目段',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'sectionCode', label:"科目段代码"},
+      {type: 'input', id: 'sectionName', label: "科目段名称"}
+    ],
+    columns: [
+      {title: "科目段代码", dataIndex: 'sectionCode'},
+      {title: "科目段代码", dataIndex: 'sectionName'},
+    ],
+    key: 'id'
+  }
 };
 
 export default selectorData;
