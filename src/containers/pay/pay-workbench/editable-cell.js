@@ -45,7 +45,7 @@ class EditableCell extends React.Component {
 
   //获取收款账号
   getAccountOptions = () => {
-    let url = `${config.baseUrl}/api/DepartmentGroup/getContactBankByUserOid?userOid=7f0e82a8-29b8-49ad-93ef-8ea42e445974`; //userOid还没拿到
+    let url = `${config.baseUrl}/api/DepartmentGroup/getContactBankByUserOid?userOid=${this.props.record.partnerOid}`;
     this.setState({ fetching: true });
     httpFetch.get(url).then(res => {
       if (res.status === 200) {

@@ -211,7 +211,7 @@ class NewContract extends React.Component{
             <Row>
               <Col span={7}>
                 <div style={{lineHeight: '32px'}}>合同编号:</div>
-                <Input value={isNew ? '-' : data.id} disabled />
+                <Input value={isNew ? '-' : data.contractNumber} disabled />
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>创建人:</div>
