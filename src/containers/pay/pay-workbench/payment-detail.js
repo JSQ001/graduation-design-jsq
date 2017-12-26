@@ -48,7 +48,7 @@ class PaymentDetail extends React.Component {
         {title: '执行结果', dataIndex: 'operationResult', render: value => {
           return <Badge status="success" text={value}/>
         }},
-        {title: '操作时间', dataIndex: 'operationTime', render: value => moment(value).format('YYYY-MM-DD hh:mm:ss')},
+        {title: '操作时间', dataIndex: 'operationTime', render: value => moment(value).format('YYYY-MM-DD HH:mm:ss')},
         {title: '备注', dataIndex: 'remark', width: '30%'},
       ],
       billsData: [],

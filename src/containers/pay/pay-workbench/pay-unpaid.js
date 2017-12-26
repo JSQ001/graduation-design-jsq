@@ -70,7 +70,7 @@ class PayUnpaid extends React.Component {
         },
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => (
           <EditableCell type="number"
-                        id={record.id}
+                        record={record}
                         value={value}
                         message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
                         onChangeError={this.state.editCellError}
