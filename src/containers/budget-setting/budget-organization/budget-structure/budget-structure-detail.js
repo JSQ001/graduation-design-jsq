@@ -319,7 +319,7 @@ class BudgetStructureDetail extends React.Component{
   handleListOk = (result) => {
     let company = [];
     result.result.map((item)=>{
-      company.push({companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
+      company.push({companyCode: item.code,companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
     });
     httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/companies/batch`,company).then((response)=>{
       if(response.status === 200) {

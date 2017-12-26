@@ -66,7 +66,7 @@ class NewUpdateBankAccount extends React.Component{
   handleBankFocus = (e)=>{
     console.log(123)
     console.log(e)
-    httpFetch.get(`${config.baseUrl}`)
+    httpFetch.get(`${config.payUrl}/payment/api/cash/bank/queryAll`)
   };
 
   onCancel = ()=>{

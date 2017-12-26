@@ -124,6 +124,8 @@
   "menu.supplier-type": "supplier type",
   "menu.announcement-information-detail": "Announcement information detail",
   "menu.supplier-management": "Supplier management",
-  "menu.page-create": "Page Creator"
-
+  "menu.page-create": "Page Creator",
+  "menu.financial-accounting-setting": "Financial accounting setting",
+  "menu.section-structure": "Section structure",
+  "menu.section-setting": "Section setting"
 }

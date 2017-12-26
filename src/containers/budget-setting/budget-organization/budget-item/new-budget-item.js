@@ -193,7 +193,7 @@ class NewBudgetItem extends React.Component{
                         validator: (item,value,callback)=>{
                           this.setState({
                             statusCode: value ? formatMessage({id:"common.status.enable"}) /*启用*/
-                              : formatMessage({id:"status.disabled"}) /*禁用*/
+                              : formatMessage({id:"common.disabled"}) /*禁用*/
                           })
                           callback();
                         }
