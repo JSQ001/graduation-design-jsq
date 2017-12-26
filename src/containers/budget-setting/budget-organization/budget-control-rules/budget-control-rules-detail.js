@@ -81,7 +81,7 @@ class BudgetControlRulesDetail extends React.Component{
           title: formatMessage({id:"budget.invalidDate"}), key: "invalidDate", dataIndex: 'invalidDate',
           render: description => (<span>{description === null ? "-" : description.substring(0,10)}</span>)
         },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '8%', render: (text, record) => (
           <span>
             <Popconfirm onConfirm={(e) => this.deleteItem(e, record)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
               <a href="#" onClick={(e) => {e.preventDefault();e.stopPropagation();}}>{formatMessage({id: "common.delete"})}</a>

@@ -70,6 +70,7 @@ class PayUnpaid extends React.Component {
         },
         {title: '本次支付金额', dataIndex: 'currentPayAmount', render: (value, record) => (
           <EditableCell type="number"
+                        record={record}
                         value={value}
                         message={formatMessage({id: "pay.workbench.payedAmount.tooltip"}/*点击修改本次支付金额*/)}
                         onChangeError={this.state.editCellError}
@@ -86,11 +87,11 @@ class PayUnpaid extends React.Component {
         {title: '收款账号', dataIndex: 'accountNumber', render: (account, record) => (
           <EditableCell value={account}
                         message={formatMessage({id: "pay.workbench.accountNumber.tooltip"}/*点击修改收款账号*/)}
+                        record={record}
                         onChangeError={this.state.editCellError}
                         onChange={(value) => this.editAccount(value, record)}/>
         )},
-        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>},
-        {title: '操作', dataIndex: 'id', render: (id) => <a onClick={() => this.payHistory(id)}>支付历史</a>}
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='default' text={state}/>}
       ],
       buttonDisabled: true,
       selectedRowKeys: [], //选中行key
@@ -104,6 +105,7 @@ class PayUnpaid extends React.Component {
       payAccountOptions: [],
       modalVisible: false,
       modalLoading: false,
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -134,7 +136,8 @@ class PayUnpaid extends React.Component {
   }
 
   componentWillMount() {
-    this.getList();
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
+    this.getList()
   }
 
   //获取列表及总金额
@@ -178,10 +181,25 @@ class PayUnpaid extends React.Component {
 
   //选择 线上／线下／落地文件
   onRadioChange = (e) => {
+    let onlineData = this.state.onlineData;
+    let offlineData = this.state.offlineData;
+    let fileData = this.state.fileData;
+    onlineData.map(item => {
+      item.currentPay = undefined
+    });
+    offlineData.map(item => {
+      item.currentPay = undefined
+    });
+    fileData.map(item => {
+      item.currentPay = undefined
+    });
     this.setState({
       radioValue: e.target.value,
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      onlineData,
+      offlineData,
+      fileData
     }, () => {
       let values = this.props.form.getFieldsValue();
       Object.keys(values).map(key => {
@@ -322,14 +340,6 @@ class PayUnpaid extends React.Component {
     })
   };
 
-  //显示支付历史
-  payHistory = (id) => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getHistoryByDateId?id=${id}`;
-    httpFetch.get(url).then(res => {
-
-    })
-  };
-
   //点击支付按钮
   handlePayModal = () => {
     this.setState({ payWayOptions: [], payAccountOptions: [], modalVisible: true });
@@ -337,7 +347,16 @@ class PayUnpaid extends React.Component {
     Object.keys(values).map(key => {
       this.props.form.setFieldsValue({ [key]: undefined });
     });
-    this.props.form.setFieldsValue({ currency: this.state.currency })
+    this.props.form.setFieldsValue({ currency: this.state.currency });
+    this.getExchangeRate()
+  };
+
+  //获取汇率
+  getExchangeRate = () => {
+    let url = `${config.baseUrl}/api/standardCurrency/selectStandardCurrency?base=CNY&otherCurrency=${this.state.currency}`;
+    httpFetch.get(url).then(res => {
+      this.props.form.setFieldsValue({ exchangeRate: res.data.rate });
+    })
   };
 
   //获取付款方式
@@ -368,7 +387,7 @@ class PayUnpaid extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Unpaid').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
@@ -582,7 +601,7 @@ class PayUnpaid extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash, selectedRowKeys } = this.state;
+    const { onlineLoading, columns, onlineData, onlinePageSize, onlinePagination, onlineCash, selectedRowKeys, pageSizeOptions } = this.state;
     const rowSelection = {
       selectedRowKeys: selectedRowKeys,
       onChange: this.onSelectChange,
@@ -620,7 +639,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -631,7 +650,7 @@ class PayUnpaid extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineCash } = this.state;
+    const { offlineLoading, columns, offlineData, offlinePageSize, offlinePagination, offlineCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -667,7 +686,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={offlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={offlinePagination.total}
                     onChange={this.offlinePaginationChange}
                     onShowSizeChange={this.offlinePaginationChange}
@@ -678,7 +697,7 @@ class PayUnpaid extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { fileLoading, columns, fileData, filePageSize, filePagination, fileCash } = this.state;
+    const { fileLoading, columns, fileData, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -714,7 +733,7 @@ class PayUnpaid extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
@@ -969,6 +988,10 @@ class PayUnpaid extends React.Component {
 
 PayUnpaid.contextTypes = {
   router: React.PropTypes.object
+};
+
+PayUnpaid.propTypes = {
+  subTab: React.PropTypes.string,
 };
 
 function mapStateToProps(state) {
