@@ -20,9 +20,9 @@ class PayPaying extends React.Component {
         {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
         {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
         {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: '支付金额从'},
-          {type: 'input', id: 'mountTo', label: '支付金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '支付金额从'},
+          {type: 'input', id: 'amountTo', label: '支付金额至'}
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
@@ -30,9 +30,9 @@ class PayPaying extends React.Component {
         ]},
         {type: 'input', id: 'billcode', label: '付款流水号'},
         {type: 'input', id: 'customerBatchNo', label: '付款批次号'},
-        {type: 'items', id: 'dateRange1', items: [
-          {type: 'date', id: 'dateFrom', label: '支付日期从'},
-          {type: 'date', id: 'dateTo', label: '支付日期至'}
+        {type: 'items', id: 'dateRange', items: [
+          {type: 'date', id: 'payDateFrom', label: '支付日期从'},
+          {type: 'date', id: 'payDateTo', label: '支付日期至'}
         ]},
       ],
       searchParams: {},
@@ -97,6 +97,7 @@ class PayPaying extends React.Component {
       record: {}, //点击行信息
       confirmSuccessLoading: false,
       confirmFailLoading: false,
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -124,6 +125,7 @@ class PayPaying extends React.Component {
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -143,6 +145,8 @@ class PayPaying extends React.Component {
   };
 
   search = (values) => {
+    values.payDateFrom && (values.payDateFrom = moment(values.payDateFrom).format('YYYY-MM-DD'));
+    values.payDateTo && (values.payDateTo = moment(values.payDateTo).format('YYYY-MM-DD'));
     this.setState({
       searchParams: values,
       onlineCash: [],
@@ -158,7 +162,7 @@ class PayPaying extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   //确认成功弹框
@@ -335,7 +339,7 @@ class PayPaying extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, onlineWarningRows } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, onlineWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -373,7 +377,7 @@ class PayPaying extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -384,7 +388,7 @@ class PayPaying extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, fileWarningRows } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, fileWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -422,7 +426,7 @@ class PayPaying extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
@@ -524,6 +528,10 @@ class PayPaying extends React.Component {
 
 PayPaying.contextTypes = {
   router: React.PropTypes.object
+};
+
+PayPaying.propTypes = {
+  subTab: React.PropTypes.string,
 };
 
 function mapStateToProps() {

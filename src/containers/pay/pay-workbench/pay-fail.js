@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
 import { Form, Radio, Badge, Table, Pagination, message, Button, Alert, Modal, Select, Input, Popconfirm, Spin } from 'antd'
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -21,9 +22,9 @@ class PayFail extends React.Component {
         {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
         {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
         {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: '支付金额从'},
-          {type: 'input', id: 'mountTo', label: '支付金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '支付金额从'},
+          {type: 'input', id: 'amountTo', label: '支付金额至'}
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
@@ -34,17 +35,17 @@ class PayFail extends React.Component {
       ],
       searchParams: {},
       columns: [
-        {title: '付款流水号', dataIndex: 'billcode'},
-        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '付款流水号', dataIndex: 'billcode', render: (value, record) => <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
             <div>
-              <a>{value}</a>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
               {record.documentTypeName}
             </div>
           )}
         },
+        {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
             <div>
@@ -57,7 +58,7 @@ class PayFail extends React.Component {
         {title: '币种', dataIndex: 'currency'},
         {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '付款方式', dataIndex: 'paymentTypeName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
           return (
             <div>
               {value}
@@ -69,13 +70,17 @@ class PayFail extends React.Component {
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='error' text={state}/>},
       ],
+      selectedRowKeys: [], //选中行key
       selectedRows: [],  //选中行
       noticeAlert: null, //提示
       errorAlert: null,  //错误
       currency: null,    //选中行的币种
+      modalVisible: false,
+      modalLoading: false,
       payAccountFetching: false,
       payWayFetching: false,
       payAccountOptions: [],
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -86,7 +91,6 @@ class PayFail extends React.Component {
         total: 0
       },
       onlineCash: [],  //总金额
-      onlineModalVisible: false,
       payWayOptions: [],
 
       /* 落地文件 */
@@ -98,11 +102,13 @@ class PayFail extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
-      fileModalVisible: false,
+
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -142,8 +148,13 @@ class PayFail extends React.Component {
   onRadioChange = (e) => {
     this.setState({
       radioValue: e.target.value,
+      selectedRowKeys: [],
       selectedRows: []
     }, () => {
+      let values = this.props.form.getFieldsValue();
+      Object.keys(values).map(key => {
+        this.props.form.setFieldsValue({ [key]: undefined })
+      });
       this.noticeAlert(this.state.selectedRows)
     })
   };
@@ -162,6 +173,11 @@ class PayFail extends React.Component {
     this.setState({ selectedRows }, () => {
       this.noticeAlert(this.state.selectedRows)
     })
+  };
+
+  //选中行的key
+  onSelectChange = (selectedRowKeys) => {
+    this.setState({ selectedRowKeys })
   };
 
   //选择/取消选择所有行的回调
@@ -228,16 +244,17 @@ class PayFail extends React.Component {
     }
   };
 
-  //重新支付
+  //点击重新支付按钮
   repay = () => {
-    if (this.state.radioValue === 'online') {
-      this.setState({ onlineModalVisible: true })
-    } else {
-      this.setState({ fileModalVisible: true })
-    }
+    this.setState({ payWayOptions: [], payAccountOptions: [], modalVisible: true });
+    let values = this.props.form.getFieldsValue();
+    Object.keys(values).map(key => {
+      this.props.form.setFieldsValue({ [key]: undefined });
+    });
+    this.props.form.setFieldsValue({ currency: this.state.currency })
   };
 
-  //取消支付
+  //点击取消支付按钮
   cancelPay = () => {
     let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund`;
     httpFetch.delete(url, this.state.selectedRows).then(res => {
@@ -270,13 +287,19 @@ class PayFail extends React.Component {
     const { radioValue } = this.state;
     if (this.state.payWayOptions.length > 0) return;
     this.setState({ payWayFetching: true });
-    let paymentType = radioValue === 'online' ? 'ONLINE_PAYMENT' : radioValue === 'offline' ? 'OFFLINE_PAYMENT' : 'EBANK_PAYMENT';
+    let paymentType = radioValue === 'online' ? 'ONLINE_PAYMENT' : 'EBANK_PAYMENT';
     let url = `${config.contractUrl}/payment/api/Cash/PaymentMethod/selectByPaymentType?paymentType=${paymentType}`;
     httpFetch.get(url).then(res => {
       res.status === 200 && this.setState({ payWayOptions: res.data, payWayFetching: false })
     }).catch(() => {
+      message.error('付款方式获取失败');
       this.setState({ payWayFetching: false })
     })
+  };
+
+  //查看支付流水详情
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Fail').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
@@ -284,7 +307,7 @@ class PayFail extends React.Component {
   //线上
   getOnlineCash = () => {
     const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=ONLINE_PAYMENT`;
+    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=F&paymentTypeCode=ONLINE_PAYMENT&isRefundOrFail=true`;
     for(let paramsName in searchParams){
       url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
     }
@@ -379,20 +402,53 @@ class PayFail extends React.Component {
 
   //线上
   handleOnlineModalOk = () => {
-    this.setState({ onlineModalVisible: false });
+    let params = {};
+    params.details = this.state.selectedRows;
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        values.paymentMethodCategory = "ONLINE_PAYMENT";
+        values.payCompanyBankName = values.payCompanyBankNumber.label;
+        values.payCompanyBankNumber = values.payCompanyBankNumber.key;
+        values.paymentDescription = values.paymentTypeId.label;
+        values.paymentTypeId = values.paymentTypeId.key;
+        params.cashPayDTO = values;
+        this.setState({ modalLoading: true });
+        let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund`;
+        httpFetch.post(url, params).then(res => {
+          if (res.status === 200) {
+            message.success('操作成功');
+            this.getOnlineList();
+            this.getOnlineCash();
+            this.setState({
+              modalVisible: false,
+              modalLoading: false,
+              selectedRowKeys: [],
+              selectedRows: []
+            },() => {
+              this.noticeAlert(this.state.selectedRows)
+            })
+          }
+        }).catch(e => {
+          message.error(`操作失败，${e.response.data.message}`);
+          this.setState({ modalLoading: false })
+        })
+      }
+    })
   };
 
   //落地文件
   handleFileModalOk = () => {
-    this.setState({ fileModalVisible: false });
+    this.setState({ modalVisible: false });
   };
 
   /************************ 内容渲染 ************************/
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, pageSizeOptions, selectedRowKeys } = this.state;
     const rowSelection = {
+      selectedRowKeys: selectedRowKeys,
+      onChange: this.onSelectChange,
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
     };
@@ -427,7 +483,7 @@ class PayFail extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -438,7 +494,7 @@ class PayFail extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const rowSelection = {
       onSelect: this.handleSelectRow,
       onSelectAll: this.handleSelectAllRow
@@ -474,7 +530,7 @@ class PayFail extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
@@ -487,7 +543,7 @@ class PayFail extends React.Component {
 
   render(){
     const { getFieldDecorator } = this.props.form;
-    const { searchForm, radioValue, buttonDisabled, noticeAlert, errorAlert, onlineModalVisible, currency, payWayOptions, fileModalVisible, payAccountFetching, payWayFetching, payAccountOptions } = this.state;
+    const { searchForm, radioValue, buttonDisabled, noticeAlert, errorAlert, modalVisible, modalLoading, currency, payWayOptions, payAccountFetching, payWayFetching, payAccountOptions } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -520,10 +576,11 @@ class PayFail extends React.Component {
         {radioValue === 'file' && this.renderFileContent()}
         {radioValue === 'online' ? (
           <Modal title="线上重新支付确认"
-                 visible={onlineModalVisible}
+                 visible={modalVisible}
+                 confirmLoading={modalLoading}
                  okText="确认支付"
                  onOk={this.handleOnlineModalOk}
-                 onCancel={() => this.setState({ onlineModalVisible: false })}>
+                 onCancel={() => this.setState({ modalVisible: false })}>
             <Form>
               <FormItem  {...formItemLayout} label="付款账户">
                 {getFieldDecorator('payCompanyBankNumber', {
@@ -584,20 +641,27 @@ class PayFail extends React.Component {
           </Modal>
         ) : (
           <Modal title="落地文件重新支付"
-                 visible={fileModalVisible}
+                 visible={modalVisible}
+                 confirmLoading={modalLoading}
                  okText="导出报盘文件"
                  onOk={this.handleFileModalOk}
-                 onCancel={() => this.setState({ fileModalVisible: false })}>
+                 onCancel={() => this.setState({ modalVisible: false })}>
             <Form>
               <div style={{marginBottom:15}}>01. 选择付款账号</div>
-              <FormItem  {...formItemLayout} label="付款账户" style={{marginBottom:15}}>
-                {getFieldDecorator('payAccount', {
+              <FormItem  {...formItemLayout} label="付款账户">
+                {getFieldDecorator('payCompanyBankNumber', {
                   rules: [{
                     required: true,
                     message: '请选择'
-                  }]})(
-                  <Select placeholder="请选择">
-
+                  }]
+                })(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayAccount}
+                          notFoundContent={payAccountFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
+                    {payAccountOptions.map(option => {
+                      return <Option key={option.bankAccountNumber}>{option.bankAccountName}</Option>
+                    })}
                   </Select>
                 )}
               </FormItem>
@@ -619,15 +683,19 @@ class PayFail extends React.Component {
                 )}
               </FormItem>
               <div style={{marginBottom:15}}>02. 选择付款方式</div>
-              <FormItem  {...formItemLayout} label="付款方式" style={{marginBottom:15}}>
-                {getFieldDecorator('payWay', {
+              <FormItem  {...formItemLayout} label="付款方式">
+                {getFieldDecorator('paymentTypeId', {
                   rules: [{
                     required: true,
                     message: '请选择'
-                  }]})(
-                  <Select placeholder="请选择">
+                  }]
+                })(
+                  <Select placeholder="请选择"
+                          onFocus={this.getPayWay}
+                          notFoundContent={payWayFetching ? <Spin size="small" /> : '无匹配结果'}
+                          labelInValue>
                     {payWayOptions.map(option => {
-                      return <Option key={option.value}>{option.messageKey}</Option>
+                      return <Option key={option.id}>{option.description}</Option>
                     })}
                   </Select>
                 )}
@@ -653,6 +721,14 @@ class PayFail extends React.Component {
   }
 
 }
+
+PayFail.contextTypes = {
+  router: React.PropTypes.object
+};
+
+PayFail.propTypes = {
+  subTab: React.PropTypes.string,
+};
 
 function mapStateToProps(state) {
   return {
