@@ -175,6 +175,8 @@ class NewBudgetJournalFrom extends React.Component {
           this.props.form.setFieldsValue({
             "structureId":structureId,
             "periodStrategy":response.data.periodStrategy,
+          })
+          this.setState({
             "defaultStructure":response.data,
           })
         }
@@ -251,9 +253,11 @@ class NewBudgetJournalFrom extends React.Component {
     const organization = this.props.organization;
     const {structureGroup, periodStrategy, structureFlag, periodStrategyFlag, uploading,defaultStructure} = this.state;
     const formItemLayout = {};
-    const strategyOptions =structureGroup.length>0?structureGroup.map((item) =><Option value={String(item.id)}>{item.structureName}</Option>):structureGroup.push(
-      <Option value={String(defaultStructure.id)}>{defaultStructure.structureName}</Option>
-    );
+    let strategyOptions =structureGroup.map((item) =><Option value={String(item.id)}>{item.structureName}</Option>);
+    if(!structureGroup.length>0){
+      strategyOptions.push(<Option value={String(defaultStructure.id)}>{defaultStructure.structureName}</Option>)
+    }
+
     const periodStrategyOptions = periodStrategy.map((item) => <Option key={item.key} value={item.key}>{item.label}</Option>);
 
     return (
