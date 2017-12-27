@@ -535,7 +535,7 @@ const selectorData = {
     url: `${config.baseUrl}/api/DepartmentGroup/get/users/by/department/and/company`,
     searchForm: [],
     columns: [
-      {title: '代码', dataIndex: 'userCode'},
+      {title: '工号', dataIndex: 'userId'},
       {title: '姓名', dataIndex: 'userName'},
     ],
     key: 'userId'

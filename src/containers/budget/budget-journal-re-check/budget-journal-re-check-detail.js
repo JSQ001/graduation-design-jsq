@@ -19,8 +19,6 @@ class BudgetJournalReCheckDetail extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      buttonLoading:false,
-      rejectLoading:false,
       data: [],
       params: {},
       spinLoading:true,
@@ -57,7 +55,7 @@ class BudgetJournalReCheckDetail extends React.Component {
 
         },
         {          /*人员*/
-          title: this.props.intl.formatMessage({id:"budgetJournal.employee"}), key: "employeeName", dataIndex: 'employeeName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -205,9 +203,6 @@ class BudgetJournalReCheckDetail extends React.Component {
 
   //通过
   handlePass=()=>{
-    this.setState({
-      buttonLoading:true
-    })
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
@@ -215,22 +210,15 @@ class BudgetJournalReCheckDetail extends React.Component {
       message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
         let path=this.state.budgetJournalDetailReCheckPage.url;
           this.context.router.push(path);
-      this.setState({
-        buttonLoading:false,
-      })
+
     }).catch((e)=>{
       message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
-    })
-    this.setState({
-      buttonLoading:false,
     })
   }
 
   //驳回
   handleReject=()=>{
-    this.setState({
-      rejectLoading:true,
-    })
+
     const id= this.state.headerAndListData.dto.id;
     let data =[];
     data.addIfNotExist(id);
@@ -239,14 +227,10 @@ class BudgetJournalReCheckDetail extends React.Component {
       message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
       let path=this.state.budgetJournalDetailReCheckPage.url;
        this.context.router.push(path);
-      this.setState({
-        rejectLoading:false,
-      })
+
+
     }).catch((e)=>{
       message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
-      this.setState({
-        rejectLoading:false,
-      })
     })
 
   }
@@ -382,9 +366,9 @@ class BudgetJournalReCheckDetail extends React.Component {
         <div className="footer-operate">
           <div className="food-input" >
             <span>{this.props.intl.formatMessage({id:"budgetJournal.budgetOpinion"})}：&nbsp;</span><Input style={{}}/>
-            <Button type="primary" onClick={this.handlePass} loading={this.state.buttonLoading}>{this.props.intl.formatMessage({id:"budgetJournal.pass"})}</Button>
-            <Button className="button-reject" type="primary"   onClick={this.handleReject} loading={this.state.rejectLoading}>{this.props.intl.formatMessage({id:"budgetJournal.reject"})}</Button>
-            <Button className="button-return" onClick={this.HandleReturn} >{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
+            <Button type="primary" onClick={this.handlePass}>{this.props.intl.formatMessage({id:"budgetJournal.pass"})}</Button>
+            <Button className="button-reject" type="primary"   onClick={this.handleReject}>{this.props.intl.formatMessage({id:"budgetJournal.reject"})}</Button>
+            <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
           </div>
           <div>
           </div>

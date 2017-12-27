@@ -16,8 +16,7 @@ import WrappedBeepFrom from 'containers/finance-setting/beep-timer/beep-from.js'
 import BeepInfo from 'containers/finance-setting/beep-timer/beep-info.js'
 import ApplyTraver from 'containers/finance-setting/beep-timer/apply-traver.js'
 import ApplyBorrow from 'containers/finance-setting/beep-timer/apply-borrow.js'
-import BusinessCardRemind from 'containers/finance-setting/beep-timer/business-card-remind.js'
-import RegularlyRemind from  'containers/finance-setting/beep-timer/regularly-remind.js'
+
 
 
 
@@ -77,18 +76,15 @@ class BeepTimer extends React.Component{
     return (
       <div className="beep-timer">
           <Tabs type="line" tabPosition="left"  onChange={this.onChangeTabs}>
-            <TabPane tab="定时提醒" key="REGULARLY_REMIND">
-              <RegularlyRemind/>
-            </TabPane>
             <TabPane tab="差旅申请" key="TRAVEL">
               <ApplyTraver/>
             </TabPane>
+
             <TabPane tab="借款申请" key="BORROW">
-              <ApplyBorrow/>
+
             </TabPane>
-            <TabPane tab="商务卡提醒" key="BUSINESS_CARD_REMIND">
-              <BusinessCardRemind/>
-            </TabPane>
+
+
           </Tabs>
 
       </div>

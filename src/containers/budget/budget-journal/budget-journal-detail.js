@@ -54,7 +54,7 @@ class BudgetJournalDetail extends React.Component {
         {type: 'select', id:'periodName',options: [], labelKey:'periodName',valueKey:'periodName',columnLabel:'periodName',columnValue:'periodName'}, //期间
         {type: 'value_list', id: 'periodQuarter', options: [],labelKey:'periodQuarter',columnLabel:'periodQuarter',columnValue:'periodQuarterName',value:'periodQuarter'}, //季度
         {type: 'select', id:'periodYear', options:[],labelKey:'periodYear',valueKey:'periodYear',columnLabel:'periodYear',columnValue:'periodYear'}, //年度
-        {type: 'select', id:'currency',method:'get', options: [],labelKey:'currencyName',columnLabel:'currency',columnLabel: 'currency', columnValue: 'currency'}, //币种
+        {type: 'select', id:'currency',method:'get', options: [],labelKey:'attribute5',columnLabel:'attribute4',columnLabel: 'currency', columnValue: 'currency'}, //币种
         {type: 'input', id:'rate',valueKey:'rate'},  //汇率
         {type: 'inputNumber', id:'amount',valueKey:'amount'},  //金额
         {type: 'inputNumber', id:'functionalAmount',valueKey:'functionalAmount'}, //本位金额
@@ -223,7 +223,7 @@ class BudgetJournalDetail extends React.Component {
     })
     httpFetch.delete(`${config.budgetUrl}/api/budget/journals/batch/lines`,selectedRowKeys).then((req)=>{
       this.getDataByBudgetJournalCode();
-      message.error(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
+      message.success(`${this.props.intl.formatMessage({id:'common.operate.success'})}`);
       this.setState({
         selectedRowKeys:[]
       })

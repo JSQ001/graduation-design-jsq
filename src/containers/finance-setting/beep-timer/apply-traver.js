@@ -1,3 +1,4 @@
+
 /**
  * Created by 13576 on 2017/10/16.
  */
@@ -23,7 +24,7 @@ class ApplyTraver extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      fromData:[]
+      data:[]
     };
   }
 
@@ -31,15 +32,15 @@ class ApplyTraver extends React.Component{
     this.getData();
   }
 
-  //获得已经有的差旅申请单数据
+  //获得已经有的借款申请数据
   getData(){
     httpFetch.get(`${config.baseUrl}/api/custom/forms/company/travel/application/all`).then((req)=>{
       console.log(req);
-      this.setState({
-        fromData: req.data
-      })
     })
   }
+
+
+
 
   //Tabs点击
   onChangeTabs = (key) => {
@@ -60,37 +61,36 @@ class ApplyTraver extends React.Component{
   }
 
 
-
   onCancel = () =>{
     this.props.close();
   };
 
   render(){
     const {} = this.state;
+
     return (
       <div className="beep-timer">
 
         <div>
-          <BeepInfo
-            type={"traver"}
-            applyData ={{}}
-          />
+          <BeepInfo/>
         </div>
         <div>
           <Button type="dashed"  style={{ width: '100%', high:40}}>
             <Icon type="plus" /> 添加
           </Button>
         </div>
+
         <WrappedBeepFrom/>
+
+
       </div>
 
     )
   }
 }
 
-
 function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(ApplyTraver));
+export default connect(mapStateToProps)(ApplyTraver);

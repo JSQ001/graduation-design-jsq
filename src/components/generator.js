@@ -4,8 +4,10 @@ import { injectIntl } from 'react-intl';
 import 'styles/components/gennerator.scss'
 
 import httpFetch from 'share/httpFetch'
+import Chooser from 'components/chooser'
+import GeneratorEditor from 'components/generator-editor'
 
-import { Form, Row, Col, Input, Button, Icon, DatePicker, Radio, Checkbox, Select, Switch, Cascader, Spin } from 'antd';
+import { Form, Row, Col, Input, Button, Icon, DatePicker, Radio, Checkbox, Select, Switch, Spin } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -47,12 +49,14 @@ class Generator extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      showGeneratorEditorFlag: false,
       editMode: false,
       security: {},
       layout: {},
       forms: [],
-      buttons: {},
-      rules: {}
+      buttons: [],
+      rules: {},
+      generatedItem: {}
     }
   }
 
@@ -90,7 +94,7 @@ class Generator extends React.Component{
       httpFetch[item.method](url, item.getParams).then((res) => {
         let options = [];
         res.data.map(data => {
-          options.push({label: item.labelRule ? this.formatLabel(data, item.labelRule) : data[item.labelKey], key: data[item.valueKey]})
+          options.push({label: item.labelRule ? this.formatLabel(data, item.labelRule) : data[item.labelKey], value: data[item.valueKey]})
         });
         let forms = this.state.forms;
         forms = forms.map(form => {
@@ -123,58 +127,64 @@ class Generator extends React.Component{
   };
 
   componentDidMount(){
-    this.state.forms.map(formItem => {
-      if(formItem.type === 'select' && typeof formItem.defaultValue === 'object')
-        this.setSelectDefaultValue(formItem);
-      if(formItem.type === 'items')
-        formItem.items.map(item => {
-          if(item.type === 'select' && typeof item.defaultValue === 'object')
-            this.setSelectDefaultValue(item, formItem.id)
-        })
-    })
+    this.setSelectDefaultValueByList()
   }
 
   /**
-   * 当select的defaultValue为一个对象 {label , key} 时
-   * 需要给select设置一个对应的假的选项，再设置默认key值
+   * 根据传入的list id值设置对应select的默认值
+   * @param targets 目标id数组，不传则为全部
+   */
+  setSelectDefaultValueByList = (targets) => {
+    this.state.forms.map(formItem => {
+      if(formItem.type === 'select' && typeof formItem.defaultValue === 'object' && (!targets || targets.indexOf(formItem.id) > -1))
+        this.setSelectDefaultValue(formItem);
+      if(formItem.type === 'items')
+        formItem.items.map(item => {
+          if(item.type === 'select' && typeof item.defaultValue === 'object' && (!targets || targets.indexOf(formItem.id) > -1))
+            this.setSelectDefaultValue(item, formItem.id)
+        })
+    })
+  };
+
+  /**
+   * 当select的defaultValue为一个对象 {label , value} 时
+   * 需要给select设置一个对应的假的选项，再设置默认value值
    * @param item 需要设置默认值的item
    * @param id 处于items类型内时的items id
    */
   setSelectDefaultValue = (item, id) => {
-    if(item.options.length === 0 && !item.fetched){
-      let valueWillSet = {};
-      let forms = this.state.forms;
-      if(id === undefined)
-        forms = forms.map(formItem => {
-          if(formItem.id === item.id){
-            valueWillSet[formItem.id] = (item.defaultValue.key + '');
-            if(formItem.options.length === 0 || (formItem.options.length === 1 && formItem.options[0].temp)){
-              formItem.options = [];
-              formItem.options.push({label: item.defaultValue.label, key: item.defaultValue.key, temp: true})
-            }
+    let valueWillSet = {};
+    let forms = this.state.forms;
+    if(id === undefined)
+      forms = forms.map(formItem => {
+        if(formItem.id === item.id){
+          valueWillSet[formItem.id] = (item.defaultValue.value + '');
+          if(formItem.options.length === 0 || (formItem.options.length === 1 && formItem.options[0].temp)){
+            formItem.options = [];
+            formItem.options.push({label: item.defaultValue.label, value: item.defaultValue.value, temp: true})
           }
-          return formItem;
-        });
-      else{
-        forms.map(formItem => {
-          if(formItem.id === id){
-            formItem.items = formItem.items.map(subItem => {
-              if(subItem.id === item.id){
-                valueWillSet[subItem.id] = subItem.defaultValue.key + '';
-                if(subItem.options.length === 0 || (subItem.options.length === 1 && subItem.options[0].temp)){
-                  subItem.options = [];
-                  subItem.options.push({label: subItem.defaultValue.label, key: subItem.defaultValue.key, temp: true})
-                }
-              }
-              return subItem;
-            });
-          }
-        })
-      }
-      this.setState({ forms }, () => {
-        this.props.form.setFieldsValue(valueWillSet);
+        }
+        return formItem;
       });
+    else{
+      forms.map(formItem => {
+        if(formItem.id === id){
+          formItem.items = formItem.items.map(subItem => {
+            if(subItem.id === item.id){
+              valueWillSet[subItem.id] = subItem.defaultValue.value + '';
+              if(subItem.options.length === 0 || (subItem.options.length === 1 && subItem.options[0].temp)){
+                subItem.options = [];
+                subItem.options.push({label: subItem.defaultValue.label, value: subItem.defaultValue.value, temp: true})
+              }
+            }
+            return subItem;
+          });
+        }
+      })
     }
+    this.setState({ forms }, () => {
+      this.props.form.setFieldsValue(valueWillSet);
+    });
   };
 
   /**
@@ -186,6 +196,9 @@ class Generator extends React.Component{
     const { formatMessage } = this.props.intl;
     const { layout } = this.state;
     switch(item.type) {
+      case 'plain': {
+        return <span className="ant-form-text">{item.defaultValue}</span>
+      }
       //输入组件
       case 'input': {
         return <Input placeholder={formatMessage({id: 'common.please.enter'})}
@@ -202,10 +215,45 @@ class Generator extends React.Component{
                   disabled={item.disabled}
                   onFocus={item.getUrl ? () => this.getOptions(item) : () => {}}>
             {item.options.map((option)=>{
-              return <Option key={option.key}>{option.label}</Option>
+              return <Option key={option.value}>{option.label}</Option>
             })}
           </Select>
         )
+      }
+      //日期组件
+      case 'date':{
+        return <DatePicker format="YYYY-MM-DD" disabled={item.disabled}/>
+      }
+      //单选组件
+      case 'radio':{
+        return  (
+          <RadioGroup disabled={item.disabled}>
+            {item.options.map((option)=>{
+              return <Radio value={option.value} key={option.value}>{option.label}</Radio>
+            })}
+          </RadioGroup>
+        )
+      }
+      //选择框
+      case 'checkbox':{
+        return <CheckboxGroup options={item.options} disabled={item.disabled}/>
+      }
+      //switch状态切换组件
+      case 'switch':{
+        return <Switch checkedChildren={<Icon type="check"/>}
+                       unCheckedChildren={<Icon type="cross" />}
+                       disabled={item.disabled}/>
+      }
+      //弹出框列表选择组件
+      case 'list':{
+        return <Chooser placeholder={item.placeholder ? item.placeholder : formatMessage({id: 'common.please.select'}) }
+                        disabled={item.disabled}
+                        type={item.listType}
+                        labelKey={item.labelKey}
+                        valueKey={item.valueKey}
+                        listExtraParams={item.listExtraParams}
+                        selectorItem={item.selectorItem}
+                        single={item.single}/>
       }
       //同一单元格下多个表单项组件
       case 'items':{
@@ -238,6 +286,11 @@ class Generator extends React.Component{
     }
   };
 
+  showEditor = (item) => {
+    this.setState({showGeneratorEditorFlag : true, generatedItem: item})
+  };
+
+  //渲染表单组
   renderFields = () => {
     const { getFieldDecorator } = this.props.form;
     const { layout, forms } = this.state;
@@ -248,7 +301,7 @@ class Generator extends React.Component{
     const children = [];
     forms.map(item => {
       children.push(
-        <Col span={layout.span} key={item.id}>
+        <Col span={layout.span} key={item.id} onDoubleClick={() => this.showEditor(item)}>
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label}>
               {getFieldDecorator(item.id, {
@@ -269,19 +322,67 @@ class Generator extends React.Component{
     return children;
   };
 
+  handleClickButton = (button) => {
+    switch(button.type){
+      case 'submit':{
+        this.props.form.validateFieldsAndScroll(button.target, (err, values) => {
+          if(!err){
+            console.log(values)
+          }
+        });
+        break;
+      }
+      case 'clear':{
+        this.props.form.resetFields(button.target);
+        this.setSelectDefaultValueByList(button.target);
+        break;
+      }
+      case 'set':{
+        break;
+      }
+    }
+  };
+
+  //渲染按钮组
+  renderButtons = () => {
+    const { buttons, layout } = this.state;
+    let margin = layout.buttons === 'right' ? { marginLeft: layout.buttonsMargin } : { marginRight: layout.buttonsMargin };
+    const operate = [];
+    buttons.map(button => {
+      operate.push(
+        <Button type={button.surface} style={margin} key={button.id} onClick={() => this.handleClickButton(button)}
+                htmlType={ button.type === 'submit' ? 'submit' : 'button' }>{button.text}</Button>
+      )
+    });
+    return operate;
+  };
+
+  handleGenerate = (values) => {
+    this.setState({ showGeneratorEditorFlag: false });
+    console.log(values);
+  };
+
   render(){
-    const { security, layout, forms, buttons, rules } = this.state;
+    const { security, layout, forms, buttons, rules, showGeneratorEditorFlag, generatedItem } = this.state;
     return(
       <Row type="flex" align="top" justify="center">
         <Form
           style={{ width: layout.width }}
           className="generator"
-          onSubmit={this.handleSearch}
         >
           <Row gutter={layout.gutter} type="flex" align={layout.align} justify={layout.justify}>
             {this.renderFields()}
           </Row>
+          <Row>
+            <Col span={24} style={{ textAlign: layout.buttons }}>
+              {this.renderButtons()}
+            </Col>
+          </Row>
         </Form>
+        <GeneratorEditor visible={showGeneratorEditorFlag}
+                         formItem={generatedItem}
+                         onOk={this.handleGenerate}
+                         onCancel={() => {this.setState({showGeneratorEditorFlag: false})}}/>
       </Row>
     )
   }
@@ -293,7 +394,8 @@ function mapStateToProps(state) {
 
 Generator.propTypes = {
   json: React.PropTypes.string.isRequired,  //页面所需的JSON字符串
-  trigger: React.PropTypes.func  //页面传递的触发方法
+  trigger: React.PropTypes.func,  //页面传递的触发方法
+  editMode: React.PropTypes.bool
 };
 
 const WrappedGenerator = Form.create()(injectIntl(Generator));
