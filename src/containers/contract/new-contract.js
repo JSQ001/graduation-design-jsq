@@ -176,6 +176,11 @@ class NewContract extends React.Component{
   render() {
     const { getFieldDecorator } = this.props.form;
     const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, extraParams } = this.state;
+    data.attachments && (data.attachments.map((item, index) => {
+        item.uid = index;
+        item.name = item.fileName;
+      })
+    );
     return (
       <div className="new-contract background-transparent" style={{marginBottom:40, marginTop:-35}}>
         <Spin spinning={pageLoading}>
@@ -381,6 +386,8 @@ class NewContract extends React.Component{
                       <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload`}
                               attachmentType="CON_CONTRACT"
                               fileNum={9}
+                              defaultFileList={isNew ? [] : data.attachments}
+                              defaultOIDs={isNew ? [] : data.attachmentOIDs}
                               uploadHandle={this.handleUpload}/>
                     )}
                   </FormItem>

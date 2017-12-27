@@ -32,7 +32,7 @@ class Contract extends React.Component{
         {type: 'input', id: 'contractTypeId', label: '合同类型'},
         {type: 'items', id: 'dateRange', items: [
           {type: 'date', id: 'signDateFrom', label: '提交时间从'},
-          {type: 'date', id: 'signDatTo', label: '提交时间至'}
+          {type: 'date', id: 'signDateTo', label: '提交时间至'}
         ]},
       ],
       unApproveSearchParams: {},
@@ -40,7 +40,7 @@ class Contract extends React.Component{
       columns: [
         {title: '序号', dataIndex: 'index', render:(value, record, index) => index + 1},
         {title: '申请人', dataIndex: 'createdName', render: (value, record) => value + ' - ' + record.createdBy},
-        {title: '提交时间', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '提交时间', dataIndex: 'signDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '合同类型', dataIndex: 'contractTypeName'},
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '币种', dataIndex: 'currency'},
@@ -150,7 +150,7 @@ class Contract extends React.Component{
   //未审批搜索
   unapprovedSearch = (values) => {
     values.signDateFrom && (values.signDateFrom = moment(values.signDateFrom).format('YYYY-MM-DD'));
-    values.signDatTo && (values.signDatTo = moment(values.signDatTo).format('YYYY-MM-DD'));
+    values.signDateTo && (values.signDateTo = moment(values.signDateTo).format('YYYY-MM-DD'));
     this.setState({ unApproveSearchParams: values }, () => {
       this.getUnapprovedList()
     })
@@ -159,7 +159,7 @@ class Contract extends React.Component{
   //审批搜索
   approvedSearch = (values) => {
     values.signDateFrom && (values.signDateFrom = moment(values.signDateFrom).format('YYYY-MM-DD'));
-    values.signDatTo && (values.signDatTo = moment(values.signDatTo).format('YYYY-MM-DD'));
+    values.signDateTo && (values.signDateTo = moment(values.signDateTo).format('YYYY-MM-DD'));
     this.setState({ approveSearchParams: values }, () => {
       this.getApprovedList()
     })
