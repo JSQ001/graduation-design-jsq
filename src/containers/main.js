@@ -18,6 +18,7 @@ import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import { setCodingRuleObjectId } from "actions/setting";
 import Loading from 'components/loading'
+import Error from 'components/error'
 import ListSelector from 'components/list-selector'
 
 import { injectIntl } from 'react-intl';
@@ -37,6 +38,8 @@ class Main extends React.Component{
       openKeys: [],
       collapsed: false,
       check: false,
+      error: false,
+      errorText: '',
       adminMode: false,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
@@ -148,7 +151,7 @@ class Main extends React.Component{
    */
   checkParams() {
     let errorContent = this.props.intl.formatMessage({id: 'common.error'});
-    this.setState({check: false});
+    this.setState({check: false, error: false});
     const path = location.pathname;
     let section = path.split('/');
     if(path.indexOf('budget-organization-detail') > -1 && this.props.organization.id !== section[5]) {  //预算组织内部页面的组织id检查
@@ -180,28 +183,12 @@ class Main extends React.Component{
           this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
           this.setState({check: true});
         } else {
-          let modalData = {
-            content: '该帐套下没有启用的预算组织',
-            onOk: () => {
-              this.context.router.replace(menuRoute.getRouteItem('dashboard', 'key').url);
-              this.setState({check: true});
-            },
-            okText: 'Ok'
-          };
-          Modal.error(modalData);
+          this.setState({ check: true, error: true, errorText: '该帐套下没有启用的预算组织' });
         }
       }).catch(e => {
         let content = (e.response && e.response.data) ? (e.response.data.message ? e.response.data.message : errorContent) : errorContent;
         this.props.dispatch(setUserOrganization({message: content}));
-        let modalData = {
-          content: content,
-          onOk: () => {
-            this.context.router.replace(menuRoute.getRouteItem('dashboard', 'key').url);
-            this.setState({check: true});
-          },
-          okText: 'Ok'
-        };
-        Modal.error(modalData);
+        this.setState({ check: true, error: true, errorText: content });
       })
     } else {
       this.setState({check: true});
@@ -290,7 +277,7 @@ class Main extends React.Component{
   };
 
   render(){
-    const { collapsed, check, showListSelector, adminMode } = this.state;
+    const { collapsed, check, error, showListSelector, adminMode, errorText } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <Layout className="helios-main">
@@ -326,7 +313,7 @@ class Main extends React.Component{
             {this.renderBreadcrumb()}
           </Header>
           <Content className="helios-content">
-            {check ? menuRoute.MainRoute : <Loading/>}
+            {check ? (error ? <Error text={errorText}/> : menuRoute.MainRoute) : <Loading/>}
           </Content>
         </Layout>
 
