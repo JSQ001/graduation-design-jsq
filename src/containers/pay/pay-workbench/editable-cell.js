@@ -1,6 +1,11 @@
 import React from 'react'
 import { injectIntl } from 'react-intl';
-import { Form, InputNumber, Icon, Tooltip, Select } from 'antd'
+import config from 'config'
+import httpFetch from 'share/httpFetch'
+import { Form, InputNumber, Icon, Tooltip, Select, Spin, Popover, Timeline, message } from 'antd'
+const Option = Select.Option;
+
+import moment from 'moment'
 
 class EditableCell extends React.Component {
   constructor(props) {
@@ -9,6 +14,10 @@ class EditableCell extends React.Component {
       value: null,
       modifyValue: null,
       editable: false,
+      accountOptions: [],
+      fetching: false,
+      historyContent: null,
+      historyLoading: false
     }
   }
 
@@ -16,6 +25,7 @@ class EditableCell extends React.Component {
     this.setState({ value: this.props.value })
   }
 
+  //确认修改
   check = (e) => {
     e.stopPropagation();
     this.props.onChange(this.state.value);
@@ -24,6 +34,7 @@ class EditableCell extends React.Component {
     })
   };
 
+  //取消修改
   cancel = (e) => {
     e.stopPropagation();
     this.setState({
@@ -32,9 +43,61 @@ class EditableCell extends React.Component {
     })
   };
 
+  //获取收款账号
+  getAccountOptions = () => {
+    let url = `${config.baseUrl}/api/DepartmentGroup/getContactBankByUserOid?userOid=7f0e82a8-29b8-49ad-93ef-8ea42e445974`;
+    this.setState({ fetching: true });
+    httpFetch.get(url).then(res => {
+      if (res.status === 200) {
+        this.setState({ accountOptions: res.data, fetching: false })
+      }
+    }).catch(() => {
+      message.error('收款账号获取失败');
+      this.setState({ fetching: false })
+    })
+  };
+
+  //显示支付历史
+  payHistory = (visible) => {
+    if (visible) {
+      let url = `${config.contractUrl}/payment/api/cash/transaction/details/getHistoryByDateId?id=${this.props.record.id}`;
+      this.setState({ historyLoading: true });
+      httpFetch.get(url).then(res => {
+        if (res.status === 200) {
+          let historyContent;
+          if (res.data.length) {
+            historyContent = (
+              <Timeline>
+                {res.data.map(item => {
+                  return (
+                    <Timeline.Item key={item.id} color="green">
+                      <span style={{fontSize:13,color:'rgba(0,0,0,0.55)',marginRight:5}}>{moment(item.createdDate).format('YYYY-MM-DD HH:mm:ss')}</span>
+                      {item.employeeId} {item.employeeName} 支付 {item.currency}
+                      {(item.amount || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                    </Timeline.Item>
+                  )
+                })}
+              </Timeline>
+            )
+          } else {
+            historyContent = (
+              <div>无支付历史</div>
+            )
+          }
+          this.setState({ historyContent, historyLoading: false })
+        }
+      })
+    }
+  };
+
   render() {
     const { type, message } = this.props;
-    const { value, editable, modifyValue } = this.state;
+    const { value, editable, modifyValue, accountOptions, fetching, historyContent, historyLoading } = this.state;
+    let history = (
+      <Spin spinning={historyLoading}>
+        {historyContent}
+      </Spin>
+    );
     return (
       <div className="editable-cell">
         {
@@ -46,7 +109,12 @@ class EditableCell extends React.Component {
                                onChange={(value) => this.setState({ value })}/>
                   :
                   <Select defaultValue={value}
-                          onChange={(value) => this.setState({ value })}>
+                          notFoundContent={fetching ? <Spin size="small" /> : '无匹配结果'}
+                          onChange={(value) => this.setState({ value })}
+                          onFocus={this.getAccountOptions}>
+                    {accountOptions.map(option => {
+                      return <Option key={option.bankAccountNo}>{option.bankAccountNo}</Option>
+                    })}
                   </Select>
               }
               <Tooltip placement="top" title="保存">
@@ -57,14 +125,27 @@ class EditableCell extends React.Component {
               </Tooltip>
             </div>
             :
-            <div className="editable-cell-text-wrapper" style={{textAlign: type === 'number' ? 'right' : 'left'}}>
-              {type === 'number' && modifyValue && modifyValue < this.props.value &&
-                <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red',marginRight:5}} /></Tooltip>}
-              {type === 'number' ? (value || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : (value || '')}
-              <Tooltip placement="top" title={message}>
-                <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />
-              </Tooltip>
-            </div>
+            (
+              type === 'number'? (
+                <Popover placement="bottom" content={history} onVisibleChange={this.payHistory}>
+                  <a className="editable-cell-text-wrapper" style={{textAlign:'right'}}>
+                    {modifyValue && modifyValue < this.props.value &&
+                    <Tooltip title="本次支付金额不等于可支付金额"><Icon type="exclamation-circle-o" style={{color:'red',marginRight:5}} /></Tooltip>}
+                    {(value || 0).toFixed(2).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
+                    <Tooltip placement="top" title={message}>
+                      <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />
+                    </Tooltip>
+                  </a>
+                </Popover>
+              ) : (
+                <a className="editable-cell-text-wrapper" style={{textAlign:'left'}}>
+                  {value}
+                  <Tooltip placement="top" title={message}>
+                    <Icon type="edit" className="editable-cell-icon" onClick={(e) => {e.stopPropagation();this.setState({ editable: true })}} />
+                  </Tooltip>
+                </a>
+              )
+            )
         }
       </div>
     );
@@ -75,6 +156,7 @@ EditableCell.propTypes = {
   type: React.PropTypes.string,          //修改数据的类型，为 number、string
   value: React.PropTypes.any.isRequired, //默认值
   message: React.PropTypes.string,       //点击修改时的提示信息
+  record: React.PropTypes.object,        //行信息
   onChange: React.PropTypes.func,        //确认修改时的回调
   onChangeError: React.PropTypes.bool    //确认修改时的回调后是否出错
 };
@@ -82,6 +164,7 @@ EditableCell.propTypes = {
 EditableCell.defaultProps={
   type: 'string',
   message: '点击修改',
+  record: {},
   onChange: () => {},
   onChangeError: false
 };

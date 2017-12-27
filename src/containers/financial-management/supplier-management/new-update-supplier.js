@@ -20,14 +20,17 @@ class NewUpdateSupplier extends React.Component{
     const {formatMessage} = this.props.intl;
     this.state = {
       loading: false,
+      isEnabled: true,
+      vendorInfo: {},
       basicInfo: [
         {type: 'select', flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.type"}), key: 'venderTypeId',//供应商类型
-          options: [], url: `${config.vendorUrl}/vendor-info-service/api/supplier/type/query`, valueKey: 'id', labelKey: 'supplierTypeName' ,method: 'get',
+          options: [], url: `${config.vendorUrl}/vendor-info-service/api/ven/type/query`, valueKey: 'id', labelKey: 'supplierTypeName' ,method: 'get',
          },
         {type: 'input',flag: 'basic', isRequired: true, label: formatMessage({id:"supplier.management.code"}), key: 'venderCode' }, //供应商代码
         {type: 'input',flag: 'basic', isRequired: true,label: formatMessage({id:"supplier.management.name"}), key: 'venNickname' }, //供应商名称
-        {type: 'date', flag: 'basic',isRequired: false, label: formatMessage({id:"supplier.management.commissionDate"}), key: 'commissionDate' }, //启用日期
-        {type: 'switch',flag: 'basic', isRequired: false, label: formatMessage({id:"common.column.status"}), key: 'status',//状态
+        {type: 'date', flag: 'basic',isRequired: false, label: formatMessage({id:"supplier.management.commissionDate"}), key: 'effectiveDate' }, //启用日期
+        {type: 'input',flag: 'basic', isRequired: false,label: formatMessage({id:"supplier.management.outerId"}), key: 'venNickOid' }, //外部标识id
+        {type: 'switch',flag: 'basic', isRequired: false, label: formatMessage({id:"common.column.status"}), key: 'venType',//状态
           defaultValue: 'true'
          },
       ],
@@ -63,7 +66,7 @@ class NewUpdateSupplier extends React.Component{
 
   componentWillMount(){
     //获取国家
-    httpFetch.get(`${config.uatUrl}/location-service/api/localization/query/county?language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
+  /*  httpFetch.get(`${config.uatUrl}/location-service/api/localization/query/county?language=${this.props.language.locale ==='zh' ? "zh_cn" : "en_us"}`).then((response)=>{
       let country = [];
       response.data.map((item)=>{
         let option = {
@@ -78,12 +81,33 @@ class NewUpdateSupplier extends React.Component{
         otherInfo
       })
     });
+ */
+    console.log(this.props)
+    if(typeof this.props.params.id !== 'undefined'){
+      this.setState({
+        vendorInfo: this.props.params,
+        isEnabled: true
+      })
+    }
   }
 
 
 
   handleChange = (key)=>{
-    //console.log(key)
+   /* switch (key){
+      case 'venType':{
+        this.setState((prevState) => ({
+          isEnabled: !prevState.isEnabled
+        }))
+      }
+    }*/
+
+  };
+
+  switchChange = () => {
+    this.setState((prevState) => ({
+      isEnabled: !prevState.isEnabled
+    }))
   };
 
   getOptions = (item)=> {
@@ -146,10 +170,14 @@ class NewUpdateSupplier extends React.Component{
       //值列表选择组件
       //switch状态切换组件
       case 'switch':{
-        return <Switch checkedChildren={<Icon type="check"/>}
+        return <div>
+                  <Switch checkedChildren={<Icon type="check"/>}
                        unCheckedChildren={<Icon type="cross" />}
-                       onChange={this.handleChange(item.key)}
+                       defaultChecked={this.state.isEnabled}
+                       onChange={this.switchChange}
                        disabled={item.disabled}/>
+          <span className="enabled-type" style={{marginLeft:20,width:100}}>{ this.state.isEnabled ? this.props.intl.formatMessage({id:"common.status.enable"}) : this.props.intl.formatMessage({id:"common.disabled"}) }</span>
+        </div>
       }
       //日期组件
       case 'date': {
@@ -163,6 +191,7 @@ class NewUpdateSupplier extends React.Component{
 
   getFields = (array) =>{
     const { getFieldDecorator } = this.props.form;
+    const { vendorInfo} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 0 },
@@ -173,7 +202,7 @@ class NewUpdateSupplier extends React.Component{
         <FormItem {...formItemLayout} key={item.key} label={item.label}>
           {getFieldDecorator(`${item.key}`, {
             valuePropName: item.type === 'switch' ? 'checked' : 'value',
-            initialValue: item.defaultValue,
+            initialValue: item.type === 'switch' ? this.state.isEnabled : vendorInfo[item.key],
             rules: [{
               required: item.isRequired,
               message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
@@ -191,6 +220,8 @@ class NewUpdateSupplier extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log(values)
+        values.venType = values.venType ? 1001 : 1002;
+        values.effectiveDate = values.effectiveDate.getTime();
         httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info/insert`,values).then((response)=>{
           console.log(response)
           this.props.form.resetFields();
