@@ -143,34 +143,38 @@ class MyContract extends React.Component{
   eventHandle = (type, value) => {
     let searchForm = this.state.searchForm;
     if (type === 'id') {  //合同类型
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+        contractTypeId: undefined
+      });
       searchForm.map(item => {
         if (item.id === 'contractTypeId') {
           if (value) {
             item.listExtraParams = {companyId: value};
             item.disabled = false
           } else {
-            this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
-              contractTypeId: undefined
-            });
             item.disabled = true
           }
         }
       })
     } else if (type === 'code') { //合作方
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+        partnerId: ''
+      });
       searchForm.map(item => {
         if (item.id === 'partnerId') {
           if (value === 'EMPLOYEE') {
             item.getUrl = `${config.baseUrl}/api/users/v2/search`;
             item.valueKey = 'id';
+            item.options = [];
             item.renderOption = (option) => `${option.fullName} - ${option.employeeID}`;
             item.disabled = false
           } else if (value === 'VENDER') {
-
+            //TODO: 合同方类型为供应商时，查询合同方列表的接口
+            item.getUrl = ``;
+            item.valueKey = '';
+            item.options = [];
             item.disabled = false
           } else {
-            this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
-              partnerId: []
-            });
             item.disabled = true
           }
         }
