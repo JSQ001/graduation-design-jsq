@@ -569,6 +569,19 @@ const selectorData = {
       {title: "科目段代码", dataIndex: 'sectionName'},
     ],
     key: 'id'
+  },
+  'source_transactions_data':{
+    title: '来源事务-数据结构',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'sectionCode', label:"数据结构代码"},
+      {type: 'input', id: 'sectionName', label: "数据结构名称"}
+    ],
+    columns: [
+      {title: "数据结构代码", dataIndex: 'sectionCode'},
+      {title: "数据结构名称", dataIndex: 'sectionName'},
+    ],
+    key: 'id'
   }
 };
 

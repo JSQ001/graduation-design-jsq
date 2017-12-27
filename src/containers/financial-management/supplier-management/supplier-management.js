@@ -217,7 +217,6 @@ class SupplierManagement extends React.Component{
   };
 
   handleOnClose = () =>{
-    alert(1)
     let slideFrame = {
       title: "",
       visible: false,
@@ -230,7 +229,6 @@ class SupplierManagement extends React.Component{
 
   handleAfterClose = (params) =>{
     console.log(params)
-    alert(12)
     let slideFrame = {
       title: "",
       visible: false,

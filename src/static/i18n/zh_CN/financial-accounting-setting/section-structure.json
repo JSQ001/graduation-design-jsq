@@ -19,6 +19,11 @@
   "section.tips": "科目段代码不可重复，保存后不可修改。科目段字段值取自系统级值列表，选择时会自动过滤掉已选择项。",
   "section.help.tips": "帮助提示",
   "section.field": "科目段字段",
-  "section.mapping": "映射集"
+  "section.mapping": "映射集",
+  "section.selected": "已选 {selected} 条",
+  "section.value.code": "科目段值代码",
+  "section.value.code.total": "总账科目段值代码",
+  "section.mapping.set.placeholder": "请输入科目段值代码/总账科目段值代码",
+  "section.notification.mapping": "您有未保存的项，请先保存！"
 
 }

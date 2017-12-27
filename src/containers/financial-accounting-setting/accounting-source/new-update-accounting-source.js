@@ -1,5 +1,5 @@
 /**
- * created by jsq on 2017/12/25
+ * created by jsq on 2017/12/27
  */
 import React from 'react'
 import { connect } from 'react-redux'
@@ -7,8 +7,8 @@ import { injectIntl } from 'react-intl';
 import { Button, Input, Switch, Select, Form, Icon, notification, Alert, Row, Col } from 'antd'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import 'styles/financial-accounting-setting/section-structure/new-update-section.scss'
-import Chooser from 'components/chooser.js'
+import 'styles/financial-accounting-setting/accounting-source/new-update-accounting-source.scss'
+import Chooser from 'components/chooser'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -25,16 +25,7 @@ class NewUpdateSection extends React.Component{
   }
 
   componentWillMount(){
-    //获取账套
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then((response)=>{
-      let setOfBook = [];
-      response.data.map((item)=>{
-        setOfBook.push({label: item.setOfBooksName, value: item.id})
-      });
-      this.setState({
-        setOfBook
-      })
-    })
+
   }
 
   handleNotification = ()=>{
@@ -91,66 +82,38 @@ class NewUpdateSection extends React.Component{
     };
 
     return(
-      <div className="new-update-section">
-        <Alert description={formatMessage({id:"section.tips"})} type="warning"/>
-        <Form onSubmit={this.handleSubmit} className="new-update-section-form">
+      <div className="new-update-accounting-source">
+        <Alert description={formatMessage({id:"accounting.source.helpTips"})} type="warning"/>
+        <Form onSubmit={this.handleSubmit} className="accounting-source-form">
           <Row gutter={30}>
             <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.code'})  /*科目段代码*/}>
-            {getFieldDecorator('sectionCode', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: "common.please.enter"})
-              }]
-            })(
-              <Input className="input-disabled-color" placeholder={ formatMessage({id:"common.please.enter"})}/>
-            )}
-          </FormItem>
+              <FormItem {...formItemLayout} label={formatMessage({id:'accounting.source'})  /*来源事物*/}>
+                {getFieldDecorator('sectionName', {
+                  rules: [{
+                    required: true,
+                    message: formatMessage({id: "common.please.select"})
+                  }]
+                })(
+                  <Chooser
+                    placeholder={formatMessage({id:"common.please.select"})}
+                    type="section"
+                    single={true}
+                    labelKey="defaultDimValueCode"
+                    valueKey="defaultDimValueId"
+                    //selectorItem={selectorItem}
+                    // listExtraParams={{dimensionId: dimensionCode.length>0? dimensionCode[0].dimensionId : null}}
+                    onChange={()=>{}}/>
+                )}
+              </FormItem>
             </Col>
           </Row>
           <Row gutter={30}>
             <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.name'})  /*科目段名称*/}>
-            {getFieldDecorator('sectionName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: "common.please.enter"})
-              }]
-            })(
-              <Input className="input-disabled-color" placeholder={ formatMessage({id:"common.please.enter"})}/>
-            )}
-          </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-              <FormItem {...formItemLayout} label={formatMessage({id:'section.field'})  /*科目段字段*/}>
-            {getFieldDecorator('sectionName', {
-              rules: [{
-                required: true,
-                message: formatMessage({id: "common.please.select"})
-              }]
-            })(
-              <Chooser
-                placeholder={formatMessage({id:"common.please.select"})}
-                type="section"
-                single={true}
-                labelKey="defaultDimValueCode"
-                valueKey="defaultDimValueId"
-                //selectorItem={selectorItem}
-               // listExtraParams={{dimensionId: dimensionCode.length>0? dimensionCode[0].dimensionId : null}}
-                onChange={()=>{}}/>
-            )}
-          </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={30}>
-            <Col span={20}>
-             <FormItem {...formItemLayout} label={formatMessage({id:'section.name'})  /*科目段名称*/}>
-            {getFieldDecorator('sectionName')(
-              <lable>{'-'}</lable>
-            )}
-          </FormItem>
+              <FormItem {...formItemLayout} label={formatMessage({id:'accounting.source.name'})  /*来源事物名称*/}>
+                {getFieldDecorator('sectionName')(
+                  <lable>{'-'}</lable>
+                )}
+              </FormItem>
             </Col>
           </Row>
           <FormItem {...formItemLayout}
