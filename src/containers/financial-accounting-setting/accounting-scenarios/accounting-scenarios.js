@@ -1,18 +1,18 @@
 /**
- * created by jsq on 2017/12/28
+ * created by jsq on 2017/12/27
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge, Input} from 'antd'
+import { Button, Table, Badge} from 'antd'
 import SlideFrame from 'components/slide-frame'
-import NewUpdateAccountingElements from 'containers/financial-accounting-setting/accounting-scenarios-system/new-update-accounting-elements'
+import NewUpdateScenariosSystem from 'containers/financial-accounting-setting/accounting-scenarios-system/new-update-scenarios-system'
+import SearchArea from 'components/search-area';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/financial-accounting-setting/accounting-scenarios-system/accounting-elements.scss'
-import debounce from 'lodash.debounce';
-const Search = Input.Search;
+import 'styles/financial-accounting-setting/accounting-scenarios-system/accounting-scenarios-system.scss'
+import ListSelector from 'components/list-selector'
 
 class AccountingScenariosSystem extends React.Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class AccountingScenariosSystem extends React.Component {
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: false,
-      dataVisible: false,
+      scenariosVisible: false,
       data: [{id: 1}],
       lov:{
         visible: false
@@ -33,18 +33,26 @@ class AccountingScenariosSystem extends React.Component {
         showSizeChanger: true,
         showQuickJumper: true,
       },
+      searchForm: [
+        { type: 'select', id: 'setOfBook', label: formatMessage({id: 'section.setOfBook'}), options:[],labelKey: 'setOfBooksName',valueKey: 'id',
+          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', getParams: {roleType: 'TENANT'},
+        },
+        {                                                                        //核算场景代码
+          type: 'input', id: 'scenariosCode', label: formatMessage({id: 'accounting.scenarios.code'})
+        },
+        {                                                                        //核算场景名称
+          type: 'input', id: 'scenariosName', label: formatMessage({id: 'accounting.scenarios.name'})
+        },
+      ],
       columns: [
-        {          /*核算要素代码*/
-          title: formatMessage({id:"accounting.elements.code"}), key: "elementsCode", dataIndex: 'elementsCode'
+        {          /*账套*/
+          title: formatMessage({id:"section.setOfBook"}), key: "setOfBook", dataIndex: 'setOfBook'
         },
-        {          /*核算要素名称*/
-          title: formatMessage({id:"accounting.elements.name"}), key: "elementsName", dataIndex: 'elementsName'
+        {          /*核算场景代码*/
+          title: formatMessage({id:"accounting.scenarios.code"}), key: "scenariosCode", dataIndex: 'scenariosCode'
         },
-        {          /*核算要素性质*/
-          title: formatMessage({id:"accounting.elements.nature"}), key: "nature", dataIndex: 'nature'
-        },
-        {          /*匹配组字段*/
-          title: formatMessage({id:"accounting.matching.group.field"}), key: "groupField", dataIndex: 'groupField'
+        {          /*核算场景名称*/
+          title: formatMessage({id:"accounting.scenarios.name"}), key: "scenariosName", dataIndex: 'scenariosName'
         },
         {           /*状态*/
           title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
@@ -53,22 +61,19 @@ class AccountingScenariosSystem extends React.Component {
                    text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
           )
         },
-        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '8%', render: (text, record, index) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '12%', render: (text, record, index) => (
           <span>
             <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "common.edit"})}</a>   {/*编辑*/}
+            <span className="ant-divider" />
+            <a href="#" onClick={(e) => this.handleLinkConfig(e, record,index)}>{formatMessage({id: "accounting.configuration.set"})}</a>
           </span>)
         },
       ],
     };
   }
 
-  handleLinkDataStructure = (e, record,index)=>{
-    this.setState({dataVisible: true})
-  };
-
-  handleLinkElement = (e, record,index)=>{
-    console.log(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace('id', record.id))
-    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace('id', record.id))
+  handleLinkConfig = (e, record,index)=>{
+    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-scenarios-system', 'key').children.accountingElements.url.replace('id', record.id))
   };
 
   componentWillMount() {
@@ -83,7 +88,7 @@ class AccountingScenariosSystem extends React.Component {
 
   handleCreate = ()=>{
     let lov = {
-      title: this.props.intl.formatMessage({id:"accounting.elements.add"}),
+      title: this.props.intl.formatMessage({id:"accounting.scenarios.new"}),
       visible: true,
       params: {}
     };
@@ -94,7 +99,7 @@ class AccountingScenariosSystem extends React.Component {
 
   handleUpdate = (e,record,index)=>{
     let lov = {
-      title: this.props.intl.formatMessage({id:"accounting.elements.update"}),
+      title: this.props.intl.formatMessage({id:"accounting.scenarios.update"}),
       visible: true,
       params: record
     };
@@ -133,27 +138,26 @@ class AccountingScenariosSystem extends React.Component {
     })
   };
 
+  handleListOk = (result) => {
+    console.log(123)
+    this.setState({
+      scenariosVisible: false
+    })
+  };
+
   render(){
     const { formatMessage} = this.props.intl;
-    const { loading, data, columns, pagination, lov, dataVisible , scenarios} = this.state;
+    const { loading, data, columns, searchForm, pagination, lov, dataVisible, scenariosVisible } = this.state;
     return(
-      <div className="accounting-elements">
-        <div className="accounting-elements-header">
-          <h2>{formatMessage({id:"accounting.scenarios"},{name:"123-假场景"})}</h2>
+      <div className="accounting-scenarios-system">
+        <div className="accounting-scenarios-head-tips">
+          {formatMessage({id:"accounting.scenarios.headTips"})}
         </div>
-        <div className="accounting-elements-header-tips">
-          {formatMessage({id:"accounting.elements.headTips"},{name:"假场景"})}
-        </div>
+        <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.add'})}</Button>  {/*添加*/}
-            <Search
-              className="table-header-search"
-              placeholder={formatMessage({id:"accounting.placeholder.tips"})}
-              onSearch={value => console.log(value)}
-              style={{ width: 300 }}
-            />
+            <Button type="primary" onClick={()=>this.setState({scenariosVisible: true})}>{formatMessage({id: 'common.add'})}</Button>  {/*添加*/}
           </div>
         </div>
         <Table
@@ -164,9 +168,14 @@ class AccountingScenariosSystem extends React.Component {
           onChange={this.onChangePager}
           bordered
           size="middle"/>
+        <ListSelector type="accounting_scenarios"
+                      visible={scenariosVisible}
+                      onOk={this.handleListOk}
+                      extraParams={{itemId: this.props.params.itemId}}
+                      onCancel={()=>this.setState({scenariosVisible: false})}/>
         <SlideFrame title= {lov.title}
                     show={lov.visible}
-                    content={NewUpdateAccountingElements}
+                    content={NewUpdateScenariosSystem}
                     afterClose={this.handleAfterClose}
                     onClose={()=>this.handleShowSlide(false)}
                     params={lov.params}/>

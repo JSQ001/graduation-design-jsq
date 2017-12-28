@@ -19,7 +19,7 @@ import BasicInfo from 'components/basic-info'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-const strategyGroup = [];
+
 class BudgetControlRulesDetail extends React.Component{
   constructor(props){
     super(props);
@@ -48,7 +48,7 @@ class BudgetControlRulesDetail extends React.Component{
       infoList: [
         {type: 'input', id: 'controlRuleCode', required: true, disabled: true, label: this.props.intl.formatMessage({id: 'budget.controlRuleCode'})+" :" /*业务规则代码*/},
         {type: 'input', id: 'controlRuleName', label: formatMessage({id: 'budget.controlRuleName'})+" :" /*业务规则名称*/},
-        {type: 'select', options: strategyGroup, id: 'strategyGroupName', label: "控制策略 :"},
+        {type: 'select', options: [], id: 'strategyGroupName', label: formatMessage({id:"budget.strategy"})+" :"},
         {type: 'items', id: 'effectiveDate',label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", items: [
           {type: 'date', id: 'startDate', label: formatMessage({id:"budget.controlRule.effectiveDate"})+" :", isRequired: true},
           {type: 'date', id: 'endDate', label: ' '}
@@ -116,6 +116,7 @@ class BudgetControlRulesDetail extends React.Component{
     //加载页面时，获取启用的控制策略
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
       if(response.status === 200){
+        let strategyGroup = [];
         response.data.map((item)=>{
           let strategy = {
             id: item.id,
@@ -126,6 +127,9 @@ class BudgetControlRulesDetail extends React.Component{
           };
           strategyGroup.addIfNotExist(strategy)
         });
+        let infoList = this.state.infoList;
+        infoList[2].options = strategyGroup;
+        this.setState({infoList})
       }
     })
   }

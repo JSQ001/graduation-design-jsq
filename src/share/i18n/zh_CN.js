@@ -29,6 +29,8 @@ import supplierManagement from 'static/i18n/zh_CN/financial-management/supplier-
 import sectionStructure from 'static/i18n/zh_CN/financial-accounting-setting/section-structure.json'
 import accountingSource from 'static/i18n/zh_CN/financial-accounting-setting/accounting-source.json'
 import accountingScenariosSystem from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios-system.json'
+import accountingScenarios from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios.json'
+
 
 const i18nList = [
   common,  //公用
@@ -62,6 +64,7 @@ const i18nList = [
   sectionStructure,       //科目段结构
   accountingSource,       //核算来源事物
   accountingScenariosSystem, //核算场景系统级
+  accountingScenarios,     //核算场景账套级
 ];
 
 let result = {};

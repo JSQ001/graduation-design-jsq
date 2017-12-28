@@ -81,7 +81,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'baseCurrency',
+        codeKey: 'currency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -230,7 +230,6 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillReceiveProps(nextprops){
-    console.log(this.state.lov)
     this.setState({
       ruleId: nextprops.params,
       organizationId: this.props.organization.id
@@ -508,8 +507,8 @@ class NewBudgetRulesDetail extends React.Component{
           <Row gutter={30}>
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                        validateStatus={validateStatusMap.parameterLowerLimit}
-                        help={helpMap.parameterLowerLimit}>
+                validateStatus={validateStatusMap.parameterLowerLimit}
+                help={helpMap.parameterLowerLimit}>
                 {getFieldDecorator('parameterLowerLimit',
                   {
                     rules: [

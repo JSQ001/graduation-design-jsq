@@ -4,6 +4,7 @@ import AccountingSource from 'containers/financial-accounting-setting/accounting
 import VoucherTemplate from 'containers/financial-accounting-setting/accounting-source/voucher-template'
 import AccountingScenariosSystem from 'containers/financial-accounting-setting/accounting-scenarios-system/accounting-scenarios-system'
 import AccountingElements from 'containers/financial-accounting-setting/accounting-scenarios-system/accounting-elements'
+import AccountingScenarios from 'containers/financial-accounting-setting/accounting-scenarios/accounting-scenarios'
 
 
 //科目段设置
@@ -57,10 +58,20 @@ const accountingScenariosSystem = {
   children: {accountingElements}
 };
 
+//核算场景账套级
+const accountingScenarios = {
+  key: 'accounting-scenarios',
+  url: '/main/financial-accounting-setting/accounting-scenarios',
+  components: AccountingScenarios,
+  parent: 'financial-accounting-setting',
+  children: {accountingElements}
+};
+
+
 //财务核算设置
 const financialAccountingSetting = {
   key:'financial-accounting-setting',
-  subMenu: [sectionStructure, accountingSource, accountingScenariosSystem],
+  subMenu: [sectionStructure, accountingSource, accountingScenariosSystem, accountingScenarios ],
   icon: 'setting',
   admin: true
 };

@@ -131,5 +131,6 @@
   "menu.accounting-source": "Accounting source",
   "menu.voucher-template": "Voucher template",
   "menu.accounting-scenarios-system": "Accounting scenarios system",
-  "menu.accounting-elements": "Accounting elements"
+  "menu.accounting-elements": "Accounting elements",
+  "menu.accounting-scenarios": "Accounting scenarios setOfBook"
 }
