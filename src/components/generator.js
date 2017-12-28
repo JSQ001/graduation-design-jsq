@@ -1,7 +1,7 @@
 import React  from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import 'styles/components/gennerator.scss'
+import 'styles/components/generator.scss'
 
 import httpFetch from 'share/httpFetch'
 import Chooser from 'components/chooser'
