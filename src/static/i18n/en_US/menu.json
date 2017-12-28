@@ -129,5 +129,7 @@
   "menu.section-structure": "Section structure",
   "menu.section-setting": "Section setting",
   "menu.accounting-source": "Accounting source",
-  "menu.voucher-template": "Voucher template"
+  "menu.voucher-template": "Voucher template",
+  "menu.accounting-scenarios-system": "Accounting scenarios system",
+  "menu.accounting-elements": "Accounting elements"
 }
