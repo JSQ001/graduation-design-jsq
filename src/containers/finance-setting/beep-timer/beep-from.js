@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
 import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message,Checkbox,InputNumber} from 'antd'
+const { TextArea } = Input;
 const CheckboxGroup = Checkbox.Group;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
@@ -95,7 +96,7 @@ class BeepFrom extends React.Component{
                   }],
                   initialValue: ''
                 })(
-                  <Input type="提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容提醒内容" />
+                  <TextArea/>
                 )}
               </FormItem>
               </Col>
