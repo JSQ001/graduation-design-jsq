@@ -154,7 +154,11 @@ class ContractDetail extends React.Component{
   saveInputRef = input => this.input = input;
 
   goBack = () => {
-    this.context.router.push(this.state.contract.url);
+    if (this.state.isConfirm) {
+      this.context.router.push(`${this.state.contract.url}?approved=true`);
+    } else {
+      this.context.router.push(this.state.contract.url);
+    }
   };
 
   //获取合同状态
