@@ -234,10 +234,10 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel:'periodYear',columnValue:'periodYear'
       }, //年度
       {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budgetJournal.currency"}), isRequired: true, options:currencyOptions,event:'currency',
-        labelKey:'attribute5',valueKey:'attribute4',defaultValue:"CNY",
+        labelKey:'attribute5',valueKey:'attribute4',
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}), isRequired: true,event:'rate',disabled: true,defaultValue:1},  //汇率
+      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
       {type: 'inputNumber',key:'amount', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budgetJournal.amount"}), isRequired: true,
         step:10, defaultValue:0, event:'amount'},  //金额
       {type: 'inputNumber',key:'functionalAmount', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budgetJournal.functionalAmount"}),
