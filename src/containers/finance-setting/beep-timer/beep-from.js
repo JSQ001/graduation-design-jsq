@@ -5,7 +5,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message,Checkbox,InputNumber} from 'antd'
+import { Form, Input, Switch, Select,Button, Icon ,Tabs,Row,Col,message,Checkbox,InputNumber} from 'antd'
 const { TextArea } = Input;
 const CheckboxGroup = Checkbox.Group;
 import httpFetch from 'share/httpFetch'
@@ -58,7 +58,7 @@ class BeepFrom extends React.Component{
     const {} = this.state;
     const hourOption=[];
     for(let i=0;i<=24;i++){
-      hourOption.push(<option value={i} key={i}>`${i}:00`</option>)
+      hourOption.push(<option value={i} key={i}>{i+":00"}</option>)
     }
     const formItemLayout = {
       labelCol: { span:24 },
@@ -91,7 +91,7 @@ class BeepFrom extends React.Component{
 
               <Col span={8}>
               <FormItem {...formItemLayout} label="提醒内容" >
-                {getFieldDecorator('code2', {
+                {getFieldDecorator('description', {
                   rules: [{
                   }],
                   initialValue: ''
@@ -109,7 +109,7 @@ class BeepFrom extends React.Component{
             {this.props.type === "regularly" && <Row>
               <Col span={8}>
                 <FormItem {...formItemLayout} label="发送日期" >
-                  {getFieldDecorator('code4', {
+                  {getFieldDecorator('date ', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -126,9 +126,9 @@ class BeepFrom extends React.Component{
                     }],
                     initialValue: ''
                   })(
-                    <select>
+                    <Select>
                       {hourOption}
-                    </select>
+                    </Select>
                   )}
                 </FormItem>
               </Col>
