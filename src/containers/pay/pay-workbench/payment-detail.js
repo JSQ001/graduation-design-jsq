@@ -45,12 +45,17 @@ class PaymentDetail extends React.Component {
       logColumns: [
         {title: '操作类型', dataIndex: 'operationType'},
         {title: '操作人', dataIndex: 'operationMan'},
-        {title: '执行结果', dataIndex: 'operationResult', render: value => {
-          return <Badge status="success" text={value}/>
-        }},
         {title: '操作时间', dataIndex: 'operationTime', render: value => moment(value).format('YYYY-MM-DD HH:mm:ss')},
         {title: '备注', dataIndex: 'remark', width: '30%'},
       ],
+      payStatus: {
+        W: {label: '待支付', state: 'default'},
+        P: {label: '支付中', state: 'processing'},
+        S: {label: '支付成功', state: 'success'},
+        F: {label: '支付失败', state: 'error'},
+        R: {label: '重新支付', state: 'warning'},
+      },
+      payStatusValue: '',
       billsData: [],
       detailData: [],
       financeData: [],
@@ -73,6 +78,7 @@ class PaymentDetail extends React.Component {
           billsData: [res.data.payDocumentDTO],
           detailData: [res.data.payDetailDTO],
           logData: res.data.operationDTO,
+          payStatusValue: res.data.payStatus,
           loading: false
         })
       }
@@ -85,7 +91,7 @@ class PaymentDetail extends React.Component {
 
   render(){
     const { formatMessage } = this.props.intl;
-    const { loading, billsColumns, detailColumns, financeColumns, offHistoryColumns, logColumns, billsData, detailData, financeData, offHistoryDate, logData } = this.state;
+    const { loading, billsColumns, detailColumns, financeColumns, offHistoryColumns, logColumns, billsData, detailData, financeData, offHistoryDate, logData, payStatusValue, payStatus } = this.state;
     const gridLeftStyle = {
       width: '20%',
       textAlign: 'left',
@@ -99,7 +105,9 @@ class PaymentDetail extends React.Component {
     return (
       <div className="payment-detail">
         <Spin spinning={loading}>
-          <Alert message={<Badge text="支付成功" status='success'/>} type="info" className="top-result" />
+          <Alert message={<Badge text={payStatusValue ? payStatus[payStatusValue].label : ''}
+                                 status={payStatusValue ? payStatus[payStatusValue].state : 'default'}/>}
+                 type="info" className="top-result" />
           <h3 className="header-title">{formatMessage({id:"pay.workbench.detail.bills"})/*付款单据*/}</h3>
           <Table rowKey="documentCode"
                  columns={billsColumns}

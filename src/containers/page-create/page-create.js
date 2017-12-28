@@ -1,6 +1,7 @@
 import React  from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
+import { Alert } from 'antd'
 import Generator from 'components/generator'
 
 import config from 'config'
@@ -15,6 +16,7 @@ class PageCreate extends React.Component{
   render(){
     const json = {
       security: {
+        title: '测试表单',
         key: 'page-create',
         hash: '33za1r8an66e59ng7ap69m9567'
       },
@@ -59,6 +61,7 @@ class PageCreate extends React.Component{
     return(
       <div>
         <Generator json={JSON.stringify(json)}/>
+        <br/>
       </div>
     )
   }

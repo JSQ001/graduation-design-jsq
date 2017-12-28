@@ -1,7 +1,7 @@
 import React  from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import 'styles/components/gennerator.scss'
+import 'styles/components/generator.scss'
 
 import httpFetch from 'share/httpFetch'
 import Chooser from 'components/chooser'
@@ -287,13 +287,17 @@ class Generator extends React.Component{
   };
 
   showEditor = (item) => {
+<<<<<<< HEAD
     this.setState({showGeneratorEditorFlag : true, generatedItem: item})
+=======
+    this.state.editMode && this.setState({showGeneratorEditorFlag : true, generatedItem: item})
+>>>>>>> develop
   };
 
   //渲染表单组
   renderFields = () => {
     const { getFieldDecorator } = this.props.form;
-    const { layout, forms } = this.state;
+    const { layout, forms, editMode } = this.state;
     const formItemLayout = {
       labelCol: layout.labelCol,
       wrapperCol: layout.wrapperCol
@@ -301,6 +305,7 @@ class Generator extends React.Component{
     const children = [];
     forms.map(item => {
       children.push(
+<<<<<<< HEAD
         <Col span={layout.span} key={item.id} onDoubleClick={() => this.showEditor(item)}>
           {item.type === 'items' ? this.renderFormItem(item) :
             <FormItem {...formItemLayout} label={item.label}>
@@ -315,6 +320,31 @@ class Generator extends React.Component{
                 this.renderFormItem(item)
               )}
             </FormItem>
+=======
+        <Col span={layout.span} key={item.id}>
+          {
+            <div className={editMode ? "form-item edit-item" : 'form-item'}>
+              <div className="edit-operate">
+                <div>
+                  <Button shape="circle" icon="setting" ghost onClick={() => this.showEditor(item)} style={{marginRight: 10}}/>
+                  <Button shape="circle" icon="delete" ghost/>
+                </div>
+              </div>
+              {item.type === 'items' ? this.renderFormItem(item) :
+                <FormItem {...formItemLayout} label={item.label}>
+                  {getFieldDecorator(item.id, {
+                    valuePropName: item.type === 'switch' ? 'checked' : 'value',
+                    initialValue: (item.type === 'select' && typeof item.defaultValue === 'object') ? undefined : item.defaultValue,
+                    rules: [{
+                      required: item.isRequired,
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
+                    }]
+                  })(
+                    this.renderFormItem(item)
+                  )}
+              </FormItem>}
+            </div>
+>>>>>>> develop
           }
         </Col>
       );
@@ -345,13 +375,30 @@ class Generator extends React.Component{
 
   //渲染按钮组
   renderButtons = () => {
+<<<<<<< HEAD
     const { buttons, layout } = this.state;
+=======
+    const { buttons, layout, editMode } = this.state;
+>>>>>>> develop
     let margin = layout.buttons === 'right' ? { marginLeft: layout.buttonsMargin } : { marginRight: layout.buttonsMargin };
     const operate = [];
     buttons.map(button => {
       operate.push(
+<<<<<<< HEAD
         <Button type={button.surface} style={margin} key={button.id} onClick={() => this.handleClickButton(button)}
                 htmlType={ button.type === 'submit' ? 'submit' : 'button' }>{button.text}</Button>
+=======
+        <span className={editMode ? "form-item edit-item edit-button-item" : 'form-item'}>
+          <div className="edit-operate">
+            <div>
+              <Button shape="circle" icon="setting" onClick={() => this.showEditor(button)} ghost style={{marginRight: 10}}/>
+              <Button shape="circle" icon="delete" ghost/>
+            </div>
+          </div>
+          <Button type={button.surface} style={margin} key={button.id} onClick={() => this.handleClickButton(button)}
+                  htmlType={ button.type === 'submit' ? 'submit' : 'button' }>{button.text}</Button>
+        </span>
+>>>>>>> develop
       )
     });
     return operate;
@@ -363,13 +410,23 @@ class Generator extends React.Component{
   };
 
   render(){
+<<<<<<< HEAD
     const { security, layout, forms, buttons, rules, showGeneratorEditorFlag, generatedItem } = this.state;
+=======
+    const { security, layout, forms, buttons, rules, showGeneratorEditorFlag, generatedItem, editMode } = this.state;
+>>>>>>> develop
     return(
       <Row type="flex" align="top" justify="center">
         <Form
           style={{ width: layout.width }}
           className="generator"
         >
+          { security.title ? (
+            <h3 className="header-title">
+              {security.title}
+              <Icon onClick={() => this.setState({editMode: !editMode})} type={editMode ? 'save' : 'edit'}/>
+            </h3>
+          ) : null}
           <Row gutter={layout.gutter} type="flex" align={layout.align} justify={layout.justify}>
             {this.renderFields()}
           </Row>
