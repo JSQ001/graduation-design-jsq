@@ -6,74 +6,65 @@ import AccountingScenariosSystem from 'containers/financial-accounting-setting/a
 import AccountingElements from 'containers/financial-accounting-setting/accounting-scenarios-system/accounting-elements'
 import AccountingScenarios from 'containers/financial-accounting-setting/accounting-scenarios/accounting-scenarios'
 
-
-//科目段设置
-const sectionSetting = {
-  key: 'section-setting',
-  url: '/main/financial-accounting-setting/section-structure/:id/section-setting',
-  components: SectionSetting,
-  parent: 'section-structure',
-};
-
-//科目段结构
-const sectionStructure = {
-  key: 'section-structure',
-  url: '/main/financial-accounting-setting/section-structure',
-  components: SectionStructure,
-  parent: 'financial-accounting-setting',
-  children: {sectionSetting}
-};
-
-//凭证模板
-const voucherTemplate = {
-  key: 'voucher-template',
-  url: '/main/financial-accounting-setting/accounting-source/:id/voucher-template',
-  components: VoucherTemplate,
-  parent: 'section-structure'
-};
-
-//核算来源事物
-const accountingSource = {
-  key: 'accounting-source',
-  url: '/main/financial-accounting-setting/accounting-source',
-  components: AccountingSource,
-  parent: 'financial-accounting-setting',
-  children:{voucherTemplate}
-};
-
-//核算要素
-const accountingElements = {
-  key: 'accounting-elements',
-  url: '/main/financial-accounting-setting/accounting-scenarios-system/:id/accounting-elements',
-  components: AccountingElements,
-  parent: 'financial-accounting-setting'
-};
-
-//核算场景系统级
-const accountingScenariosSystem = {
-  key: 'accounting-scenarios-system',
-  url: '/main/financial-accounting-setting/accounting-scenarios-system',
-  components: AccountingScenariosSystem,
-  parent: 'financial-accounting-setting',
-  children: {accountingElements}
-};
-
-//核算场景账套级
-const accountingScenarios = {
-  key: 'accounting-scenarios',
-  url: '/main/financial-accounting-setting/accounting-scenarios',
-  components: AccountingScenarios,
-  parent: 'financial-accounting-setting',
-  children: {accountingElements}
-};
-
-
 //财务核算设置
 const financialAccountingSetting = {
   key:'financial-accounting-setting',
-  subMenu: [sectionStructure, accountingSource, accountingScenariosSystem, accountingScenarios ],
   icon: 'setting',
-  admin: true
+  admin: true,
+  subMenu: [
+    //科目段结构
+    {
+      key: 'section-structure',
+      url: '/main/financial-accounting-setting/section-structure',
+      components: SectionStructure,
+      parent: 'financial-accounting-setting',
+      children: {
+        //科目段设置
+        sectionSetting: {
+          key: 'section-setting',
+          url: '/main/financial-accounting-setting/section-structure/:id/section-setting',
+          components: SectionSetting,
+          parent: 'section-structure',
+        }
+      }
+    },
+    //核算来源事务
+    {
+      key: 'accounting-source',
+      url: '/main/financial-accounting-setting/accounting-source',
+      components: AccountingSource,
+      parent: 'financial-accounting-setting',
+      children:{
+        //凭证模板
+        key: 'voucher-template',
+        url: '/main/financial-accounting-setting/accounting-source/:id/voucher-template',
+        components: VoucherTemplate,
+        parent: 'section-structure'
+      }
+    },
+    //核算场景系统级
+    {
+      key: 'accounting-scenarios-system',
+      url: '/main/financial-accounting-setting/accounting-scenarios-system',
+      components: AccountingScenariosSystem,
+      parent: 'financial-accounting-setting',
+      children: {
+        //核算要素
+        key: 'accounting-elements',
+        url: '/main/financial-accounting-setting/accounting-scenarios-system/:id/accounting-elements',
+        components: AccountingElements,
+        parent: 'financial-accounting-setting'
+      }
+    },
+    //核算场景账套级
+    {
+      key: 'accounting-scenarios',
+      url: '/main/financial-accounting-setting/accounting-scenarios',
+      components: AccountingScenarios,
+      parent: 'financial-accounting-setting',
+      children:{}
+    }
+  ]
 };
 
 export default financialAccountingSetting

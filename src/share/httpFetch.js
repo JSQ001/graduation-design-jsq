@@ -125,7 +125,7 @@ const httpFetch = {
   }
 };
 
-let methodList = ['get','post','put','delete'];
+let methodList = ['get','post','put','delete', 'patch'];
 methodList.map(method => {
   httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
@@ -136,7 +136,8 @@ methodList.map(method => {
       method: method.toUpperCase(),
       mode: 'cors',
       headers: header,
-      data: params
+      data: (method === 'get' || method === 'delete') ? undefined : params,
+      params:(method === 'get' || method === 'delete') ? params : undefined
     };
     return axios(url, Object.assign({}, options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };

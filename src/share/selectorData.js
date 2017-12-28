@@ -570,6 +570,21 @@ const selectorData = {
     ],
     key: 'id'
   },
+  'contract_type': {
+    title: "合同类型",
+    url: `${config.contractUrl}/contract/api/contract/type/contract/type/by/company`,
+    searchForm: [
+      {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
+      {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
+      {type: 'input', id: 'contractCategory', label: '合同大类'}
+    ],
+    columns: [
+      {title: '合同类型代码', dataIndex: 'contractTypeCode'},
+      {title: '合同类型名称', dataIndex: 'contractTypeName'},
+      {title: '合同大类', dataIndex: 'contractCategoryName'},
+    ],
+    key: 'id'
+  },
   'source_transactions_data':{
     title: '来源事务-数据结构',
     url: `${config.baseUrl}/api/company/by/condition`,
