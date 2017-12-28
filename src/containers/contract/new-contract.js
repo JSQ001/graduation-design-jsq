@@ -32,6 +32,7 @@ class NewContract extends React.Component{
       contractCategoryValue: 'EMPLOYEE',
       unitIdOptions: [], //责任部门选项
       employeeIdOptions: [], //责任人选项
+      currencyLoading: false,
       extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
       contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
@@ -50,16 +51,16 @@ class NewContract extends React.Component{
       let contractCategoryOptions = res.data.values || [];
       this.setState({ contractCategoryOptions })
     });
-    this.service.getCurrencyList().then((res) => {  //币种
-      let currencyOptions = res.data;
-      this.setState({ currencyOptions })
-    });
+
     httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.props.company.setOfBooksId}`).then((res) => {  //获取公司列表
       let companyIdOptions = res.data;
       this.setState({ companyIdOptions })
     });
     httpFetch.get(`${config.baseUrl}/api/users/v2/search`).then(res => {  //获取员工列表
       res.status === 200 && this.setState({ employeeOptions: res.data })
+    });
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info`,{}).then(res => {  //获取供应商列表
+      res.status === 200 && this.setState({ venderOptions: res.data.body.body.venInfoBeans })
     });
     httpFetch.get(`${config.baseUrl}/api/departments/root/v2?flag=1001`).then(res => {  //获取责任部门列表
       res.status === 200 && this.setState({ unitIdOptions: res.data })
@@ -75,10 +76,20 @@ class NewContract extends React.Component{
         data: res.data,
         isNew: false,
         pageLoading: false,
-        contractTypeDisabled: false
+        contractTypeDisabled: false,
+        contractCategoryValue: res.data.partnerCategory
       }, () => {
         this.setState({ extraParams: this.state.data.contractTypeId })
       })
+    })
+  };
+
+  //获取币种
+  getCurrencyOptions = () => {
+    this.setState({ currencyLoading: true });
+    !this.state.currencyOptions.length && this.service.getCurrencyList().then((res) => {
+      let currencyOptions = res.data;
+      this.setState({ currencyOptions, currencyLoading: false })
     })
   };
 
@@ -127,6 +138,9 @@ class NewContract extends React.Component{
         values.contractTypeId = values.contractTypeId[0].id;
         values.id = this.state.data.id;
         values.versionNumber = this.state.data.versionNumber;
+        this.state.unitIdOptions.map(option => {
+          option.departmentOID === values.unitId && (values.unitId = option.id)
+        });
         this.setState({ loading: true });
         let url = `${config.contractUrl}/contract/api/contract/header`;
         httpFetch.put(url, values).then(res => {
@@ -175,7 +189,7 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, extraParams, currencyLoading } = this.state;
     data.attachments && (data.attachments.map((item, index) => {
         item.uid = index;
         item.name = item.fileName;
@@ -292,7 +306,10 @@ class NewContract extends React.Component{
                         {getFieldDecorator('currency', {
                           initialValue: isNew ? 'CNY' : data.currency
                         })(
-                          <Select placeholder="请选择" disabled={!isNew}>
+                          <Select placeholder="请选择"
+                                  onFocus={this.getCurrencyOptions}
+                                  notFoundContent={currencyLoading ? <Spin size="small" /> : '无匹配结果'}
+                                  disabled={!isNew}>
                             {currencyOptions.map((option) => {
                               return <Option key={option.currency}>{option.currency}</Option>
                             })}
@@ -369,7 +386,7 @@ class NewContract extends React.Component{
                             return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
                           }) :
                           venderOptions.map(option => {
-                            return <Option key={option.id}>{option.fullName}</Option>
+                            return <Option key={option.id}>{option.venNickname}</Option>
                           })
                         }
                       </Select>
@@ -416,7 +433,7 @@ class NewContract extends React.Component{
                     })(
                       <Select placeholder="请选择" allowClear>
                         {employeeIdOptions.map((option) => {
-                          return <Option key={option.userOID}>{option.fullName} - {option.employeeID}</Option>
+                          return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
                         })}
                       </Select>
                     )}
