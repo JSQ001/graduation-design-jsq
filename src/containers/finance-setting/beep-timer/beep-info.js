@@ -39,7 +39,6 @@ class BeepInfo extends React.Component{
 
     return (
       <div className="beep-info">
-
         <div className="beep-info-in">
           <div className="beep-info-operation">
             <Popconfirm placement="top" title="确定删除" onConfirm={this.onDelete} okText="Yes" cancelText="No">
@@ -56,37 +55,44 @@ class BeepInfo extends React.Component{
           <div className="beep-info-content">
             请及时还款，这里显示内容，200字符。请及时还款，这里显示内容，200字符。请及时还款，这里显示内容，200字符。请及时还款，这里显示内容，200字符。请及时还款，这里显示内容，200字符。
           </div>
-
           <br/><hr/><br/><br/>
-
-          <div>
-            <Row>
+          {this.props.type ==="traver" && (<div>
+            <div>
+              <Row>
                 <Col span={8}>
                   <span>发送日期：</span>
                 </Col>
                 <Col span={8}>
                   <span>发送时间：</span>
                 </Col>
-            </Row>
-           <Row>
-            <Col span={24}>
-              <span>适用单据：</span>
-            </Col>
-           </Row>
-
-          </div>
-
+              </Row>
+              <Row>
+                <Col span={24}>
+                  <span>适用单据：</span>
+                </Col>
+              </Row>
+            </div>
+          </div>)}
         </div>
-
-
-
       </div>
     )
   }
 }
 
+BeepInfo.propTypes = {
+  type: React.PropTypes.string,  //选择类型 "borrow","traver","business-card","regularly"
+  applyData:React.PropTypes.object,
+  onEdit:React.PropTypes.func
+}
+BeepInfo.defaultProps = {
+  applyData:{},
+  onEdit:()=>{}
+
+}
+
+
 function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(BeepInfo);
+export default connect(mapStateToProps)(injectIntl(BeepInfo));
