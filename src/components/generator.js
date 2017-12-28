@@ -287,11 +287,7 @@ class Generator extends React.Component{
   };
 
   showEditor = (item) => {
-<<<<<<< HEAD
-    this.setState({showGeneratorEditorFlag : true, generatedItem: item})
-=======
     this.state.editMode && this.setState({showGeneratorEditorFlag : true, generatedItem: item})
->>>>>>> develop
   };
 
   //渲染表单组
@@ -305,22 +301,6 @@ class Generator extends React.Component{
     const children = [];
     forms.map(item => {
       children.push(
-<<<<<<< HEAD
-        <Col span={layout.span} key={item.id} onDoubleClick={() => this.showEditor(item)}>
-          {item.type === 'items' ? this.renderFormItem(item) :
-            <FormItem {...formItemLayout} label={item.label}>
-              {getFieldDecorator(item.id, {
-                valuePropName: item.type === 'switch' ? 'checked' : 'value',
-                initialValue: (item.type === 'select' && typeof item.defaultValue === 'object') ? undefined : item.defaultValue,
-                rules: [{
-                  required: item.isRequired,
-                  message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: item.label}),  //name 不可为空
-                }]
-              })(
-                this.renderFormItem(item)
-              )}
-            </FormItem>
-=======
         <Col span={layout.span} key={item.id}>
           {
             <div className={editMode ? "form-item edit-item" : 'form-item'}>
@@ -342,9 +322,8 @@ class Generator extends React.Component{
                   })(
                     this.renderFormItem(item)
                   )}
-              </FormItem>}
+                </FormItem>}
             </div>
->>>>>>> develop
           }
         </Col>
       );
@@ -375,19 +354,11 @@ class Generator extends React.Component{
 
   //渲染按钮组
   renderButtons = () => {
-<<<<<<< HEAD
-    const { buttons, layout } = this.state;
-=======
     const { buttons, layout, editMode } = this.state;
->>>>>>> develop
     let margin = layout.buttons === 'right' ? { marginLeft: layout.buttonsMargin } : { marginRight: layout.buttonsMargin };
     const operate = [];
     buttons.map(button => {
       operate.push(
-<<<<<<< HEAD
-        <Button type={button.surface} style={margin} key={button.id} onClick={() => this.handleClickButton(button)}
-                htmlType={ button.type === 'submit' ? 'submit' : 'button' }>{button.text}</Button>
-=======
         <span className={editMode ? "form-item edit-item edit-button-item" : 'form-item'}>
           <div className="edit-operate">
             <div>
@@ -398,7 +369,6 @@ class Generator extends React.Component{
           <Button type={button.surface} style={margin} key={button.id} onClick={() => this.handleClickButton(button)}
                   htmlType={ button.type === 'submit' ? 'submit' : 'button' }>{button.text}</Button>
         </span>
->>>>>>> develop
       )
     });
     return operate;
@@ -410,11 +380,7 @@ class Generator extends React.Component{
   };
 
   render(){
-<<<<<<< HEAD
-    const { security, layout, forms, buttons, rules, showGeneratorEditorFlag, generatedItem } = this.state;
-=======
     const { security, layout, forms, buttons, rules, showGeneratorEditorFlag, generatedItem, editMode } = this.state;
->>>>>>> develop
     return(
       <Row type="flex" align="top" justify="center">
         <Form
