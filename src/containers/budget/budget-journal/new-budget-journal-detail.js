@@ -48,10 +48,10 @@ class NewBudgetJournalDetail extends React.Component {
       }
       case 'currency':{
         const eventData = JSON.parse(event);
-        let rate =eventData.attribute11;
+        let rate =eventData.rate;
         this.setState({ rate })
         this.props.form.setFieldsValue({
-          rate:eventData.attribute11,
+          rate:Number(rate),
           amount:'',
           functionalAmount:''
         });
@@ -191,9 +191,9 @@ class NewBudgetJournalDetail extends React.Component {
       });
     });
     let currencyOptions = [];
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`).then((res)=>{
+    httpFetch.get(`${config.baseUrl}/api/company/standard/currency/getAll`).then((res)=>{
       res.data.map(data => {
-        currencyOptions.push({label: data.attribute5,data: data,key:data.id})
+        currencyOptions.push({label: data.currencyName,data: data,key:data.id})
       });
     })
     let nowYear = new Date().getFullYear();
@@ -234,7 +234,7 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel:'periodYear',columnValue:'periodYear'
       }, //年度
       {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budgetJournal.currency"}), isRequired: true, options:currencyOptions,event:'currency',
-        labelKey:'attribute5',valueKey:'attribute4',
+        labelKey:'currencyName',valueKey:'currency',
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
       {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
