@@ -244,6 +244,14 @@ class PayFail extends React.Component {
     }
   };
 
+  //获取汇率
+  getExchangeRate = () => {
+    let url = `${config.baseUrl}/api/standardCurrency/selectStandardCurrency?base=CNY&otherCurrency=${this.state.currency}`;
+    httpFetch.get(url).then(res => {
+      this.props.form.setFieldsValue({ exchangeRate: res.data.rate });
+    })
+  };
+
   //点击重新支付按钮
   repay = () => {
     this.setState({ payWayOptions: [], payAccountOptions: [], modalVisible: true });
@@ -251,7 +259,8 @@ class PayFail extends React.Component {
     Object.keys(values).map(key => {
       this.props.form.setFieldsValue({ [key]: undefined });
     });
-    this.props.form.setFieldsValue({ currency: this.state.currency })
+    this.props.form.setFieldsValue({ currency: this.state.currency });
+    this.getExchangeRate()
   };
 
   //点击取消支付按钮
@@ -411,7 +420,7 @@ class PayFail extends React.Component {
         values.payCompanyBankNumber = values.payCompanyBankNumber.key;
         values.paymentDescription = values.paymentTypeId.label;
         values.paymentTypeId = values.paymentTypeId.key;
-        params.cashPayDTO = values;
+        params.payDTO = values;
         this.setState({ modalLoading: true });
         let url = `${config.contractUrl}/payment/api/cash/transaction/details/payFailOrRefund`;
         httpFetch.post(url, params).then(res => {

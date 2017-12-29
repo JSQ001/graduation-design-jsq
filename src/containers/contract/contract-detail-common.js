@@ -116,6 +116,7 @@ class ContractDetailCommon extends React.Component {
     })
   };
 
+  //资金计划表格页码切换
   onChangePaper = (page) => {
     if (page - 1 !== this.state.page) {
       this.setState({ page: page - 1 }, () => {
@@ -124,15 +125,12 @@ class ContractDetailCommon extends React.Component {
     }
   };
 
+  //合同信息／合同历史 切换
   handleTabsChange = (tab) => {
     this.setState({ topTapValue: tab })
   };
 
-  //侧滑
-  showSlide = (flag) => {
-    this.setState({ showSlideFrame: flag })
-  };
-
+  //合同信息内容渲染格式
   renderList = (title, value) => {
     return (
       <Row className="list-info">
@@ -140,6 +138,11 @@ class ContractDetailCommon extends React.Component {
         <Col className="content" span={17}>{value}</Col>
       </Row>
     )
+  };
+
+  //侧滑
+  showSlide = (flag) => {
+    this.setState({ showSlideFrame: flag })
   };
 
   //关闭侧滑
@@ -267,7 +270,7 @@ class ContractDetailCommon extends React.Component {
           {contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
           {!this.props.isApprovePage && headerData.status === 'SUBMITTED' && <Button type="primary" onClick={this.contractRecall}>撤 回</Button>}
           {!this.props.isApprovePage && headerData.status === 'CONFIRM' &&
-            <div>
+            <div style={{float:'right'}}>
               <Button type="primary" onClick={this.contractFinish}>完 成</Button>
               <Button type="primary" onClick={this.contractCancel} style={{marginRight:10}}>取 消</Button>
               <Button type="primary" onClick={this.contractHold} style={{marginRight:10}}>暂 挂</Button>
@@ -276,7 +279,7 @@ class ContractDetailCommon extends React.Component {
         </h3>
         <Row>
           <Col span={6}>
-            {this.renderList('创建人', headerData.createdName + ' - ' + headerData.createdBy)}
+            {this.renderList('创建人', (headerData.createdName || '') + ' - ' + (headerData.createdBy || ''))}
             {this.renderList('创建日期', moment(headerData.createdDate).format('YYYY-MM-DD'))}
           </Col>
           <Col span={6}>
@@ -363,11 +366,12 @@ class ContractDetailCommon extends React.Component {
             <Col span={8}>{this.renderList('备注', headerData.remark || '-')}</Col>
           </Row>
           <h3 className="margin-20-0">附件信息</h3>
-          {headerData.attachmentURLs && headerData.attachmentURLs.map((url, index) => {
+          {headerData.attachments && headerData.attachments.map((item, index) => {
             return (
               <div key={index}>
-                <Icon type="paper-clip" style={{marginRight:5}}/>
-                <a href={`${config.contractUrl}${url}`} target="_blank">{url}</a>
+                <a href={item.fileUrl} target="_blank">
+                  <Icon type="paper-clip" style={{marginRight:5}}/>{item.fileName}
+                </a>
               </div>
             )
           })}
