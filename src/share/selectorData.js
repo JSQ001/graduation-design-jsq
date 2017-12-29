@@ -126,8 +126,8 @@ const selectorData = {
     searchForm: [
       {type: 'input', id: 'itemCode', label: '预算项目代码'},
       {type: 'input', id: 'itemName', label: '预算项目描述'},
-      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: []},
-      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: []}
+      {type: 'select', id: 'itemCodeFrom', label: '预算项目从', options: [], renderOption: (data) => `${data.itemCode}(${data.itemName})`},
+      {type: 'select', id: 'itemCodeTo', label: '预算项目至', options: [], renderOption: (data) => `${data.itemCode}(${data.itemName})`}
     ],
     columns: [
       {title: '预算项目代码', dataIndex: 'itemCode', width: '25%'},
