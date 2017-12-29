@@ -6,9 +6,7 @@ import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message } f
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import httpFetch from 'share/httpFetch'
-import config from 'config'
-
+import { budgetService } from 'service'
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
 class UpdateBudgetOrganization extends React.Component {
@@ -37,7 +35,7 @@ class UpdateBudgetOrganization extends React.Component {
           setOfBooksId: this.props.params.setOfBooksId,
           versionNumber: this.props.params.versionNumber
         };
-        httpFetch.put(`${config.budgetUrl}/api/budget/organizations`,params).then((res)=>{
+        budgetService.updateOrganization(params).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.save.success'}, {name: values.organizationName}));  //保存成功
           this.props.close(true);
