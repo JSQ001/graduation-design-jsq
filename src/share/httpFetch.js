@@ -136,7 +136,7 @@ methodList.map(method => {
       method: method.toUpperCase(),
       mode: 'cors',
       headers: header,
-      data: (method === 'get' || method === 'delete') ? undefined : params,
+      data: params,
       params:(method === 'get' || method === 'delete') ? params : undefined
     };
     return axios(url, Object.assign({}, options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))

@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
-import { Form, Input, Row, Col, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
-import Chooser from 'components/chooser.js'
-import httpFetch from 'share/httpFetch'
 import config from 'config'
+import { Form, Input, Row, Col, Switch, Button, Icon, Checkbox, Alert, message, Select, InputNumber } from 'antd'
+import Chooser from 'components/chooser'
+import { budgetService } from 'service'
 import 'styles/budget-setting/budget-organization/budget-structure/new-dimension.scss'
 
 const FormItem = Form.Item;
@@ -84,7 +83,7 @@ class NewDimension extends React.Component{
           values.defaultDimValueId = defaultDimension[0].defaultDimValueId;
         }
 
-        httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
+        budgetService.structureAssignDimension(values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
