@@ -29,6 +29,8 @@ import zh from 'share/i18n/zh_CN'
 import LogoImg from 'images/logo.png'
 import UserImg from 'images/user.png'
 
+import { budgetService } from 'service'
+
 class Main extends React.Component{
   constructor(props) {
     super(props);
@@ -156,7 +158,7 @@ class Main extends React.Component{
     let section = path.split('/');
     if(path.indexOf('budget-organization-detail') > -1 && this.props.organization.id !== section[5]) {  //预算组织内部页面的组织id检查
       let actions = (value) => {
-        httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${value}`).then(res => {
+        budgetService.getOrganizationById(value).then(res => {
           this.props.dispatch(setOrganization(res.data));
           this.setState({check: true});
         }).catch(e => {
@@ -178,7 +180,7 @@ class Main extends React.Component{
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
     } else if(path.indexOf('/budget/') > -1) {   //预算组织的默认检查
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/${this.props.company.setOfBooksId}`).then((response)=>{
+      budgetService.getOrganizationBySetOfBooksId(this.props.company.setOfBooksId).then((response)=>{
         if(response.data.isEnabled){
           this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
           this.setState({check: true});
