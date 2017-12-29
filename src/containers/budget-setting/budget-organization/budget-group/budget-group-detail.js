@@ -9,9 +9,9 @@ const Option = Select.Option;
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
+import { budgetService } from 'service'
 
 import selectorData from 'share/selectorData'
 
@@ -46,7 +46,7 @@ class BudgetGroupDetail extends React.Component {
       pageSize: 10,
       showListSelector: false,
       newData: [],
-      extraParams: {organizationId: this.props.organization.id},
+      extraParams: {organizationId: this.props.organization.id, isEnabled: true},
       selectedData: [],
       selectorItem: {},
       rowSelection: {
@@ -61,14 +61,14 @@ class BudgetGroupDetail extends React.Component {
   }
 
   componentWillMount(){
-    httpFetch.get(`${config.budgetUrl}/api/budget/groups/${this.props.params.groupId}`).then(response => {
+    budgetService.getOrganizationGroupById(this.props.params.groupId).then(response => {
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({ groupData: response.data});
     });
     this.getList();
     let selectorItem = selectorData['budget_item_filter'];
     selectorItem.url = `${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/filter`;
-    httpFetch.get(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query/filterAll?organizationId=${this.props.organization.id}`).then(response => {
+    budgetService.filterItemByGroupIdAndOrganizationId(this.props.params.groupId, this.props.organization.id).then(response => {
       let result = [];
       response.data.map((item) => {
         result.push({
@@ -84,7 +84,7 @@ class BudgetGroupDetail extends React.Component {
 
   updateHandleInfo = (params) => {
     this.setState({ editing: true });
-    httpFetch.put(`${config.budgetUrl}/api/budget/groups`, Object.assign({}, this.state.groupData, params)).then(response => {
+    budgetService.updateOrganizationGroup(Object.assign({}, this.state.groupData, params)).then(response => {
       message.success('修改成功');
       response.data.organizationName = this.props.organization.organizationName;
       this.setState({
@@ -162,7 +162,7 @@ class BudgetGroupDetail extends React.Component {
 
   getList = () => {
     const { page, pageSize } = this.state;
-    return httpFetch.get(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/query?page=${page}&size=${pageSize}`).then(response => {
+    return budgetService.getItemByGroupId(this.props.params.groupId, page, pageSize).then(response => {
       response.data.map((item)=>{
         item.key = item.id;
       });
@@ -182,7 +182,7 @@ class BudgetGroupDetail extends React.Component {
 
   deleteItem = (text, record) => {
     this.setState({loading: true}, () => {
-      httpFetch.delete(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/${record.id}`).then(response => {
+      budgetService.deleteItemFromGroup(this.props.params.groupId, record.id).then(response => {
         message.success('删除成功');
         this.getList();
       })
@@ -195,7 +195,7 @@ class BudgetGroupDetail extends React.Component {
       paramList.push(item.id);
     });
     this.setState({loading: true}, () => {
-      httpFetch.delete(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/batch`, paramList).then(response => {
+      budgetService.batchDeleteItemFromGroup(this.props.params.groupId, paramList).then(response => {
         message.success('删除成功');
         this.getList();
       })
@@ -214,7 +214,7 @@ class BudgetGroupDetail extends React.Component {
         item.itemId = item.id;
         delete item.id;
       });
-      httpFetch.post(`${config.budgetUrl}/api/budget/groupDetail/${this.props.params.groupId}/batch`, result.result).then(response => {
+      budgetService.batchAddItemToGroup(this.props.params.groupId, result.result).then(response => {
         message.success('添加成功');
         this.setState({
           page: 0,

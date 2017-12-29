@@ -6,9 +6,8 @@ import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message, Sp
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import config from 'config'
+import { budgetService, setOfBooksService } from 'service'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
@@ -27,7 +26,7 @@ class NewBudgetOrganization extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/organizations`, values).then((res)=>{
+        budgetService.addOrganization(values).then((res)=>{
           this.setState({loading: false});
           message.success(this.props.intl.formatMessage({id: 'common.create.success'}, {name: values.organizationName}));  //新建成功
           this.context.router.replace(this.state.budgetOrganization.url);
@@ -44,8 +43,7 @@ class NewBudgetOrganization extends React.Component {
   };
 
   componentWillMount(){
-    //TODO: tenant模式
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/by/tenant?roleType=TENANT`).then(res => {
+    setOfBooksService.getSetOfBooksByTenant().then(res => {
       this.setState({ setOfBooks: res.data })
     })
   }
