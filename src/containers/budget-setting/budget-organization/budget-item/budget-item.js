@@ -5,14 +5,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select, Popover, Badge, message } from 'antd';
-import SearchArea from 'components/search-area.js';
+import SearchArea from 'components/search-area';
 import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
-import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import ListSelector from 'components/list-selector'
 import Importer from 'components/template/importer'
-
+import budgetService from 'service/budgetService'
 
 const itemCode = [];
 class BudgetItem extends React.Component {
@@ -89,7 +88,7 @@ class BudgetItem extends React.Component {
   componentWillMount(){
     this.getList();
     //查出所有预算项目，以方便预算项目的查询中可以选择
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all?organizationId=${this.props.id}&isEnabled=${true}`).then((response)=>{
+    budgetService.getItem({organizationId: this.props.id,isEnabled: true}).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
@@ -103,12 +102,14 @@ class BudgetItem extends React.Component {
 
   //获取预算项目数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/items/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let params = Object.assign({}, this.state.searchParams);
     for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+      !params[paramsName] && delete params[paramsName];
     }
-    httpFetch.get(url).then((response)=>{
+    params.organizationId = this.props.id;
+    params.page = this.state.page;
+    params.pageSize = this.state.pageSize;
+    budgetService.getItemByOption(params).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
       });
@@ -230,7 +231,7 @@ class BudgetItem extends React.Component {
       });
       let param = [];
       param.push({"companyIds": companyIds, "resourceIds": this.state.selectedEntityOIDs});
-      httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      budgetService.batchAddCompanyToItem(param).then((response)=>{
         message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
         if(response.status === 200){
           this.setState({

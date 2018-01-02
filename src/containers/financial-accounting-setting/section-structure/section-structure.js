@@ -60,7 +60,7 @@ class SectionStructure extends React.Component{
           title: formatMessage({id:"common.operation"}), key: "operate", dataIndex: 'operate',width:'14%',
           render: (text, record, index) => (
             <span>
-            <a href="#" onClick={(e) => this.editItem(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
+            <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
             <span className="ant-divider" />
             <a href="#" onClick={(e) => this.handleLinkSetting(e, record,index)}>{formatMessage({id: "section.setting"})}</a>
           </span>)
@@ -70,8 +70,7 @@ class SectionStructure extends React.Component{
   };
 
   handleLinkSetting = (e,record,index)=>{
-    console.log(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace('id', record.id))
-    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace('id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace(':id', record.id))
   };
 
   componentWillMount() {
@@ -95,6 +94,17 @@ class SectionStructure extends React.Component{
     })
   };
 
+  handleUpdate = (e,record,index)=>{
+    let lov = {
+      title: this.props.intl.formatMessage({id:"section.structure.update"}),
+      visible: true,
+      params: record
+    };
+    this.setState({
+      lov
+    })
+  };
+
   handleAfterClose = ()=>{
     this.setState({
       lov:{
@@ -108,6 +118,20 @@ class SectionStructure extends React.Component{
       lov:{
         visible: false
       }
+    })
+  };
+
+  //分页点击
+  onChangePager = (pagination,filters, sorter) =>{
+    let temp = this.state.pagination;
+    temp.page = pagination.current-1;
+    temp.current = pagination.current;
+    temp.pageSize = pagination.pageSize;
+    this.setState({
+      loading: true,
+      pagination: temp
+    }, ()=>{
+      this.getList();
     })
   };
 
@@ -131,6 +155,7 @@ class SectionStructure extends React.Component{
             dataSource={data}
             columns={columns}
             pagination={pagination}
+            onChange={this.onChangePager}
             bordered
             size="middle"/>
         <SlideFrame title= {lov.title}

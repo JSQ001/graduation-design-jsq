@@ -26,6 +26,9 @@ import cashTransactionClass from 'static/i18n/en_US/pay-setting/cash-transaction
 import checkCenter from 'static/i18n/en_US/financial-management/check-center.json'
 import supplierManagement from 'static/i18n/en_US/financial-management/supplier-management.json'
 import sectionStructure from 'static/i18n/en_US/financial-accounting-setting/section-structure.json'
+import accountingSource from 'static/i18n/en_US/financial-accounting-setting/accounting-source.json'
+import accountingScenariosSystem from 'static/i18n/en_US/financial-accounting-setting/accounting-scenarios-system.json'
+import accountingScenarios from 'static/i18n/en_US/financial-accounting-setting/accounting-scenarios.json'
 
 
 const i18nList = [
@@ -57,6 +60,9 @@ const i18nList = [
   budgetItemMap,           //项目映射
   supplierManagement,      //供应商管理
   sectionStructure,       //科目段结构
+  accountingSource,       //核算来源事物
+  accountingScenariosSystem, //核算场景系统级
+  accountingScenarios,     //核算场景账套级
 ];
 
 let result = {};

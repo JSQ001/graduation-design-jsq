@@ -6,8 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import moment from 'moment'
 import { Form, Input, Switch, Button, Icon, Row, Col, Checkbox, Alert, message, DatePicker, Select } from 'antd'
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import budgetService from 'service/budgetService'
 import selectorData from 'share/selectorData'
 import Selput from 'components/selput'
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
@@ -96,7 +95,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'baseCurrency',
+        codeKey: 'currency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -186,7 +185,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'quarter',
         labelKey: 'messageKey',
         valueKey: 'id',
-        codeKey: 'messageKey',
+        codeKey: 'code',
         listExtraParams: {systemCustomEnumerationType: 2021},
         selectorItem: undefined
       },
@@ -282,13 +281,13 @@ class UpdateBudgetRulesDetail extends React.Component{
 
   //获取成本中心
   getCostCenter(array){
-    httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
+    budgetService.getCostCenter().then((response)=>{
       response.data.map((item)=>{
         let option = {
           id: item.code + "+"+item.costCenterOID+"+"+item.id,
           value: item.name,
         };
-        array.addIfNotExist(option)
+        array.addIfNotExist(option);
         this.setState({
           array
         })
@@ -319,7 +318,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         values.ruleParameterOID = str[1];
       }
       if (!err) {
-        httpFetch.put(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=> {
+        budgetService.updateRuleDetail(values).then((res)=> {
          if(res.status === 200){
            message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
            this.props.form.resetFields();

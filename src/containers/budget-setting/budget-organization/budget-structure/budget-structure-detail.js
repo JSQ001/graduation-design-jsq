@@ -4,8 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import { budgetService } from 'service'
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
 
@@ -123,7 +122,7 @@ class BudgetStructureDetail extends React.Component{
   onChangeEnabled = (e, record) => {
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
-    httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/companies`, record).then(() => {
+    budgetService.updateStructureAssignCompany(record).then(() => {
       this.getList()
     })
   };
@@ -141,7 +140,7 @@ class BudgetStructureDetail extends React.Component{
     });
 
     //获取某预算表某行的数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/${this.props.params.structureId}`).then((response)=> {
+    budgetService.getStructuresById(this.props.params.structureId).then((response)=> {
       let periodStrategy = {label:response.data.periodStrategyName,value:response.data.periodStrategy};
       response.data.periodStrategy = periodStrategy;
       if(response.status === 200){
@@ -161,7 +160,7 @@ class BudgetStructureDetail extends React.Component{
     value.id = this.state.structure.id;
     value.versionNumber = this.state.structure.versionNumber;
     value.organizationId = this.state.structure.organizationId;
-    httpFetch.put(`${config.budgetUrl}/api/budget/structures`,value).then((response)=>{
+    budgetService.updateStructures(value).then((response)=>{
       if(response.status === 200) {
         let structure = response.data;
         structure.organizationName = this.state.structure.organizationName;
@@ -223,8 +222,13 @@ class BudgetStructureDetail extends React.Component{
 
   getList = ()=>{
     const { pagination } = this.state;
-    this.state.label === "company" ?
-      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/companies/query?structureId=${this.props.params.structureId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
+    let params = {
+      structureId: this.props.params.structureId,
+      page: pagination.page,
+      size: pagination.pageSize
+    };
+    if(this.state.label === "company"){
+      budgetService.getCompanyAssignedStructure(params).then((response)=>{
         if(response.status === 200) {
           response.data.map((item)=>{
             item.key = item.id
@@ -238,8 +242,8 @@ class BudgetStructureDetail extends React.Component{
           })
         }
       })
-      :
-      httpFetch.get(`${config.budgetUrl}/api/budget/structure/assign/layouts/query?structureId=${this.props.params.structureId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
+    }else {
+      budgetService.getDimensionAssignedStructure(params).then((response)=>{
         if(response.status === 200){
           response.data.map((item)=>{
             item.key = item.id
@@ -253,6 +257,7 @@ class BudgetStructureDetail extends React.Component{
           })
         }
       })
+    }
   };
 
 
@@ -321,7 +326,7 @@ class BudgetStructureDetail extends React.Component{
     result.result.map((item)=>{
       company.push({companyCode: item.code,companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
     });
-    httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/companies/batch`,company).then((response)=>{
+    budgetService.structureAssignCompany(company).then((response)=>{
       if(response.status === 200) {
         this.showListSelector(false);
         this.setState({

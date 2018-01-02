@@ -129,5 +129,12 @@
   "menu.supplier-company-delivery": "供应商公司分配",
   "menu.financial-accounting-setting": "财务核算设置",
   "menu.section-structure": "科目段结构",
-  "menu.section-setting": "科目段设置"
+  "menu.section-setting": "科目段设置",
+  "menu.accounting-source": "核算来源事物",
+  "menu.voucher-template": "凭证模板",
+  "menu.accounting-scenarios-system": "核算场景-系统级",
+  "menu.accounting-elements": "核算要素",
+  "menu.accounting-scenarios": "核算场景-账套级",
+  "menu.matching-group-elements": "匹配组与核算要素",
+  "menu.subject-matching-setting": "科目匹配设置"
 }

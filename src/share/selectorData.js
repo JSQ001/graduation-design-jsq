@@ -584,6 +584,32 @@ const selectorData = {
       {title: '合同大类', dataIndex: 'contractCategoryName'},
     ],
     key: 'id'
+  },
+  'source_transactions_data':{
+    title: '来源事务-数据结构',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'sectionCode', label:"数据结构代码"},
+      {type: 'input', id: 'sectionName', label: "数据结构名称"}
+    ],
+    columns: [
+      {title: "数据结构代码", dataIndex: 'sectionCode'},
+      {title: "数据结构名称", dataIndex: 'sectionName'},
+    ],
+    key: 'id'
+  },
+  'accounting_scenarios':{
+    title: '添加核算场景',
+    url: `${config.baseUrl}/api/company/by/condition`,
+    searchForm: [
+      {type: 'input', id: 'sectionCode', label:"核算场景代码"},
+      {type: 'input', id: 'sectionName', label: "核算场景名称"}
+    ],
+    columns: [
+      {title: "核算场景代码", dataIndex: 'sectionCode'},
+      {title: "核算场景名称", dataIndex: 'sectionName'},
+    ],
+    key: 'id'
   }
 };
 
