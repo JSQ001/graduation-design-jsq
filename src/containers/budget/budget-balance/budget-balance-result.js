@@ -22,6 +22,8 @@ class BudgetBalanceResult extends React.Component {
       pagination: {
         total: 0
       },
+      hasInitial: false,
+      dimensionColumns: [],
       columns: [
         {title: '公司', dataIndex: 'companyName', render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: '预算项目类型', dataIndex: 'itemTypeName', render: recode => <Popover content={recode}>{recode}</Popover>},
@@ -40,6 +42,7 @@ class BudgetBalanceResult extends React.Component {
         {title: '员工', dataIndex: 'employeeName', render: recode => <Popover content={recode}>{recode}</Popover>},
         {title: '员工组', dataIndex: 'employeeGroupName', render: recode => <Popover content={recode}>{recode}</Popover>}
       ],
+      scrollx: 150,
       condition: {
         companyNumber: 0,
         version: '',
@@ -106,7 +109,20 @@ class BudgetBalanceResult extends React.Component {
           item.schedule = item.bgtAmount === 0 ? 0 : (item.expReserveAmount + item.expUsedAmount) / item.bgtAmount;
           return item;
         });
-        total = res.data.queryResultCurrencyList
+        total = res.data.queryResultCurrencyList;
+        let { dimensionColumns } = this.state;
+        if(res.data.dimensionFiledMap && dimensionColumns.length === 0){
+          let dimensionColumnsTemp = [];
+          let dimensionFiledMap = res.data.dimensionFiledMap;
+          Object.keys(dimensionFiledMap).map(dimensionIndex => {
+            dimensionColumnsTemp.push({
+              title: dimensionFiledMap[dimensionIndex],
+              dataIndex: `dimension${dimensionIndex}Name`,
+              render: recode => <Popover content={recode}>{recode}</Popover>
+            })
+          });
+          this.setState({ dimensionColumns: dimensionColumnsTemp });
+        }
       }
       this.setState({
         loading: false,
@@ -130,6 +146,7 @@ class BudgetBalanceResult extends React.Component {
     this.setState({
       showSlideFrameFlag: true,
       slideFrameParam: {
+        dimensionColumns: this.state.dimensionColumns,
         type: type,
         data: record,
         title: this.state.titleMap[type]
@@ -149,7 +166,9 @@ class BudgetBalanceResult extends React.Component {
           {Object.keys(item).map((itemName, index) => {
             return itemName === 'currency' ? null : (
               <span className="currency-item-child" key={index}>
-                <span className="ant-divider" />{this.state.menuText[itemName]}：{this.renderMoney(item[itemName], itemName === 'totalNumber' ? 0 : 2)}
+                <span className="ant-divider" />
+                {this.state.menuText[itemName]} ：
+                {itemName === 'totalNumber' ? item[itemName] : this.renderMoney(item[itemName])}
               </span>
             )
           })}
@@ -159,7 +178,7 @@ class BudgetBalanceResult extends React.Component {
   };
 
   render(){
-    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam, budgetBalancePage, pagination } = this.state;
+    const { columns, data, condition, loading, showSlideFrameFlag, slideFrameParam, budgetBalancePage, pagination, dimensionColumns } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-balance-result">
@@ -197,14 +216,14 @@ class BudgetBalanceResult extends React.Component {
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
         </div>
         {this.renderTotal()}
-        <Table columns={columns}
+        <Table columns={columns.concat(dimensionColumns)}
                dataSource={data}
                loading={loading}
                pagination={pagination}
                size="middle"
                bordered
                rowKey="key"
-               scroll={{ x: '150%' }}/>
+               scroll={{ x: `${150 + dimensionColumns.length * 10}%` }}/>
         <SlideFrame content={BudgetBalanceAmountDetail}
                     show={showSlideFrameFlag}
                     onClose={() => this.setState({ showSlideFrameFlag: false })}

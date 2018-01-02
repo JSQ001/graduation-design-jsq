@@ -20,6 +20,7 @@ class BudgetBalanceAmountDetail extends React.Component {
       pagination: {
         total: 0
       },
+      dimensionColumns: [],
       data: [],
       titleMap: {
         J: '预算额明细',
@@ -88,7 +89,9 @@ class BudgetBalanceAmountDetail extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(!this.props.params.data || (nextProps.params.type !== this.props.params.type || nextProps.params.data.key !== this.props.params.data.key)){
+    if((!this.props.params.data && nextProps.params.data) ||
+      (this.props.params.data &&
+        (nextProps.params.type !== this.props.params.type || nextProps.params.data.key !== this.props.params.data.key))){
       this.getList(nextProps);
     }
   }
@@ -120,6 +123,7 @@ class BudgetBalanceAmountDetail extends React.Component {
       this.setState({
         loading: false,
         data,
+        dimensionColumns: nextProps.params.dimensionColumns,
         pagination: {
           total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
           onChange: this.onChangePager,
@@ -131,22 +135,23 @@ class BudgetBalanceAmountDetail extends React.Component {
 
   render(){
     const type = this.props.params.type;
-    const { data, loading, pagination, columns, titleMap } = this.state;
+    const { data, loading, pagination, columns, titleMap, dimensionColumns } = this.state;
     const { formatMessage } = this.props.intl;
+    let tableColumns = [].concat(columns[type] ? columns[type] : []).concat(dimensionColumns);
     return (
       <div>
         <h3 className="header-title">{titleMap[type]}</h3>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
         </div>
-        <Table columns={columns[type]}
+        <Table columns={tableColumns}
                dataSource={data}
                bordered
                pagination={pagination}
                loading={loading}
                size="middle"
                rowKey="key"
-               scroll={{ x: '300%' }}/>
+               scroll={{ x: `${tableColumns.length * 20}%` }}/>
         <div className="slide-footer">
           <Button onClick={() => {this.getList(this.props)}}>刷新查询结果</Button>
           <Button>导出CSV</Button>
