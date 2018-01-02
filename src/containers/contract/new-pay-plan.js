@@ -2,6 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import { contractService } from 'service'
 import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -63,9 +64,8 @@ class NewPayPlan extends React.Component{
         values.headerId = this.props.params.id;
         values.lineNumber = 1;  //之后要删掉！！！！！！！！！！！！！！！！！！！
         values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
-        let url = `${config.contractUrl}/contract/api/contract/line`;
         this.setState({loading: true});
-        httpFetch.post(url, values).then(res => {
+        contractService.newPayPlan(values).then(res => {
           if (res.status === 200) {
             this.props.close(true);
             message.success('保存成功');
@@ -88,9 +88,8 @@ class NewPayPlan extends React.Component{
         values.headerId = this.props.params.id;
         values.versionNumber = this.props.params.record.versionNumber;
         values.dueDate = moment(values.dueDate).format('YYYY-MM-DD');
-        let url = `${config.contractUrl}/contract/api/contract/line`;
         this.setState({loading: true});
-        httpFetch.put(url, values).then(res => {
+        contractService.updatePayPlan(values).then(res => {
           if (res.status === 200) {
             this.props.close(true);
             message.success('修改成功');

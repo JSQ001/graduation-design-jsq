@@ -1,8 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { contractService } from 'service'
 import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
 
@@ -69,9 +68,8 @@ class ContractDetailCommon extends React.Component {
 
   //获取合同信息
   getInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.id}`;
     this.setState({ detailLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getContractHeaderInfo(this.props.id).then(res => {
       if (res.data.status === 'GENERATE' ||
         res.data.status === 'REJECTED' ||
         res.data.status === 'WITHDRAWAL') { //编辑中、已驳回、已撤回
@@ -101,9 +99,8 @@ class ContractDetailCommon extends React.Component {
   //获取资金计划
   getPayList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}?page=${page}&size=${pageSize}`;
     this.setState({ planLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getPayPlan(page, pageSize, this.props.id).then(res => {
       this.setState({
         data: res.data,
         planLoading: false,
@@ -185,9 +182,8 @@ class ContractDetailCommon extends React.Component {
   //删除资金计划行
   deleteItem = (e, record) => {
     e.preventDefault();
-    let url = `${config.contractUrl}/contract/api/contract/line/${record.id}`;
     this.setState({ planLoading: true });
-    httpFetch.delete(url).then(() => {
+    contractService.deletePayPlan(record.id).then(() => {
       message.success(`删除成功`);
       this.getPayList();
       this.getInfo()
@@ -199,8 +195,7 @@ class ContractDetailCommon extends React.Component {
 
   //撤回
   contractRecall = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/withdrawal/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.recallContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('撤回成功');
         this.getInfo()
@@ -212,8 +207,7 @@ class ContractDetailCommon extends React.Component {
 
   //暂挂
   contractHold = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/hold/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.holdContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('暂挂成功');
         this.getInfo()
@@ -225,8 +219,7 @@ class ContractDetailCommon extends React.Component {
 
   //取消暂挂
   contractCancelHold = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/unHold/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.unHoldContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('取消暂挂成功');
         this.getInfo()
@@ -238,8 +231,7 @@ class ContractDetailCommon extends React.Component {
 
   //取消
   contractCancel = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/cancel/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.cancelContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('取消成功');
         this.getInfo()
@@ -251,8 +243,7 @@ class ContractDetailCommon extends React.Component {
 
   //完成
   contractFinish = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/finish/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.finishContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('完成成功');
         this.getInfo()

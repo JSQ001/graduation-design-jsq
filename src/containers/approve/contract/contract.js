@@ -2,9 +2,8 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { contractService } from 'service'
 
 import SearchArea from 'components/search-area'
 import moment from 'moment'
@@ -78,12 +77,8 @@ class Contract extends React.Component{
   //获取未审批列表
   getUnapprovedList = (resolve, reject) => {
     const { unapprovedPage, unapprovedPageSize, unApproveSearchParams } = this.state;
-    let unapprovedUrl = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
-    for(let searchName in unApproveSearchParams) {
-      unapprovedUrl += unApproveSearchParams[searchName] ? `&${searchName}=${unApproveSearchParams[searchName]}` : ''
-    }
     this.setState({ loading1: true });
-    httpFetch.get(unapprovedUrl).then((res) => {
+    contractService.getUnapprovedContractList(unapprovedPage, unapprovedPageSize, unApproveSearchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           unapprovedData: res.data || [],
@@ -105,12 +100,8 @@ class Contract extends React.Component{
   //获取审批列表
   getApprovedList = (resolve, reject) => {
     const { approvedPage, approvedPageSize, approveSearchParams } = this.state;
-    let approvedUrl = `${config.contractUrl}/contract/api/contract/header/confirmEd/query?page=${approvedPage}&size=${approvedPageSize}`;
-    for(let searchName in approveSearchParams) {
-      approvedUrl += approveSearchParams[searchName] ? `&${searchName}=${approveSearchParams[searchName]}` : ''
-    }
     this.setState({ loading2: true });
-    httpFetch.get(approvedUrl).then((res) => {
+    contractService.getApprovedContractList(approvedPage, approvedPageSize, approveSearchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           approvedData: res.data || [],

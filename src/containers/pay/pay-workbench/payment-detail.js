@@ -1,9 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { paymentService } from 'service'
 import { Alert, Badge, Table, Card, Icon, Spin } from 'antd'
 
 import moment from 'moment'
@@ -70,9 +69,8 @@ class PaymentDetail extends React.Component {
   }
 
   getInfo = () => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getDetailById?id=${this.props.params.id}`;
     this.setState({loading: true});
-    httpFetch.get(url).then(res => {
+    paymentService.getPayDetail(this.props.params.id).then(res => {
       if (res.status === 200) {
         this.setState({
           billsData: [res.data.payDocumentDTO],
