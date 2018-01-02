@@ -5,21 +5,27 @@ import { Button } from 'antd'
 
 class Error extends React.Component {
 
-
+  skipTo = () => {
+    this.context.router.push(this.props.skip);
+  };
 
   render() {
     return (
       <div className="error background-transparent">
         <img src={errorImg}/>
         <div className="error-message">
-          <div>{this.props.title}</div>
-          <div>{this.props.text}</div>
-          <Button onClick={}>{this.props.buttonText}</Button>
+          <div className="error-title">{this.props.title}</div>
+          <div className="error-text">{this.props.text}</div>
+          <Button onClick={this.skipTo} type="primary">{this.props.buttonText}</Button>
         </div>
       </div>
     );
   }
 }
+
+Error.contextTypes = {
+  router: React.PropTypes.object
+};
 
 Error.PropTypes = {
   title: React.PropTypes.string,
@@ -32,8 +38,8 @@ Error.PropTypes = {
 Error.defaultProps = {
   title: '出错啦',
   text: '请联系重试操作或联系管理员:(',
-  skip: React.PropTypes.string,
-  buttonText: React.PropTypes.string,
+  skip: '/',
+  buttonText: '',
   hasButton: false
 };
 

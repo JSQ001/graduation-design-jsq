@@ -23,5 +23,16 @@
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
+    .error-title{
+      font-size: 50px;
+      font-weight: 600;
+      height: 50px;
+      line-height: 50px;
+    }
+    .error-text{
+      font-size: 14px;
+      line-height: 40px;
+      height: 40px;
+    }
   }
 }
