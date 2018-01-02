@@ -24,6 +24,7 @@ import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 import SupplierType from 'containers/setting/supplier-type/supplier-type'
 import AnnouncementInformation from 'containers/setting/announcement-information/announcement-information'
 import AnnouncementInformationDetail from 'containers/setting/announcement-information/announcement-information-detail'
+import SubjectSheetDetail from 'containers/setting/subject-sheet/subject-sheet-detail'
 
 //设置
 const setting = {
@@ -195,7 +196,16 @@ const setting = {
       key: 'subject-sheet',
       url: '/main/setting/subject-sheet',
       components: SubjectSheet,
-      parent: 'setting'
+      parent: 'setting',
+      children: {
+        //科目表详情
+          subjectSheetDetail: {
+          key:'subject-sheet-detail',
+          url:'/main/setting/subject-sheet/subject-sheet-detail/:accountSetId',
+          components:SubjectSheetDetail,
+          parent: 'subject-sheet'
+        }
+      }
     },
     //公告信息
     {
