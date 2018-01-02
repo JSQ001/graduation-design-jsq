@@ -2,6 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import paymentService from 'service/paymentService'
 import { Form, InputNumber, Icon, Tooltip, Select, Spin, Popover, Timeline, message } from 'antd'
 const Option = Select.Option;
 
@@ -60,9 +61,8 @@ class EditableCell extends React.Component {
   //显示支付历史
   payHistory = (visible) => {
     if (visible) {
-      let url = `${config.contractUrl}/payment/api/cash/transaction/details/getHistoryByDateId?id=${this.props.record.id}`;
       this.setState({ historyLoading: true });
-      httpFetch.get(url).then(res => {
+      paymentService.showPayHistory(this.props.record.id).then(res => {
         if (res.status === 200) {
           let historyContent;
           if (res.data.length) {

@@ -1,9 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import paymentService from 'service/paymentService'
 import { Badge, Radio, Table, Pagination, Alert, message, Modal, Icon, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
 
@@ -162,8 +161,7 @@ class PaySuccess extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.setState({ confirmLoading: true });
-        let url = `${config.contractUrl}/payment/api/cash/transaction/details/refund?refundDate=${moment(values.refundDate).format('YYYY-MM-DD')}`;
-        httpFetch.post(url, this.state.refundRow).then(res => {
+        paymentService.confirmRefund(moment(values.refundDate).format('YYYY-MM-DD'), this.state.refundRow).then(res => {
           if (res.status === 200) {
             this.setState({ modalVisible: false, confirmLoading: false });
             message.success('退票成功');
@@ -187,36 +185,21 @@ class PaySuccess extends React.Component {
 
   //线上
   getOnlineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('ONLINE_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ onlineCash: res.data })
     })
   };
 
   //线下
   getOfflineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('OFFLINE_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ offlineCash: res.data })
     })
   };
 
   //落地文件
   getFileCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('EBANK_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ fileCash: res.data })
     })
   };
@@ -226,12 +209,8 @@ class PaySuccess extends React.Component {
   //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ onlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(onlinePage, onlinePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           onlineData: res.data,
@@ -251,12 +230,8 @@ class PaySuccess extends React.Component {
   //线下
   getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentTypeCode=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ offlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(offlinePage, offlinePageSize, 'OFFLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           offlineData: res.data,
@@ -276,12 +251,8 @@ class PaySuccess extends React.Component {
   //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ fileLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(filePage, filePageSize, 'EBANK_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           fileData: res.data,

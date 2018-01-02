@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import contractService from 'service/contractService'
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'
@@ -14,7 +14,6 @@ class MyContract extends React.Component{
     super(props);
     this.state = {
       loading: false,
-      setOfBooksId: null,
       contractStatus: {
         CANCEL: {label: '已取消', state: 'default'},
         FINISH: {label: '已完成', state: 'success'},
@@ -69,28 +68,13 @@ class MyContract extends React.Component{
   }
 
   componentWillMount() {
-    let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
-    httpFetch.get(url).then((res) => {
-      if (res.status === 200) {
-        this.setState({ setOfBooksId: res.data[0].setOfBooksId }, () => {
-          this.getList();
-          httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.state.setOfBooksId}`).then((res) => {  //公司
-            // let currencyOptions = res.data;
-            // this.setState({ currencyOptions })
-          })
-        })
-      }
-    })
+    this.getList()
   }
 
   getList = () => {
     const { page, pageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/header/update/query?page=${page}&size=${pageSize}`;
-    for(let searchName in searchParams) {
-      url += searchParams[searchName] ? `&${searchName}=${searchParams[searchName]}` : ''
-    }
     this.setState({ loading: true });
-    httpFetch.get(url).then((res) => {
+    contractService.getContractList(page, pageSize, searchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           loading: false,

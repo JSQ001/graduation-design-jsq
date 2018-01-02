@@ -7,6 +7,7 @@ const Option = Select.Option;
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
+import contractService from 'service/contractService'
 
 import moment from 'moment'
 import Upload from 'components/upload'
@@ -69,9 +70,8 @@ class NewContract extends React.Component{
 
   //获取合同信息
   getInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
     this.setState({ pageLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getContractHeaderInfo(this.props.params.id).then(res => {
       this.setState({
         data: res.data,
         isNew: false,
@@ -111,8 +111,7 @@ class NewContract extends React.Component{
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
         values.contractTypeId = values.contractTypeId[0].id;
         this.setState({ loading: true });
-        let url = `${config.contractUrl}/contract/api/contract/header`;
-        httpFetch.post(url, values).then(res => {
+        contractService.newContractHeader(values).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -142,8 +141,7 @@ class NewContract extends React.Component{
           option.departmentOID === values.unitId && (values.unitId = option.id)
         });
         this.setState({ loading: true });
-        let url = `${config.contractUrl}/contract/api/contract/header`;
-        httpFetch.put(url, values).then(res => {
+        contractService.updateContractHeader(values).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('修改成功');

@@ -1,8 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import contractService from 'service/contractService'
 import { Form, Affix, Button, message } from 'antd'
 
 import ContractDetailCommon from 'containers/contract/contract-detail-common'
@@ -28,9 +27,8 @@ class ContractDetail extends React.Component {
 
   //提交
   onSubmit = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/submit/${this.props.params.id}`;
     this.setState({ loading: true });
-    httpFetch.put(url, {id: this.props.params.id}).then(res => {
+    contractService.submitContract(this.props.params.id).then(res => {
       if (res.status === 200) {
         this.setState({ loading: false });
         message.success('提交成功');
@@ -44,9 +42,8 @@ class ContractDetail extends React.Component {
 
   //删除
   onDelete = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
     this.setState({ dLoading: true });
-    httpFetch.delete(url, {id: this.props.params.id}).then(res => {
+    contractService.deleteContract(this.props.params.id).then(res => {
       if (res.status === 200) {
         this.setState({ dLoading: false });
         message.success('删除成功');

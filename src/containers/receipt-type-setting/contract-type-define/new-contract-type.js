@@ -6,6 +6,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import contractService from "service/contractService"
 
 import PermissionSetting from 'components/template/permission-setting'
 
@@ -43,8 +44,7 @@ class NewContractType extends React.Component{
 
   getInfo = () => {
     const { setOfBooksId, id } = this.props.params;
-    let url = `${config.contractUrl}/contract/api/contract/type/${setOfBooksId}/${id}`;
-    httpFetch.get(url).then(res => {
+    contractService.getContractTypeInfo(setOfBooksId, id).then(res => {
       if (res.status === 200) {
         this.setState({
           data: res.data,
@@ -68,7 +68,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.post(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        contractService.newContractType(values.setOfBooksId, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -98,7 +98,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.put(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        contractService.updateContractType(values.setOfBooksId, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');

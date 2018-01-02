@@ -11,6 +11,7 @@ const Option = Select.Option;
 const { TextArea } = Input;
 import SearchArea from 'components/search-area'
 import menuRoute from 'share/menuRoute'
+import paymentService from 'service/paymentService'
 
 import EditableCell from 'containers/pay/pay-workbench/editable-cell'
 
@@ -322,13 +323,12 @@ class PayUnpaid extends React.Component {
 
   //修改收款账号
   editAccount = (value, record) => {
-    let url = `${config.contractUrl}/payment/api/cash/transactionData`;
     let params = [{
       id: record.id,
       accountNumber: value,
       versionNumber: record.versionNumber
     }];
-    httpFetch.put(url, params).then(res => {
+    paymentService.updateAccountNum(params).then(res => {
       if (res.status === 200) {
         message.success('修改成功');
         this.setState({ editCellError: false });
@@ -365,8 +365,7 @@ class PayUnpaid extends React.Component {
     if (this.state.payWayOptions.length > 0) return;
     this.setState({ payWayFetching: true });
     let paymentType = radioValue === 'online' ? 'ONLINE_PAYMENT' : radioValue === 'offline' ? 'OFFLINE_PAYMENT' : 'EBANK_PAYMENT';
-    let url = `${config.contractUrl}/payment/api/Cash/PaymentMethod/selectByPaymentType?paymentType=${paymentType}`;
-    httpFetch.get(url).then(res => {
+    paymentService.getPayWay(paymentType).then(res => {
       res.status === 200 && this.setState({ payWayOptions: res.data, payWayFetching: false })
     }).catch(() => {
       this.setState({ payWayFetching: false })
@@ -394,36 +393,21 @@ class PayUnpaid extends React.Component {
 
   //线上
   getOnlineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidAmount('ONLINE_PAYMENT', this.state.searchParams).then(res => {
       this.setState({ onlineCash: res.data })
     })
   };
 
   //线下
   getOfflineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidAmount('OFFLINE_PAYMENT', this.state.searchParams).then(res => {
       this.setState({ offlineCash: res.data })
     })
   };
 
   //落地文件
   getFileCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/select/totalAmountAndDocumentNum?paymentMethodCategory=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidAmount('EBANK_PAYMENT', this.state.searchParams).then(res => {
       this.setState({ fileCash: res.data })
     })
   };
@@ -433,12 +417,8 @@ class PayUnpaid extends React.Component {
   //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${onlinePage}&size=${onlinePageSize}&paymentMethodCategory=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ onlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidList(onlinePage, onlinePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           onlineData: res.data,
@@ -458,12 +438,8 @@ class PayUnpaid extends React.Component {
   //线下
   getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${offlinePage}&size=${offlinePageSize}&paymentMethodCategory=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ offlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidList(offlinePage, offlinePageSize, 'OFFLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           offlineData: res.data,
@@ -483,12 +459,8 @@ class PayUnpaid extends React.Component {
   //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transactionData/query?page=${filePage}&size=${filePageSize}&paymentMethodCategory=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ fileLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getUnpaidList(filePage, filePageSize, 'EBANK_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           fileData: res.data,
@@ -530,8 +502,7 @@ class PayUnpaid extends React.Component {
         values.payDate && (values.payDate = moment(values.payDate).format('YYYYMMDD'));
         params.cashPayDTO = values;
         this.setState({ modalLoading: true });
-        let url = `${config.contractUrl}/payment/api/cash/transaction/details/insertBatch`;
-        httpFetch.post(url, params).then(res => {
+        paymentService.confirmPay(params).then(res => {
           if (res.status === 200) {
             message.success('操作成功');
             if (radioValue === 'online') {
@@ -574,8 +545,7 @@ class PayUnpaid extends React.Component {
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
-      this.getOnlineList();
-      this.getOnlineCash()
+      this.getOnlineList()
     })
   };
 
@@ -583,8 +553,7 @@ class PayUnpaid extends React.Component {
   offlinePaginationChange = (offlinePage, offlinePageSize) => {
     offlinePage = offlinePage - 1;
     this.setState({ offlinePage, offlinePageSize },() => {
-      this.getOfflineList();
-      this.getOfflineCash()
+      this.getOfflineList()
     })
   };
 
@@ -592,8 +561,7 @@ class PayUnpaid extends React.Component {
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
-      this.getFileList();
-      this.getFileCash()
+      this.getFileList()
     })
   };
 

@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu, Modal, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
+import paymentService from 'service/paymentService'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -181,8 +180,7 @@ class PayPaying extends React.Component {
           versionNumbers: [this.state.record.versionNumber]
         };
         this.setState({ confirmSuccessLoading: true });
-        let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/paySuccess/${date}`;
-        httpFetch.post(url, params).then(res => {
+        paymentService.confirmSuccess(params, date).then(res => {
           if (res.status === 200) {
             message.success('操作成功');
             this.setState({ confirmSuccessLoading: false, okModalVisible: false });
@@ -203,13 +201,12 @@ class PayPaying extends React.Component {
 
   //确认失败操作
   confirmFail = () => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/PayFail`;
     let params = {
       detailIds: [this.state.record.id],
       versionNumbers: [this.state.record.versionNumber]
     };
     this.setState({ confirmFailLoading: true });
-    httpFetch.post(url, params).then(res => {
+    paymentService.confirmFail(params).then(res => {
       if (res.status === 200) {
         message.success('操作成功');
         this.setState({ failModalVisible: false, confirmFailLoading: false });
@@ -225,29 +222,15 @@ class PayPaying extends React.Component {
 
   //线上
   getOnlineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('ONLINE_PAYMENT', 'P', this.state.searchParams).then(res => {
       this.setState({ onlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //落地文件
   getFileCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('EBANK_PAYMENT', 'P', this.state.searchParams).then(res => {
       this.setState({ fileCash: res.data })
-    }).catch(() => {
-
     })
   };
 
@@ -256,12 +239,8 @@ class PayPaying extends React.Component {
   //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ onlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getPayingList(onlinePage, onlinePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         let onlineWarningRows = [];
         res.data.map(item => {
@@ -288,12 +267,8 @@ class PayPaying extends React.Component {
   //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ fileLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getPayingList(filePage, filePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         let fileWarningRows = [];
         res.data.map(item => {
