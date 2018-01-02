@@ -24,6 +24,7 @@ import NewSubjectSheet from 'containers/setting/subject-sheet/new-subject-sheet'
 import SupplierType from 'containers/setting/supplier-type/supplier-type'
 import AnnouncementInformation from 'containers/setting/announcement-information/announcement-information'
 import AnnouncementInformationDetail from 'containers/setting/announcement-information/announcement-information-detail'
+import SubjectSheetDetail from 'containers/setting/subject-sheet/subject-sheet-detail'
 
 //新建部门组
 const newDepartmentGroup = {
@@ -220,12 +221,23 @@ const companyMaintain ={
   }
 };
 
+//科目表详情 这里有先后顺序之后，必须是在parent之前定义
+const subjectSheetDetail ={
+  key:'subject-sheet-detail',
+  url:'/main/setting/subject-sheet/subject-sheet-detail/:accountSetId',
+  components:SubjectSheetDetail,
+  parent: 'subject-sheet'
+};
+
 /*科目表定义*/
 const subjectSheet = {
   key: 'subject-sheet',
   url: '/main/setting/subject-sheet',
   components: SubjectSheet,
-  parent: 'setting'
+  parent: 'setting',
+  children:{
+    subjectSheetDetail
+  }
 };
 
 /*供应商类型定义*/

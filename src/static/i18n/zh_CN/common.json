@@ -32,6 +32,13 @@
   "common.help": "帮助提示",
   "common.baseInfo": "基本信息",
   "common.sequence": "序号",
+  "common.yes": "是",
+  "common.no": "否",
+  "common.all":"全部",
+  "common.back":"返回",
+  "common.select.one.more":"请至少选择一条数据！",
+  "common.confirm.add":"确定要添加吗？",
+  "common.confirm.delete":"确定要删除吗？",
   "common.error": "哦呼，服务器出了点问题，请联系管理员或稍后再试:("
 }
 
