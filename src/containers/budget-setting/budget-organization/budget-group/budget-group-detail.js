@@ -72,7 +72,7 @@ class BudgetGroupDetail extends React.Component {
       let result = [];
       response.data.map((item) => {
         result.push({
-          label: item.itemCode,
+          label: `${item.itemCode}(${item.itemName})`,
           value: item.itemCode
         })
       });
