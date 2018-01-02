@@ -1,8 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { contractService } from 'service'
 import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
 
@@ -69,9 +68,8 @@ class ContractDetailCommon extends React.Component {
 
   //获取合同信息
   getInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.id}`;
     this.setState({ detailLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getContractHeaderInfo(this.props.id).then(res => {
       if (res.data.status === 'GENERATE' ||
         res.data.status === 'REJECTED' ||
         res.data.status === 'WITHDRAWAL') { //编辑中、已驳回、已撤回
@@ -101,9 +99,8 @@ class ContractDetailCommon extends React.Component {
   //获取资金计划
   getPayList = () => {
     const { page, pageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}?page=${page}&size=${pageSize}`;
     this.setState({ planLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getPayPlan(page, pageSize, this.props.id).then(res => {
       this.setState({
         data: res.data,
         planLoading: false,
@@ -116,6 +113,7 @@ class ContractDetailCommon extends React.Component {
     })
   };
 
+  //资金计划表格页码切换
   onChangePaper = (page) => {
     if (page - 1 !== this.state.page) {
       this.setState({ page: page - 1 }, () => {
@@ -124,15 +122,12 @@ class ContractDetailCommon extends React.Component {
     }
   };
 
+  //合同信息／合同历史 切换
   handleTabsChange = (tab) => {
     this.setState({ topTapValue: tab })
   };
 
-  //侧滑
-  showSlide = (flag) => {
-    this.setState({ showSlideFrame: flag })
-  };
-
+  //合同信息内容渲染格式
   renderList = (title, value) => {
     return (
       <Row className="list-info">
@@ -140,6 +135,11 @@ class ContractDetailCommon extends React.Component {
         <Col className="content" span={17}>{value}</Col>
       </Row>
     )
+  };
+
+  //侧滑
+  showSlide = (flag) => {
+    this.setState({ showSlideFrame: flag })
   };
 
   //关闭侧滑
@@ -182,9 +182,8 @@ class ContractDetailCommon extends React.Component {
   //删除资金计划行
   deleteItem = (e, record) => {
     e.preventDefault();
-    let url = `${config.contractUrl}/contract/api/contract/line/${record.id}`;
     this.setState({ planLoading: true });
-    httpFetch.delete(url).then(() => {
+    contractService.deletePayPlan(record.id).then(() => {
       message.success(`删除成功`);
       this.getPayList();
       this.getInfo()
@@ -196,8 +195,7 @@ class ContractDetailCommon extends React.Component {
 
   //撤回
   contractRecall = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/withdrawal/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.recallContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('撤回成功');
         this.getInfo()
@@ -209,8 +207,7 @@ class ContractDetailCommon extends React.Component {
 
   //暂挂
   contractHold = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/hold/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.holdContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('暂挂成功');
         this.getInfo()
@@ -222,8 +219,7 @@ class ContractDetailCommon extends React.Component {
 
   //取消暂挂
   contractCancelHold = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/unHold/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.unHoldContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('取消暂挂成功');
         this.getInfo()
@@ -235,8 +231,7 @@ class ContractDetailCommon extends React.Component {
 
   //取消
   contractCancel = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/cancel/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.cancelContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('取消成功');
         this.getInfo()
@@ -248,8 +243,7 @@ class ContractDetailCommon extends React.Component {
 
   //完成
   contractFinish = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/finish/${this.props.id}`;
-    httpFetch.put(url).then(res => {
+    contractService.finishContract(this.props.id).then(res => {
       if (res.status === 200) {
         message.success('完成成功');
         this.getInfo()
@@ -267,7 +261,7 @@ class ContractDetailCommon extends React.Component {
           {contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
           {!this.props.isApprovePage && headerData.status === 'SUBMITTED' && <Button type="primary" onClick={this.contractRecall}>撤 回</Button>}
           {!this.props.isApprovePage && headerData.status === 'CONFIRM' &&
-            <div>
+            <div style={{float:'right'}}>
               <Button type="primary" onClick={this.contractFinish}>完 成</Button>
               <Button type="primary" onClick={this.contractCancel} style={{marginRight:10}}>取 消</Button>
               <Button type="primary" onClick={this.contractHold} style={{marginRight:10}}>暂 挂</Button>
@@ -276,7 +270,7 @@ class ContractDetailCommon extends React.Component {
         </h3>
         <Row>
           <Col span={6}>
-            {this.renderList('创建人', headerData.createdName + ' - ' + headerData.createdBy)}
+            {this.renderList('创建人', (headerData.createdName || '') + ' - ' + (headerData.createdBy || ''))}
             {this.renderList('创建日期', moment(headerData.createdDate).format('YYYY-MM-DD'))}
           </Col>
           <Col span={6}>
@@ -363,11 +357,12 @@ class ContractDetailCommon extends React.Component {
             <Col span={8}>{this.renderList('备注', headerData.remark || '-')}</Col>
           </Row>
           <h3 className="margin-20-0">附件信息</h3>
-          {headerData.attachmentURLs && headerData.attachmentURLs.map((url, index) => {
+          {headerData.attachments && headerData.attachments.map((item, index) => {
             return (
               <div key={index}>
-                <Icon type="paper-clip" style={{marginRight:5}}/>
-                <a href={`${config.contractUrl}${url}`} target="_blank">{url}</a>
+                <a href={item.fileUrl} target="_blank">
+                  <Icon type="paper-clip" style={{marginRight:5}}/>{item.fileName}
+                </a>
               </div>
             )
           })}

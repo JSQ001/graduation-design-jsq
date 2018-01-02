@@ -281,6 +281,7 @@ class BudgetStructureDetail extends React.Component{
       let defaultDimensionValue = [];
       defaultDimensionCode.push({ dimensionId: record.dimensionId, dimensionCode: record.dimensionCode,key: record.dimensionId});
       defaultDimensionValue.push({ defaultDimValueId: record.defaultDimValueId, defaultDimValueCode: record.defaultDimValueCode,key: record.defaultDimValueId});
+      record.usedFlag = this.state.structure.usedFlag;
       record.defaultDimensionCode = defaultDimensionCode;
       record.defaultDimensionValue = defaultDimensionValue;
       this.setState({
@@ -318,7 +319,7 @@ class BudgetStructureDetail extends React.Component{
   handleListOk = (result) => {
     let company = [];
     result.result.map((item)=>{
-      company.push({companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
+      company.push({companyCode: item.code,companyId:item.id,structureId:this.props.params.structureId,isEnabled:item.isEnabled})
     });
     httpFetch.post(`${config.budgetUrl}/api/budget/structure/assign/companies/batch`,company).then((response)=>{
       if(response.status === 200) {
@@ -361,7 +362,6 @@ class BudgetStructureDetail extends React.Component{
     const { infoList, dimension, updateState, structure, loading, showSlideFrameUpdate, data, columns, pagination, label, showSlideFrame, lov} = this.state;
 
     return(
-
       <div className="budget-structure-detail">
         <BasicInfo
             infoList={infoList}
@@ -376,7 +376,7 @@ class BudgetStructureDetail extends React.Component{
         <div className="table-header">
           <div className="table-header-title">{this.props.intl.formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{label === 'company'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
+            <Button type="primary" disabled={label === 'company' ? false : structure.usedFlag } onClick={this.handleCreate}>{label === 'company'? this.props.intl.formatMessage({id:'structure.addCompany'}) :
               this.props.intl.formatMessage({id: 'common.create'})}</Button>  {/*新建*/}
           </div>
         </div>
@@ -391,15 +391,15 @@ class BudgetStructureDetail extends React.Component{
             pagination={pagination}
             size="middle"
             bordered/>
-        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
 
-        <SlideFrame title="新建维度"
+        <SlideFrame title={this.props.intl.formatMessage({id:"structure.newDimension"})}
                     show={showSlideFrame}
                     content={NewDimension}
                     afterClose={this.handleCloseSlide}
                     onClose={() => this.showSlide(false)}
                     params={structure}/>
-        <SlideFrame title="编辑维度"
+        <SlideFrame title={this.props.intl.formatMessage({id:"structure.updateDimension"})}
                     show={showSlideFrameUpdate}
                     content={UpdateDimension}
                     afterClose={this.handleCloseSlideUpdate}

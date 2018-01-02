@@ -46,20 +46,24 @@ const httpFetch = {
    * @return {Promise.<TResult>}
    */
   refreshToken: function(){
-    let refreshParams = `client_id=ArtemisApp&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${localStorage.refresh_token}&grant_type=refresh_token`;
+    let refreshParams = `client_id=ArtemisApp&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${JSON.parse(localStorage.getItem('hly.token')).refresh_token}&grant_type=refresh_token`;
     return axios(encodeURI(`${config.baseUrl}/oauth/token?${refreshParams}`),{
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ' + localStorage.token
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('hly.token')).access_token
       }
     }).then(checkStatus).catch(e => {
       message.error(e.response.data.error_description);
       if(location.href.substr(8, location.href.length - 1).split('/').length !== 2)
         location.href = '/';
     }).then(response => {
-      localStorage.token = response.data.access_token;
-      localStorage.refresh_token = response.data.refresh_token;
+      let expiredAt = new Date();
+      let token = response.data;
+      expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
+      token.expires_at = expiredAt.getTime();
+      localStorage.setItem('hly.token', JSON.stringify(token));
+
     })
   },
 
@@ -112,24 +116,28 @@ const httpFetch = {
         'Authorization': 'Basic QXJ0ZW1pc0FwcDpuTENud2RJaGl6V2J5a0h5dVpNNlRwUURkN0t3SzlJWERLOExHc2E3U09X'
       }
     }).then(checkStatus).then((response)=>{
-      localStorage.token = response.data.access_token;
-      localStorage.refresh_token = response.data.refresh_token;
+      let expiredAt = new Date();
+      let token = response.data;
+      expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
+      token.expires_at = expiredAt.getTime();
+      localStorage.setItem('hly.token', JSON.stringify(token));
     });
   }
 };
 
-let methodList = ['get','post','put','delete'];
+let methodList = ['get','post','put','delete', 'patch'];
 methodList.map(method => {
   httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + localStorage.token;
+    header.Authorization = "Bearer " + JSON.parse(localStorage.getItem('hly.token')).access_token;
     let option = {
       url: url,
       method: method.toUpperCase(),
       mode: 'cors',
       headers: header,
-      data: params
+      data: (method === 'get' || method === 'delete') ? undefined : params,
+      params:(method === 'get' || method === 'delete') ? params : undefined
     };
     return axios(url, Object.assign({}, options, option)).catch(e => checkStatus(e.response, true, url, params, header, method.toUpperCase()))
   };

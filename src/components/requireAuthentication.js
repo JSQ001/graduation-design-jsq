@@ -36,7 +36,8 @@ function requireAuthentication(Component) {
     }
 
     checkAuth() {
-      const login = !!localStorage.token;
+      //新老中控的共享token检查
+      const login = !!localStorage.getItem('hly.token');
       if (!login) {
         this.props.history.replace('/');
       } else {

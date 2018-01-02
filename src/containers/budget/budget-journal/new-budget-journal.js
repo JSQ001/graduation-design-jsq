@@ -256,15 +256,15 @@ class NewBudgetJournalFrom extends React.Component {
     return (
       <div className="new-budget-journal">
         <div className="budget-journal-title">
-          <div><h1>预算日记账</h1></div>
-          <div className="budget-journal-title-detail">用于预算录入，提交审批</div>
+          <div><h1>{this.props.intl.formatMessage({id: "budgetJournal.journal"})}</h1></div>
+          <div className="budgetJournal-journal-title-detail">{this.props.intl.formatMessage({id: "budgetJournal.journalDetail"})}</div>
         </div>
         <div className="divider"> </div>
         <Form onSubmit={this.handleFrom} style={{}}>
-          <Card title="基本信息"  style={{with: "100%"}}>
+          <Card title={this.props.intl.formatMessage({id: "budgetJournal.basicInformation"})}  style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalCode"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.journalCode"})}>
                   {getFieldDecorator('journalCode', {
                     rules: [{}],
                     initialValue: '-'
@@ -274,7 +274,7 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.employeeId"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.employeeId"})}>
                   {getFieldDecorator('employeeId', {
                     rules: [{
                       required: true,
@@ -300,7 +300,7 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.companyId"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.companyId"})}>
                   {getFieldDecorator('companyId',{
                     rules: [{
                       required: true,
@@ -313,7 +313,7 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.unitId"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.unitId"})}>
                   {getFieldDecorator('departmentName',{
                     rules: [{
                       required: true,
@@ -328,14 +328,14 @@ class NewBudgetJournalFrom extends React.Component {
             </Row>
           </Card>
           <div className="divider"> </div>
-          <Card title="预算信息"  style={{with: "100%"}}>
+          <Card title={this.props.intl.formatMessage({id: "budgetJournal.budgetInformation"})}  style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.journalTypeId"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.journalTypeId"})}>
                   {getFieldDecorator('journalTypeName', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算日记账类型"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:this.props.intl.formatMessage({id: "budgetJournal.journalTypeId"})})
                     }]
                   })(
                     <Chooser
@@ -350,12 +350,12 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.structureId"})}
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.structureId"})}
                 >
                   {getFieldDecorator('structureId', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算表"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:this.props.intl.formatMessage({id: "budgetJournal.structureId"})})
                     }],
 
                   })(
@@ -366,11 +366,11 @@ class NewBudgetJournalFrom extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.periodStrategy"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.periodStrategy"})}>
                   {getFieldDecorator('periodStrategy', {
                     rules: [{
                       required: true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "编制期段"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:this.props.intl.formatMessage({id: "budgetJournal.periodStrategy"})})
                     }],
 
                   })(
@@ -380,14 +380,12 @@ class NewBudgetJournalFrom extends React.Component {
                   )}
                 </FormItem>
               </Col>
-
-
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.version"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.versionId"})}>
                   {getFieldDecorator('versionName', {
                     rules: [{
                       required:true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算版本"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:this.props.intl.formatMessage({id: "budgetJournal.version"})})
                     }],
                     valuePropName:"value",
                     initialValue:this.state.defaultValueList["versionName"],
@@ -402,14 +400,12 @@ class NewBudgetJournalFrom extends React.Component {
                   )}
                 </FormItem>
               </Col>
-
-              {/*${config.budgetUrl}/api/budget/scenarios/query*/}
               <Col span={8}>
-                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.scenarios"})}>
+                <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetJournal.scenarios"})}>
                   {getFieldDecorator('scenarioName', {
                     rules: [{
                       required:true,
-                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name: "预算场景"})
+                      message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:this.props.intl.formatMessage({id: "budgetJournal.scenarios"})})
                     }],
                     valuePropsName:"value",
                     initialValue:this.state.defaultValueList["scenarioName"],
@@ -430,12 +426,12 @@ class NewBudgetJournalFrom extends React.Component {
             </Row>
           </Card>
           <div className="divider" style={{height:16}}> </div>
-          <Card title="附件信息" style={{with: "100%"}}>
+          <Card title={this.props.intl.formatMessage({id: "budgetJournal.attachmentInformation"})} style={{with: "100%"}}>
             <Row gutter={40} type="flex" align="top">
               <Col span={8}>
                 <FormItem
                   {...formItemLayout}
-                  label="附件"
+                  label={this.props.intl.formatMessage({id: "budgetJournal.attachment"})}  //附件
                 >
                   <div className="dropbox">
                     {getFieldDecorator('file', {})(
@@ -456,8 +452,8 @@ class NewBudgetJournalFrom extends React.Component {
           <Affix offsetBottom={0}
                  style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
                    boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-            <Button type="primary" htmlType="submit" loading={this.state.loading} style={{margin:'0 20px'}}>下一步</Button>
-            <Button onClick={this.HandleClear}>取消</Button>
+            <Button type="primary" htmlType="submit" loading={this.state.loading} style={{margin:'0 20px'}}>{this.props.intl.formatMessage({id: "budgetJournal.lastStep"})}</Button>
+            <Button onClick={this.HandleClear}>{this.props.intl.formatMessage({id: "budgetJournal.return"})}</Button>
           </Affix>
         </Form>
       </div>

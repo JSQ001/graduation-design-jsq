@@ -4,14 +4,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
+import {Form,Timeline,Popover,Button,Collapse, Table, Select,Modal,message,Popconfirm,notification,Icon,Badge,Row,Col,Input,Steps} from 'antd';
 const Step =Steps.Step;
-
+const FormItem =Form.Item;
 import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scss"
-
 import httpFetch from 'share/httpFetch';
-import config from 'config'
-import menuRoute from 'share/menuRoute'
+import config from 'config';
+import menuRoute from 'share/menuRoute';
 
 
 class BudgetJournalCheckDetail extends React.Component {
@@ -21,6 +20,7 @@ class BudgetJournalCheckDetail extends React.Component {
       loading: true,
       data: [],
       params: {},
+      HistoryData:[],
       headerAndListData: {},
       pageSize: 10,
       page: 0,
@@ -31,6 +31,15 @@ class BudgetJournalCheckDetail extends React.Component {
         onChange: this.onSelectChange,
         onSelect: this.onSelectItem,
         onSelectAll: this.onSelectAll
+      },
+      statusData:{
+        SUBMIT_FOR_APPROVAL:{color:'blue',name:'提交'},
+        WITHDRAW:{color:'blue',name:'撤回预算日记'},
+        SELF_PASS:{color:'green',name:'自审批通过'},
+        APPROVAL_PASS:{color:'green',name:'审批通过'},
+        APPROVAL_REJECT:{color:'red',name:'审批驳回'},
+        AUDIT_PASS:{color:'purple',name:'审核通过'},
+        AUDIT_REJECT:{color:'red',name:'审核驳回'},
       },
       organization: {},
       fileList:[],
@@ -110,13 +119,14 @@ class BudgetJournalCheckDetail extends React.Component {
         },
       ],
 
-      budgetJournalDetailReCheckPage: menuRoute.getRouteItem('budget-journal-re-check','key'),    //预算日记账复核
+      budgetJournalDetailCheckPage: menuRoute.getRouteItem('budget-journal-check','key'),    //预算日记账审核
 
     };
   }
 
   componentWillMount=()=>{
     this.getDataByBudgetJournalCode();
+
   }
 
 
@@ -129,7 +139,7 @@ class BudgetJournalCheckDetail extends React.Component {
         fileList:fileList
       })
     }).catch(e=>{
-      message.error(`查询附件失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budgetJournal.getAttachmentFail"})},${e.response.data.message}`);
     })
   }
 
@@ -143,12 +153,14 @@ class BudgetJournalCheckDetail extends React.Component {
       headerData.attachmentOID.map((item)=>{
         this.getFileByAttachmentOID(item);
       })
-
+      this.getApproveHistory(headerData);
       this.setState({
         headerAndListData:request.data,
         infoData:headerData,
         data:listData,
         total:listData.length
+      },()=>{
+
       })
     })
   }
@@ -156,12 +168,10 @@ class BudgetJournalCheckDetail extends React.Component {
   //根据预算表id，获得维度
   getDimensionByStructureId = (value) =>{
     httpFetch.get(`${config.budgetUrl}/api/budget/journals/getLayoutsByStructureId?isEnabled=true&structureId=${value}`).then((resp)=>{
-      console.log(resp.data);
-
-      this.getColumnsAndDimensionhandleData(resp.data);
-
+    this.getColumnsAndDimensionhandleData(resp.data);
     }).catch(e=>{
-      message.error(`获得维度失败,${e.response.data.message}`);
+      message.error(`${this.props.intl.formatMessage({id: "budgetJournal.getDimensionFail"})},${e.response.data.message}`);
+
     })
   }
 
@@ -187,42 +197,102 @@ class BudgetJournalCheckDetail extends React.Component {
 
   //通过
   handlePass=()=>{
-    const id= this.state.headerAndListData.dto.id;
-    let data =[];
-    data.addIfNotExist(id);
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals/balance/create`,data).then((request)=>{
-      message.success("已经通过")
 
-      let path=this.state.budgetJournalDetailReCheckPage.url;
-      this.context.router.push(path);
+    this.props.form.validateFieldsAndScroll((err, value) => {
+      if(!err){
+        const dataValue={
+          "approvalTxt":value.approvalTxt?value.approvalTxt:null,
+          "entities":[
+            {"entityOID":this.state.headerAndListData.dto.documentOid,
+              "entityType":this.state.headerAndListData.dto.documentType,
+              "countersignApproverOIDs":null,
+            }]
+        }
+        httpFetch.post(`${config.baseUrl}/api/approvals/pass`,dataValue).then((request)=>{
+          message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
+          let path=this.state.budgetJournalDetailCheckPage.url;
+          this.context.router.push(path);
 
-    }).catch((e)=>{
-      message.error("失败");
+        }).catch((e)=>{
+          message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
+
+        })
+      }
+
     })
+
+  }
+
+  getApproveHistory(headerData){
+   console.log(headerData);
+    console.log(123);
+    const documentType = headerData.documentType;
+    const documentOid = headerData.documentOid;
+    httpFetch.get(`${config.baseUrl}/api/budget/journa/reports/history?entityType=${documentType?documentType:''}&entityOID=${documentOid?documentOid:''}`).then((request)=>{
+     console.log(request.data);
+      this.setState({"HistoryData":request.data},()=>{
+        console.log(this.state.HistoryData);
+      });
+      message.success(this.props.intl.formatMessage({id: "budgetJournal.getApproveCodeSuccess"}))
+    }).catch((e)=>{
+      message.error(this.props.intl.formatMessage({id: "budgetJournal.getApproveCodeFail"}));
+    })
+  }
+
+  getHistory(){
+    const HistoryData = this.state.HistoryData;
+    let children = [];
+    HistoryData.map((item, i)=>{
+      children.push(
+        this.getHistoryRender(item,i)
+      )
+    })
+    return children;
+  }
+
+  getHistoryRender(item,i){
+    const statusData= this.state.statusData;
+    if(item){
+      return(
+        <Timeline.Item color={statusData[item.operation].color} key={i}>
+          <p>
+            <span style={{fontWeight:'bold'}}>{statusData[item.operation].name}</span>
+            <span style={{marginLeft:50}}>【{item.lastModifiedDate}】{item.employeeName}</span>
+          </p>
+          <p>{item.operationDetail}</p>
+        </Timeline.Item>)
+    }
+    return ''
   }
 
   //驳回
   handleReject=()=>{
+    this.props.form.validateFieldsAndScroll((err, value) => {
+      if(!err){
+        const dataValue={
+          "approvalTxt":value.approvalTxt?value.approvalTxt:null,
+          "entities":[
+            {"entityOID":this.state.headerAndListData.dto.documentOid,
+              "entityType":this.state.headerAndListData.dto.documentType}]
+        }
+        httpFetch.post(`${config.baseUrl}/api/approvals/reject`,dataValue).then((request)=>{
+          message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
+          let path=this.state.budgetJournalDetailCheckPage.url;
+          this.context.router.push(path);
 
-    const id= this.state.headerAndListData.dto.id;
-    let data =[];
-    data.addIfNotExist(id);
+        }).catch((e)=>{
+          message.error(`${this.props.intl.formatMessage({id: "common.operate.filed"})},${e.response.data.message}`);
 
-    httpFetch.post(`${config.budgetUrl}/api/budget/journals/rejectJournal`,data).then((request)=>{
-      message.success("已经驳回");
-      let path=this.state.budgetJournalDetailReCheckPage.url;
-      this.context.router.push(path);
+        })
+      }
 
-
-    }).catch((e)=>{
-      message.error("失败");
     })
 
   }
 
   //返回列表页
   HandleReturn=()=>{
-    let path=this.state.budgetJournalDetailReCheckPage.url;
+    let path=this.state.budgetJournalDetailCheckPage.url;
     this.context.router.push(path);
   }
 
@@ -230,18 +300,18 @@ class BudgetJournalCheckDetail extends React.Component {
   getStatus=()=>{
     const infoData = this.state.infoData;
     switch (infoData.status){
-      case 'NEW':{ return <Badge status="processing" text="新建" />}
-      case 'SUBMIT':{ return   <Badge status="warning" text="提交审批" />}
-      case 'SUNMIT_RETURN':{return <Badge status="default" color="#dd12333" text="提交撤回"/> }
-      case 'REJECT':{ return  <Badge status="error" text="拒绝" />}
-      case 'CHECKED':{return < Badge status="default" color="#234234" text="审批完成"/>}
-      case 'CHECKING':{return <Badge  status="default" color="#ffdd44" text="审批中"/>}
-      case 'POSTED':{return <Badge status="default"  color="#87d068" text="复核"/>}
-      case 'BACKLASH_SUBMIT':{return <Badge status="default" color="#871233" text="反冲提交"/>}
-      case 'BACKLASH_CHECKED':{return <Badge status="default" color="#823344" text="反冲审核"/>}
+      case 'NEW':{ return <Badge status="processing" text={infoData.statusName} />}
+      case 'SUBMIT':{ return   <Badge status="warning" text={infoData.statusName}/>}
+      case 'SUBMIT_RETURN':{return   <Badge status="warning" text={infoData.statusName}/>}
+      case 'REJECT':{ return  <Badge status="error" text={infoData.statusName} />}
+      case 'CHECKED':{return < Badge status="default" text={infoData.statusName}/>}
+      case 'CHECKING':{return <Badge  status="default"text={infoData.statusName}/>}
+      case 'POSTED':{return <Badge status="default" text={infoData.statusName}/>}
+      case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={infoData.statusName}/>}
+      case 'BACKLASH_CHECKED':{return <Badge status="default"  text={infoData.statusName}/>}
+      default :{return <Badge status="default"  text={infoData.statusName}/>}
     }
   }
-
 
 //获得总金额
   getAmount=()=>{
@@ -253,28 +323,6 @@ class BudgetJournalCheckDetail extends React.Component {
     return "CNY"+" "+sum.toFixed(2);
   }
 
-
-  getPeriodStrategy=()=>{
-    const infoData = this.state.infoData;
-    const periodStrategy =  infoData.periodStrategy;
-    switch (periodStrategy){
-      case 'MONTH':{ return `月`}
-      case 'QUARTER':{ return `年`}
-      case 'YEAR':{ return `季度`}
-    }
-
-  }
-
-  getPeriodStrategyData=()=>{
-    const infoData = this.state.infoData;
-    const periodStrategy =  infoData.periodStrategy;
-    switch (periodStrategy){
-      case 'MONTH':{ return `期间`}
-      case 'QUARTER':{ return `年`}
-      case 'YEAR':{ return `季度`}
-    }
-
-  }
 
   //获取附件
   getFile=()=>{
@@ -288,85 +336,71 @@ class BudgetJournalCheckDetail extends React.Component {
   }
 
 
-  getPeriod=()=>{
-    const infoData = this.state.infoData;
-    switch (infoData.periodStrategy){
-      case 'MONTH':{ return `${infoData.periodName?infoData.periodName:''}`}
-      case 'QUARTER':{ return `${infoData.periodYear}年-第 ${infoData.periodQuarter?infoData.periodQuarter:''} 季度`}
-      case 'YEAR':{ return `${infoData.periodYear}年`}
-
-    }
-  }
-
-
-
   render(){
     const { data, columns,infoData} = this.state;
+    const {getFieldDecorator} = this.props.form;
     return(
       <div className="budget-journal-re-check-detail">
 
         <div className="base-info">
           <div className="base-info-header">
-            基本信息
+            {this.props.intl.formatMessage({id:"budgetJournal.basicInformation"})}
           </div>
 
           <Row className="base-info-cent">
             <Col span={8}>
-              <div className="base-info-title">状态</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.status"})}:</div>
               <div className="beep-info-text">
                 {this.getStatus()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算日记账编号</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.journalCode"})}:</div>
               <div className="beep-info-text">{infoData.journalCode?infoData.journalCode:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">总金额</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.amount"})}:</div>
               <div className="beep-info-cent-text">
                 {this.getAmount()}
               </div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">申请人</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.employeeId"})}:</div>
               <div className="beep-info-text">{infoData.employeeName?infoData.employeeName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">部门:</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.unitId"})}:</div>
               <div className="beep-info-text">{infoData.unitName?infoData.unitName:'-'}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">创建日期</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.createdDate"})}:</div>
               <div className="beep-info-text">{String(infoData.createdDate).substring(0,10)}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算项目类型</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"})}:</div>
               <div className="beep-info-text">{infoData.journalTypeName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算表</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.structureId"})}:</div>
               <div className="beep-info-text">{infoData.structureName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算场景</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.scenarioId"})}:</div>
               <div className="beep-info-text">{infoData.scenario}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">预算版本</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.versionId"})}:</div>
               <div className="beep-info-text">{infoData.versionName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">编制期段</div>
-              <div className="beep-info-text">{this.getPeriodStrategy()}</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"})}:</div>
+              <div className="beep-info-text">{infoData.periodStrategyName}</div>
             </Col>
             <Col span={8}>
-              <div className="base-info-title">附件</div>
+              <div className="base-info-title">{this.props.intl.formatMessage({id:"budgetJournal.attachment"})}:</div>
               <div className="beep-info-text">{this.getFile()}</div>
             </Col>
-
           </Row>
-
-
         </div>
 
         <Table columns={columns}
@@ -374,40 +408,39 @@ class BudgetJournalCheckDetail extends React.Component {
                bordered
                size="middle"
                scroll={{ x: '150%' }}
-               rowKey={recode=>{return recode.id}}
-
         />
 
         <div className="collapse">
           <Collapse bordered={false} defaultActiveKey={['1']}>
-            <Collapse.Panel header="审批历史" key="1">
-              <Steps direction="vertical" size="small" >
-                <Step title="Finished" description="This is a description." />
-                <Step title="In Progress" description="This is a description." />
-                <Step title="Waiting" description="This is a description." icon={<Icon  type="smile-o"/>} />
-              </Steps>
+            <Collapse.Panel header={this.props.intl.formatMessage({id:"budgetJournal.budgetHistory"})} key="1">
+              <Timeline>
+                {this.getHistory()}
+              </Timeline>
             </Collapse.Panel>
-
           </Collapse>
         </div>
-
-
         <div className="footer-operate">
           <div className="food-input" >
-            <span>审批意见：&nbsp;</span><Input style={{}}/>
-            <Button type="primary" onClick={this.handlePass}>通过</Button>
-            <Button className="button-reject" type="primary"   onClick={this.handleReject}>驳回</Button>
-            <Button className="button-return" onClick={this.HandleReturn}>返回</Button>
-
+            <span>{this.props.intl.formatMessage({id:"budgetJournal.budgetOpinion"})}}：&nbsp;</span>
+            <Form>
+              <FormItem
+              >
+                {getFieldDecorator('approvalTxt', {
+                  rules: [{ required: true, message:this.props.intl.formatMessage({id:"comment.please.enter"}) }],
+                })(
+                  <Input/>
+                )}
+              </FormItem>
+            </Form>
+            <Button type="primary" onClick={this.handlePass}>{this.props.intl.formatMessage({id:"budgetJournal.pass"})}</Button>
+            <Button className="button-reject" type="primary"   onClick={this.handleReject}>{this.props.intl.formatMessage({id:"budgetJournal.reject"})}</Button>
+            <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
           </div>
           <div>
-
-
           </div>
 
         </div>
       </div>
-
 
     )
   }
@@ -415,13 +448,22 @@ class BudgetJournalCheckDetail extends React.Component {
 }
 
 
-BudgetJournalCheckDetail.contextTypes ={
+BudgetJournalCheckDetail.contextTypes = {
   router: React.PropTypes.object
+};
+
+
+const WebBudgetJournalCheckDetail = Form.create()(BudgetJournalCheckDetail);
+
+function mapStateToProps(state) {
+  return {
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
+
+  }
+
 }
 
-function mapStateToProps() {
-  return {}
-}
-
-export default connect(mapStateToProps)(injectIntl(BudgetJournalCheckDetail));
+export default connect(mapStateToProps)(injectIntl(WebBudgetJournalCheckDetail));
 

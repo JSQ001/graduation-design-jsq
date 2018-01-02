@@ -34,6 +34,7 @@ class PayWorkbench extends React.Component {
   }
 
   onChangeTabs = (key) => {
+    this.props.location.query.subTab = undefined;
     this.setState({ nowStatus: key }, () => {
       this.context.router.replace(`${this.state.payWorkbench.url}?tab=${this.state.nowStatus}`);
     })
@@ -43,16 +44,16 @@ class PayWorkbench extends React.Component {
     let content = null;
     switch (this.state.nowStatus){
       case 'Unpaid':
-        content = <PayUnpaid/>;
+        content = <PayUnpaid subTab={this.props.location.query.subTab}/>;
         break;
       case 'Paying':
-        content = <PayPaying/>;
+        content = <PayPaying subTab={this.props.location.query.subTab}/>;
         break;
       case 'Fail':
-        content = <PayFail/>;
+        content = <PayFail subTab={this.props.location.query.subTab}/>;
         break;
       case 'Success':
-        content = <PaySuccess/>;
+        content = <PaySuccess subTab={this.props.location.query.subTab}/>;
         break;
     }
     return content;

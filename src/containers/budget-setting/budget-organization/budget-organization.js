@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import config from 'config'
 import { Table, Badge, Button, Popover, message } from 'antd';
 import menuRoute from 'share/menuRoute'
-import httpFetch from 'share/httpFetch'
+import budgetService from 'service/budgetService'
+import config from 'config'
 
 import UpdateBudgetOrganization from 'containers/budget-setting/budget-organization/update-budget-organization'
 import SearchArea from 'components/search-area'
@@ -75,12 +75,13 @@ class BudgetOrganization extends React.Component {
   //得到列表数据
   getList(){
     this.setState({ loading: true });
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/organizations/query?&page=${this.state.page}&size=${this.state.pageSize}`;
+    let params = Object.assign({}, this.state.searchParams);
     for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+      !params[paramsName] && delete params[paramsName];
     }
-    return httpFetch.get(url).then((response)=>{
+    params.page = this.state.page;
+    params.pageSize = this.state.pageSize;
+    return budgetService.getOrganizations(params).then((response)=>{
       response.data.map((item)=>{
         item.key = item.id;
       });

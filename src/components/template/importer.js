@@ -58,7 +58,7 @@ class Importer extends React.Component {
 
   //监听导入状态：PARSING_FILE(1001), PROCESS_DATA(1002), DONE(1003), ERROR(1004), CANCELLED(1005)
   listenStatus = () => {
-    httpFetch.get(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`).then(res => {
+    httpFetch.get(`${config.budgetUrl}/api/budget/batch/transaction/logs/${this.state.transactionID}`).then(res => {
       if (res.data.status === 1004) {
         this.setState({ uploading: false });
         message.error('导入失败，请重试')
@@ -98,7 +98,7 @@ class Importer extends React.Component {
   onCancel = () => {
     this.setState({visible: false, uploading: false});
     if (this.state.uploading && this.state.transactionID) {
-      httpFetch.delete(`${config.budgetUrl}/api/batch/transaction/logs/${this.state.transactionID}`)
+      httpFetch.delete(`${config.budgetUrl}/api/budget/batch/transaction/logs/${this.state.transactionID}`)
     }
   };
 
@@ -127,7 +127,7 @@ class Importer extends React.Component {
       hide();
     }).catch(() => {
       hide();
-      message.error('错误信息下载失败，请重试');
+      message.error('错误信息下载失败，请检查导入模板是否正确');
     })
   };
 

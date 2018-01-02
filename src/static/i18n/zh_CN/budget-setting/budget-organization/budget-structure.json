@@ -34,7 +34,9 @@
   "structure.dimensionValueCode": "维值代码",
   "structure.dimensionValueName": "维值名称",
   "structure.validateDimension": "请先选择维度代码",
-  "structure.selectDim": "选择维度"
+  "structure.selectDim": "选择维度",
+  "structure.newDimension": "新建维度",
+  "structure.updateDimension": "编辑维度"
 
 
 

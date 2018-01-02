@@ -32,7 +32,7 @@ class NewBudgetJournalType extends React.Component {
           this.context.router.replace(this.state.budgetJournalTypeDetailPage.url.replace(":typeId", res.data.id));
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors[0].message}`);
+            message.error(`新建失败, ${e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message}`);
           }
           this.setState({loading: false});
         })

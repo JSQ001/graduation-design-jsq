@@ -15,9 +15,9 @@ import selectorData from 'share/selectorData'
 
 
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
-
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 class NewBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
@@ -45,7 +45,7 @@ class NewBudgetRulesDetail extends React.Component{
     let userSelectorItem = selectorData['user'];
 
     let itemSelectorItem = selectorData['budget_item'];
-    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length;
     if(key < 2){
       itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
       itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
@@ -81,7 +81,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'currencyName',
+        codeKey: 'baseCurrency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -125,7 +125,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'fullName',
         valueKey: 'employeeID',
         codeKey: 'employeeID',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: userSelectorItem
       },
       'EMPLOYEE_GROUP': {
@@ -230,6 +230,7 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillReceiveProps(nextprops){
+    console.log(this.state.lov)
     this.setState({
       ruleId: nextprops.params,
       organizationId: this.props.organization.id
@@ -283,7 +284,10 @@ class NewBudgetRulesDetail extends React.Component{
       ruleParamsArray: [],
       validateStatusMap: {},
       helpMap: {},
-      loading: false
+      loading: false,
+      lov:{
+        disabled: true
+      }
     });
     this.detail ={};
     this.props.close();

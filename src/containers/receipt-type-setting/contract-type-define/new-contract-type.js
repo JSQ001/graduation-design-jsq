@@ -1,11 +1,12 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import { Form, Input, Switch, Button, Icon, Select, message, Spin } from 'antd'
+import { Form, Input, Switch, Button, Icon, Select, message, Spin, Tooltip } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
+import { contractService } from 'service'
 
 import PermissionSetting from 'components/template/permission-setting'
 
@@ -43,8 +44,7 @@ class NewContractType extends React.Component{
 
   getInfo = () => {
     const { setOfBooksId, id } = this.props.params;
-    let url = `${config.contractUrl}/contract/api/contract/type/${setOfBooksId}/${id}`;
-    httpFetch.get(url).then(res => {
+    contractService.getContractTypeInfo(setOfBooksId, id).then(res => {
       if (res.status === 200) {
         this.setState({
           data: res.data,
@@ -68,7 +68,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.post(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        contractService.newContractType(values.setOfBooksId, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -98,7 +98,7 @@ class NewContractType extends React.Component{
         let params = [];
         params.push(values);
         this.setState({ loading: true });
-        httpFetch.put(`${config.contractUrl}/contract/api/contract/type/${values.setOfBooksId}`, params).then((res) => {
+        contractService.updateContractType(values.setOfBooksId, params).then((res) => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -129,6 +129,14 @@ class NewContractType extends React.Component{
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 }
     };
+    const form_label = (
+      <span>
+        关联表单类型
+        <Tooltip title="关联表单设计器中的单据类型，用来使用工作流" overlayStyle={{width:220}}>
+          <Icon type="info-circle-o" style={{margin:'0 3px'}}/>
+        </Tooltip>
+      </span>
+    );
     return (
       <div className="new-contract-type">
         <Spin spinning={infoLoading}>
@@ -185,7 +193,7 @@ class NewContractType extends React.Component{
                 <Input placeholder="请输入" />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="关联表单类型">
+            <FormItem {...formItemLayout} label={form_label}>
               {getFieldDecorator('type', {
                 initialValue: undefined
               })(
@@ -211,7 +219,6 @@ class NewContractType extends React.Component{
                         onChange={this.switchChange}/>
               )}
             </FormItem>
-
             <FormItem wrapperCol={{ offset: 7 }}>
               <Button type="primary" htmlType="submit" loading={loading} style={{marginRight:'10px'}}>保存</Button>
               <Button onClick={this.handleCancel}>取消</Button>

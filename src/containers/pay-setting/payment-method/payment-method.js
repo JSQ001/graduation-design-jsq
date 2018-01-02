@@ -55,7 +55,9 @@ class PaymentMethod extends React.Component {
           dataIndex: 'isEnabled',
           key: 'isEnabled',
           render: (recode, text) => {
-            return (<div ><Badge status={ recode ? "success" : "error"}/>{recode ? "启用" : "禁用"}</div>);
+            return (<div ><Badge status={ recode ? "success" : "error"}/>
+              {recode ? this.props.intl.formatMessage({id: "common.status.enable"}) : this.props.intl.formatMessage({id: "common.status.disable"})}
+            </div>);
           }
         },
       ],
@@ -74,7 +76,6 @@ class PaymentMethod extends React.Component {
       },
       updateParams: {},
       showSlideFrameNew: false,
-      showSlideFramePut: false,
       loading: true
 
     };
@@ -88,7 +89,7 @@ class PaymentMethod extends React.Component {
 
 //获得数据
   getList() {
-    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCode}&size=${this.state.pageSize}&page=${this.state.page}`;
+    let url = `${config.payUrl}/api/Cash/PaymentMethod/query?description=${this.state.searchParams.description}&paymentMethodCode=${this.state.searchParams.paymentMethodCode}&size=${this.state.pageSize}&current=${this.state.page+1}`;
     return httpFetch.get(url).then((response) => {
       response.data.map((item) => {
         item.key = item.id;
@@ -131,8 +132,6 @@ class PaymentMethod extends React.Component {
 
   //搜索
   search = (result) => {
-    console.log(result);
-    console.log(12333333);
     let searchParams = {
       description: result.description,
       paymentMethodCode: result.paymentMethodCode
@@ -148,27 +147,13 @@ class PaymentMethod extends React.Component {
   };
 
   handleCloseNewSlide = (params) => {
-    this.getList();
-    this.setState({
-      showSlideFrameNew: false
-    })
+    if(params) {
+      this.setState({loading: true});
+      this.getList();
+    }
+    this.showSlideNew(false)
   };
 
-
-  handleCloseUpdateSlide = (params) => {
-    this.getList();
-
-    this.setState({
-      showSlideFramePut: false
-    })
-  };
-
-
-  showSlidePut = (flag) => {
-    this.setState({
-      showSlideFramePut: flag
-    })
-  };
 
   showSlideNew = (flag) => {
     this.setState({
@@ -195,7 +180,7 @@ class PaymentMethod extends React.Component {
 
 
   render() {
-    const {columns, data, pagination, searchForm, showSlideFramePut, showSlideFrameNew, loading, updateParams, isPut} = this.state
+    const {columns, data, pagination, searchForm, showSlideFrameNew, loading, updateParams, isPut} = this.state
     return (
       <div className="payment-method">
         <div className="searchFrom">
@@ -229,21 +214,12 @@ class PaymentMethod extends React.Component {
           />
         </div>
 
-        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?"新建付款方式":"编辑付款方式"}
+        <SlideFrame title={JSON.stringify(this.state.updateParams) === "{}"?this.props.intl.formatMessage({id: "paymentMethod.newPaymentMethod"}):this.props.intl.formatMessage({id: "paymentMethod.editPaymentMethod"})}
                     show={showSlideFrameNew}
                     content={WrappedPaymentMethod}
                     afterClose={this.handleCloseNewSlide}
                     onClose={() => this.showSlideNew(false)}
                     params={updateParams}/>
-
-        <SlideFrame title={this.props.intl.formatMessage({id: "budget.editItemType"})}
-                    show={showSlideFramePut}
-                    content={WrappedPutBudgetItemType}
-                    afterClose={this.handleCloseUpdateSlide}
-                    onClose={() => this.showSlidePut(false)}
-                    params={updateParams}/>
-
-
       </div>
     );
   }

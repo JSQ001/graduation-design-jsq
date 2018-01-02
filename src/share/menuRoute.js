@@ -18,6 +18,7 @@ import dashboard from 'share/routes/normal/dashboard'  //仪表盘
 import myAccount from 'share/routes/normal/my-account'  //我的账本
 import expenseReport from 'share/routes/normal/expense-report'  //报销单
 import request from 'share/routes/normal/request'  //申请单
+import pageCreate from 'share/routes/normal/page-create'  //网页生成器
 import financialManagement from 'share/routes/normal/finacial-management'  //财务管理
 import budget from 'share/routes/normal/budget'  //预算
 import pay from 'share/routes/normal/pay'  //支付
@@ -34,7 +35,7 @@ import financeSetting from 'share/routes/admin/finance-setting'  //财务设置
 import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
 import receiptTypeSetting from 'share/routes/admin/receipt-type-setting'  //单据类型设置
 import paySetting from  'share/routes/admin/pay-setting' //支付设置
-
+import financialAccountSetting from 'share/routes/admin/financial-accounting-setting.js' //财务核算设置
 
 /**
  * 项目菜单整体路由配置
@@ -55,6 +56,7 @@ const menu = [
   myAccount,  //我的账本
   expenseReport,  //报销单
   request,  //申请单
+  pageCreate,  //网页生成器
   financialManagement,  //财务管理
   budget,  //预算
   pay,  //支付
@@ -70,6 +72,7 @@ const menu = [
   receiptTypeSetting,  //单据类型设置
   basicData,      //基础数据
   paySetting,   //支付设置
+  financialAccountSetting,  //财务核算设置
 
 ];
 

@@ -61,7 +61,8 @@ class NewBudgetOccupancy extends React.Component {
           }
         })
       }
-    }).catch(() => {
+    }).catch(e => {
+      message.error(`查询失败，${e.response.data.message}`);
       this.setState({ tableLoading: false });
     })
   };

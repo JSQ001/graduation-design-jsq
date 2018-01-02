@@ -96,7 +96,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'currencyName',
+        codeKey: 'baseCurrency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -140,7 +140,7 @@ class UpdateBudgetRulesDetail extends React.Component{
         labelKey: 'fullName',
         valueKey: 'employeeID',
         codeKey: 'employeeID',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: userSelectorItem
       },
       'EMPLOYEE_GROUP': {

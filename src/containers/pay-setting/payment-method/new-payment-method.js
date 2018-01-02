@@ -50,7 +50,7 @@ class NewPaymentMethod extends React.Component {
     let paymentMethodCategoryOptions = [];
     this.getSystemValueList(2105).then(res => {
       res.data.values.map(data => {
-        paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code})
+        paymentMethodCategoryOptions.push({label: data.messageKey, value: data.code,key:data.code})
       });
       this.setState({
         paymentMethodCategoryOptions
@@ -106,7 +106,7 @@ class NewPaymentMethod extends React.Component {
             this.setState({loading: false});
             this.props.form.resetFields();
             this.props.close(true);
-            message.success("编辑成功");
+            message.success(this.props.intl.formatMessage({id: "common.operate.success"}));
           }).catch((e) => {
             this.setState({loading: false});
             message.error(this.props.intl.formatMessage({id: "common.save.filed"})+`${e.response.data.message}`);
@@ -152,10 +152,13 @@ class NewPaymentMethod extends React.Component {
           </FormItem>
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.paymentMethodCategory"})}>
             {getFieldDecorator('paymentMethodCategory', {
-              rules: [{}],
+              rules: [{
+                required: true,
+                message: this.props.intl.formatMessage({id: "common.please.enter"})
+              }],
               initialValue:this.props.params.paymentMethodCategory||''
             })(
-              <Select>
+              <Select disabled={JSON.stringify(this.props.params) === "{}"?false:true} placeholder={this.props.intl.formatMessage({id: "common.please.select"})}>
                 {this.state.paymentMethodCategoryOptions.map((option)=>{
                   return <Option value={option.value} lable={option.label} >{option.label}</Option>
                 })}
@@ -170,7 +173,7 @@ class NewPaymentMethod extends React.Component {
               }],
               initialValue:this.props.params.paymentMethodCode||''
             })(
-              <Input/>
+              <Input placeholder={this.props.intl.formatMessage({id: "common.please.enter"})} disabled={JSON.stringify(this.props.params) === "{}"?false:true}/>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "paymentMethod.description"})}>

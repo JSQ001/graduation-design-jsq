@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
 import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu, Modal, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
+import { paymentService } from 'service'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'
@@ -20,9 +19,9 @@ class PayPaying extends React.Component {
         {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
         {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
         {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: '支付金额从'},
-          {type: 'input', id: 'mountTo', label: '支付金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '支付金额从'},
+          {type: 'input', id: 'amountTo', label: '支付金额至'}
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
@@ -30,9 +29,9 @@ class PayPaying extends React.Component {
         ]},
         {type: 'input', id: 'billcode', label: '付款流水号'},
         {type: 'input', id: 'customerBatchNo', label: '付款批次号'},
-        {type: 'items', id: 'dateRange1', items: [
-          {type: 'date', id: 'dateFrom', label: '支付日期从'},
-          {type: 'date', id: 'dateTo', label: '支付日期至'}
+        {type: 'items', id: 'dateRange', items: [
+          {type: 'date', id: 'payDateFrom', label: '支付日期从'},
+          {type: 'date', id: 'payDateTo', label: '支付日期至'}
         ]},
       ],
       searchParams: {},
@@ -43,7 +42,7 @@ class PayPaying extends React.Component {
             <div>
               <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
-              {record.documentCategoryName}
+              {record.documentTypeName}
             </div>
           )}
         },
@@ -71,7 +70,7 @@ class PayPaying extends React.Component {
         },
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'state', render: (state) => <Badge status='processing' text="支付中"/>},
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='processing' text={state}/>},
         {title: '操作', dataIndex: 'id', render: (id, record) => {
           const menu = (
             <Menu>
@@ -95,6 +94,9 @@ class PayPaying extends React.Component {
       okModalVisible: false, //确认成功modal
       failModalVisible: false, //确认失败modal
       record: {}, //点击行信息
+      confirmSuccessLoading: false,
+      confirmFailLoading: false,
+      pageSizeOptions: ['10', '20', '30', '50'],
 
       /* 线上 */
       onlineLoading: false,
@@ -105,6 +107,7 @@ class PayPaying extends React.Component {
         total: 0
       },
       onlineCash: [],  //总金额
+      onlineWarningRows: [],  //超过12小时未更新状态行
 
       /* 落地文件 */
       fileLoading: false,
@@ -115,11 +118,13 @@ class PayPaying extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
+      fileWarningRows: [],  //超过12小时未更新状态行
       paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -139,7 +144,13 @@ class PayPaying extends React.Component {
   };
 
   search = (values) => {
-    this.setState({ searchParams: values }, () => {
+    values.payDateFrom && (values.payDateFrom = moment(values.payDateFrom).format('YYYY-MM-DD'));
+    values.payDateTo && (values.payDateTo = moment(values.payDateTo).format('YYYY-MM-DD'));
+    this.setState({
+      searchParams: values,
+      onlineCash: [],
+      fileCash: []
+    }, () => {
       this.getList()
     })
   };
@@ -150,7 +161,7 @@ class PayPaying extends React.Component {
 
   //查看支付流水详情
   checkPaymentDetail = (record) => {
-    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':id', record.id));
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Paying').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   //确认成功弹框
@@ -163,9 +174,24 @@ class PayPaying extends React.Component {
   confirmSuccess = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        let date = moment(values.date).format('YYYY-MM-DD');
+        let params = {
+          detailIds: [this.state.record.id],
+          versionNumbers: [this.state.record.versionNumber]
+        };
+        this.setState({ confirmSuccessLoading: true });
+        paymentService.confirmSuccess(params, date).then(res => {
+          if (res.status === 200) {
+            message.success('操作成功');
+            this.setState({ confirmSuccessLoading: false, okModalVisible: false });
+            this.getList()
+          }
+        }).catch(() => {
+          this.setState({ confirmSuccessLoading: false });
+          message.error('操作失败，请重试')
+        })
       }
-    });
+    })
   };
 
   //确认失败弹框
@@ -175,19 +201,20 @@ class PayPaying extends React.Component {
 
   //确认失败操作
   confirmFail = () => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/PayFail`;
     let params = {
       detailIds: [this.state.record.id],
       versionNumbers: [this.state.record.versionNumber]
     };
-    httpFetch.post(url, params).then(res => {
+    this.setState({ confirmFailLoading: true });
+    paymentService.confirmFail(params).then(res => {
       if (res.status === 200) {
         message.success('操作成功');
-        this.setState({ failModalVisible: false });
+        this.setState({ failModalVisible: false, confirmFailLoading: false });
         this.getList()
       }
     }).catch(() => {
-      message.success('操作失败，请稍后再试');
+      this.setState({ confirmFailLoading: false });
+      message.success('操作失败，请重试')
     })
   };
 
@@ -195,21 +222,15 @@ class PayPaying extends React.Component {
 
   //线上
   getOnlineCash = () => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=ONLINE_PAYMENT`;
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('ONLINE_PAYMENT', 'P', this.state.searchParams).then(res => {
       this.setState({ onlineCash: res.data })
-    }).catch(() => {
-
     })
   };
 
   //落地文件
   getFileCash = () => {
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=P&paymentTypeCode=EBANK_PAYMENT`;
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('EBANK_PAYMENT', 'P', this.state.searchParams).then(res => {
       this.setState({ fileCash: res.data })
-    }).catch(() => {
-
     })
   };
 
@@ -218,16 +239,19 @@ class PayPaying extends React.Component {
   //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ onlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getPayingList(onlinePage, onlinePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
+        let onlineWarningRows = [];
+        res.data.map(item => {
+          if ((new Date().getTime() - new Date(item.payDate).getTime())/1000/60/60 > 12) {  //付款时间超过12小时
+            onlineWarningRows.push(item)
+          }
+        });
         this.setState({
           onlineData: res.data,
           onlineLoading: false,
+          onlineWarningRows,
           onlinePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
@@ -243,16 +267,19 @@ class PayPaying extends React.Component {
   //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/paying/query?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ fileLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getPayingList(filePage, filePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
+        let fileWarningRows = [];
+        res.data.map(item => {
+          if ((new Date().getTime() - new Date(item.payDate).getTime())/1000/60/60 > 12) {  //付款时间超过12小时
+            fileWarningRows.push(item)
+          }
+        });
         this.setState({
           fileData: res.data,
           fileLoading: false,
+          fileWarningRows,
           filePagination: {
             total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0
           }
@@ -265,8 +292,9 @@ class PayPaying extends React.Component {
     })
   };
 
-  /************************** 线上 **************************/
-  // 修改每页显示数量
+  /********************* 修改每页显示数量 *********************/
+
+  //线上
   onlinePaginationChange = (onlinePage, onlinePageSize) => {
     onlinePage = onlinePage - 1;
     this.setState({ onlinePage, onlinePageSize },() => {
@@ -274,9 +302,7 @@ class PayPaying extends React.Component {
     })
   };
 
-  /************************ 落地文件 ************************/
-
-  //修改每页显示数量
+  //落地文件
   filePaginationChange = (filePage, filePageSize) => {
     filePage = filePage - 1;
     this.setState({ filePage, filePageSize },() => {
@@ -288,7 +314,7 @@ class PayPaying extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, onlineWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -307,7 +333,6 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-online">
-        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={onlineData}
@@ -315,12 +340,19 @@ class PayPaying extends React.Component {
                loading={onlineLoading}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
+               rowClassName={record => {
+                 let warningFlag = false;
+                 onlineWarningRows.map(item => {
+                   item.id === record.id && (warningFlag = true)
+                 });
+                 return warningFlag ? 'row-warning' : ''
+               }}
                bordered
                size="middle"/>
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -331,7 +363,7 @@ class PayPaying extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, fileWarningRows, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付中
@@ -350,7 +382,6 @@ class PayPaying extends React.Component {
     );
     return (
       <div className="paying-file">
-        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
         <Table rowKey={record => record.id}
                columns={columns}
                dataSource={fileData}
@@ -358,12 +389,19 @@ class PayPaying extends React.Component {
                loading={fileLoading}
                title={()=>{return tableTitle}}
                scroll={{x: true, y: false}}
+               rowClassName={record => {
+                 let warningFlag = false;
+                 fileWarningRows.map(item => {
+                   item.id === record.id && (warningFlag = true)
+                 });
+                 return warningFlag ? 'row-warning' : ''
+               }}
                bordered
                size="middle"/>
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
@@ -380,7 +418,17 @@ class PayPaying extends React.Component {
       labelCol: { span: 8 },
       wrapperCol: { span: 15, offset: 1 },
     };
-    const { radioValue, searchForm, okModalVisible, failModalVisible } = this.state;
+    const { radioValue, searchForm, okModalVisible, failModalVisible, onlineWarningRows, fileWarningRows, confirmSuccessLoading, confirmFailLoading } = this.state;
+    let warningItems = radioValue === 'online' ? onlineWarningRows : fileWarningRows;
+    let warningRows = warningItems.map(item => {
+      return (
+        <div key={item.id}>
+          付款流水号：{item.billcode}
+          <span className="ant-divider" />
+          单据类型：{item.documentCategoryName}
+        </div>
+      )
+    });
     return (
       <div className="pay-paying">
         <SearchArea
@@ -393,9 +441,16 @@ class PayPaying extends React.Component {
           <Radio.Button value="offline" disabled>线下</Radio.Button>
           <Radio.Button value="file">落地文件</Radio.Button>
         </Radio.Group>
+        <Alert message="支付结果与银行业务处理速度有关，请耐心等待" type="info" showIcon style={{marginBottom:20}} />
+        {warningRows.length > 0 && <Alert message="请注意，以下付款已超过12小时未更新状态"
+                                          description={warningRows}
+                                          type="warning"
+                                          style={{margin:'-10px 0 20px'}}
+                                          showIcon />}
         {radioValue === 'online' && this.renderOnlineContent()}
         {radioValue === 'file' && this.renderFileContent()}
         <Modal visible={okModalVisible}
+               confirmLoading={confirmSuccessLoading}
                onOk={this.confirmSuccess}
                onCancel={() => this.setState({ okModalVisible: false })}
                okText="确认成功"
@@ -426,6 +481,7 @@ class PayPaying extends React.Component {
           </div>
         </Modal>
         <Modal visible={failModalVisible}
+               confirmLoading={confirmFailLoading}
                onOk={this.confirmFail}
                onCancel={() => this.setState({ failModalVisible: false })}
                okText="确认失败"
@@ -447,6 +503,10 @@ class PayPaying extends React.Component {
 
 PayPaying.contextTypes = {
   router: React.PropTypes.object
+};
+
+PayPaying.propTypes = {
+  subTab: React.PropTypes.string,
 };
 
 function mapStateToProps() {
