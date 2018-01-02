@@ -322,7 +322,7 @@ class Generator extends React.Component{
                   })(
                     this.renderFormItem(item)
                   )}
-              </FormItem>}
+                </FormItem>}
             </div>
           }
         </Col>

@@ -29,6 +29,7 @@ class NewBudgetJournalDetail extends React.Component {
       journalTypeIdFlag:true,
       companyIdFlag:true,
       journalTypeId:null,
+      currencys:[],
     };
   }
 
@@ -48,10 +49,10 @@ class NewBudgetJournalDetail extends React.Component {
       }
       case 'currency':{
         const eventData = JSON.parse(event);
-        let rate =eventData.attribute11;
+        let rate =eventData.rate;
         this.setState({ rate })
         this.props.form.setFieldsValue({
-          rate:eventData.attribute11,
+          rate:Number(rate),
           amount:'',
           functionalAmount:''
         });
@@ -191,14 +192,16 @@ class NewBudgetJournalDetail extends React.Component {
       });
     });
     let currencyOptions = [];
-    httpFetch.get(`${config.budgetUrl}/api/budget/journals/getCurrencyByBase?base=CNY`).then((res)=>{
+    httpFetch.get(`${config.baseUrl}/api/company/standard/currency/getAll`).then((res)=>{
       res.data.map(data => {
-        currencyOptions.push({label: data.attribute5,data: data,key:data.id})
+        currencyOptions.push({label: data.currencyName,data: data,key:data.id})
       });
+      this.setState({"currencys":res.data})
     })
+
     let nowYear = new Date().getFullYear();
     let yearOptions = [];
-    for(let i = nowYear - 20; i <= nowYear + 20; i++)
+    for(let i = nowYear ; i <= nowYear + 10; i++)
       yearOptions.push({label: i, value: String(i),key:i})
     let searchForm =[
       {type: 'list',key:'company', id: 'company', listType: 'company',label:this.props.intl.formatMessage({id: 'budgetJournal.companyId'}),
@@ -234,15 +237,15 @@ class NewBudgetJournalDetail extends React.Component {
         columnLabel:'periodYear',columnValue:'periodYear'
       }, //年度
       {type: 'select',key:'currency', id:'currency',label:  this.props.intl.formatMessage({id:"budgetJournal.currency"}), isRequired: true, options:currencyOptions,event:'currency',
-        labelKey:'attribute5',valueKey:'attribute4',
+        labelKey:'currencyName',valueKey:'currency',
         columnLabel: 'currency', columnValue: 'currency'
       }, //币种
-      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}), isRequired: true,event:'rate',disabled: true},  //汇率
+      {type: 'inputNumber',key:'rate', id:'rate', precision:2,label:this.props.intl.formatMessage({id:"budgetJournal.rate"}),defaultValue:1,isRequired: true,event:'rate',disabled: true},  //汇率
       {type: 'inputNumber',key:'amount', id:'amount',precision:2, label:  this.props.intl.formatMessage({id:"budgetJournal.amount"}), isRequired: true,
         step:10, defaultValue:0, event:'amount'},  //金额
       {type: 'inputNumber',key:'functionalAmount', id:'functionalAmount', precision:2,label:  this.props.intl.formatMessage({id:"budgetJournal.functionalAmount"}),
         step:10, isRequired: true, defaultValue:0, disabled: true}, //本位金额
-      {type: 'inputNumber',key:'quantity', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budgetJournal.quantity"}),step:1,defaultValue:0,min:0}, //数量
+      {type: 'inputNumber',key:'quantity', id:'quantity', precision:0,label:  this.props.intl.formatMessage({id:"budgetJournal.quantity"}),step:1,defaultValue:1,min:0}, //数量
       {type: 'input',key:'remark', id:'remark', label:  this.props.intl.formatMessage({id:"budgetJournal.remark"})}  //备注
     ];
     this.setState({ searchForm })
@@ -261,6 +264,10 @@ class NewBudgetJournalDetail extends React.Component {
         }
       }else if (nextProps.params != this.props.params) {
         this.getItemAbled(true,'','');
+        this.props.form.setFieldsValue({
+          currency:JSON.stringify((this.state.currencys)[0]),
+          rate:(this.state.currencys)[0].rate
+        })
       }
       //获取编制期段的控制
       if(nextProps.params.periodStrategy && this.state.periodStrategyFlag){
@@ -298,6 +305,10 @@ class NewBudgetJournalDetail extends React.Component {
             this.props.form.setFieldsValue(result);
           }else {
             this.props.form.resetFields();
+            this.props.form.setFieldsValue({
+              currency:JSON.stringify((this.state.currencys)[0]),
+              rate:(this.state.currencys)[0].rate
+            })
           }
         });
       }

@@ -1,10 +1,10 @@
 import React from "react";
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux'
-import { Form, Button, Table, Badge } from 'antd'
+import { Button, Table, Badge } from 'antd'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import httpFetch from 'share/httpFetch'
+import { contractService } from 'service'
 
 import SearchArea from 'components/search-area'
 
@@ -53,33 +53,25 @@ class ContractTypeDefine extends React.Component{
   }
 
   componentWillMount() {
-    let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
-    httpFetch.get(url).then((res) => {
-      if (res.status === 200) {
-        let searchForm = this.state.searchForm;
-        let searchParams = this.state.searchParams;
-        searchForm[0].defaultValue = res.data[0].setOfBooksId;
-        searchForm[0].options = [{
-          temp: true,
-          label: res.data[0].setOfBooksCode,
-          value: res.data[0].setOfBooksId
-        }];
-        searchParams.setOfBooksId = res.data[0].setOfBooksId;
-        this.setState({ searchForm, searchParams }, () => {
-          this.getList()
-        })
-      }
+    const { company } = this.props;
+    let searchForm = this.state.searchForm;
+    let searchParams = this.state.searchParams;
+    searchForm[0].defaultValue = company.setOfBooksId;
+    searchForm[0].options = [{
+      temp: true,
+      label: company.setOfBooksName,
+      value: company.setOfBooksId
+    }];
+    searchParams.setOfBooksId = company.setOfBooksId;
+    this.setState({ searchForm, searchParams }, () => {
+      this.getList()
     })
   }
 
   getList = () => {
-    const { searchParams, page, pageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/type/${searchParams.setOfBooksId}/query?page=${page}&size=${pageSize}`;
-    for(let searchKey in searchParams) {
-      searchKey !== 'setOfBooksId' && (url += searchParams[searchKey] ? `&${searchKey}=${searchParams[searchKey]}` : '')
-    }
+    const { page, pageSize, searchParams } = this.state;
     this.setState({ loading: true });
-    httpFetch.get(url).then((res) => {
+    contractService.getContractTypeDefineList(page, pageSize, searchParams.setOfBooksId, searchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           loading: false,

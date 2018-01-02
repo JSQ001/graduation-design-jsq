@@ -2,7 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import httpFetch from 'share/httpFetch'
+import { contractService } from 'service'
 import { Form, Row, Col, Badge, Button, Table, Checkbox, message, Icon } from 'antd'
 
 import ListSelector from 'components/list-selector'
@@ -45,8 +45,7 @@ class CompanyDistribution extends React.Component{
 
   getBasicInfo = () => {
     const { params } = this.props;
-    let url = `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/${params.id}`;
-    httpFetch.get(url).then((res) => {
+    contractService.getContractTypeInfo(params.setOfBooksId, params.id).then((res) => {
       let selectorItem = {
         title: "批量分配公司",
         url: `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/companies/query/filter`,
@@ -71,8 +70,7 @@ class CompanyDistribution extends React.Component{
     const { params } = this.props;
     const { page, pageSize } = this.state;
     this.setState({ loading: true });
-    let url = `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/companies/query?page=${page}&size=${pageSize}&contractTypeId=${params.id}`;
-    httpFetch.get(url).then((res) => {
+    contractService.getCompanyDistributionByContractType( page, pageSize, params.setOfBooksId, params.id).then((res) => {
       if (res.status === 200) {
         this.setState({
           data: res.data,
@@ -96,15 +94,12 @@ class CompanyDistribution extends React.Component{
   };
 
   handleStatusChange = (e, record) => {
-    console.log(e.target.checked);
-    console.log(record);
-    let url =  `${config.contractUrl}/contract/api/contract/type/${this.props.params.setOfBooksId}/toCompany`;
     let params = {
       id: record.id,
       isEnabled: e.target.checked,
       versionNumber: record.versionNumber
     };
-    httpFetch.put(url, params).then((res) => {
+    contractService.updateCompanyDistributionStatus(this.props.params.setOfBooksId, params).then((res) => {
       if (res.status === 200) {
         this.getList();
         message.success('操作成功')
@@ -126,8 +121,7 @@ class CompanyDistribution extends React.Component{
     values.result.map(item => {
       paramsValue.companyIds.push(item.id)
     });
-    let url = `${config.contractUrl}/contract/api/contract/type/${params.setOfBooksId}/toCompany`;
-    httpFetch.post(url, paramsValue).then((res) => {
+    contractService.distributionCompany(params.setOfBooksId, paramsValue).then((res) => {
       if (res.status === 200) {
         message.success('操作成功');
         this.handleListShow(false);
