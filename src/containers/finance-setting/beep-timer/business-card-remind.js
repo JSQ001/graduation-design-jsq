@@ -1,5 +1,5 @@
 /**
- * Created by 13576 on 2017/10/16.
+ * Created by 13576 on 2017/12/26.
  */
 import React from 'react'
 import { connect } from 'react-redux'
@@ -19,7 +19,7 @@ import 'styles/finance-setting/beep-timer/apply-traver.scss'
 
 
 
-class ApplyTraver extends React.Component{
+class BusinessCardRemind extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -93,4 +93,4 @@ function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(ApplyTraver));
+export default connect(mapStateToProps)(injectIntl(BusinessCardRemind));
