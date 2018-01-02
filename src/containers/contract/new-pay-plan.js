@@ -2,7 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 import { Form, Button, Input, Row, Col, Select, InputNumber, DatePicker, message } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;

@@ -11,7 +11,7 @@ const Option = Select.Option;
 const { TextArea } = Input;
 import SearchArea from 'components/search-area'
 import menuRoute from 'share/menuRoute'
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 
 import EditableCell from 'containers/pay/pay-workbench/editable-cell'
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 import { Form, Tabs, Button, Row, Col, Spin, Table, Timeline, message, Popover, Popconfirm, Icon } from 'antd'
 const TabPane = Tabs.TabPane;
 

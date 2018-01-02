@@ -6,7 +6,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import contractService from "service/contractService"
+import { contractService } from 'service'
 
 import PermissionSetting from 'components/template/permission-setting'
 

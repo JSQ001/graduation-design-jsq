@@ -7,7 +7,7 @@ const Option = Select.Option;
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 
 import moment from 'moment'
 import Upload from 'components/upload'
@@ -110,6 +110,9 @@ class NewContract extends React.Component{
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
         values.contractTypeId = values.contractTypeId[0].id;
+        this.state.unitIdOptions.map(option => {
+          option.departmentOID === values.unitId && (values.unitId = option.id)
+        });
         this.setState({ loading: true });
         contractService.newContractHeader(values).then(res => {
           if (res.status === 200) {

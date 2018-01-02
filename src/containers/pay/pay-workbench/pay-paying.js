@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import menuRoute from 'share/menuRoute'
 import { Radio, Badge, Table, Pagination, message, Alert, Icon, Dropdown, Menu, Modal, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 
 import moment from 'moment';
 import SearchArea from 'components/search-area'

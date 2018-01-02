@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl'
 import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'

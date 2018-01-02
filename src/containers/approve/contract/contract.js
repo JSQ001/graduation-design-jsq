@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl'
 import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
 import menuRoute from 'share/menuRoute'
-import contractService from "service/contractService"
+import { contractService } from 'service'
 
 import SearchArea from 'components/search-area'
 import moment from 'moment'

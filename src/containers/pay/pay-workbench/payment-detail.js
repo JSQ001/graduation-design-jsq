@@ -1,10 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 import { Alert, Badge, Table, Card, Icon, Spin } from 'antd'
 
 import moment from 'moment'

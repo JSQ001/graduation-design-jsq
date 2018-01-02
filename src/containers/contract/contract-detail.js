@@ -1,7 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 import { Form, Affix, Button, message } from 'antd'
 
 import ContractDetailCommon from 'containers/contract/contract-detail-common'

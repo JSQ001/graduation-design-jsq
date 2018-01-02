@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 import { Form, Radio, Badge, Table, Pagination, message, Button, Alert, Modal, Select, Input, Popconfirm, Spin } from 'antd'
 const Option = Select.Option;
 const FormItem = Form.Item;

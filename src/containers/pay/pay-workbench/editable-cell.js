@@ -2,7 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 import { Form, InputNumber, Icon, Tooltip, Select, Spin, Popover, Timeline, message } from 'antd'
 const Option = Select.Option;
 

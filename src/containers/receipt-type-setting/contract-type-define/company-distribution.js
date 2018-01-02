@@ -2,7 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
 import config from 'config'
-import contractService from 'service/contractService'
+import { contractService } from 'service'
 import { Form, Row, Col, Badge, Button, Table, Checkbox, message, Icon } from 'antd'
 
 import ListSelector from 'components/list-selector'

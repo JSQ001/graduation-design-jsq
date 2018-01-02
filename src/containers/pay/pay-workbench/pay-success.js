@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import paymentService from 'service/paymentService'
+import { paymentService } from 'service'
 import { Badge, Radio, Table, Pagination, Alert, message, Modal, Icon, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
 
