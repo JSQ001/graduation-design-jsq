@@ -49,8 +49,11 @@ class BeepFrom extends React.Component{
   //保存控制
   handSubmit=(e)=>{
     e.preventDefault();
-   const value = this.props.getFieldsValue();
-    console.log(value)
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if(!err){
+        this.props.submitHandle(values);
+      }
+    })
   }
 
   render(){
@@ -77,10 +80,9 @@ class BeepFrom extends React.Component{
             <Row>
               <Col span={8}>
               <FormItem {...formItemLayout} label="提醒标题" >
-                {getFieldDecorator('code1', {
+                {getFieldDecorator('code', {
                   rules: [{
                   }],
-                  initialValue: '提醒标题'
                 })(
                   <Input  />
                 )}
@@ -121,7 +123,7 @@ class BeepFrom extends React.Component{
 
               <Col span={8}>
                 <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('code4', {
+                  {getFieldDecorator('hour', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -154,7 +156,7 @@ class BeepFrom extends React.Component{
 
               <Col span={8}>
                 <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('code4', {
+                  {getFieldDecorator('hour', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -169,7 +171,7 @@ class BeepFrom extends React.Component{
               <Col span={8}>
                 <FormItem {...formItemLayout} label="发送日期" >
                   <span>预计还款日期前</span>
-                  {getFieldDecorator('code3', {
+                  {getFieldDecorator('data', {
                     rules: [{
                     }],
                     initialValue: ''
@@ -246,12 +248,13 @@ const WrappedBeepFrom= Form.create()(BeepFrom);
 WrappedBeepFrom.propTypes = {
   type: React.PropTypes.string,  //选择类型 "borrow","traver","business-card","regularly"
   applyData:React.PropTypes.object,
-  onEdit:React.PropTypes.func
+  onEdit:React.PropTypes.func,
+  submitHandle:React.PropTypes.func   //保存
 }
 WrappedBeepFrom.defaultProps = {
   applyData:{},
-  onEdit:()=>{}
-
+  onEdit:()=>{},
+  submitHandle:()=>{}
 }
 
 

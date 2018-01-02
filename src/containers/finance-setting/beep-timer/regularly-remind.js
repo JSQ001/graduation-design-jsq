@@ -54,6 +54,8 @@ class RegularlyRemind extends React.Component{
     });
   };
 
+  submitHandle
+
 
   componentWillMount(){
 
@@ -81,6 +83,7 @@ class RegularlyRemind extends React.Component{
         <WrappedBeepFrom
           type={"regularly"}
           applyData ={{}}
+          submitHandle ={this.submitHandle}
         />
       </div>
 
