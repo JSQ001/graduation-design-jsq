@@ -15,6 +15,7 @@ import SupplierCompanyDelivery from  'containers/financial-management/supplier-m
 //财务管理
 const financialManagement = {
   key:'financial-management',
+  icon: 'pay-circle-o',
   subMenu: [
     //单据审核
     {
