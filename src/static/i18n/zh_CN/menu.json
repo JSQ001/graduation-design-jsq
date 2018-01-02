@@ -134,5 +134,7 @@
   "menu.voucher-template": "凭证模板",
   "menu.accounting-scenarios-system": "核算场景-系统级",
   "menu.accounting-elements": "核算要素",
-  "menu.accounting-scenarios": "核算场景-账套级"
+  "menu.accounting-scenarios": "核算场景-账套级",
+  "menu.matching-group-elements": "匹配组与核算要素",
+  "menu.subject-matching-setting": "科目匹配设置"
 }

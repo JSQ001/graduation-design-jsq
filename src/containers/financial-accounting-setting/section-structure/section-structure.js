@@ -70,7 +70,7 @@ class SectionStructure extends React.Component{
   };
 
   handleLinkSetting = (e,record,index)=>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace('id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').children.sectionSetting.url.replace(':id', record.id))
   };
 
   componentWillMount() {

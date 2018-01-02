@@ -73,8 +73,7 @@ class AccountingSource extends React.Component {
   };
 
   handleLinkTemplate = (e, record,index)=>{
-    console.log(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace('id', record.id))
-    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace('id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace(':id', record.id))
   };
 
   componentWillMount() {

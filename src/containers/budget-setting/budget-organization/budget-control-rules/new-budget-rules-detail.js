@@ -168,7 +168,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'quarter',
         labelKey: 'messageKey',
         valueKey: 'id',
-        codeKey: 'messageKey',
+        codeKey: 'code',
         listExtraParams: {systemCustomEnumerationType: 2021},
         selectorItem: undefined
       },

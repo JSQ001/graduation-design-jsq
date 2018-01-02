@@ -69,7 +69,7 @@ class AccountingScenariosSystem extends React.Component {
   }
 
   handleLinkElement = (e, record,index)=>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-scenarios-system', 'key').children.accountingElements.url.replace('id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-scenarios-system', 'key').children.accountingElements.url.replace(':id', record.id))
   };
 
   componentWillMount() {

@@ -1,10 +1,10 @@
 /**
- * created by jsq on 2017/12/27
+ * created by jsq on 2018/01/02
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Badge} from 'antd'
+import { Button, Table, Badge, Popconfirm} from 'antd'
 import SlideFrame from 'components/slide-frame'
 import NewUpdateScenariosSystem from 'containers/financial-accounting-setting/accounting-scenarios-system/new-update-scenarios-system'
 import SearchArea from 'components/search-area';
@@ -14,7 +14,7 @@ import menuRoute from 'share/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios/accounting-scenarios.scss'
 import ListSelector from 'components/list-selector'
 
-class AccountingScenarios extends React.Component {
+class subjectsMatchingSetting extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -45,11 +45,11 @@ class AccountingScenarios extends React.Component {
         },
       ],
       columns: [
-        {          /*账套*/
-          title: formatMessage({id:"section.setOfBook"}), key: "setOfBook", dataIndex: 'setOfBook'
+        {          /*科目代码*/
+          title: formatMessage({id:"accounting.subject.code"}), key: "setOfBook", dataIndex: 'setOfBook'
         },
-        {          /*核算场景代码*/
-          title: formatMessage({id:"accounting.scenarios.code"}), key: "scenariosCode", dataIndex: 'scenariosCode'
+        {          /*科目名称*/
+          title: formatMessage({id:"accounting.subject.name"}), key: "scenariosCode", dataIndex: 'scenariosCode'
         },
         {          /*核算场景名称*/
           title: formatMessage({id:"accounting.scenarios.name"}), key: "scenariosName", dataIndex: 'scenariosName'
@@ -65,15 +65,17 @@ class AccountingScenarios extends React.Component {
           <span>
             <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "common.edit"})}</a>   {/*编辑*/}
             <span className="ant-divider" />
-            <a href="#" onClick={(e) => this.handleLinkConfig(e, record,index)}>{formatMessage({id: "accounting.configuration.set"})}</a>
+             <Popconfirm onConfirm={(e) => this.deleteItem(e, record,index)} title={formatMessage({id:"budget.are.you.sure.to.delete.rule"}, {controlRule: record.controlRuleName})}>{/* 你确定要删除organizationName吗 */}
+               <a href="#" style={{marginLeft: 12}}>{ formatMessage({id: "common.delete"})}</a>
+              </Popconfirm>
           </span>)
         },
       ],
     };
   }
 
-  handleLinkConfig = (e, record,index)=>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-scenarios', 'key').children.matchingGroupElements.url.replace(':id',record.id))
+  deleteItem = (e, record,index)=>{
+    alert(1)
   };
 
   componentWillMount() {
@@ -149,11 +151,20 @@ class AccountingScenarios extends React.Component {
     const { formatMessage} = this.props.intl;
     const { loading, data, columns, searchForm, pagination, lov, dataVisible, scenariosVisible } = this.state;
     return(
-      <div className="accounting-scenarios-system">
+      <div className="subject-matching-setting">
         <div className="accounting-scenarios-head-tips">
-          {formatMessage({id:"accounting.scenarios.headTips"})}
+          <span>
+            {formatMessage({id:"section.setOfBook"})}: 假账套
+          </span>
+          <span style={{marginLeft:10}}>
+            {formatMessage({id:"accounting.scenarios"},{name:""})+":vd"}
+          </span>
+          <span style={{marginLeft:10}}>
+            {formatMessage({id:"accounting.subject.setting"},{name:"ffff"})}
+          </span>
         </div>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
+        <div>设置核算场景下，不同核算要素组合时匹配的科目。</div>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
@@ -185,7 +196,7 @@ class AccountingScenarios extends React.Component {
 }
 
 
-AccountingScenarios.contextTypes = {
+subjectsMatchingSetting.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -193,4 +204,5 @@ function mapStateToProps(state) {
   return {}
 }
 
-export default connect(mapStateToProps)(injectIntl(AccountingScenarios));
+export default connect(mapStateToProps)(injectIntl(subjectsMatchingSetting));
+
