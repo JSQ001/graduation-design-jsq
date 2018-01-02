@@ -205,9 +205,9 @@ class SubSubjectMaintain extends React.Component {
 
   //只要有props的值发生变化，就会调用该方法
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.params.record);
+    //console.log(nextProps.params.record);
     if (!nextProps.params || nextProps.params == this.props.params) {
-      console.log("=====componentWillReceiveProps return");
+      //console.log("=====componentWillReceiveProps return");
       return;
     }
     let searchParamsTmp = {

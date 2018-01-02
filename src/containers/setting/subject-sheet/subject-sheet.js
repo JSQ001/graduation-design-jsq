@@ -148,7 +148,7 @@ class SubjectSheet extends React.Component {
   };
 
   searchEventHandle = (event, value) => {
-    console.log(event, value)
+    //console.log(event, value)
   };
 
   handleCloseNewSlide = (params) => {

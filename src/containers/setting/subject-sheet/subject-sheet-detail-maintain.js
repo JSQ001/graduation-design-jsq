@@ -49,7 +49,7 @@ class SubjectSheetDetailMaintain extends React.Component {
   }
   //获取 余额方向的值列表
   clickBalanceDirectionSelect = () => {
-    console.log("balanceDirectionOptions length:" + this.state.balanceDirectionOptions.length);
+    //console.log("balanceDirectionOptions length:" + this.state.balanceDirectionOptions.length);
     //如果已经有值，则不再查询
     if (this.state.balanceDirectionOptions.length > 1) {
       return;
@@ -76,12 +76,12 @@ class SubjectSheetDetailMaintain extends React.Component {
   componentWillReceiveProps(nextProps) {
     // console.log(this.props.params);
     // console.log(nextProps.params);
-    console.log("=====componentWillReceiveProps begin");
+    //console.log("=====componentWillReceiveProps begin");
     if (!nextProps.params || nextProps.params == this.props.params) {
-      console.log("=====componentWillReceiveProps return");
+      //console.log("=====componentWillReceiveProps return");
       return;
     }
-    console.log("=====componentWillReceiveProps continue");
+    //console.log("=====componentWillReceiveProps continue");
 
     //余额方向 值列表
     let balanceDirectionOptionsTemp = [];

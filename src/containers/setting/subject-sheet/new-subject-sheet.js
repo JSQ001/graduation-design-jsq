@@ -24,7 +24,7 @@ class NewSubjectSheet extends React.Component {
 
     componentWillMount() {
         let params = this.props.params;
-        console.log(params);
+        //console.log(params);
         // if (params && JSON.stringify(params) != "{}") {
         //     this.setState({
         //         isDisabled: true,

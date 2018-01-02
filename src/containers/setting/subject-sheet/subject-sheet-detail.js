@@ -170,7 +170,7 @@ class SubjectSheetDetail extends React.Component {
 
   //获取 科目类型的值列表
   clickAccountTypeSelect = () => {
-    console.log("clickAccountTypeSelect:" + this.state.accountTypeOptions);
+    //console.log("clickAccountTypeSelect:" + this.state.accountTypeOptions);
     //如果已经有值，则不再查询
     if (this.state.accountTypeOptions != '' && this.state.accountTypeOptions != undefined) {
       return;

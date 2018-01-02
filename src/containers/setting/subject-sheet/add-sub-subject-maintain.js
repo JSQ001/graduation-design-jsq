@@ -109,10 +109,10 @@ class AddSubSubjectMaintain extends React.Component {
   };
   //只要有props的值发生变化，就会调用该方法
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.params);
-    console.log("=====componentWillReceiveProps add====");
+    //console.log(nextProps.params);
+    //console.log("=====componentWillReceiveProps add====");
     if (!nextProps.params || nextProps.params == this.props.params) {
-      console.log("=====componentWillReceiveProps return");
+      //console.log("=====componentWillReceiveProps return");
       return;
     }
     this.clear();
@@ -170,7 +170,7 @@ class AddSubSubjectMaintain extends React.Component {
 
   //分页点击
   onChangePager = (page) => {
-    console.log("onChangePager:" + this.state.page);
+    //console.log("onChangePager:" + this.state.page);
     if (page - 1 !== this.state.page)
       this.setState({
         page: page - 1,
@@ -193,12 +193,12 @@ class AddSubSubjectMaintain extends React.Component {
   };
 
   searchEventHandle = (event, value) => {
-    console.log(event, value)
+    //console.log(event, value)
   };
 
   // 添加子科目
   addSubSubjectSave = (visible) => {
-    console.log(visible);
+    //console.log(visible);
     if (this.state.selectedRowKeys.length < 1){
       message.info(this.props.intl.formatMessage({ id: 'common.select.at.least.one.line' }));  //操作成功
       return;
@@ -235,13 +235,13 @@ class AddSubSubjectMaintain extends React.Component {
   }
   //确认的取消
   cancel = () => {
-    console.log("cancel");
+    //console.log("cancel");
     this.setState({ visible: false });
   }
 
   //删除
   deleteItem = (values) => {
-    console.log(values);
+    //console.log(values);
   };
   //取消按钮
   onCancel = () => {
