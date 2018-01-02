@@ -1,4 +1,3 @@
-
 /**
  * Created by 13576 on 2017/10/16.
  */
@@ -22,7 +21,7 @@ class ApplyBorrow extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      data:[]
+      fromData:[]
     };
   }
 
@@ -34,6 +33,9 @@ class ApplyBorrow extends React.Component{
   getData(){
     httpFetch.get(`${config.baseUrl}/api/custom/forms/company/travel/application/all`).then((req)=>{
       console.log(req);
+      this.setState({
+        fromData: req.data
+      })
     })
   }
 

@@ -83,7 +83,7 @@ class Login extends React.Component{
         </div>
         <div className="message">
           <div className="no-account">还没有账号？请联系客服</div>
-          <div className="phone-number">400-202-2020</div>
+          <div className="phone-number">400-829-7878</div>
         </div>
 
         <div id="scene">

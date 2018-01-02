@@ -7,7 +7,7 @@ import App from 'containers/App'
 import 'share/common'
 
 import 'styles/common.scss'
-import 'static/animate.css'
+import 'styles/animate.css'
 
 import config from 'config'
 import 'ant-design-pro/dist/ant-design-pro.css';

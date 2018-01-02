@@ -41,7 +41,7 @@ class Main extends React.Component{
       collapsed: false,
       check: false,
       error: false,
-      errorText: '',
+      errorContent: {},
       adminMode: false,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
@@ -153,9 +153,12 @@ class Main extends React.Component{
    */
   checkParams() {
     let errorContent = this.props.intl.formatMessage({id: 'common.error'});
-    this.setState({check: false, error: false});
+    this.setState({check: false, error: false, errorContent: {}});
     const path = location.pathname;
     let section = path.split('/');
+    if(section.length > 1){
+      this.setState({ adminMode: menuRoute.getMenuItemByAttr(section[2], 'key').admin })
+    }
     if(path.indexOf('budget-organization-detail') > -1 && this.props.organization.id !== section[5]) {  //预算组织内部页面的组织id检查
       let actions = (value) => {
         budgetService.getOrganizationById(value).then(res => {
@@ -190,7 +193,14 @@ class Main extends React.Component{
       }).catch(e => {
         let content = (e.response && e.response.data) ? (e.response.data.message ? e.response.data.message : errorContent) : errorContent;
         this.props.dispatch(setUserOrganization({message: content}));
-        this.setState({ check: true, error: true, errorText: content });
+        this.setState({ check: true, error: true, errorContent: {
+            text: content,
+            title: 500,
+            skip: menuRoute.getRouteItem('budget-organization').url,
+            buttonText: '去设置',
+            hasButton: true
+          }
+        });
       })
     } else {
       this.setState({check: true});
@@ -279,7 +289,7 @@ class Main extends React.Component{
   };
 
   render(){
-    const { collapsed, check, error, showListSelector, adminMode, errorText } = this.state;
+    const { collapsed, check, error, showListSelector, adminMode, errorContent } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <Layout className="helios-main">
@@ -315,7 +325,7 @@ class Main extends React.Component{
             {this.renderBreadcrumb()}
           </Header>
           <Content className="helios-content">
-            {check ? (error ? <Error text={errorText}/> : menuRoute.MainRoute) : <Loading/>}
+            {check ? (error ? <Error {...errorContent} /> : menuRoute.MainRoute) : <Loading/>}
           </Content>
         </Layout>
 

@@ -332,7 +332,7 @@ class BudgetJournalDetailSubmit extends React.Component {
             <Button className="button-return" onClick={this.HandleReturn}>{this.props.intl.formatMessage({id:"budgetJournal.return"})}</Button>
             {this.state.infoData.status === "SUBMIT"?
               (   <Popconfirm placement="topLeft" title={this.props.intl.formatMessage({id:"budgetJournal.returnCommit"})} onConfirm={this.handleRevocation} okText={this.props.intl.formatMessage({id:'common.ok'})} cancelText={this.props.intl.formatMessage({id:'common.cancel'})}>
-                   <Button className="button-Revocation" type="primary" >{this.props.intl.formatMessage({id:"budgetJournal.returnCommit"})}</Button>)
+                   <Button className="button-Revocation" type="primary" >{this.props.intl.formatMessage({id:"budgetJournal.returnCommit"})}</Button>
                 </Popconfirm>
               ) :''}
 
