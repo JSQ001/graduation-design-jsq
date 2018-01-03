@@ -198,7 +198,7 @@ class CreateOrUpdateBank extends React.Component{
               initialValue:isEnabled
             })(
               <div>
-                <Switch defaultChecked={isEnabled} disabled={typeof bank.id ==='undefined' ? false : true} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <Switch defaultChecked={isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
                 <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
               </div>)}
           </FormItem>
@@ -213,7 +213,7 @@ class CreateOrUpdateBank extends React.Component{
                 }
               ],
             })(
-              <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
+              <Input  disabled={typeof bank.id ==='undefined' ? false : true}  placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
             )}
           </FormItem>
           <FormItem {...formItemLayout}
