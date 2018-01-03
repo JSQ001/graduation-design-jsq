@@ -2,7 +2,7 @@
  * Created by 13576 on 2017/12/4.
  */
 import React from 'react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message, Spin } from 'antd'
 const FormItem = Form.Item;
@@ -15,7 +15,7 @@ import moment from 'moment'
 import Upload from 'components/upload'
 import Chooser from 'components/chooser'
 
-class MyNewPrePayment extends React.Component{
+class MyNewPrePayment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,43 +33,75 @@ class MyNewPrePayment extends React.Component{
       uploadOIDs: [], //上传附件的OIDs
       employeeOptions: [], //员工选项
       venderOptions: [], //供应商选项
-      employeeIdOptions:[],//申请人
-      unitIdOptions:[],//部门
+      employeeIdOptions: [],//申请人
+      unitIdOptions: [],//部门
       selectorItem: {},
       extraParams: null,
-      myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
-      contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
+      departmentId: "",
+      myContract: menuRoute.getRouteItem('my-contract', 'key'),    //我的合同
+      contractDetail: menuRoute.getRouteItem('contract-detail', 'key'),    //合同详情
+      PayRequisitionDetail: menuRoute.getRouteItem('pre-payment-detail', 'key'), //预付款详情
+      model: {}
     }
   }
 
   componentWillMount() {
-    Number(this.props.params.id) && this.getInfo(); //预付款编辑
-    this.setState({ user: this.props.user });
-    this.getSystemValueList(2107).then(res => { //合同方类型
-      let partnerCategoryOptions = res.data.values || [];
-      this.setState({ partnerCategoryOptions })
-    });
-    this.getSystemValueList(2202).then(res => { //合同大类
-      let contractCategoryOptions = res.data.values || [];
-      this.setState({ contractCategoryOptions })
-    });
-    this.service.getCurrencyList().then((res) => {  //币种
-      let currencyOptions = res.data;
-      this.setState({ currencyOptions })
-    });
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
-      this.setState({ setOfBooksId: res.data[0].setOfBooksId });
-      httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
-        let companyIdOptions = res.data;
-        this.setState({ companyIdOptions })
+
+    // httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
+    //   this.setState({ setOfBooksId: res.data[0].setOfBooksId });
+    //   httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
+    //     let companyIdOptions = res.data;
+    //     this.setState({ companyIdOptions })
+    //   })
+    //   httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?deptCode=&deptName=`).then((res) => {  //公司
+    //     let unitIdOptions = res.data;
+    //     this.setState({ unitIdOptions })
+    //   })
+    // });
+
+    if (this.props.params.id) {
+      let url = `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead/${this.props.params.id}`;
+
+      httpFetch.get(url).then(res => {
+        this.setState({ model: res.data.head,isNew:false });
       })
-      httpFetch.get(`${config.baseUrl}/api/DepartmentGroup/selectDept/enabled?companyId=''&setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
-        let unitIdOptions = res.data;
-        this.setState({ unitIdOptions })
+
+      httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
+        this.setState({ setOfBooksId: res.data[0].setOfBooksId });
+        httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
+          let companyIdOptions = res.data;
+          this.setState({ companyIdOptions })
+        })
+        httpFetch.get(`${config.budgetUrl}/api/budget/journals/selectDepartmentsByCompanyAndTenant?deptCode=&deptName=`).then((res) => {  //公司
+          let unitIdOptions = res.data;
+          this.setState({ unitIdOptions })
+        })
+      });
+    }
+    else {
+      httpFetch.get(`${config.baseUrl}/api/departments/${this.props.user.departmentOID}`).then(res => {
+        this.setState({ departmentId: res.data.id });
       })
-    });
+      // console.log(this.props.user);
+  
+      Number(this.props.params.id) && this.getInfo(); //预付款编辑
+      this.setState({ user: this.props.user });
+      this.getSystemValueList(2107).then(res => { //合同方类型
+        let partnerCategoryOptions = res.data.values || [];
+        this.setState({ partnerCategoryOptions })
+      });
+      this.getSystemValueList(2202).then(res => { //合同大类
+        let contractCategoryOptions = res.data.values || [];
+        this.setState({ contractCategoryOptions })
+      });
+      this.service.getCurrencyList().then((res) => {  //币种
+        let currencyOptions = res.data;
+        this.setState({ currencyOptions })
+      });
+    }
 
   }
+
 
   //获取
   getInfo = () => {
@@ -97,18 +129,31 @@ class MyNewPrePayment extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.requisitionDate && (values.requisitionDate = values.requisitionDate.format('YYYY-MM-DD'));
-        const dataValue={
-          ...values,
-          paymentReqTypeId:this.props.params.prePaymentTypeId
-      }
-        let url = `${config.cdcUrl}/api/cash/prepayment/requisitionHead`;
+
+        let dataValue = null;
+        if(this.state.isNew) {
+          dataValue = {
+            ...values,
+            paymentReqTypeId: this.props.params.prePaymentTypeId,
+            tenant_id: this.props.user.tenantId,
+            attachmentOids: this.state.uploadOIDs
+          }
+        }
+        else {
+          dataValue = {
+            ...this.state.model,
+            ...values,
+            attachmentOids: this.state.uploadOIDs
+          }
+        }
+        let url = `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead`;
+  
         this.setState({ loading: true });
         httpFetch.post(url, dataValue).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
-            this.context.router.push(this.state.contractDetail.url.replace(':id', res.data.id));
+            this.context.router.push(this.state.PayRequisitionDetail.url.replace(':id', res.data.id));
           }
         }).catch(e => {
           message.error(`保存失败，${e.response.data.message}`);
@@ -143,30 +188,30 @@ class MyNewPrePayment extends React.Component{
   };
 
   //当选择申请人的时候
-  handleSelectEmoloyee = () =>{
+  handleSelectEmoloyee = () => {
 
   }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data,unitIdOptions, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
+    const { model,loading, departmentId, pageLoading, user, contractTypeDisabled, isNew, data, unitIdOptions, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, selectorItem, extraParams } = this.state;
     return (
-      <div className="new-contract background-transparent" style={{marginBottom:'40px'}}>
+      <div className="new-contract background-transparent" style={{ marginBottom: '40px' }}>
         <Spin spinning={pageLoading}>
-          <Card title="单据信息" noHovering style={{marginBottom:'20px'}}>
+          <Card title="单据信息" noHovering style={{ marginBottom: '20px' }}>
             <Row>
               <Col span={7}>
-                <div style={{lineHeight: '32px'}}>单据编号:</div>
-                <Input value={isNew ? '-' : data.id} disabled />
+                <div style={{ lineHeight: '32px' }}>单据编号:</div>
+                <Input value={isNew ? '-' : model.requisitionNumber} disabled />
               </Col>
               <Col span={7} offset={1}>
-                <div style={{lineHeight: '32px'}}>创建人:</div>
-                <Input value={user.fullName} disabled />
+                <div style={{ lineHeight: '32px' }}>创建人:</div>
+                <Input value={isNew ? user.fullName : model.createByName } disabled />
               </Col>
             </Row>
           </Card>
-          <Form onSubmit={isNew ? this.handleSave : this.handleUpdate}>
-            <Card title="基本信息" noHovering style={{marginBottom:'20px'}}>
+          <Form onSubmit={this.handleSave}>
+            <Card title="基本信息" noHovering style={{ marginBottom: '20px' }}>
               <Row>
                 <Col span={7} offset={1}>
                   <FormItem label="申请日期">
@@ -175,10 +220,10 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请选择'
                       }],
-                      initialValue: isNew ? undefined : moment(data.timestamp)
+                      initialValue: isNew ? moment(new Date()) : moment(model.requisitionDate)
                     })(
-                      <DatePicker style={{width:'100%'}}/>
-                    )}
+                      <DatePicker style={{ width: '100%' }} />
+                      )}
                   </FormItem>
                 </Col>
                 <Col span={7} offset={1}>
@@ -188,14 +233,12 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请选择'
                       }],
-                     // initialValue: isNew ? undefined : [data.contractTypeId]
-                     // initialValue:this.props.user.id
-                      initialValue:174342,
+                      // initialValue: isNew ? undefined : [data.contractTypeId]
+                      // initialValue:this.props.user.id
+                      initialValue: isNew?user.id:model.employeeId,
                     })(
-                      <Select onSelect={this.handleSelectEmoloyee}>
-
-                      </Select>
-                    )}
+                      <Select onSelect={this.handleSelectEmoloyee}></Select>
+                      )}
                   </FormItem>
                 </Col>
                 <Col span={7} offset={1}>
@@ -205,14 +248,14 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请选择'
                       }],
-                      initialValue: isNew ? undefined : data.companyId
+                      initialValue: isNew ? this.props.user.companyId : parseInt(model.companyId)
                     })(
                       <Select placeholder="请选择" onChange={this.handleCompanyId}>
                         {companyIdOptions.map((option) => {
-                          return <Option key={option.id}>{option.name}</Option>
+                          return <Option value={option.id} key={option.id}>{option.name}</Option>
                         })}
                       </Select>
-                    )}
+                      )}
                   </FormItem>
                 </Col>
 
@@ -225,15 +268,15 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请选择'
                       }],
-                     // initialValue: isNew ? undefined : data.unitId
-                      initialValue:123
+                      // initialValue: isNew ? undefined : data.unitId
+                      initialValue: isNew ? departmentId : model.unitId
                     })(
                       <Select placeholder="请选择">
                         {unitIdOptions.map(option => {
                           return <Option key={option.id}>{option.name}</Option>
                         })}
                       </Select>
-                    )}
+                      )}
                   </FormItem>
                 </Col>
                 <Col span={15} offset={1}>
@@ -243,31 +286,33 @@ class MyNewPrePayment extends React.Component{
                         required: true,
                         message: '请输入'
                       }],
-                      initialValue: isNew ? '' : data.description
+                      initialValue: isNew ? '' : model.description
                     })(
-                      <Input placeholder="请输入"/>
-                    )}
+                      <Input placeholder="请输入" />
+                      )}
                   </FormItem>
                 </Col>
               </Row>
             </Card>
-            <Card title="附件信息" noHovering style={{marginBottom:'20px'}}>
+            <Card title="附件信息" noHovering style={{ marginBottom: '20px' }}>
               <Row>
                 <Col span={7}>
                   <FormItem>
                     {getFieldDecorator('attachmentOID')(
                       <Upload attachmentType="CONTRACT"
-                              fileNum={9}
-                              uploadHandle={this.handleUpload}/>
+                        fileNum={9}
+                        uploadHandle={this.handleUpload} />
                     )}
                   </FormItem>
                 </Col>
               </Row>
             </Card>
             <Affix offsetBottom={0}
-                   style={{position:'fixed',bottom:0,marginLeft:'-35px', width:'100%', height:'50px',
-                     boxShadow:'0px -5px 5px rgba(0, 0, 0, 0.067)', background:'#fff',lineHeight:'50px'}}>
-              <Button type="primary" htmlType="submit" loading={loading} style={{margin:'0 20px'}}>下一步</Button>
+              style={{
+                position: 'fixed', bottom: 0, marginLeft: '-35px', width: '100%', height: '50px',
+                boxShadow: '0px -5px 5px rgba(0, 0, 0, 0.067)', background: '#fff', lineHeight: '50px'
+              }}>
+              <Button type="primary" htmlType="submit" loading={loading} style={{ margin: '0 20px' }}>{isNew?"下一步":"确定"}</Button>
               <Button onClick={this.onCancel}>取消</Button>
             </Affix>
           </Form>

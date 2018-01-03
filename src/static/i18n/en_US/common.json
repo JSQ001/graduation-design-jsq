@@ -32,5 +32,12 @@
   "common.help": "Help",
   "common.baseInfo": "Base Info",
   "common.sequence": "SN",
+  "common.yes": "Yes",
+  "common.no": "No",
+  "common.all":"All",
+  "common.back":"Back",
+  "common.select.at.least.one.line":"Please select at least one line",
+  "common.confirm.add":"Confirm add ?",
+  "common.confirm.delete":"Confirm delete ?",
   "common.error": "Oops, service error occurs, please try it later :("
 }
