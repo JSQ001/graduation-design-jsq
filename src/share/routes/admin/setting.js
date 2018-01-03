@@ -44,6 +44,13 @@ const setting = {
           url:'/main/setting/value-list/new-value-list',
           components: NewValueList,
           parent: 'value-list'
+        },
+        //值列表详情
+        valueListDetail: {
+          key:'value-list-detail',
+          url:'/main/setting/value-list/value-list-detail/:customEnumerationOID',
+          components: NewValueList,
+          parent: 'value-list'
         }
       }
     },

@@ -5,7 +5,8 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import { Form, Table, Button, notification, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal, Upload } from 'antd';
+import menuRoute from 'share/menuRoute'
+import { Form, Table, Button, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal, Upload, message, Checkbox, Tooltip } from 'antd';
 const FormItem = Form.Item;
 
 import SlideFrame from 'components/slide-frame'
@@ -17,33 +18,94 @@ class ValueList extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
+      tableLoading: false,
       data: [],
-      page: 0,
-      pageSize: 10,
+      page: 1,
+      pagination: {},
       columns: [
-        {title: '序号', dataIndex: 'index'},
+        {title: '序号', dataIndex: 'index', width: '7%', render: (value, record, index) => index + 1 + 10 * (this.state.page - 1)},
         {title: '值名称', dataIndex: 'messageKey'},
         {title: '编码', dataIndex: 'value'},
-        {title: '数据权限', key: 'common', render: common => common ? '全员' : '部分'},
-        {title: '备注', key: 'remark', render: remark => remark ? remark : '-'},
-        {title: '状态', key: 'enabled', render: enabled => <Badge status={enabled ? 'success' : 'error'} text={enabled ? '启用' : '禁用'} />},
+        {title: '数据权限', dataIndex: 'common', render: common => common ? '全员' : '部分'},
+        {title: '备注', dataIndex: 'remark', render: remark =>
+          remark ? <Tooltip title={remark}>{remark}</Tooltip> : '-'},
+        {title: '状态', dataIndex: 'enabled', width: '7%', render: enabled =>
+          <Badge status={enabled ? 'success' : 'error'} text={enabled ? '启用' : '禁用'} />},
+        {title: '默认', dataIndex: 'customEnumerationItemOID', width: '7%', render: (value, record) =>
+          <Checkbox checked={value === this.state.defaultCustomEnumerationItemOID} onChange={(e) => this.setDefault(e, record)}/>}
       ],
-      pagination: {
-        total: 0
-      },
       showSlideFrame: false,
       showImportFrame: false,
       form: {
         name: '',
         enabled: true
       },
-      edit: true
+      edit: true,
+      customEnumerationOID: null,
+      defaultCustomEnumerationItemOID: null,
+      isCustom: '',
+      valueList: menuRoute.getRouteItem('value-list','key')   //值列表页
     };
   }
 
   componentWillMount(){
-
+    if(this.props.params.customEnumerationOID) {
+      this.setState({
+        customEnumerationOID: this.props.params.customEnumerationOID,
+        edit: false
+      },() => {
+        this.getList()
+      })
+    }
   }
+
+  getList = () => {
+    this.setState({ tableLoading: true });
+    let url = `${config.baseUrl}/api/custom/enumerations/${this.state.customEnumerationOID}`;
+    let form = this.state.form;
+    httpFetch.get(url).then(res => {
+      form.name = res.data.name;
+      form.enabled = res.data.enabled;
+      form.defaultCustomEnumerationItemOID = res.data.defaultCustomEnumerationItemOID;
+      form.defaultCustomEnumerationItemValue = res.data.defaultCustomEnumerationItemValue;
+      this.setState({
+        tableLoading: false,
+        data: res.data.values,
+        isCustom: res.data.isCustom,
+        defaultCustomEnumerationItemOID: res.data.defaultCustomEnumerationItemOID,
+        form,
+        pagination: { onChange: this.onChangePage }
+      })
+    }).catch(() => {
+      this.setState({ tableLoading: false });
+      message.error('数据加载失败，请重试')
+    })
+  };
+
+  //点击页码
+  onChangePage = (page) => {
+    this.setState({ page })
+  };
+
+  //设置默认值内容
+  setDefault = (e, record) => {
+    let { data, form } = this.state;
+    data.map(item => {
+      if(e.target.checked) {
+        item.isDefault = (item.id === record.id);
+        form.defaultCustomEnumerationItemOID = record.customEnumerationItemOID;
+        form.defaultCustomEnumerationItemValue = record.messageKey
+      } else {
+        item.isDefault = false;
+        form.defaultCustomEnumerationItemOID = null;
+        form.defaultCustomEnumerationItemValue = null
+      }
+    });
+    this.setState({ data, form, tableLoading: true }, () => {
+      this.handleSave()
+    })
+  };
 
   showSlide = (flag) => {
     this.setState({
@@ -68,7 +130,36 @@ class ValueList extends React.Component{
   };
 
   handleSave = () => {
-    this.setState({edit: false})
+    let params = {
+      isCustom: this.state.isCustom,
+      //TODO: 以下字段需确定
+      fieldType: "TEXT",
+      values: [],
+      dataFrom: "101"
+    };
+    Object.keys(this.state.form).map(key => {
+      params[key] = this.state.form[key]
+    });
+    if(this.state.customEnumerationOID) {
+      params.customEnumerationOID = this.state.customEnumerationOID
+    }
+    this.setState({ loading: true });
+    let url = `${config.baseUrl}/api/v2/custom/enumerations?roleType=TENANT`;
+    httpFetch[this.state.customEnumerationOID ? 'put' : 'post'](url, params).then(res => {
+      if(res.status === 200) {
+        this.setState({
+          loading: false,
+          edit: false,
+          customEnumerationOID: res.data.customEnumerationOID
+        }, () => {
+          this.getList()
+        });
+        message.success('保存成功');
+      }
+    }).catch(e => {
+      this.setState({ loading: false });
+      message.error(`保存失败，${e.response.data.message}`)
+    })
   };
 
   handleEdit = () => {
@@ -76,7 +167,11 @@ class ValueList extends React.Component{
   };
 
   handleCancel = () => {
-
+    if(this.state.customEnumerationOID) {
+      this.setState({ edit: false })
+    } else {
+      this.context.router.push(`${this.state.valueList.url}?tab=CUSTOM`)
+    }
   };
 
   showImport = (flag) => {
@@ -94,10 +189,13 @@ class ValueList extends React.Component{
    * @param params
    */
   handleCloseSlide = (params) => {
-    console.log(params);
-    this.setState({
-      showSlideFrame: false
-    })
+    if(params) {
+      this.setState({
+        showSlideFrame: false
+      }, () => {
+        this.getList()
+      })
+    }
   };
 
   renderForm(){
@@ -121,7 +219,11 @@ class ValueList extends React.Component{
           </FormItem>
         </Col>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" onClick={this.handleSave} disabled={length === 0 || length > 15}>保存</Button>
+          <Button type="primary"
+                  htmlType="submit"
+                  loading={this.state.loading}
+                  onClick={this.handleSave}
+                  disabled={length === 0 || length > 15}>保存</Button>
           <Button style={{ marginLeft: 8 }} onClick={this.handleCancel}>取消</Button>
         </Col>
       </Row> :
@@ -140,34 +242,48 @@ class ValueList extends React.Component{
     )
   }
 
+  handleBack = () => {
+    this.context.router.push(`${this.state.valueList.url}?tab=${this.state.isCustom}`)
+  };
+
   render(){
-    const { showSlideFrame, edit, data, columns, pagination, showImportFrame, form } = this.state;
+    const { tableLoading, showSlideFrame, edit, data, columns, pagination, showImportFrame, form, customEnumerationOID, isCustom } = this.state;
     return (
       <div className="new-value-list">
         <div className="common-top-area">
           <div className="common-top-area-title">
             {!edit ? <Icon type={form.enabled ? "check-circle" : "minus-circle"} className={form.enabled ? "title-icon" : "title-icon not"} /> : null}
             基本信息
-            {!edit ? <span className="title-edit" onClick={this.handleEdit}>编辑</span> : null}
+            {(!edit && isCustom === 'CUSTOM') ? <span className="title-edit" onClick={this.handleEdit}>编辑</span> : null}
           </div>
           <div className="common-top-area-content form-title-area">
             {this.renderForm()}
           </div>
         </div>
 
-        <div className="table-header">
-          <div className="table-header-title">{`共${data.length}条数据`}</div>
-          <div className="table-header-buttons">
-            <Dropdown.Button overlay={this.renderDropDown()} type="primary" onClick={() => this.showSlide(true)}>
-              新建值内容
-            </Dropdown.Button>
-            <Button>值导出</Button>
+        {customEnumerationOID && (
+          <div>
+            <div className="table-header">
+              <div className="table-header-title">{`共${data.length}条数据`}</div>
+              <div className="table-header-buttons">
+                <Dropdown.Button overlay={this.renderDropDown()} type="primary" onClick={() => this.showSlide(true)}>
+                  新建值内容
+                </Dropdown.Button>
+                <Button>值导出</Button>
+              </div>
+            </div>
+            <Table rowKey="id"
+                   columns={columns}
+                   dataSource={data}
+                   pagination={pagination}
+                   loading={tableLoading}
+                   size="middle"
+                   bordered/>
+            <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}>
+              <Icon type="rollback" style={{marginRight:'5px'}}/>返回
+            </a>
           </div>
-        </div>
-        <Table columns={columns}
-               dataSource={data}
-               pagination={pagination}
-               bordered/>
+        )}
 
         <SlideFrame title="新建值内容"
                     show={showSlideFrame}
@@ -189,6 +305,10 @@ class ValueList extends React.Component{
     )
   }
 }
+
+ValueList.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {}

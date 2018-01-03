@@ -129,5 +129,6 @@
   "menu.supplier-company-delivery": "供应商公司分配",
   "menu.financial-accounting-setting": "财务核算设置",
   "menu.section-structure": "科目段结构",
-  "menu.section-setting": "科目段设置"
+  "menu.section-setting": "科目段设置",
+  "menu.value-list-detail": "值列表详情"
 }
