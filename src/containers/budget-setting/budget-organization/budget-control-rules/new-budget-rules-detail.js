@@ -4,11 +4,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
 import { Form, Input, Switch, Button, Icon, Row, Col, Alert, message, DatePicker, Select } from 'antd'
-
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import budgetService from 'service/budgetService'
 import debounce from 'lodash.debounce';
 import Selput from 'components/selput'
 import selectorData from 'share/selectorData'
@@ -81,7 +78,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'baseCurrency',
+        codeKey: 'currency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -171,7 +168,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'quarter',
         labelKey: 'messageKey',
         valueKey: 'id',
-        codeKey: 'messageKey',
+        codeKey: 'code',
         listExtraParams: {systemCustomEnumerationType: 2021},
         selectorItem: undefined
       },
@@ -215,7 +212,7 @@ class NewBudgetRulesDetail extends React.Component{
 
   //获取成本中心
   getCostCenter(array){
-    httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
+    budgetService.getCostCenter().then((response)=>{
       response.data.map((item)=>{
         let option = {
           id: item.code + "+"+item.costCenterOID+"+"+item.id,
@@ -230,7 +227,6 @@ class NewBudgetRulesDetail extends React.Component{
   }
 
   componentWillReceiveProps(nextprops){
-    console.log(this.state.lov)
     this.setState({
       ruleId: nextprops.params,
       organizationId: this.props.organization.id
@@ -248,7 +244,7 @@ class NewBudgetRulesDetail extends React.Component{
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
         values.ruleParameterOID = str[1];
-        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
+        budgetService.addRuleDetail(values).then((res)=>{
           this.setState({
             loading: false,
             filtrateMethodHelp:'',
@@ -508,8 +504,8 @@ class NewBudgetRulesDetail extends React.Component{
           <Row gutter={30}>
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                        validateStatus={validateStatusMap.parameterLowerLimit}
-                        help={helpMap.parameterLowerLimit}>
+                validateStatus={validateStatusMap.parameterLowerLimit}
+                help={helpMap.parameterLowerLimit}>
                 {getFieldDecorator('parameterLowerLimit',
                   {
                     rules: [

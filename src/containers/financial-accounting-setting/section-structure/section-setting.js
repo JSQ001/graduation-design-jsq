@@ -4,10 +4,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table} from 'antd'
+import { Button, Table, Icon } from 'antd'
 import SlideFrame from 'components/slide-frame'
-import NewUpdateSection from 'containers/financial-accounting-setting/section-structure/new-update-section.js'
-import SearchArea from 'components/search-area.js';
+import NewUpdateSection from 'containers/financial-accounting-setting/section-structure/new-update-section'
+import SectionMappingSet from 'containers/financial-accounting-setting/section-structure/section-mapping-set'
+import SearchArea from 'components/search-area';
+import menuRoute from 'share/menuRoute'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 
@@ -17,6 +19,7 @@ class SectionSetting extends React.Component{
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: false,
+      mapVisible: false,
       data: [{id:1}],
       lov:{
         visible: false
@@ -64,7 +67,7 @@ class SectionSetting extends React.Component{
           title: formatMessage({id:"common.operation"}), key: "operate", dataIndex: 'operate',
           render: (text, record, index) => (
             <span>
-            <a href="#" onClick={(e) => this.editItem(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
+            <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "common.edit"})}</a>
             <span className="ant-divider" />
             <a href="#" onClick={(e) => this.handleLinkMapping(e, record,index)}>{formatMessage({id: "section.mapping.setting"})}</a>
           </span>)
@@ -74,13 +77,7 @@ class SectionSetting extends React.Component{
   }
 
   handleLinkMapping = (e,record,index)=>{
-    alert(1)
-    let lov = {
-      title: this.props.intl.formatMessage({id:"section.mapping"}),
-      visible: true,
-      params: {}
-    };
-    this.setState({lov})
+    this.setState({mapVisible: true})
   };
 
   componentWillMount() {
@@ -104,18 +101,15 @@ class SectionSetting extends React.Component{
     })
   };
 
-  handleUpdate = (record)=>{
-    if(!this.state.lov.visible){
-      alert(2)
-      let lov = {
-        title: this.props.intl.formatMessage({id:"section.update"}),
-        visible: true,
-        params: record
-      };
-      this.setState({
-        lov
-      })
-    }
+  handleUpdate = (e, record,index)=>{
+    let lov = {
+      title: this.props.intl.formatMessage({id:"section.update"}),
+      visible: true,
+      params: record
+    };
+    this.setState({
+      lov
+    })
   };
 
   handleAfterClose = ()=>{
@@ -134,9 +128,13 @@ class SectionSetting extends React.Component{
     })
   };
 
+  handleBack = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('section-structure', 'key').url);
+  };
+
   render(){
     const { formatMessage} = this.props.intl;
-    const { loading, data, columns, searchForm, pagination, lov } = this.state;
+    const { loading, data, columns, searchForm, pagination, lov, mapVisible } = this.state;
     return (
       <div className="section-setting">
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
@@ -151,16 +149,20 @@ class SectionSetting extends React.Component{
           dataSource={data}
           columns={columns}
           pagination={pagination}
-          onRow={record => ({
-            onClick: () => this.handleUpdate(record)
-          })}
           bordered
           size="middle"/>
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
         <SlideFrame title= {lov.title}
                     show={lov.visible}
                     content={NewUpdateSection}
                     afterClose={this.handleAfterClose}
                     onClose={()=>this.handleShowSlide(false)}
+                    params={lov.params}/>
+        <SlideFrame title= {formatMessage({id:"section.mapping"})}
+                    show={mapVisible}
+                    content={SectionMappingSet}
+                    afterClose={(value)=>{console.log(value)}}
+                    onClose={()=>this.setState({mapVisible:false})}
                     params={lov.params}/>
       </div>
     )

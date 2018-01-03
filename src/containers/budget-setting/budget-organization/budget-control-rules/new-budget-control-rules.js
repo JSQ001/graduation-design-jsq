@@ -4,10 +4,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon, DatePicker, InputNumber  } from 'antd';
-
-import httpFetch from 'share/httpFetch';
+import budgetService from 'service/budgetService'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
@@ -31,7 +29,7 @@ class NewBudgetControlRules extends React.Component{
 
  componentWillMount(){
    //加载页面时，获取启用的控制策略
-   httpFetch.get(`${config.budgetUrl}/api/budget/control/strategies/query?organizationId=${this.props.organization.id}&isEnabled=true`).then((response)=>{
+   budgetService.getStrategy({organizationId: this.props.organization.id, isEnabled: true }).then((response)=>{
      if(response.status === 200){
        let strategyGroup = [];
        response.data.map((item)=>{
@@ -85,9 +83,9 @@ class NewBudgetControlRules extends React.Component{
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.organizationId = this.props.organization.id
+        values.organizationId = this.props.organization.id;
         values.strategyGroupId = values.controlStrategy.key;
-        httpFetch.post(`${config.budgetUrl}/api/budget/control/rules`,values).then((response)=>{
+        budgetService.addRule(values).then((response)=>{
           if(response.status === 200) {
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
@@ -109,7 +107,7 @@ class NewBudgetControlRules extends React.Component{
   };
 
   validateRuleCode = (item,value,callback)=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.params.id}&controlRuleCode=${value}`).then((response)=>{
+    budgetService.getRuleByOptions({organizationId: this.props.params.id,controlRuleCode: value}).then((response)=>{
       let flag = false;
       if(response.data.length > 0 ){
         response.data.map((item)=>{
@@ -118,14 +116,12 @@ class NewBudgetControlRules extends React.Component{
           }
         })
       }
-      flag >0 ? callback(this.props.intl.formatMessage({id:"budget.structureCode.exist"})) : callback();
-
+      flag >0 ? callback(this.props.intl.formatMessage({id:"budget.rule.code.exist"})) : callback();
     });
   };
 
   handleSelect=()=>{
     let value = this.props.form.getFieldValue("controlStrategy");
-    console.log(value)
     if(typeof value !== 'undefined'){
       let controlStrategy = {
         key: value.key,

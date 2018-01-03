@@ -4,11 +4,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
 import { Button, Table} from 'antd'
-
-import SearchArea from 'components/search-area.js';
-import httpFetch from 'share/httpFetch';
+import SearchArea from 'components/search-area';
+import budgetService from 'service/budgetService'
 import config from 'config'
 import menuRoute from 'share/menuRoute'
 
@@ -96,12 +94,14 @@ class BudgetControlRules extends React.Component {
 
   //获取控制规则数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/control/rules/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let params = Object.assign({}, this.state.searchParams);
     for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+      !params[paramsName] && delete params[paramsName];
     }
-    httpFetch.get(url).then((response)=>{
+    params.organizationId = this.props.id;
+    params.page = this.state.page;
+    params.size = this.state.pageSize;
+    budgetService.getRuleByOptions(params).then((response)=>{
       if(response.status === 200){
         response.data.map((item)=>{
           item.key = item.id;
@@ -145,8 +145,7 @@ class BudgetControlRules extends React.Component {
 
 //点击行，进入该行详情页面
   handleRowClick = (record, index, event) =>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.
-    budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
+    this.context.router.push(menuRoute.getMenuItemByAttr('budget-organization', 'key').children.budgetControlRulesDetail.url.replace(':id', this.props.id).replace(':ruleId', record.id));
   };
 
   render(){

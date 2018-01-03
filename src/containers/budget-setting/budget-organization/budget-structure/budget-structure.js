@@ -6,12 +6,9 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Badge, notification, Popover  } from 'antd';
 import SearchArea from 'components/search-area.js';
-import httpFetch from 'share/httpFetch';
-import config from 'config'
-
 import menuRoute from 'share/menuRoute'
-
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
+import { budgetService } from 'service'
 
 class BudgetStructure extends React.Component {
   constructor(props) {
@@ -74,7 +71,7 @@ class BudgetStructure extends React.Component {
   }
   componentWillMount(){
     //查出当前预算组织数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.id}`).then((response)=>{
+    budgetService.getOrganizationsById(this.props.id).then((response)=>{
       this.setState({
         organization: response.data
       })
@@ -84,12 +81,14 @@ class BudgetStructure extends React.Component {
 
   //获取预算表数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/structures/query?organizationId=${this.props.id}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
+    let params = Object.assign({}, this.state.searchParams);
     for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
+      !params[paramsName] && delete params[paramsName];
     }
-    httpFetch.get(url).then((response)=>{
+    params.organizationId = this.props.id;
+    params.page = this.state.page;
+    params.pageSize = this.state.pageSize;
+    budgetService.getStructures(params).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.structureCode;
       });

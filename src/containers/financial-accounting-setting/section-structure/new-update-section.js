@@ -92,10 +92,7 @@ class NewUpdateSection extends React.Component{
 
     return(
       <div className="new-update-section">
-        <Alert message={formatMessage({id:"section.help.tips"})}
-               description={formatMessage({id:"section.tips"})}
-               type="info"
-               showIcon />
+        <Alert description={formatMessage({id:"section.tips"})} type="warning"/>
         <Form onSubmit={this.handleSubmit} className="new-update-section-form">
           <Row gutter={30}>
             <Col span={20}>

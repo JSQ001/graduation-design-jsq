@@ -5,13 +5,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon } from 'antd';
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import budgetService from 'service/budgetService'
 import menuRoute from 'share/menuRoute'
-import ListSelector from 'components/list-selector.js'
+import ListSelector from 'components/list-selector'
 import "styles/budget-setting/budget-organization/budget-item/new-budget-item.scss"
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 class NewBudgetItem extends React.Component{
   constructor(props){
     super(props);
@@ -26,7 +26,7 @@ class NewBudgetItem extends React.Component{
   }
   componentWillMount(){
     typeof this.props.organization.organizationName === "undefined" ?
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then((response) =>{
+      budgetService.getOrganizationById(this.props.params.id).then((response) =>{
         this.setState({
           organization: response.data,
         })
@@ -44,7 +44,7 @@ class NewBudgetItem extends React.Component{
       if (!err) {
         values.organizationId = this.state.organization.id;
         values.itemTypeId = values.itemTypeName[0].key;
-        httpFetch.post(`${config.budgetUrl}/api/budget/items`,values).then((response)=>{
+        budgetService.addItem(values).then((response)=>{
           if(response) {
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;

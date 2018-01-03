@@ -26,5 +26,6 @@
   "budget.summaryOrDetailHelp.all": "在上下限值内的明细和汇总规则参数都包括在内",
   "budget.summaryOrDetailHelp.summary": "只包括在上下限内的汇总规则参数",
   "budget.summaryOrDetailHelp.detail": "只包括在上下限内的明细规则参数",
+  "budget.rule.code.exist": "该预算规则代码已存在",
   "budget.strategy": "控制策略"
 }

@@ -252,7 +252,7 @@ class AnnouncementInformationDetail extends React.Component{
                <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
              </div>)}
          </FormItem>                                                         {/*标题*/}
-         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.title"})} wrapperCol={{span: 8, offset: 1}}>
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement.info.title"})} wrapperCol={{span: 8, offset: 1}}>
            {getFieldDecorator('title', {
              rules: [
                {
@@ -264,7 +264,7 @@ class AnnouncementInformationDetail extends React.Component{
              <Input placeholder={formatMessage({id:"common.please.enter"})} /> /*请输入*/
            )}
          </FormItem>                   {/*轮播图片*/}
-         <FormItem {...formItemLayout} label= {formatMessage({id: "announcement-info.picture"})}>
+         <FormItem {...formItemLayout} label= {formatMessage({id: "announcement.info.picture"})}>
            {getFieldDecorator('attachmentOID')(
              <Upload name="avatar"
                      listType="picture-card"
@@ -276,12 +276,12 @@ class AnnouncementInformationDetail extends React.Component{
              </Upload>
            )}
          </FormItem>                      {/*跳转外部链接*/}
-         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.link"})}  wrapperCol={{span: 8, offset: 1}}>
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement.info.link"})}  wrapperCol={{span: 8, offset: 1}}>
            {getFieldDecorator('outLink')(
              <Checkbox onChange={this.checked}>选中后点击轮播图将直接跳转外部页面</Checkbox>
            )}
          </FormItem>
-         <FormItem {...formItemLayout} label={formatMessage({id:"announcement-info.content"})} wrapperCol={{span: 8, offset: 1}}>
+         <FormItem {...formItemLayout} label={formatMessage({id:"announcement.info.content"})} wrapperCol={{span: 8, offset: 1}}>
            {getFieldDecorator('content')(
              <TextArea placeholder={ formatMessage({id:"common.please.enter"})}/>
            )}
