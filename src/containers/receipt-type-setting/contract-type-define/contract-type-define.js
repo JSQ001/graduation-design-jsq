@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux'
 import { Button, Table, Badge } from 'antd'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { contractService } from 'service'
 
 import SearchArea from 'components/search-area'

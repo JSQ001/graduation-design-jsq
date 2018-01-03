@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import { Form, Button, Select, Checkbox, Input, Switch, Icon, Alert , Tabs, Table, message, Popconfirm  } from 'antd'
 

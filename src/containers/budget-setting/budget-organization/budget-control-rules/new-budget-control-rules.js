@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon, DatePicker, InputNumber  } from 'antd';
 import budgetService from 'service/budgetService'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce';
 
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-control-rules.scss"

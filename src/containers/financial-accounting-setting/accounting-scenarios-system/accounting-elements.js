@@ -9,7 +9,7 @@ import SlideFrame from 'components/slide-frame'
 import NewUpdateAccountingElements from 'containers/financial-accounting-setting/accounting-scenarios-system/new-update-accounting-elements'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios-system/accounting-elements.scss'
 import debounce from 'lodash.debounce';
 const Search = Input.Search;

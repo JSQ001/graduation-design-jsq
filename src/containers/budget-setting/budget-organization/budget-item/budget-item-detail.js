@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Checkbox   } from 'antd'
 import budgetService from 'service/budgetService'
 import ListSelector from 'components/list-selector'

@@ -10,7 +10,7 @@ const Option = Select.Option;
 import SearchArea from 'components/search-area'
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 
 class WrappedNewBankAccount extends React.Component {
@@ -63,7 +63,7 @@ class WrappedNewBankAccount extends React.Component {
         },
         {
           /*备注*/
-          type: 'input', label: formatMessage({ id: "bank.account.remark" }), 
+          type: 'input', label: formatMessage({ id: "bank.account.remark" }),
             id: "remark",
         },
         {/*状态*/
@@ -86,7 +86,7 @@ class WrappedNewBankAccount extends React.Component {
 
 
   componentDidMount() {
-    
+
   }
 
   //搜索区域点击事件
@@ -149,7 +149,7 @@ class WrappedNewBankAccount extends React.Component {
     delete values.countryInfo;
 
     httpFetch.post(`${baseUrl}/api/CompanyBank/insertOrUpdate`, values).then((res) => {
-      
+
       //跳转到详情页面
       let path = this.state.bankAccountDetailPage.url.replace(":companyBankId", res.data.id);
       this.context.router.push(path);

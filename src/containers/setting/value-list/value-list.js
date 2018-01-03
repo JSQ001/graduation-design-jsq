@@ -9,7 +9,7 @@ import { Tabs, Table, Button, Badge } from 'antd';
 import { Link } from 'react-router'
 const TabPane = Tabs.TabPane;
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/setting/value-list/value-list.scss'
 

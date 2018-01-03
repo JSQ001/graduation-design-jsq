@@ -5,7 +5,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Form, Tabs, Button, Row, Col, Spin,Breadcrumb, Table, Timeline, message, Popover, Popconfirm } from 'antd'
 const TabPane = Tabs.TabPane;
 import moment from 'moment'
@@ -209,7 +209,7 @@ class PrePaymentCommon extends React.Component {
   render() {
     const { stateName,topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
-      <Spin spinning={topLoading}> 
+      <Spin spinning={topLoading}>
         <h3 className="header-title">{headerData.typeName} 预付款
           {this.props.contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
         </h3>

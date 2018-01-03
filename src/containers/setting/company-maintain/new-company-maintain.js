@@ -6,7 +6,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 
 class WrappedNewCompanyMaintain extends React.Component {
@@ -112,7 +112,7 @@ class WrappedNewCompanyMaintain extends React.Component {
 
 
   componentWillMount() {
-   
+
   }
 
   //处理表单事件
@@ -347,7 +347,7 @@ class WrappedNewCompanyMaintain extends React.Component {
 
       if (!err) {
         this.setState({loading: true});
-        
+
         httpFetch.post(`${config.baseUrl}/api/refactor/tenant/company/register`, valuesData).then((res) => {
           this.setState({loading: false});
 

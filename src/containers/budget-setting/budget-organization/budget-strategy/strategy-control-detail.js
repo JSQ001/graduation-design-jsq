@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import { Form, Button, Table, Input, message, Icon } from 'antd'
 const Search = Input.Search;

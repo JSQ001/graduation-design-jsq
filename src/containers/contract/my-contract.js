@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { contractService } from 'service'
 
 import moment from 'moment'

@@ -10,7 +10,7 @@ const { TextArea } = Input;
 const CheckboxGroup = Checkbox.Group;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/finance-setting/beep-timer/beep-from.scss'
 

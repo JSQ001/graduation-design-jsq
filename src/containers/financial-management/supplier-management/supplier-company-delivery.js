@@ -11,7 +11,7 @@ import httpFetch from 'share/httpFetch';
 import config from 'config'
 import 'styles/financial-management/supplier-management/supplier-company-delivery.scss'
 import NewUpdateBankAccount from 'containers/financial-management/supplier-management/new-update-bank-account'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class SupplierCompanyDelivery extends React.Component{
   constructor(props){

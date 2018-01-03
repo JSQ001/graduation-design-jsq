@@ -9,7 +9,7 @@ import SlideFrame from 'components/slide-frame'
 import NewUpdateMatchingGroup from 'containers/financial-accounting-setting/accounting-scenarios/new-update-matching-group'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios/matchingGroupElements.scss'
 
 class MatchingGroupElements extends React.Component {

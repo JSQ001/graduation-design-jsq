@@ -13,7 +13,7 @@ import SearchArea from 'components/search-area.js';
 import SlideFrame from 'components/slide-frame'
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/setting/subject-sheet/subject-sheet.scss'
 import ListSelector from 'components/list-selector'
 import AddSubSubjectMaintain from 'containers/setting/subject-sheet/add-sub-subject-maintain'
@@ -29,7 +29,7 @@ class SubSubjectMaintain extends React.Component {
       batchDelete: true,
       buttonLoading: false,
       subjectListSelector: false,  //控制科目明细选则弹框
-      selectedRowKeys: [], 
+      selectedRowKeys: [],
       pagination: {
         current: 1,
         page: 0,
@@ -93,7 +93,7 @@ class SubSubjectMaintain extends React.Component {
           }
         ],
         key: 'subAccountId'
-      }, 
+      },
       tableData: [],
       columns: [
         {
@@ -146,7 +146,7 @@ class SubSubjectMaintain extends React.Component {
       message.error(this.props.intl.formatMessage({ id: "common.operate.filed" }) + `${e.response.data.message}`);
     })
   }
-  
+
   //批量删除
   deleteItemBatch = (e,record) => {
     this.setState({buttonLoading: true});
@@ -270,7 +270,7 @@ class SubSubjectMaintain extends React.Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    
+
     return (
       <div className="subject-sheet">
         <div className="table-header">
@@ -292,7 +292,7 @@ class SubSubjectMaintain extends React.Component {
           rowSelection={rowSelection}
           loading={loading}
           bordered
-          size="middle" 
+          size="middle"
           style={{margin:'16px 0', textAlign:'right'}}/>
 
         {/* 子科目弹出框 */}

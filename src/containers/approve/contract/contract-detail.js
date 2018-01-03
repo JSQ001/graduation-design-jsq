@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { contractService } from 'service'
 import { Form, Affix, Button, Row, Col, Input, Popover, Tag, message } from 'antd'
 const FormItem = Form.Item;

@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { budgetService } from 'service'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce';
 
 import { Form, Button, Select, Input, Switch, Icon, Badge, Tabs, Checkbox, Table, message, Popover  } from 'antd'

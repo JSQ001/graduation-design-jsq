@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Form, Table, Badge, Row, Col, message, Pagination } from 'antd'
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import moment from 'moment';
 

@@ -4,7 +4,7 @@ import config from 'config'
 import httpFetch from 'share/httpFetch'
 import { Form, Spin, Row, Col, Tabs, Table, Icon, message } from 'antd'
 const TabPane = Tabs.TabPane;
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import moment from 'moment'
 import 'styles/budget/budget-occupancy/import-detail.scss'

@@ -12,7 +12,7 @@ import 'styles/main.scss'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { setUserOrganization } from 'actions/login'
 import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'

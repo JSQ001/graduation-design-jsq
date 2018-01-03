@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import config from 'config'
 import { Table, Badge, Button, Popover, message } from 'antd';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import httpFetch from 'share/httpFetch'
 
 import NewPrePaymentType from 'containers/receipt-type-setting/pre-payment-type/new-pre-payment-type'

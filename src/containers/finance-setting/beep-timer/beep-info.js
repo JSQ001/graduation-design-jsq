@@ -10,7 +10,7 @@ import { injectIntl } from 'react-intl';
 import { Collapse,Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message,Popconfirm} from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/finance-setting/beep-timer/beef-info.scss'
 const Panel =Collapse.Panel

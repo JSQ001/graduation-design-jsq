@@ -9,7 +9,7 @@ import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/setting/department-group/department-group.scss';
 

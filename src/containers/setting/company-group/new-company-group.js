@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce';
 import 'styles/setting/company-group/new-company-group.scss';
 

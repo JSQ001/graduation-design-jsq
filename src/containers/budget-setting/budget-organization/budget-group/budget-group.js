@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Table, Badge, Button } from 'antd';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { budgetService } from 'service'
 
 import SearchArea from 'components/search-area'

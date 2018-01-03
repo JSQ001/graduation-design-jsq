@@ -10,7 +10,7 @@ import NewUpdateSectionStructure from 'containers/financial-accounting-setting/s
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/section-structure/section-structure.scss'
 
 class SectionStructure extends React.Component{

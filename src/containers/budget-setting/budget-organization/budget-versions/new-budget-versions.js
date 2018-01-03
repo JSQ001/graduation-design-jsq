@@ -7,7 +7,7 @@ import {injectIntl} from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch';
 import moment from 'moment'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import {Form, Input, Switch, Button, Col, Row, Select, DatePicker, Alert, notification, Icon, message} from 'antd'
 import 'styles/budget-setting/budget-organization/budget-versions/new-budget-versions.scss'
 

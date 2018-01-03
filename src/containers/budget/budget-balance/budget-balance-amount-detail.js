@@ -6,7 +6,7 @@ import { Table, Button, message, Popover } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
