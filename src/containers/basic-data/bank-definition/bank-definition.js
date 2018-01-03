@@ -50,7 +50,7 @@ class BankDefinition extends React.Component{
           label: formatMessage({id: 'bank.country'}),  /*国家*/
           event:'COUNTRY_CHANGE',
           defaultValue:'中国',
-          getUrl: `${config.uatUrl}/location-service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
+          getUrl: `${config.locationUrl}/location_service/api/localization/query/county`, method: 'get', getParams: {language: this.props.language.locale ==='zh' ? "zh_cn" : "en_us"},
         },
         {type: 'cascader', id: 'address', options:[],event:'ADDRESS_CHANGE', label: formatMessage({id: 'bank.address'}) , /*开户地*/}
       ],

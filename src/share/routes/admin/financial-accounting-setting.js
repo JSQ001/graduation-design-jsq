@@ -1,7 +1,8 @@
 import SectionStructure from 'containers/financial-accounting-setting/section-structure/section-structure'
 import SectionSetting from 'containers/financial-accounting-setting/section-structure/section-setting'
+import AccountingSourceSystem from 'containers/financial-accounting-setting/accounting-source-system/accounting-source-system'
 import AccountingSource from 'containers/financial-accounting-setting/accounting-source/accounting-source'
-import VoucherTemplate from 'containers/financial-accounting-setting/accounting-source/voucher-template'
+import VoucherTemplate from 'containers/financial-accounting-setting/accounting-source-system/voucher-template'
 import AccountingScenariosSystem from 'containers/financial-accounting-setting/accounting-scenarios-system/accounting-scenarios-system'
 import AccountingElements from 'containers/financial-accounting-setting/accounting-scenarios-system/accounting-elements'
 import AccountingScenarios from 'containers/financial-accounting-setting/accounting-scenarios/accounting-scenarios'
@@ -31,7 +32,23 @@ const financialAccountingSetting = {
         }
       }
     },
-    //核算来源事务
+    //来源事务-系统级
+    {
+      key: 'accounting-source-system',
+      url: '/main/financial-accounting-setting/accounting-source-system',
+      components: AccountingSourceSystem,
+      parent: 'financial-accounting-setting',
+      children:{
+        //凭证模板
+        voucherTemplate:{
+          key: 'voucher-template',
+          url: '/main/financial-accounting-setting/accounting-source-system/voucher-template/:id',
+          components: VoucherTemplate,
+          parent: 'section-structure'
+        }
+      }
+    },
+    //来源事务-账套级
     {
       key: 'accounting-source',
       url: '/main/financial-accounting-setting/accounting-source',

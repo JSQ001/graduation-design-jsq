@@ -27,6 +27,7 @@ import subjectSheet from 'static/i18n/zh_CN/setting/subject-sheet.json'
 import checkCenter from 'static/i18n/zh_CN/financial-management/check-center.json'
 import supplierManagement from 'static/i18n/zh_CN/financial-management/supplier-management.json'
 import sectionStructure from 'static/i18n/zh_CN/financial-accounting-setting/section-structure.json'
+import accountingSourceSystem from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scource-system.json'
 import accountingSource from 'static/i18n/zh_CN/financial-accounting-setting/accounting-source.json'
 import accountingScenariosSystem from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios-system.json'
 import accountingScenarios from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios.json'
@@ -62,7 +63,8 @@ const i18nList = [
   budgetItemMap,            //项目映射
   supplierManagement,       //供应商管理
   sectionStructure,       //科目段结构
-  accountingSource,       //核算来源事物
+  accountingSourceSystem, //来源事物-系统级
+  accountingSource,       //来源事物-账套级
   accountingScenariosSystem, //核算场景系统级
   accountingScenarios,     //核算场景账套级
 ];

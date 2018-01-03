@@ -4,18 +4,17 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import { Button, Table, Checkbox} from 'antd'
+import { Button, Table, Badge} from 'antd'
 import SlideFrame from 'components/slide-frame'
-import NewUpdateAccountingSource from 'containers/financial-accounting-setting/accounting-source/new-update-accounting-source'
-import DataStructure from 'containers/financial-accounting-setting/accounting-source/data-structure'
+import NewUpdateAccountingSource from 'containers/financial-accounting-setting/accounting-source-system/new-update-accounting-source'
+import DataStructure from 'containers/financial-accounting-setting/accounting-source-system/data-structure'
 import SearchArea from 'components/search-area';
-import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 import menuRoute from 'share/menuRoute'
-import 'styles/financial-accounting-setting/accounting-source/accounting-source.scss'
+import 'styles/financial-accounting-setting/accounting-source-system/accounting-source-system.scss'
 
-class AccountingSource extends React.Component {
+class AccountingSourceSystem extends React.Component {
   constructor(props) {
     super(props);
     const { formatMessage } = this.props.intl;
@@ -23,19 +22,8 @@ class AccountingSource extends React.Component {
       loading: false,
       dataVisible: false,
       data: [{id: 1}],
-      lovVisible: false,
       lov:{
-        title: formatMessage({id:"accounting.source.lovTitle"})+this.props.company.setOfBooksName,
-        url: `${config.baseUrl}/api/users/v2/search`,
-        searchForm: [
-          {type: 'input', id: 'code', label: formatMessage({id:"accounting.source.code"})},
-          {type: 'input', id: 'name', label: formatMessage({id:"accounting.source.name"})}
-        ],
-        columns: [
-          {title: formatMessage({id:"accounting.source.code"}), dataIndex: 'code', width: '25%'},
-          {title: formatMessage({id:"accounting.source.name"}), dataIndex: 'name', width: '25%'},
-        ],
-        key: 'id'
+        visible: false
       },
       pagination: {
         current: 1,
@@ -46,10 +34,6 @@ class AccountingSource extends React.Component {
         showQuickJumper: true,
       },
       searchForm: [
-        { type: 'select', id: 'setOfBook', label: formatMessage({id: 'section.setOfBook'}), options:[],labelKey: 'setOfBooksName',valueKey: 'id',
-          defaultValue: this.props.company.setOfBooksName,
-          getUrl:`${config.baseUrl}/api/setOfBooks/by/tenant`, method: 'get', getParams: {roleType: 'TENANT'},
-        },
         {                                                                        //来源事物代码
           type: 'input', id: 'accountingSourceCode', label: formatMessage({id: 'accounting.source.code'})
         },
@@ -64,23 +48,21 @@ class AccountingSource extends React.Component {
         {          /*来源事物名称*/
           title: formatMessage({id:"accounting.source.name"}), key: "accountingSourceName", dataIndex: 'accountingSourceName'
         },
-        {                        /*自动过账*/
-          title:formatMessage({id:"accounting.auto.checked"}), key: "autoChecked", dataIndex: 'autoChecked',width:'10%',
-          render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
+        {           /*状态*/
+          title: formatMessage({id:"common.column.status"}), key: 'status', width: '10%', dataIndex: 'isEnabled',
+          render: isEnabled => (
+            <Badge status={isEnabled ? 'success' : 'error'}
+                   text={isEnabled ? formatMessage({id: "common.status.enable"}) : formatMessage({id: "common.status.disable"})} />
+          )
         },
-        {                        /*启用*/
-          title:formatMessage({id:"common.status.enable"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
-          render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
-        },
-        {title: formatMessage({id:"accounting.source.setting"}), key: 'operation', width: '25%', render: (text, record, index) => (
+        {title: formatMessage({id:"common.operation"}), key: 'operation', width: '25%', render: (text, record, index) => (
           <span>
-            <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "accounting.source.setting"})}</a>   {/*编辑*/}
+            <a href="#" onClick={(e) => this.handleUpdate(e, record,index)}>{formatMessage({id: "common.edit"})}</a>   {/*编辑*/}
             <span className="ant-divider" />
             <a href="#" onClick={(e) => this.handleLinkDataStructure(e, record,index)}>{formatMessage({id: "accounting.source.data.setting"})}</a>  {/*数据结构设置*/}
            <span className="ant-divider" />
-            <a href="#" onClick={(e) => this.handleLinkTemplate(e, record,index)}>{formatMessage({id: "accounting.source.setOfBook.template"})}</a>  {/*凭证模板*/}
+            <a href="#" onClick={(e) => this.handleLinkTemplate(e, record,index)}>{formatMessage({id: "accounting.source.template"})}</a>  {/*凭证模板设置*/}
           </span>)
-
         },
       ],
     };
@@ -91,7 +73,7 @@ class AccountingSource extends React.Component {
   };
 
   handleLinkTemplate = (e, record,index)=>{
-    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-source', 'key').children.voucherTemplate.url.replace(':id', record.id))
+    this.context.router.push(menuRoute.getMenuItemByAttr('accounting-source-system', 'key').children.voucherTemplate.url.replace(':id', record.id))
   };
 
   componentWillMount() {
@@ -105,7 +87,14 @@ class AccountingSource extends React.Component {
   };
 
   handleCreate = ()=>{
-    this.setState({lovVisible:true})
+    let lov = {
+      title: this.props.intl.formatMessage({id:"accounting.source.add"}),
+      visible: true,
+      params: {}
+    };
+    this.setState({
+      lov
+    })
   };
 
   handleUpdate = (e,record,index)=>{
@@ -135,10 +124,6 @@ class AccountingSource extends React.Component {
     })
   };
 
-  handleListOk = (result) => {
-    this.setState({})
-  };
-
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
     let temp = this.state.pagination;
@@ -155,18 +140,17 @@ class AccountingSource extends React.Component {
 
   render(){
     const { formatMessage} = this.props.intl;
-    const { loading, data, columns, searchForm, pagination, lovVisible, lov, dataVisible } = this.state;
+    const { loading, data, columns, searchForm, pagination, lov, dataVisible } = this.state;
     return(
       <div className="accounting-source">
         <div className="accounting-source-head-tips">
-          {formatMessage({id:"accounting.source.setOfBook.headTips"})}
+          {formatMessage({id:"accounting.source.headTips"})}
         </div>
         <SearchArea searchForm={searchForm} submitHandle={this.handleSearch}/>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:'common.total'},{total:`${pagination.total}`})}</div>  {/*共搜索到*条数据*/}
           <div className="table-header-buttons">
-            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.add'})}</Button>  {/*添加*/}
-            <Button onClick={this.handleCreate}>{formatMessage({id: 'common.save'})}</Button>  {/*保存*/}
+            <Button type="primary" onClick={this.handleCreate}>{formatMessage({id: 'common.add'})}</Button>  {/*新 建*/}
           </div>
         </div>
         <Table
@@ -177,27 +161,32 @@ class AccountingSource extends React.Component {
           onChange={this.onChangePager}
           bordered
           size="middle"/>
-        <ListSelector
-            visible={lovVisible}
-            onOk={this.handleListOk}
-            selectorItem={lov}
-            //extraParams={{setOfBooksId: this.props.company.setOfBooksId,isEnabled: true}}
-            onCancel={()=>this.setState({lovVisible:false})}/>
+        <SlideFrame title= {lov.title}
+                    show={lov.visible}
+                    content={NewUpdateAccountingSource}
+                    afterClose={this.handleAfterClose}
+                    onClose={()=>this.handleShowSlide(false)}
+                    params={lov.params}/>
+        <SlideFrame title= {formatMessage({id:"data.structure"})}
+                    show={dataVisible}
+                    content={DataStructure}
+                    afterClose={(value)=>{console.log(value)}}
+                    onClose={()=>this.setState({dataVisible:false})}
+                    params={lov.params}/>
       </div>
     )
   }
 }
 
 
-AccountingSource.contextTypes = {
+AccountingSourceSystem.contextTypes = {
   router: React.PropTypes.object
 };
 
 function mapStateToProps(state) {
   return {
-    user: state.login.user,
-    company: state.login.company
+
   }
 }
 
-export default connect(mapStateToProps)(injectIntl(AccountingSource));
+export default connect(mapStateToProps)(injectIntl(AccountingSourceSystem));

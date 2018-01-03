@@ -192,13 +192,13 @@ class CreateOrUpdateBank extends React.Component{
       <div className="new-bank-definition">
         <Form onSubmit={this.handleSubmit} onChange={this.handleFormChange} >
           <FormItem {...formItemLayout}
-                    label={formatMessage({id:"common.column.status"})} colon={true}>
+            label={formatMessage({id:"common.column.status"})} colon={true}>
             {getFieldDecorator('isEnabled', {
-              valuePropName:"defaultChecked",
+              valuePropName:"checked",
               initialValue:isEnabled
             })(
               <div>
-                <Switch defaultChecked={isEnabled}  checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                <Switch defaultChecked={isEnabled} disabled={typeof bank.id ==='undefined' ? false : true} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
                 <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
               </div>)}
           </FormItem>
@@ -220,10 +220,6 @@ class CreateOrUpdateBank extends React.Component{
             label='Swift Code'>
             {getFieldDecorator('swiftCode', {
               initialValue: bank.swiftCode,
-              rules: [{
-                required: true,
-                message: formatMessage({id:"common.please.select"})
-              }],
             })(
               <Input disabled={isEditor} placeholder={formatMessage({id:"common.please.enter"})}/>
             )}
@@ -247,12 +243,6 @@ class CreateOrUpdateBank extends React.Component{
             help={bankTypeHelp}>
             {getFieldDecorator('country', {
               initialValue: countryCode,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({id:"common.please.select"})
-                }
-              ],
             })(
               <Select onChange={this.countryChange} allowClear showSearch placeholder={ formatMessage({id:"common.please.select"})}>
                 {
@@ -266,12 +256,6 @@ class CreateOrUpdateBank extends React.Component{
                     help={bankTypeHelp}>
             {getFieldDecorator('accountAddress', {
               initialValue: bank.accountAddress,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({id:"common.please.select"})
-                }
-              ],
             })(
              <Cascader  placeholder={ formatMessage({id:"common.please.select"})}
                         showSearch
@@ -284,12 +268,6 @@ class CreateOrUpdateBank extends React.Component{
                     help={bankTypeHelp}>
             {getFieldDecorator('address', {
               initialValue: bank.address,
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage({id:"common.please.enter"})
-                }
-              ],
             })(
               <Input placeholder={ formatMessage({id:"common.please.enter"})}/>
             )}
