@@ -285,7 +285,7 @@ class NewPrePaymentType extends React.Component {
                 <Radio value={false}>部分类型</Radio>
               </RadioGroup>
 
-              <Select ref="selectCashTransaction" mode="multiple" onFocus={this.showSelectCashTransaction} onChange={this.onAllClassListChange} disabled={allClass} value={allClass ? "全部类型" : transactionClassList} placeholder={formatMessage({ id: 'common.please.select' })/* 请选择 */}>
+              <Select ref="selectCashTransaction" mode={allClass?"":"multiple"} onFocus={this.showSelectCashTransaction} onChange={this.onAllClassListChange} disabled={allClass} value={allClass ? "全部类型" : transactionClassList} placeholder={formatMessage({ id: 'common.please.select' })/* 请选择 */}>
               </Select>
             </div>
           </FormItem>
@@ -326,6 +326,8 @@ class NewPrePaymentType extends React.Component {
           onOk={this.handleListOk}
           single={true}
         />
+
+
 
 
 
