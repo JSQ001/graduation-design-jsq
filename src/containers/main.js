@@ -18,6 +18,7 @@ import { setLanguage, setTenantMode } from 'actions/main'
 import { setOrganization, setOrganizationStrategyId } from 'actions/budget'
 import { setCodingRuleObjectId } from "actions/setting";
 import Loading from 'components/loading'
+import Error from 'components/error'
 import ListSelector from 'components/list-selector'
 
 import { injectIntl } from 'react-intl';
@@ -28,6 +29,8 @@ import zh from 'share/i18n/zh_CN'
 import LogoImg from 'images/logo.png'
 import UserImg from 'images/user.png'
 
+import { budgetService } from 'service'
+
 class Main extends React.Component{
   constructor(props) {
     super(props);
@@ -37,6 +40,8 @@ class Main extends React.Component{
       openKeys: [],
       collapsed: false,
       check: false,
+      error: false,
+      errorContent: {},
       adminMode: false,
       showListSelector: false,
       dashboardPage : menuRoute.getRouteItem('dashboard', 'key'),
@@ -148,12 +153,15 @@ class Main extends React.Component{
    */
   checkParams() {
     let errorContent = this.props.intl.formatMessage({id: 'common.error'});
-    this.setState({check: false});
+    this.setState({check: false, error: false, errorContent: {}});
     const path = location.pathname;
     let section = path.split('/');
+    if(section.length > 1){
+      this.setState({ adminMode: menuRoute.getMenuItemByAttr(section[2], 'key').admin })
+    }
     if(path.indexOf('budget-organization-detail') > -1 && this.props.organization.id !== section[5]) {  //预算组织内部页面的组织id检查
       let actions = (value) => {
-        httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${value}`).then(res => {
+        budgetService.getOrganizationById(value).then(res => {
           this.props.dispatch(setOrganization(res.data));
           this.setState({check: true});
         }).catch(e => {
@@ -175,21 +183,24 @@ class Main extends React.Component{
       };
       this.setUrl(section, 5, this.props.codingRuleObjectId, actions, ":id", 'coding-rule-object');
     } else if(path.indexOf('/budget/') > -1) {   //预算组织的默认检查
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/default/${this.props.company.setOfBooksId}`).then((response)=>{
-        this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
-        this.setState({check: true});
+      budgetService.getOrganizationBySetOfBooksId(this.props.company.setOfBooksId).then((response)=>{
+        if(response.data.isEnabled){
+          this.props.userOrganization.id !== response.data.id && this.props.dispatch(setUserOrganization(response.data));
+          this.setState({check: true});
+        } else {
+          this.setState({ check: true, error: true, errorText: '该帐套下没有启用的预算组织' });
+        }
       }).catch(e => {
         let content = (e.response && e.response.data) ? (e.response.data.message ? e.response.data.message : errorContent) : errorContent;
         this.props.dispatch(setUserOrganization({message: content}));
-        let modalData = {
-          content: content,
-          onOk: () => {
-            this.context.router.replace(menuRoute.getRouteItem('dashboard', 'key').url);
-            this.setState({check: true});
-          },
-          okText: 'Ok'
-        };
-        Modal.error(modalData);
+        this.setState({ check: true, error: true, errorContent: {
+            text: content,
+            title: 500,
+            skip: menuRoute.getRouteItem('budget-organization').url,
+            buttonText: '去设置',
+            hasButton: true
+          }
+        });
       })
     } else {
       this.setState({check: true});
@@ -268,12 +279,17 @@ class Main extends React.Component{
     this.props.dispatch(setLanguage(language));
   };
 
+  //跳转至老中控，插入token
+  skipToAdmin = () => {
+    location.href = location.origin + '/new/#/my/expense/list';
+  };
+
   onCollapse = (collapsed) => {
     this.setState({ collapsed });
   };
 
   render(){
-    const { collapsed, check, showListSelector, adminMode } = this.state;
+    const { collapsed, check, error, showListSelector, adminMode, errorContent } = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <Layout className="helios-main">
@@ -289,6 +305,8 @@ class Main extends React.Component{
               <img src={LogoImg}/>
             </div>
             <div className="user-area">
+              {config.appEnv === 'dist' ? <Button className="admin-button" onClick={this.skipToAdmin}>跳转至中控平台</Button> : null}
+
               <Button className="admin-button" onClick={this.handleModeChange}>{adminMode ? formatMessage({id: 'main.exit.admin.mode'}) /* 退出管理员模式*/ : formatMessage({id: 'main.admin.mode'}) /* 管理员模式*/}</Button>
               <Select defaultValue={this.props.language.locale} onChange={this.handleChangeLanguage} className="language-set">
                 <Option value="zh">简体中文</Option>
@@ -307,7 +325,7 @@ class Main extends React.Component{
             {this.renderBreadcrumb()}
           </Header>
           <Content className="helios-content">
-            {check ? menuRoute.MainRoute : <Loading/>}
+            {check ? (error ? <Error {...errorContent} /> : menuRoute.MainRoute) : <Loading/>}
           </Content>
         </Layout>
 

@@ -2,5 +2,7 @@
   "paymentMethod.paymentMethodCode":"付款方式代码",
   "paymentMethod.paymentMethodCategory":"付款方式类型",
   "paymentMethod.description":"付款方式名称",
-  "paymentMethod.isEnabled":"状态"
+  "paymentMethod.isEnabled":"状态",
+  "paymentMethod.newPaymentMethod":"新建付款方式",
+  "paymentMethod.editPaymentMethod":"编辑付款方式"
 }

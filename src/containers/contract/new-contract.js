@@ -7,6 +7,7 @@ const Option = Select.Option;
 import menuRoute from 'share/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
+import { contractService } from 'service'
 
 import moment from 'moment'
 import Upload from 'components/upload'
@@ -20,7 +21,6 @@ class NewContract extends React.Component{
       pageLoading: false,
       user: {},
       contractTypeDisabled: true,
-      setOfBooksId: null,
       isNew: true, //新建 or 编辑
       data: [], //编辑的合同信息
       partnerCategoryOptions: [], //合同方类型选项
@@ -33,7 +33,7 @@ class NewContract extends React.Component{
       contractCategoryValue: 'EMPLOYEE',
       unitIdOptions: [], //责任部门选项
       employeeIdOptions: [], //责任人选项
-      selectorItem: {},
+      currencyLoading: false,
       extraParams: null,
       myContract:  menuRoute.getRouteItem('my-contract','key'),    //我的合同
       contractDetail:  menuRoute.getRouteItem('contract-detail','key'),    //合同详情
@@ -52,19 +52,16 @@ class NewContract extends React.Component{
       let contractCategoryOptions = res.data.values || [];
       this.setState({ contractCategoryOptions })
     });
-    this.service.getCurrencyList().then((res) => {  //币种
-      let currencyOptions = res.data;
-      this.setState({ currencyOptions })
-    });
-    httpFetch.get(`${config.baseUrl}/api/setOfBooks/query/dto`).then((res) => { //账套
-      this.setState({ setOfBooksId: res.data[0].setOfBooksId });
-      httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${res.data[0].setOfBooksId}`).then((res) => {  //公司
-        let companyIdOptions = res.data;
-        this.setState({ companyIdOptions })
-      })
+
+    httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.props.company.setOfBooksId}`).then((res) => {  //获取公司列表
+      let companyIdOptions = res.data;
+      this.setState({ companyIdOptions })
     });
     httpFetch.get(`${config.baseUrl}/api/users/v2/search`).then(res => {  //获取员工列表
       res.status === 200 && this.setState({ employeeOptions: res.data })
+    });
+    httpFetch.post(`${config.vendorUrl}/vendor-info-service/api/ven/info`,{}).then(res => {  //获取供应商列表
+      res.status === 200 && this.setState({ venderOptions: res.data.body.body.venInfoBeans })
     });
     httpFetch.get(`${config.baseUrl}/api/departments/root/v2?flag=1001`).then(res => {  //获取责任部门列表
       res.status === 200 && this.setState({ unitIdOptions: res.data })
@@ -73,17 +70,26 @@ class NewContract extends React.Component{
 
   //获取合同信息
   getInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.params.id}`;
     this.setState({ pageLoading: true });
-    httpFetch.get(url).then(res => {
+    contractService.getContractHeaderInfo(this.props.params.id).then(res => {
       this.setState({
         data: res.data,
         isNew: false,
         pageLoading: false,
-        contractTypeDisabled: false
+        contractTypeDisabled: false,
+        contractCategoryValue: res.data.partnerCategory
       }, () => {
-        this.getContractType(this.state.data.contractTypeId);
+        this.setState({ extraParams: this.state.data.contractTypeId })
       })
+    })
+  };
+
+  //获取币种
+  getCurrencyOptions = () => {
+    this.setState({ currencyLoading: true });
+    !this.state.currencyOptions.length && this.service.getCurrencyList().then((res) => {
+      let currencyOptions = res.data;
+      this.setState({ currencyOptions, currencyLoading: false })
     })
   };
 
@@ -104,9 +110,11 @@ class NewContract extends React.Component{
         values.startDate && (values.startDate = values.startDate.format('YYYY-MM-DD'));
         values.endDate && (values.endDate = values.endDate.format('YYYY-MM-DD'));
         values.contractTypeId = values.contractTypeId[0].id;
+        this.state.unitIdOptions.map(option => {
+          option.departmentOID === values.unitId && (values.unitId = option.id)
+        });
         this.setState({ loading: true });
-        let url = `${config.contractUrl}/contract/api/contract/header`;
-        httpFetch.post(url, values).then(res => {
+        contractService.newContractHeader(values).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('保存成功');
@@ -132,9 +140,11 @@ class NewContract extends React.Component{
         values.contractTypeId = values.contractTypeId[0].id;
         values.id = this.state.data.id;
         values.versionNumber = this.state.data.versionNumber;
+        this.state.unitIdOptions.map(option => {
+          option.departmentOID === values.unitId && (values.unitId = option.id)
+        });
         this.setState({ loading: true });
-        let url = `${config.contractUrl}/contract/api/contract/header`;
-        httpFetch.put(url, values).then(res => {
+        contractService.updateContractHeader(values).then(res => {
           if (res.status === 200) {
             this.setState({ loading: false });
             message.success('修改成功');
@@ -154,34 +164,11 @@ class NewContract extends React.Component{
       this.context.router.push(this.state.myContract.url)
   };
 
-  //获取合同类型
-  getContractType = (value) => {
-    let selectorItem = {
-      title: "合同类型",
-      url: `${config.contractUrl}/contract/api/contract/type/contract/type/by/company`,
-      searchForm: [
-        {type: 'input', id: 'contractTypeCode', label: '合同类型代码'},
-        {type: 'input', id: 'contractTypeName', label: '合同类型名称'},
-        {type: 'input', id: 'contractCategory', label: '合同大类'}
-      ],
-      columns: [
-        {title: '合同类型代码', dataIndex: 'contractTypeCode'},
-        {title: '合同类型名称', dataIndex: 'contractTypeName'},
-        {title: '合同大类', dataIndex: 'contractCategoryName'},
-      ],
-      key: 'id'
-    };
-    this.setState({
-      selectorItem,
-      extraParams: value
-    })
-  };
-
   //选择公司
   handleCompanyId = (value) => {
     if (value) {
       this.props.form.setFieldsValue({ contractTypeId: undefined });
-      this.getContractType(value);
+      this.setState({ extraParams: value });
       this.setState({ contractTypeDisabled: false })
     }
   };
@@ -203,7 +190,12 @@ class NewContract extends React.Component{
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, selectorItem, extraParams } = this.state;
+    const { loading, pageLoading, user, contractTypeDisabled, isNew, data, partnerCategoryOptions, currencyOptions, companyIdOptions, contractCategoryOptions, employeeOptions, venderOptions, contractCategoryValue, unitIdOptions, employeeIdOptions, extraParams, currencyLoading } = this.state;
+    data.attachments && (data.attachments.map((item, index) => {
+        item.uid = index;
+        item.name = item.fileName;
+      })
+    );
     return (
       <div className="new-contract background-transparent" style={{marginBottom:40, marginTop:-35}}>
         <Spin spinning={pageLoading}>
@@ -211,7 +203,7 @@ class NewContract extends React.Component{
             <Row>
               <Col span={7}>
                 <div style={{lineHeight: '32px'}}>合同编号:</div>
-                <Input value={isNew ? '-' : data.id} disabled />
+                <Input value={isNew ? '-' : data.contractNumber} disabled />
               </Col>
               <Col span={7} offset={1}>
                 <div style={{lineHeight: '32px'}}>创建人:</div>
@@ -281,7 +273,7 @@ class NewContract extends React.Component{
                       initialValue: isNew ? undefined : [{id: data.contractTypeId, contractTypeName: data.contractTypeName}]
                     })(
                       <Chooser disabled={isNew ? contractTypeDisabled : false}
-                               selectorItem={selectorItem}
+                               type="contract_type"
                                listExtraParams={{companyId: extraParams}}
                                valueKey="id"
                                labelKey="contractTypeName"
@@ -315,7 +307,10 @@ class NewContract extends React.Component{
                         {getFieldDecorator('currency', {
                           initialValue: isNew ? 'CNY' : data.currency
                         })(
-                          <Select placeholder="请选择" disabled={!isNew}>
+                          <Select placeholder="请选择"
+                                  onFocus={this.getCurrencyOptions}
+                                  notFoundContent={currencyLoading ? <Spin size="small" /> : '无匹配结果'}
+                                  disabled={!isNew}>
                             {currencyOptions.map((option) => {
                               return <Option key={option.currency}>{option.currency}</Option>
                             })}
@@ -392,7 +387,7 @@ class NewContract extends React.Component{
                             return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
                           }) :
                           venderOptions.map(option => {
-                            return <Option key={option.id}>{option.fullName}</Option>
+                            return <Option key={option.id}>{option.venNickname}</Option>
                           })
                         }
                       </Select>
@@ -409,6 +404,8 @@ class NewContract extends React.Component{
                       <Upload uploadUrl={`${config.contractUrl}/contract/api/contract/header/attachment/upload`}
                               attachmentType="CON_CONTRACT"
                               fileNum={9}
+                              defaultFileList={isNew ? [] : data.attachments}
+                              defaultOIDs={isNew ? [] : data.attachmentOIDs}
                               uploadHandle={this.handleUpload}/>
                     )}
                   </FormItem>
@@ -437,7 +434,7 @@ class NewContract extends React.Component{
                     })(
                       <Select placeholder="请选择" allowClear>
                         {employeeIdOptions.map((option) => {
-                          return <Option key={option.userOID}>{option.fullName} - {option.employeeID}</Option>
+                          return <Option key={option.id}>{option.fullName} - {option.employeeID}</Option>
                         })}
                       </Select>
                     )}
@@ -477,7 +474,8 @@ const wrappedNewContract = Form.create()(injectIntl(NewContract));
 
 function mapStateToProps(state) {
   return {
-    user: state.login.user
+    user: state.login.user,
+    company: state.login.company
   }
 }
 

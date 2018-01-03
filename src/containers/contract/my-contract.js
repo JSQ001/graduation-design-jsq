@@ -1,9 +1,10 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
 import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { contractService } from 'service'
 
 import moment from 'moment'
 import SearchArea from 'components/search-area'
@@ -13,7 +14,6 @@ class MyContract extends React.Component{
     super(props);
     this.state = {
       loading: false,
-      setOfBooksId: null,
       contractStatus: {
         CANCEL: {label: '已取消', state: 'default'},
         FINISH: {label: '已完成', state: 'success'},
@@ -22,35 +22,35 @@ class MyContract extends React.Component{
         SUBMITTED: {label: '审批中', state: 'processing'},
         REJECTED: {label: '已驳回', state: 'error'},
         CONFIRM: {label: '已通过', state: 'success'},
-        WITHDRAWAL: {label: '已撤回', state: 'warning'}, //字段未确认
+        WITHDRAWAL: {label: '已撤回', state: 'warning'},
       },
       searchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'contractName', label: '合同名称'},
-        {type: 'items', id: 'price', items: [
-          {type: 'input', id: 'amountBegin', label: '合同金额从'},
-          {type: 'input', id: 'amountEnd', label: '合同金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '合同金额从'},
+          {type: 'input', id: 'amountTo', label: '合同金额至'}
         ]},
-        {type: 'items', id: 'signDate', items: [
-          {type: 'date', id: 'signDateStart', label: '签订日期从'},
-          {type: 'date', id: 'signDateEnd', label: '签订日期至'}
+        {type: 'items', id: 'dateRange', items: [
+          {type: 'date', id: 'signDateFrom', label: '签署日期从'},
+          {type: 'date', id: 'signDateTo', label: '签署日期至'}
         ]},
-        {type: 'value_list', id: 'contractCategory', label: '合同大类', valueListCode: 2202, options: []},
-        {type: 'input', id: 'companyId', label: '公司'},
-        {type: 'input', id: 'contractTypeId', label: '合同类型'},
-        {type: 'value_list', id: 'partnerCategory', label: '合同方类型', valueListCode: 2107, options: []},
-        {type: 'input', id: 'partnerId', label: '合同方'},
-        {type: 'input', id: 'unitId', label: '责任部门'},
-        {type: 'input', id: 'employeeId', label: '责任人'},
+        {type: 'select', id: 'companyId', label: '公司', getUrl: `${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.props.company.setOfBooksId}`,
+          method: 'get', valueKey: 'id', labelKey: 'name', options: [], event: 'id'},
+        {type: 'list', id: 'contractTypeId', label: '合同类型', single: true, labelKey: 'contractTypeName', valueKey: 'id', listType: 'contract_type', disabled: true},
+        {type: 'value_list', id: 'partnerCategory', label: '合同方类型', valueListCode: 2107, options: [], event: 'code'},
+        {type: 'select', id: 'partnerId', label: '合同方', options: [], method: 'get', disabled: true},
         {type: 'value_list', id: 'status', label: '合同状态', valueListCode: 2201, options: []},
       ],
+      searchParams: {},
       columns: [
-        {title: '序号', dataIndex: 'id', render: (value, record, index) => this.state.pageSize * this.state.page + index + 1},
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '公司', dataIndex: 'companyName'},
-        {title: '合同类型', dataIndex: 'contractTypeName', render: (value, record) => (record.contractCategory + ' - ' + value)},
+        {title: '合同类型', dataIndex: 'contractTypeName'},
+        {title: '合同名称', dataIndex: 'contractName'},
         {title: '签署日期', dataIndex: 'signDate', render: (value) => moment(value).format('YYYY-MM-DD')},
-        {title: '合同方', dataIndex: 'partnerCategoryName', render: (value, record) => (value + ' - ' + record.partnerName)},
+        {title: '合同方类型', dataIndex: 'partnerCategoryName'},
+        {title: '合同方', dataIndex: 'partnerName'},
         {title: '币种', dataIndex: 'currency'},
         {title: '合同金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '状态', dataIndex: 'status',
@@ -68,25 +68,13 @@ class MyContract extends React.Component{
   }
 
   componentWillMount() {
-    let url = `${config.baseUrl}/api/setOfBooks/query/dto`;
-    httpFetch.get(url).then((res) => {
-      if (res.status === 200) {
-        this.setState({ setOfBooksId: res.data[0].setOfBooksId }, () => {
-          this.getList();
-          httpFetch.get(`${config.baseUrl}/api/company/by/condition?setOfBooksId=${this.state.setOfBooksId}`).then((res) => {  //公司
-            // let currencyOptions = res.data;
-            // this.setState({ currencyOptions })
-          })
-        })
-      }
-    })
+    this.getList()
   }
 
   getList = () => {
-    const { page, pageSize } = this.state;
-    let url = `${config.contractUrl}/contract/api/contract/header/update/query?page=${page}&size=${pageSize}`;
+    const { page, pageSize, searchParams } = this.state;
     this.setState({ loading: true });
-    httpFetch.get(url).then((res) => {
+    contractService.getContractList(page, pageSize, searchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           loading: false,
@@ -100,7 +88,7 @@ class MyContract extends React.Component{
       }
     }).catch(() => {
       this.setState({ loading: false });
-      message.error('数据加载失败请重试')
+      message.error('数据加载失败，请重试')
     })
   };
 
@@ -113,8 +101,17 @@ class MyContract extends React.Component{
   };
 
   //搜索
-  search = (result) => {
-    console.log(result)
+  search = (values) => {
+    values.signDateFrom && (values.signDateFrom = moment(values.signDateFrom).format('YYYY-MM-DD'));
+    values.signDateTo && (values.signDateTo = moment(values.signDateTo).format('YYYY-MM-DD'));
+    this.setState({ searchParams: values },() => {
+      this.getList()
+    })
+  };
+
+  clear = () => {
+    this.eventHandle('id', null);
+    this.eventHandle('code', null)
   };
 
   //新建
@@ -127,12 +124,58 @@ class MyContract extends React.Component{
     this.context.router.push(this.state.ContractDetail.url.replace(':id', record.id))
   };
 
+  eventHandle = (type, value) => {
+    let searchForm = this.state.searchForm;
+    if (type === 'id') {  //合同类型
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+        contractTypeId: undefined
+      });
+      searchForm.map(item => {
+        if (item.id === 'contractTypeId') {
+          if (value) {
+            item.listExtraParams = {companyId: value};
+            item.disabled = false
+          } else {
+            item.disabled = true
+          }
+        }
+      })
+    } else if (type === 'code') { //合作方
+      this.formRef._reactInternalInstance._renderedComponent._instance.setValues({
+        partnerId: ''
+      });
+      searchForm.map(item => {
+        if (item.id === 'partnerId') {
+          if (value === 'EMPLOYEE') {
+            item.getUrl = `${config.baseUrl}/api/users/v2/search`;
+            item.valueKey = 'id';
+            item.options = [];
+            item.renderOption = (option) => `${option.fullName} - ${option.employeeID}`;
+            item.disabled = false
+          } else if (value === 'VENDER') {
+            //TODO: 合同方类型为供应商时，查询合同方列表的接口
+            item.getUrl = ``;
+            item.valueKey = '';
+            item.options = [];
+            item.disabled = false
+          } else {
+            item.disabled = true
+          }
+        }
+      })
+    }
+    this.setState({ searchForm })
+  };
+
   render() {
     const { loading, searchForm, columns, data, pagination } = this.state;
     return (
       <div className="my-contract">
         <SearchArea searchForm={searchForm}
-                    submitHandle={this.search}/>
+                    eventHandle={this.eventHandle}
+                    submitHandle={this.search}
+                    clearHandle={this.clear}
+                    wrappedComponentRef={(inst) => this.formRef = inst}/>
         <div className="table-header">
           <div className="table-header-title">{`共搜索到 ${pagination.total} 条数据`}</div>
           <div className="table-header-buttons">
@@ -159,6 +202,12 @@ MyContract.contextTypes = {
   router: React.PropTypes.object
 };
 
+function mapStateToProps(state) {
+  return {
+    company: state.login.company
+  }
+}
+
 const wrappedMyContract = Form.create()(injectIntl(MyContract));
 
-export default wrappedMyContract
+export default connect(mapStateToProps)(wrappedMyContract)

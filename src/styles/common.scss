@@ -73,6 +73,9 @@ body{
     button{
       margin-right: 8px;
     }
+    .ant-input-suffix button{
+      margin-right: 0px;
+    }
   }
   .ant-table-thead > tr > th > span{
     color: #666 !important;

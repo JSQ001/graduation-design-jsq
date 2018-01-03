@@ -107,7 +107,8 @@
   "menu.new-cash-transaction-class": "New cash transaction class",
   "menu.cash-transaction-class-detail": "Cash transaction class detail",
   "menu.pay-requisition-type-assign-transaction":"Pay Requisition Type Assign Transaction",
-  "menu.subject-sheet": "sheet of subjects",
+  "menu.subject-sheet": "Sheet of Subjects",
+  "menu.subject-sheet-detail":"Sheet of Subjects Detail",
   "menu.receipt-type-setting": "Receipt Type Setting",
   "menu.pre-payment-type": "Pre payment type",
   "menu.pre-payment":"Previous Payment",
@@ -123,5 +124,15 @@
   "menu.announcement-information": "Announcement information",
   "menu.supplier-type": "supplier type",
   "menu.announcement-information-detail": "Announcement information detail",
-  "menu.page-create": "Page Creator"
+  "menu.supplier-management": "Supplier management",
+  "menu.page-create": "Page Creator",
+  "menu.financial-accounting-setting": "Financial accounting setting",
+  "menu.section-structure": "Section structure",
+  "menu.section-setting": "Section setting",
+  "menu.value-list-detail": "Value List Detail",
+  "menu.accounting-source": "Accounting source",
+  "menu.voucher-template": "Voucher template",
+  "menu.accounting-scenarios-system": "Accounting scenarios system",
+  "menu.accounting-elements": "Accounting elements",
+  "menu.accounting-scenarios": "Accounting scenarios setOfBook"
 }

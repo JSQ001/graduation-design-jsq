@@ -5,12 +5,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Select, Popover, Badge, message, Form, Spin, Popconfirm} from 'antd';
-import SearchArea from 'components/search-area.js';
+import SearchArea from 'components/search-area';
 import Chooser from 'components/chooser'
 import "styles/budget-setting/budget-organization/budget-item-map/budget-item-map.scss"
-import httpFetch from 'share/httpFetch';
+import budgetService from 'service/budgetService'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
 import selectorData from 'share/selectorData'
 import Importer from 'components/template/importer'
 
@@ -23,7 +22,9 @@ class BudgetItemMap extends React.Component {
     const { formatMessage } = this.props.intl;
     this.state = {
       loading: true,
+      btnLoading: false,
       params: [],
+      isSave: true,
       paramsKey:0,
       sourceType: [],
       searchParams:{
@@ -40,7 +41,7 @@ class BudgetItemMap extends React.Component {
       searchForm: [
         {type: 'select', options: [], id: 'sourceType', label: this.props.intl.formatMessage({id: 'itemMap.sourceType'}) }, /*来源类别*/
         {type: 'select', id: 'itemId',options:[], labelKey: 'itemName',valueKey: 'id',
-          label: formatMessage({id: 'budget.item'}),  /*预算项目*/
+          label: formatMessage({id: 'itemMap.item'}),  /*预算项目*/
           listExtraParams:{organizationId: this.props.id},
           getUrl: `${config.budgetUrl}/api/budget/items/find/all`, method: 'get', getParams: {organizationId: this.props.id, isEnabled: true}
         },
@@ -53,7 +54,7 @@ class BudgetItemMap extends React.Component {
           title: formatMessage({id:"itemMap.detailType"}), key: "sourceItemName", dataIndex: 'sourceItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'detail')
         },
         {          /*预算项目*/
-          title: formatMessage({id:"budget.item"}), key: "budgetItemName", dataIndex: 'budgetItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'item')
+          title: formatMessage({id:"itemMap.item"}), key: "budgetItemName", dataIndex: 'budgetItemName',render: (text, record, index) => this.renderColumns(text, record,index, 'item')
         },                            //操作
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record, index) => (
           <span>
@@ -79,10 +80,11 @@ class BudgetItemMap extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     if(record.sourceType !=="" && typeof record.budgetItemId !== 'undefined' && typeof record.sourceItemId !== 'undefined') {
-      httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`, [record]).then((response) => {
+      budgetService.insertOrUpdateItemMap([record]).then((response) => {
         message.success(`${this.props.intl.formatMessage({id: "common.save.success"}, {name: ""})}`);
         this.setState({
-          loading: true
+          loading: true,
+          isSave: true,
         }, this.getList())
       }).catch((e) => {
         if (e.response) {
@@ -92,7 +94,7 @@ class BudgetItemMap extends React.Component {
     }else {
       if(typeof record.id === 'undefined'){
         let params = this.state.params;
-        params.delete(params[index])
+        params.delete(params[index]);
         this.setState({params});
         return
       }
@@ -105,24 +107,26 @@ class BudgetItemMap extends React.Component {
     let params = this.state.params;
     if(!flag){
       if(typeof record.id === 'undefined'){
-        params.delete(params[index])
+        params.delete(params[index]);
         this.setState({params});
         return
       }
     }
     params[index].edit = flag;
     this.setState({
-      params
+      params,
+      isSave: !flag
     });
   };
 
   //删除
   deleteItem = (e, record,index)=>{
+    this.setState({loading:true});
     e.preventDefault();
     e.stopPropagation();
     let param = [record.id];
-    httpFetch.delete(`${config.budgetUrl}/api/budget/itemsMapping/deleteByIds`,param).then((response)=>{
-      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`)
+    budgetService.deleteItemMap(param).then((response)=>{
+      message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
       this.getList();
     }).catch((e)=>{
       if(e.response){
@@ -138,8 +142,8 @@ class BudgetItemMap extends React.Component {
     let itemSelectorItem = selectorData['budget_item'];
     let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
     if(key < 2){
-      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
-      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
+      itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.id}&isEnabled=${true}`;
     }
 
     let paramValueMap = {
@@ -187,12 +191,10 @@ class BudgetItemMap extends React.Component {
 
   //获取预算项目映射数据
   getList(){
-    let params = this.state.searchParams;
-    let url = `${config.budgetUrl}/api/budget/itemsMapping/selectByInput?sourceType=${params.sourceType}&itemId=${params.itemId}&page=${this.state.pagination.page}&size=${this.state.pagination.pageSize}`;
-    for(let paramsName in params){
-      url += params[paramsName] ? `&${paramsName}=${params[paramsName]}` : '';
-    }
-    httpFetch.get(url).then((response)=>{
+    let params = Object.assign({}, this.state.searchParams);
+    params.page = this.state.pagination.page;
+    params.size = this.state.pagination.pageSize;
+    budgetService.getItemMapByOptions(params).then((response)=>{
       let paramsKey = this.state.paramsKey;
       response.data.map((item,index)=>{
         item.key = paramsKey++;
@@ -205,12 +207,13 @@ class BudgetItemMap extends React.Component {
       this.setState({
         pagination,
         loading: false,
+        isSave: true,
+        btnLoading: false,
         params: response.data,
         paramsKey
       })
     })
   }
-
 
   handleSearch = (values) =>{
     let searchParams = this.state.searchParams;
@@ -317,7 +320,6 @@ class BudgetItemMap extends React.Component {
           }
         }
         case 'item':{
-
           return(
               <Chooser
                 onChange={(value) => this.handleChangeItem(value, index)}
@@ -325,7 +327,7 @@ class BudgetItemMap extends React.Component {
                 labelKey='itemName'
                 valueKey='id'
                 itemMap={true}
-                listExtraParams={{organizationId: this.props.id}}
+                listExtraParams={{organizationId: this.props.id,isEnabled: true}}
                 value={record.item}
                 single={true}/>)
         }
@@ -345,15 +347,24 @@ class BudgetItemMap extends React.Component {
     let array=[];
     array.push(newParams);
     let newArray =  array.concat(params);
-    this.setState({ params: newArray,paramsKey});
+    this.setState({ isSave:false,params: newArray,paramsKey});
   };
 
   handleSave = () =>{
     let params = this.state.params;
-    httpFetch.post(`${config.budgetUrl}/api/budget/itemsMapping/insertOrUpdate`,params).then((response)=>{
+    let value = [];
+    params.map(item=>{
+      if(item.edit){
+        if(typeof item.id !== 'undefined' || (item.sourceType !== ''&& item.item.length>0&&item.detail.length>0)){
+          value.push(item)
+        }
+      }
+    });
+    budgetService.insertOrUpdateItemMap(value).then((response)=>{
       message.success(`${this.props.intl.formatMessage({id: "common.save.success"},{name:""})}`);
       this.setState({
-       loading: true
+       loading: true,
+        btnLoading: true,
       },this.getList())
     }).catch((e)=>{
       if(e.response){
@@ -363,7 +374,7 @@ class BudgetItemMap extends React.Component {
   };
 
   render(){
-    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, } = this.state;
+    const { loading, searchForm ,params, selectedRowKeys, pagination, columns, isSave, btnLoading} = this.state;
     const { formatMessage } = this.props.intl;
     return (
       <div className="budget-item-map">
@@ -378,7 +389,7 @@ class BudgetItemMap extends React.Component {
                       errorUrl={`${config.budgetUrl}/api/budget/itemsMapping/export/failed/data`}
                       fileName={formatMessage({id:"itemMap.itemUploadFile"})}
                       onOk={this.handleImportOk}/>
-            <Button type="primary" onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*添加*/}
+            <Button type="primary" loading={btnLoading} disabled={isSave} onClick={this.handleSave}>{formatMessage({id: 'common.save'})}</Button>  {/*保存*/}
           </div>
         </div>
         <Form
@@ -408,3 +419,4 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(injectIntl(BudgetItemMap));
+

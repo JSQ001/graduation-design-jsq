@@ -1,12 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
+import config from 'config'
 import { Form, Input, Switch, Button, Icon, Checkbox, message, Select, InputNumber, Row, Col } from 'antd'
 
-import Chooser from 'components/chooser.js'
-import httpFetch from 'share/httpFetch'
-import config from 'config'
+import Chooser from 'components/chooser'
+import { budgetService } from 'service'
 import 'styles/budget-setting/budget-organization/budget-structure/new-dimension.scss'
 
 const FormItem = Form.Item;
@@ -17,7 +16,7 @@ class NewDimension extends React.Component{
     super(props);
     const { formatMessage} = this.props.intl;
     this.state = {
-      showSelectDimension: false,
+      isEnabled: true,
       dimension:{},
       layoutPosition:[],
       extraParams: {},
@@ -59,6 +58,7 @@ class NewDimension extends React.Component{
       extraParams = {dimensionId: dimension.dimensionId}
     }
     this.setState({
+      isEnabled: dimension.isEnabled,
       dimension,
       extraParams,
       defaultDimension: dimension.defaultDimensionValue
@@ -87,6 +87,7 @@ class NewDimension extends React.Component{
       if(typeof dimension.id !== 'undefined'){
         extraParams = {dimensionId: dimension.dimensionId}
         this.setState({
+          isEnabled: dimension.isEnabled,
           dimension,
           extraParams,
           defaultDimension: dimension.defaultDimensionValue
@@ -101,10 +102,12 @@ class NewDimension extends React.Component{
       if (!err) {
         this.setState({loading: true});
         values.id = this.state.dimension.id;
-        values.dimensionId = values.dimensionCode[0].id;
-        values.defaultDimValueId = values.defaultDimensionCode[0].id;
+        values.dimensionId = values.dimensionCode[0].dimensionId;
+        if(values.defaultDimensionCode.length>0){
+          values.defaultDimValueId =values.defaultDimensionCode[0].defaultDimValueId;
+        }
         values.versionNumber = this.state.dimension.versionNumber;
-        httpFetch.put(`${config.budgetUrl}/api/budget/structure/assign/layouts`, values).then((res)=>{
+        budgetService.structureUpdateDimension(values).then((res)=>{
           this.setState({loading: false});
           if(res.status == 200){
             this.props.close(true);
@@ -123,16 +126,15 @@ class NewDimension extends React.Component{
   onCancel = () =>{
     this.props.form.resetFields();
     this.setState({
+      isEnabled: this.state.dimension.isEnabled,
       dimension:{}
     });
     this.props.close();
   };
 
   switchChange = () => {
-    let dimension = this.state.dimension;
-    dimension.isEnabled = !dimension.isEnabled;
     this.setState((prevState) => ({
-      dimension
+      isEnabled: !prevState.isEnabled
     }))
   };
 
@@ -179,7 +181,7 @@ class NewDimension extends React.Component{
   render(){
     const { getFieldDecorator } = this.props.form;
     const {formatMessage} = this.props.intl;
-    const { dimensionSelectorItem, showSelectDimension, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
+    const { dimensionSelectorItem, isEnabled, dimension, layoutPosition ,selectorItem, extraParams} = this.state;
     const options = layoutPosition.map((item)=><Option key={item.id}>{item.value}</Option>);
 
     const formItemLayout = {
@@ -193,12 +195,12 @@ class NewDimension extends React.Component{
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:"common.column.status"})} colon={true}>
                 {getFieldDecorator('isEnabled', {
-                  valuePropName:"defaultChecked",
-                  initialValue: dimension.isEnabled
+                  valuePropName:"checked",
+                  initialValue: isEnabled
                 })(
                   <div>
-                    <Switch defaultChecked={dimension.isEnabled} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
-                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ dimension.isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
+                    <Switch defaultChecked={isEnabled} disabled={dimension.usedFlag} checkedChildren={<Icon type="check"/>} unCheckedChildren={<Icon type="cross" />} onChange={this.switchChange}/>
+                    <span className="enabled-type" style={{marginLeft:20,width:100}}>{ isEnabled ? formatMessage({id:"common.status.enable"}) : formatMessage({id:"common.disabled"}) }</span>
                   </div>
                 )}
               </FormItem>
@@ -216,6 +218,7 @@ class NewDimension extends React.Component{
                   ],
                 })(
                   <Chooser
+                    disabled={dimension.usedFlag}
                     placeholder={ formatMessage({id:"common.please.enter"}) }
                     single={true}
                     labelKey="dimensionCode"
@@ -268,7 +271,7 @@ class NewDimension extends React.Component{
                     }
                   }],
                 })(
-                  <InputNumber placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
+                  <InputNumber disabled={dimension.usedFlag} placeholder={this.props.intl.formatMessage({id:"common.please.enter"})}/>
                 )}
               </FormItem>
             </Col>

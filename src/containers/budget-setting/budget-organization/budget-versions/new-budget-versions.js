@@ -24,6 +24,7 @@ class NewBudgetVersions extends React.Component {
       statusError: false,
       newData: [],
       version: {},
+      statusOptions:[],
       checkoutCodeData: [],
       loading: false,
       budgetVersionsDetailDetailPage: menuRoute.getRouteItem('budget-versions-detail', 'key'),    //预算版本详情的页面项
@@ -32,14 +33,23 @@ class NewBudgetVersions extends React.Component {
   }
 
   componentWillMount() {
-    console.log(this.props)
+    this.getStatusOptions();
     this.setState({
-      version: this.props.params
+      version: this.props.params,
+    })
+  }
+
+  getStatusOptions(){
+    httpFetch.get(`${config.baseUrl}/api/custom/enumeration/system/by/type?systemCustomEnumerationType=2001`).then(res => { //状态
+      let statusOptions = res.data.values || [];
+      console.log(res.data.values);
+      this.setState({
+        statusOptions
+      })
     })
   }
 
   componentWillReceiveProps = (nextProps) => {
-    console.log(nextProps)
   }
 
   //检查处理提交数据
@@ -63,7 +73,7 @@ class NewBudgetVersions extends React.Component {
   saveData(value) {
     httpFetch.post(`${config.budgetUrl}/api/budget/versions`, value).then((response) => {
       if(response.status === 200){
-        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: "预算版本"}));
+        message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: this.props.intl.formatMessage({id: "budgetVersion.version"})}));
         this.setState({loading: false});
         this.props.close(true);
       }
@@ -103,7 +113,7 @@ class NewBudgetVersions extends React.Component {
     const { formatMessage } = this.props.intl;
     const {getFieldDecorator} = this.props.form;
     const versionCodeError = false;
-    const {version} = this.state;
+    const {version,statusOptions} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -114,8 +124,8 @@ class NewBudgetVersions extends React.Component {
         <div className="new-budget-versions-help">
           <Alert
             message={formatMessage({id: "common.help"})}
-            description={formatMessage({id: "budget.newVersion.info"})}
-            type=""
+            description={formatMessage({id: "budgetVersion.newVersion.info"})}
+            type="info"
             showIcon
           />
         </div>
@@ -134,7 +144,7 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={formatMessage({id: "budget.versionCode"})}>
+              label={formatMessage({id: "budgetVersion.versionCode"})}>
               {getFieldDecorator('versionCode', {
                 initialValue: version.versionCode,
                 rules: [{required: true, message: formatMessage({id: "common.please.enter"})},]
@@ -142,7 +152,7 @@ class NewBudgetVersions extends React.Component {
                 <Input />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label={formatMessage({id: "budget.versionName"})}>
+            <FormItem {...formItemLayout} label={formatMessage({id: "budgetVersion.versionName"})}>
               {getFieldDecorator('versionName', {
                 initialValue: version.versionName,
                 rules: [{required: true, message: formatMessage({id: "common.please.enter"})}],
@@ -150,26 +160,25 @@ class NewBudgetVersions extends React.Component {
 
             </FormItem>
             <FormItem {...formItemLayout}
-              label={formatMessage({id: "budget.versionStatus"})}>
+              label={formatMessage({id: "budgetVersion.versionStatus"})}>
               {getFieldDecorator('status', {
                 initialValue: typeof version.id === 'undefined' ? "NEW" : version.status.value,
                 rules: [{required: true,}],
               })(
-                <Select
-                  placeholder="">
-                  <Select.Option value="NEW">新建</Select.Option>
-                  <Select.Option value="CURRENT">当前</Select.Option>
-                  <Select.Option value="HISTORY">历史</Select.Option>
+                <Select placeholder={formatMessage({id: "common.please.select"})}>
+                  {statusOptions.map((option) => {
+                    return <Option key={option.code}>{option.messageKey}</Option>
+                  })}
                 </Select>
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.versionDescription"})}>
+            <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetVersion.versionDescription"})}>
               {getFieldDecorator('description', {
                 initialValue: version.description
               })(<Input />)}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={this.props.intl.formatMessage({id: "budget.versionDate"})}>
+              label={this.props.intl.formatMessage({id: "budgetVersion.versionDate"})}>
               {getFieldDecorator('versionDate',
                 {
                   initialValue:typeof version.id === 'undefined'? null: moment( version.versionDate, 'YYYY-MM-DD'),
@@ -180,7 +189,7 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <FormItem {...formItemLayout}
-              label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+              label={this.props.intl.formatMessage({id: "budgetVersion.isEnabled"})}>
               {getFieldDecorator('isEnabled', {
                   valuePropName: "checked",
                   initialValue: typeof version.id === 'undefined' ? true: version.isEnabled,
@@ -190,8 +199,8 @@ class NewBudgetVersions extends React.Component {
               )}
             </FormItem>
             <div className="slide-footer">
-              <Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>
-              <Button onClick={this.onCancel}>取消</Button>
+              <Button type="primary" htmlType="submit" loading={this.state.loading}>{this.props.intl.formatMessage({id: "common.save"})}</Button>
+              <Button onClick={this.onCancel}>{this.handleCreate}>{this.props.intl.formatMessage({id: "common.cancel"})}</Button>
             </div>
           </Form>
         </div>

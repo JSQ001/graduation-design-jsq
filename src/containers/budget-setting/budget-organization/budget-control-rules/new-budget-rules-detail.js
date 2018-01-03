@@ -4,20 +4,17 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-
 import { Form, Input, Switch, Button, Icon, Row, Col, Alert, message, DatePicker, Select } from 'antd'
-
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import budgetService from 'service/budgetService'
 import debounce from 'lodash.debounce';
 import Selput from 'components/selput'
 import selectorData from 'share/selectorData'
 
 
 import "styles/budget-setting/budget-organization/budget-control-rules/new-budget-rules-detail.scss"
-
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 class NewBudgetRulesDetail extends React.Component{
   constructor(props){
     super(props);
@@ -45,7 +42,7 @@ class NewBudgetRulesDetail extends React.Component{
     let userSelectorItem = selectorData['user'];
 
     let itemSelectorItem = selectorData['budget_item'];
-    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length
+    let key = itemSelectorItem.searchForm[1].getUrl.split("?").length;
     if(key < 2){
       itemSelectorItem.searchForm[1].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
       itemSelectorItem.searchForm[2].getUrl += `?organizationId=${this.props.organization.id}&isEnabled=${true}`;
@@ -81,7 +78,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'currency',
         labelKey: 'currencyName',
         valueKey: 'currency',
-        codeKey: 'currencyName',
+        codeKey: 'currency',
         listExtraParams: {
           roleType: 'TENANT',
           language: 'chineseName'
@@ -125,7 +122,7 @@ class NewBudgetRulesDetail extends React.Component{
         labelKey: 'fullName',
         valueKey: 'employeeID',
         codeKey: 'employeeID',
-        listExtraParams: {},
+        listExtraParams: {roleType: 'TENANT'},
         selectorItem: userSelectorItem
       },
       'EMPLOYEE_GROUP': {
@@ -171,7 +168,7 @@ class NewBudgetRulesDetail extends React.Component{
         listType: 'quarter',
         labelKey: 'messageKey',
         valueKey: 'id',
-        codeKey: 'messageKey',
+        codeKey: 'code',
         listExtraParams: {systemCustomEnumerationType: 2021},
         selectorItem: undefined
       },
@@ -215,7 +212,7 @@ class NewBudgetRulesDetail extends React.Component{
 
   //获取成本中心
   getCostCenter(array){
-    httpFetch.get(`${config.baseUrl}/api/cost/center/company`).then((response)=>{
+    budgetService.getCostCenter().then((response)=>{
       response.data.map((item)=>{
         let option = {
           id: item.code + "+"+item.costCenterOID+"+"+item.id,
@@ -247,7 +244,7 @@ class NewBudgetRulesDetail extends React.Component{
         let str = values.ruleParameter.split("+");
         values.ruleParameter = str[0];
         values.ruleParameterOID = str[1];
-        httpFetch.post(`${config.budgetUrl}/api/budget/control/rule/details`, values).then((res)=>{
+        budgetService.addRuleDetail(values).then((res)=>{
           this.setState({
             loading: false,
             filtrateMethodHelp:'',
@@ -283,7 +280,10 @@ class NewBudgetRulesDetail extends React.Component{
       ruleParamsArray: [],
       validateStatusMap: {},
       helpMap: {},
-      loading: false
+      loading: false,
+      lov:{
+        disabled: true
+      }
     });
     this.detail ={};
     this.props.close();
@@ -504,8 +504,8 @@ class NewBudgetRulesDetail extends React.Component{
           <Row gutter={30}>
             <Col span={20}>
               <FormItem {...formItemLayout} label={formatMessage({id:'budget.parameterLowerLimit'})  /*下限值*/}
-                        validateStatus={validateStatusMap.parameterLowerLimit}
-                        help={helpMap.parameterLowerLimit}>
+                validateStatus={validateStatusMap.parameterLowerLimit}
+                help={helpMap.parameterLowerLimit}>
                 {getFieldDecorator('parameterLowerLimit',
                   {
                     rules: [

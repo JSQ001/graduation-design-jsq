@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
+import menuRoute from 'share/menuRoute'
+import { paymentService } from 'service'
 import { Badge, Radio, Table, Pagination, Alert, message, Modal, Icon, Form, DatePicker } from 'antd'
 const FormItem = Form.Item;
 
@@ -19,9 +19,9 @@ class PaySuccess extends React.Component {
         {type: 'input', id: 'documentNumber', label: formatMessage({id: "pay.workbench.receiptNumber"})}, //单据编号
         {type: 'value_list', id: 'documentCategory', label: formatMessage({id: "pay.workbench.receiptType"}), options: [], valueListCode: 2023}, //单据类型
         {type: 'select', id: 'employeeId', label: formatMessage({id: "pay.workbench.applicant"}), options: []}, //申请人
-        {type: 'items', id: 'mountRange', items: [
-          {type: 'input', id: 'mountFrom', label: '支付金额从'},
-          {type: 'input', id: 'mountTo', label: '支付金额至'}
+        {type: 'items', id: 'amountRange', items: [
+          {type: 'input', id: 'amountFrom', label: '支付金额从'},
+          {type: 'input', id: 'amountTo', label: '支付金额至'}
         ]},
         {type: 'items', id: 'payee', label: formatMessage({id: "pay.workbench.payee"}), items: [
           {type: 'value_list', id: 'partnerCategory', label: '类型', options: [], valueListCode: 2107},
@@ -30,23 +30,23 @@ class PaySuccess extends React.Component {
         {type: 'input', id: 'billcode', label: '付款流水号'},
         {type: 'input', id: 'customerBatchNo', label: '付款批次号'},
         {type: 'items', id: 'dateRange', items: [
-          {type: 'date', id: 'dateFrom', label: '支付日期从'},
-          {type: 'date', id: 'dateTo', label: '支付日期至'}
+          {type: 'date', id: 'payDateFrom', label: '支付日期从'},
+          {type: 'date', id: 'payDateTo', label: '支付日期至'}
         ]}
       ],
       searchParams: {},
       columns: [
-        {title: '付款流水号', dataIndex: 'billcode'},
-        {title: '付款批次号', dataIndex: 'customerBatchNo'},
+        {title: '付款流水号', dataIndex: 'billcode', render: (value, record) => <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>},
         {title: '单据编号 | 单据类型', dataIndex: 'documentNumber', render: (value, record) => {
           return (
             <div>
-              <a>{value}</a>
+              <a onClick={() => {this.checkPaymentDetail(record)}}>{value}</a>
               <span className="ant-divider"/>
-              {record.documentCategory}
+              {record.documentTypeName}
             </div>
           )}
         },
+        {title: '付款批次号', dataIndex: 'customerBatchNo'},
         {title: '工号 | 申请人', dataIndex: 'employeeName', render: (value, record) => {
           return (
             <div>
@@ -59,7 +59,7 @@ class PaySuccess extends React.Component {
         {title: '币种', dataIndex: 'currency'},
         {title: '本次支付金额', dataIndex: 'amount', render: this.filterMoney},
         {title: '付款方式', dataIndex: 'paymentTypeName'},
-        {title: '类型 | 收款方', dataIndex: 'partnerCategory', render: (value, record) => {
+        {title: '类型 | 收款方', dataIndex: 'partnerCategoryName', render: (value, record) => {
           return (
             <div>
               {value}
@@ -70,8 +70,10 @@ class PaySuccess extends React.Component {
         },
         {title: '收款方账号', dataIndex: 'draweeAccountNumber'},
         {title: '支付日期', dataIndex: 'payDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '状态', dataIndex: 'paymentStatus', render: (state) => <Badge status='success' text={state}/>},
+        {title: '状态', dataIndex: 'paymentStatusName', render: (state) => <Badge status='success' text={state}/>},
       ],
+      pageSizeOptions: ['10', '20', '30', '50'],
+
       /* 线上 */
       onlineLoading: false,
       onlineData: [],
@@ -82,6 +84,8 @@ class PaySuccess extends React.Component {
       },
       onlineCash: [],  //总金额
       modalVisible: false,
+      refundRow: {},
+      confirmLoading: false,
 
       /* 线下 */
       offlineLoading: false,
@@ -102,10 +106,13 @@ class PaySuccess extends React.Component {
         total: 0
       },
       fileCash: [],  //总金额
+
+      paymentDetail:  menuRoute.getRouteItem('payment-detail','key'),    //支付详情
     };
   }
 
   componentWillMount() {
+    this.props.subTab && this.setState({ radioValue: this.props.subTab });
     this.getList()
   }
 
@@ -129,6 +136,8 @@ class PaySuccess extends React.Component {
   };
 
   search = (values) => {
+    values.payDateFrom && (values.payDateFrom = moment(values.payDateFrom).format('YYYY-MM-DD'));
+    values.payDateTo && (values.payDateTo = moment(values.payDateTo).format('YYYY-MM-DD'));
     this.setState({
       searchParams: values,
       onlineCash: [],
@@ -142,54 +151,55 @@ class PaySuccess extends React.Component {
   clear = () => {};
 
   //退票
-  handleRefund = () => {
-    this.props.form.setFieldsValue({ date: undefined });
-    this.setState({ modalVisible: true })
+  handleRefund = (record) => {
+    this.props.form.setFieldsValue({ refundDate: undefined });
+    this.setState({ modalVisible: true, refundRow: record })
   };
 
   //确认退票
   confirmRefund = () => {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values)
+        this.setState({ confirmLoading: true });
+        paymentService.confirmRefund(moment(values.refundDate).format('YYYY-MM-DD'), this.state.refundRow).then(res => {
+          if (res.status === 200) {
+            this.setState({ modalVisible: false, confirmLoading: false });
+            message.success('退票成功');
+            this.getOnlineList();
+            this.getOnlineCash()
+          }
+        }).catch(() => {
+          this.setState({ confirmLoading: false });
+          message.error('退票失败，请重试')
+        })
       }
     });
+  };
+
+  //查看支付流水详情
+  checkPaymentDetail = (record) => {
+    this.context.router.push(this.state.paymentDetail.url.replace(':tab', 'Success').replace(':subTab', this.state.radioValue).replace(':id', record.id));
   };
 
   /*********************** 获取总金额 ***********************/
 
   //线上
   getOnlineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('ONLINE_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ onlineCash: res.data })
     })
   };
 
   //线下
   getOfflineCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('OFFLINE_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ offlineCash: res.data })
     })
   };
 
   //落地文件
   getFileCash = () => {
-    const { searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/select/totalAmountAndDocumentNum?paymentStatus=S&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
-    httpFetch.get(url).then(res => {
+    paymentService.getAmount('EBANK_PAYMENT', 'S', this.state.searchParams).then(res => {
       this.setState({ fileCash: res.data })
     })
   };
@@ -199,12 +209,8 @@ class PaySuccess extends React.Component {
   //线上
   getOnlineList = (resolve, reject) => {
     const { onlinePage, onlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${onlinePage}&size=${onlinePageSize}&paymentTypeCode=ONLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ onlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(onlinePage, onlinePageSize, 'ONLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           onlineData: res.data,
@@ -224,12 +230,8 @@ class PaySuccess extends React.Component {
   //线下
   getOfflineList = (resolve, reject) => {
     const { offlinePage, offlinePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${offlinePage}&size=${offlinePageSize}&paymentTypeCode=OFFLINE_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ offlineLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(offlinePage, offlinePageSize, 'OFFLINE_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           offlineData: res.data,
@@ -249,12 +251,8 @@ class PaySuccess extends React.Component {
   //落地文件
   getFileList = (resolve, reject) => {
     const { filePage, filePageSize, searchParams } = this.state;
-    let url = `${config.contractUrl}/payment/api/cash/transaction/details/getAlreadyPaid?page=${filePage}&size=${filePageSize}&paymentTypeCode=EBANK_PAYMENT`;
-    for(let paramsName in searchParams){
-      url += searchParams[paramsName] ? `&${paramsName}=${searchParams[paramsName]}` : '';
-    }
     this.setState({ fileLoading: true });
-    httpFetch.get(url).then(res => {
+    paymentService.getSuccessList(filePage, filePageSize, 'EBANK_PAYMENT', searchParams).then(res => {
       if (res.status === 200) {
         this.setState({
           fileData: res.data,
@@ -301,10 +299,10 @@ class PaySuccess extends React.Component {
 
   //线上
   renderOnlineContent = () => {
-    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash } = this.state;
+    const { columns, onlineData, onlineLoading, onlinePageSize, onlinePagination, onlineCash, pageSizeOptions } = this.state;
     let onlineColumns = [].concat(columns);
     onlineColumns.push(
-      {title: '操作', dataIndex: 'id', render: id => <a onClick={this.handleRefund}>退票</a>}
+      {title: '操作', dataIndex: 'id', render: (id, record) => <a onClick={() => this.handleRefund(record)}>退票</a>}
     );
     const tableTitle = (
       <div>
@@ -336,7 +334,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={onlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={onlinePagination.total}
                     onChange={this.onlinePaginationChange}
                     onShowSizeChange={this.onlinePaginationChange}
@@ -347,7 +345,7 @@ class PaySuccess extends React.Component {
 
   //线下
   renderOfflineContent = () => {
-    const { columns, offlineData, offlineLoading, offlinePageSize, offlinePagination, offlineCash } = this.state;
+    const { columns, offlineData, offlineLoading, offlinePageSize, offlinePagination, offlineCash, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付成功
@@ -378,7 +376,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={offlinePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={offlinePagination.total}
                     onChange={this.offlinePaginationChange}
                     onShowSizeChange={this.offlinePaginationChange}
@@ -389,7 +387,7 @@ class PaySuccess extends React.Component {
 
   //落地文件
   renderFileContent = () => {
-    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash } = this.state;
+    const { columns, fileData, fileLoading, filePageSize, filePagination, fileCash, pageSizeOptions } = this.state;
     const tableTitle = (
       <div>
         支付成功
@@ -420,7 +418,7 @@ class PaySuccess extends React.Component {
         <Pagination size="small"
                     defaultPageSize={filePageSize}
                     showSizeChanger
-                    pageSizeOptions={['1','2','5','10']}
+                    pageSizeOptions={pageSizeOptions}
                     total={filePagination.total}
                     onChange={this.filePaginationChange}
                     onShowSizeChange={this.filePaginationChange}
@@ -437,7 +435,7 @@ class PaySuccess extends React.Component {
       labelCol: { span: 7 },
       wrapperCol: { span: 15, offset: 1 },
     };
-    const { searchForm, radioValue, modalVisible } = this.state;
+    const { searchForm, radioValue, modalVisible, confirmLoading } = this.state;
     return (
       <div className="pay-success">
         <SearchArea searchForm={searchForm}
@@ -454,6 +452,7 @@ class PaySuccess extends React.Component {
         {radioValue === 'offline' && this.renderOfflineContent()}
         {radioValue === 'file' && this.renderFileContent()}
         <Modal visible={modalVisible}
+               confirmLoading={confirmLoading}
                onOk={this.confirmRefund}
                onCancel={() => this.setState({ modalVisible: false })}
                okText="确认退票"
@@ -469,7 +468,7 @@ class PaySuccess extends React.Component {
               <FormItem {...formItemLayout}
                         label="退票日期"
                         style={{margin:'20px 0 10px'}}>
-                {getFieldDecorator('date', {
+                {getFieldDecorator('refundDate', {
                   rules: [{
                     required: true,
                     message: '请选择'
@@ -488,6 +487,15 @@ class PaySuccess extends React.Component {
   }
 
 }
+
+PaySuccess.contextTypes = {
+  router: React.PropTypes.object
+};
+
+PaySuccess.propTypes = {
+  subTab: React.PropTypes.string,
+};
+
 
 function mapStateToProps() {
   return {}

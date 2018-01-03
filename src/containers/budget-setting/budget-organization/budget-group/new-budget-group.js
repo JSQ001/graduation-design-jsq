@@ -5,9 +5,8 @@ import { Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'an
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
-import config from 'config'
+import { budgetService } from 'service'
 
 class NewBudgetGroup extends React.Component {
   constructor(props) {
@@ -25,7 +24,7 @@ class NewBudgetGroup extends React.Component {
       if (!err) {
         values.organizationId =  this.props.organization.id;
         this.setState({loading: true});
-        httpFetch.post(`${config.budgetUrl}/api/budget/groups`, values).then((res)=>{
+        budgetService.addOrganizationGroup(values).then((res)=>{
           this.setState({loading: false});
           message.success(`项目组${res.data.itemGroupName}新建成功`);
           this.context.router.replace(this.state.budgetGroupDetail.url.replace(":id", this.props.organization.id).replace(":groupId", res.data.id));
@@ -71,7 +70,7 @@ class NewBudgetGroup extends React.Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem label="预算项目组描述">
+                <FormItem label="预算项目组名称">
                   {getFieldDecorator("itemGroupName", {
                     rules: [{
                       required: true,

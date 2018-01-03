@@ -1,8 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import menuRoute from 'share/menuRoute'
-import config from 'config'
-import httpFetch from 'share/httpFetch'
+import { contractService } from 'service'
 import { Form, Affix, Button, Row, Col, Input, Popover, Tag, message } from 'antd'
 const FormItem = Form.Item;
 const { CheckableTag } = Tag;
@@ -47,11 +46,8 @@ class ContractDetail extends React.Component{
     if (this.state.inputError) return;
     let params = this.props.form.getFieldsValue();
     if (this.state.approveType === 'pass') {  //通过
-      let url = `${config.contractUrl}/contract/api/contract/header/confirm/${this.props.params.id}`;
-      params.id = this.props.params.id;
-      params.reason = params.reason || '';
       this.setState({ passLoading: true });
-      httpFetch.put(url, params).then(res => {
+      contractService.contractApprovePass(this.props.params.id, params.reason || '').then(res => {
         if (res.status === 200) {
           this.setState({ passLoading: false });
           message.success('提交审批成功');
@@ -63,12 +59,8 @@ class ContractDetail extends React.Component{
       })
     } else {  //驳回
       if (params.reason) {
-        this.setState({ inputError: false });
-        let url = `${config.contractUrl}/contract/api/contract/header/rejected/${this.props.params.id}?reason=${params.reason}`;
-        params.id = this.props.params.id;
-        console.log(params);
-        this.setState({ rejectLoading: true });
-        httpFetch.put(url, params).then(res => {
+        this.setState({ inputError: false, rejectLoading: true });
+        contractService.contractApproveReject(this.props.params.id, params.reason).then(res => {
           if (res.status === 200) {
             this.setState({ rejectLoading: false });
             message.success('提交审批成功');
@@ -154,7 +146,11 @@ class ContractDetail extends React.Component{
   saveInputRef = input => this.input = input;
 
   goBack = () => {
-    this.context.router.push(this.state.contract.url);
+    if (this.state.isConfirm) {
+      this.context.router.push(`${this.state.contract.url}?approved=true`);
+    } else {
+      this.context.router.push(this.state.contract.url);
+    }
   };
 
   //获取合同状态

@@ -6,6 +6,7 @@ import { Table, Button, message, Popover } from 'antd'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
+import menuRoute from 'share/menuRoute'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'
 
@@ -19,36 +20,85 @@ class BudgetBalanceAmountDetail extends React.Component {
       pagination: {
         total: 0
       },
+      dimensionColumns: [],
       data: [],
-      columns: [
-        {title: "公司", dataIndex: "companyName", render: companyName => <Popover content={companyName}>{companyName}</Popover>},
-        {title: "部门", dataIndex: "unitName", render: unitName => <Popover content={unitName}>{unitName}</Popover>},
-        {title: "预算申请人", dataIndex: "employeeName", type: "J"},{title: "申请人", dataIndex: "employeeName", type: "R"},{title: "报销人", dataIndex: "employeeName", type: "U"},
-        {title: "单据类型", dataIndex: "documentType"},
-        {title: "单据编号", dataIndex: "documentNumber", render: documentNumber => <Popover content={documentNumber}>{documentNumber}</Popover>},
-        {title: "预算申请日期", dataIndex: "requisitionDate", type: "J"},{title: "申请日期", dataIndex: "requisitionDate", type: "R"},{title: "报销日期", dataIndex: "requisitionDate", type: "U"},
-        {title: "单据行号", dataIndex: "documentLineNum"},
-        {title: "预算项目", dataIndex: "itemName", type: "J", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
-        {title: "申请项目", dataIndex: "itemName", type: "R", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
-        {title: "报销项目", dataIndex: "itemName", type: "U", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
-        {title: "币种", dataIndex: "currency"},
-        {title: "预算金额", dataIndex: "amount", type: "J"},{title: "申请金额", dataIndex: "amount", type: "R"},{title: "报销金额", dataIndex: "amount", type: "U"},
-        {title: "税额", dataIndex: "taxAmount"},
-        {title: "不含税金额", dataIndex: "saleAmount"},
-        {title: "状态"},
-        {title: "摘要", dataIndex: "description", render: description => <Popover content={description}>{description}</Popover>},
-        {title: "关闭状态", type: "J"},{title: "关闭状态", type: "R"},{title: "反冲", type: "U"},
-        {title: "会计期间", dataIndex: "periodName"},
-        {title: "审核状态"}
-      ]
+      titleMap: {
+        J: '预算额明细',
+        R: '保留额明细',
+        U: '发生额明细'
+      },
+      budgetJournalDetailPage: menuRoute.getRouteItem('budget-journal-detail'),
+      columns: {
+        J: [
+          {title: "期间", dataIndex: "periodName", render: periodName => <Popover content={periodName}>{periodName}</Popover>},
+          {title: "季度", dataIndex: "periodQuarter"},
+          {title: "年度", dataIndex: "periodYear"},
+          {title: "公司", dataIndex: "companyName", render: companyName => <Popover content={companyName}>{companyName}</Popover>},
+          {title: "部门", dataIndex: "unitName", render: unitName => <Popover content={unitName}>{unitName}</Popover>},
+          {title: "预算申请人", dataIndex: "employeeName"},
+          {title: "预算日记账类型", dataIndex: "documentType"},
+          {title: "预算日记账编号", dataIndex: "documentNumber", render: documentNumber => <Popover content={documentNumber}><a onClick={() => this.goBudgetJournal(documentNumber)}>{documentNumber}</a></Popover>},
+          {title: "预算编制日期", dataIndex: "requisitionDate", render: requisitionDate => new Date(requisitionDate).format('yyyy-MM-dd')},
+          {title: "预算项目", dataIndex: "itemName", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
+          {title: "币种", dataIndex: "currency"},
+          {title: "汇率", dataIndex: "rate", render: this.filterMoney},
+          {title: "本位金额", dataIndex: "functionAmount", render: functionAmount => this.filterMoney(functionAmount, 4)},
+          {title: "数量", dataIndex: "quantity"},
+          {title: "摘要", dataIndex: "description", render: description => <Popover content={description}>{description}</Popover>}
+        ],
+        R: [
+          {title: "公司", dataIndex: "companyName", render: companyName => <Popover content={companyName}>{companyName}</Popover>},
+          {title: "部门", dataIndex: "unitName", render: unitName => <Popover content={unitName}>{unitName}</Popover>},
+          {title: "申请人", dataIndex: "employeeName"},
+          {title: "单据类型", dataIndex: "documentType"},
+          {title: "单据编号", dataIndex: "documentNumber", render: documentNumber => <Popover content={documentNumber}>{documentNumber}</Popover>},
+          {title: "申请日期", dataIndex: "requisitionDate", render: requisitionDate => new Date(requisitionDate).format('yyyy-MM-dd')},
+          {title: "单据行号", dataIndex: "documentLineNum"},
+          {title: "申请项目", dataIndex: "itemName",  render: itemName => <Popover content={itemName}>{itemName}</Popover>},
+          {title: "币种", dataIndex: "currency"},
+          {title: "申请金额", dataIndex: "amount", },
+          {title: "税额", dataIndex: "taxAmount"},
+          {title: "不含税金额", dataIndex: "saleAmount"},
+          {title: "状态"},
+          {title: "摘要", dataIndex: "description", render: description => <Popover content={description}>{description}</Popover>},
+          {title: "关闭状态"},
+          {title: "会计期间", dataIndex: "periodName"},
+          {title: "审核状态"}
+        ],
+        U: [
+          {title: "公司", dataIndex: "companyName", render: companyName => <Popover content={companyName}>{companyName}</Popover>},
+          {title: "部门", dataIndex: "unitName", render: unitName => <Popover content={unitName}>{unitName}</Popover>},
+          {title: "报销人", dataIndex: "employeeName"},
+          {title: "单据类型", dataIndex: "documentType"},
+          {title: "单据编号", dataIndex: "documentNumber", render: documentNumber => <Popover content={documentNumber}>{documentNumber}</Popover>},
+          {title: "报销日期", dataIndex: "requisitionDate", render: requisitionDate => new Date(requisitionDate).format('yyyy-MM-dd')},
+          {title: "单据行号", dataIndex: "documentLineNum"},
+          {title: "报销项目", dataIndex: "itemName", render: itemName => <Popover content={itemName}>{itemName}</Popover>},
+          {title: "币种", dataIndex: "currency"},
+          {title: "报销金额", dataIndex: "amount",},
+          {title: "税额", dataIndex: "taxAmount"},
+          {title: "不含税金额", dataIndex: "saleAmount"},
+          {title: "状态"},
+          {title: "摘要", dataIndex: "description", render: description => <Popover content={description}>{description}</Popover>},
+          {title: "反冲"},
+          {title: "会计期间", dataIndex: "periodName"},
+          {title: "审核状态"}
+        ]
+      }
     };
   }
 
   componentWillReceiveProps(nextProps){
-    if(!this.props.params.data || (nextProps.params.type !== this.props.params.type || nextProps.params.data.key !== this.props.params.data.key)){
+    if((!this.props.params.data && nextProps.params.data) ||
+      (this.props.params.data &&
+        (nextProps.params.type !== this.props.params.type || nextProps.params.data.key !== this.props.params.data.key))){
       this.getList(nextProps);
     }
   }
+
+  goBudgetJournal = (code) => {
+    this.context.router.push(this.state.budgetJournalDetailPage.url.replace(":journalCode",code))
+  };
 
   onChangePager = (page) => {
     if (page - 1 !== this.state.page)
@@ -73,6 +123,7 @@ class BudgetBalanceAmountDetail extends React.Component {
       this.setState({
         loading: false,
         data,
+        dimensionColumns: nextProps.params.dimensionColumns,
         pagination: {
           total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
           onChange: this.onChangePager,
@@ -82,32 +133,25 @@ class BudgetBalanceAmountDetail extends React.Component {
     })
   };
 
-  filterColumns = () => {
-    const { columns } = this.state;
-    let result = [];
-    columns.map(column => {
-      (!column.type || column.type.indexOf(this.props.params.type) > -1) && result.push(column)
-    });
-    return result;
-  };
-
   render(){
-    const { data, loading, pagination } = this.state;
+    const type = this.props.params.type;
+    const { data, loading, pagination, columns, titleMap, dimensionColumns } = this.state;
     const { formatMessage } = this.props.intl;
+    let tableColumns = [].concat(columns[type] ? columns[type] : []).concat(dimensionColumns);
     return (
       <div>
-        <h3 className="header-title">预算额明细</h3>
+        <h3 className="header-title">{titleMap[type]}</h3>
         <div className="table-header">
           <div className="table-header-title">{formatMessage({id:"common.total"}, {total: pagination.total ? pagination.total : '0'})}</div> {/* 共total条数据 */}
         </div>
-        <Table columns={this.filterColumns()}
+        <Table columns={tableColumns}
                dataSource={data}
                bordered
                pagination={pagination}
                loading={loading}
                size="middle"
                rowKey="key"
-               scroll={{ x: '255%' }}/>
+               scroll={{ x: `${tableColumns.length * 20}%` }}/>
         <div className="slide-footer">
           <Button onClick={() => {this.getList(this.props)}}>刷新查询结果</Button>
           <Button>导出CSV</Button>
@@ -117,6 +161,10 @@ class BudgetBalanceAmountDetail extends React.Component {
   }
 
 }
+
+BudgetBalanceAmountDetail.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {

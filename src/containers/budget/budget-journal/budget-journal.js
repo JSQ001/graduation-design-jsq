@@ -23,32 +23,32 @@ class BudgetJournal extends React.Component {
       showUpdateSlideFrame:false,
       showCreateSlideFrame:false,
       searchForm: [
-        {type: 'select', id:'journalTypeId', label:this.props.intl.formatMessage({id:"budget.journalTypeId"}), options: [], method: 'get',
+        {type: 'select', id:'journalTypeId', label:this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
-        {type: 'input', id: 'journalCode', label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
+        {type: 'input', id: 'journalCode', label: this.props.intl.formatMessage({id: 'budgetJournal.journalCode'}), /*预算日记账编号*/
         },
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.status"}) ,id:'status', options: [], valueListCode: 2028},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"}) ,id:'periodStrategy', options: [], valueListCode: 2002},
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budgetJournal.status"}) ,id:'status', options: [], valueListCode: 2028},
       ],
 
       columns: [
         {          /*预算日记账编号*/
-          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode',width: '16%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.journalCode"}), key: "journalCode", dataIndex: 'journalCode',width: '16%',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',width:'16%',
+          title: this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',width:'16%',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',width:'8%'
+          title: this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',width:'8%'
         },
         {          /*预算表*/
           title:"预算表", key: "structureName", dataIndex: 'structureName',
@@ -59,7 +59,7 @@ class BudgetJournal extends React.Component {
         },
         {
           /*预算场景*/
-          title: this.props.intl.formatMessage({id:"budget.scenarioId"}), key: "scenario", dataIndex: 'scenario',
+          title: this.props.intl.formatMessage({id:"budgetJournal.scenarioId"}), key: "scenario", dataIndex: 'scenario',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -67,7 +67,7 @@ class BudgetJournal extends React.Component {
         },
         {
           /*预算版本*/
-          title: this.props.intl.formatMessage({id:"budget.versionId"}), key: "versionName", dataIndex: 'versionName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.versionId"}), key: "versionName", dataIndex: 'versionName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -75,25 +75,25 @@ class BudgetJournal extends React.Component {
         },
         {
           /*创建时间*/
-          title:"创建时间", key: "createdDate", dataIndex: 'createdDate',
+          title: this.props.intl.formatMessage({id:"budgetJournal.createdDate"}), key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
             <Popover content={String(recode).substring(0,10)}>
               {String(recode).substring(0,10)}
             </Popover>)
         },
         {          /*状态*/
-          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
+          title: this.props.intl.formatMessage({id:"budgetJournal.status"}), key: "status", dataIndex: 'status',
           render(recode,text){
             switch (recode){
               case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
-              case 'SUBMIT':{ return   <Badge status="default"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
-              case 'SUBMIT_RETURN':{return <Badge status="default" style={{backgroundColor:"#fef0ef"}} text={text.statusName}/> }
+              case 'SUBMIT':{ return   <Badge status="default"  text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default"  text={text.statusName}/> }
               case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
               case 'CHECKED':{return < Badge status="warning" text={text.statusName}/>}
               case 'CHECKING':{return <Badge  status="warning" text={text.statusName}/>}
               case 'POSTED':{return <Badge status="success" text={text.statusName}/>}
-              case 'BACKLASH_SUBMIT':{return <Badge status="default" style={{backgroundColor:"#c11c7b"}} text={text.statusName}/>}
-              case 'BACKLASH_CHECKED':{return <Badge status="default" style={{backgroundColor:"#42299a"}} text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default"  text={text.statusName}/>}
             }
           }
         },
@@ -156,7 +156,7 @@ class BudgetJournal extends React.Component {
   //跳转到详情
   HandleRowClick=(value)=>{
     const journalCode =value.journalCode;
-    if(value.status=="NEW" || value.status=="SUBMIT_RETURN"){
+    if(value.status==="NEW" || value.status==="SUBMIT_RETURN" || value.status==="REJECT"){
       let path=this.state.budgetJournalDetailPage.url.replace(":journalCode",journalCode);
       this.context.router.push(path);
     }else {

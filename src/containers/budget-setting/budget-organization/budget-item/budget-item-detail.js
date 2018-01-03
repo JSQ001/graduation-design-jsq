@@ -4,12 +4,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import httpFetch from 'share/httpFetch';
 import menuRoute from 'share/menuRoute'
-import config from 'config'
 import { Form, Button, Select, Row, Col, Input, Switch, Icon, Badge, Tabs, Table, message, Checkbox   } from 'antd'
-
-import ListSelector from 'components/list-selector.js'
+import budgetService from 'service/budgetService'
+import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 import 'styles/budget-setting/budget-organization/budget-item/budget-item-detail.scss';
 
@@ -53,7 +51,7 @@ class BudgetItemDetail extends React.Component{
           render: desc => <span>{desc ? desc : '-'}</span>
         },
         {                        /*启用*/
-          title:formatMessage({id:"structure.enablement"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
+          title:formatMessage({id:"common.status.enable"}), key: "doneRegisterLead", dataIndex: 'doneRegisterLead',width:'10%',
           render: (isEnabled, record) => <Checkbox onChange={(e) => this.onChangeEnabled(e, record)} checked={record.isEnabled}/>
         },
       ],
@@ -64,14 +62,14 @@ class BudgetItemDetail extends React.Component{
   onChangeEnabled = (e, record) => {
     this.setState({loading: true});
     record.isEnabled = e.target.checked;
-    httpFetch.put(`${config.budgetUrl}/api/budget/item/companies`, record).then(() => {
+    budgetService.updateItemAssignedCompany(record).then((response) => {
       this.getList()
     })
   };
 
   componentWillMount(){
     //根据路径上的id,查出该条预算项目完整数据
-    httpFetch.get(`${config.budgetUrl}/api/budget/items/${this.props.params.itemId}`).then((response)=>{
+    budgetService.getItemById(this.props.params.itemId).then((response)=>{
       if(response.status === 200){
         response.data.itemTypeName = {label:response.data.itemTypeName,value:response.data.itemTypeName};
         response.data.variationAttribute = {label:response.data.variationAttributeName,value:response.data.variationAttribute};
@@ -89,7 +87,7 @@ class BudgetItemDetail extends React.Component{
     value.organizationId = this.state.budgetItem.organizationId;
     value.id = this.state.budgetItem.id;
     value.versionNumber = this.state.budgetItem.versionNumber;
-    httpFetch.put(`${config.budgetUrl}/api/budget/items`,value).then((response)=>{
+    budgetService.updateItem(value).then((response)=>{
       if(response) {
         response.data.organizationName = this.state.budgetItem.organizationName;
         response.data.itemTypeName = {label:value.itemTypeName,value:value.itemTypeName};
@@ -105,7 +103,7 @@ class BudgetItemDetail extends React.Component{
   //查询已经分配过的公司
   getList(){
     const {pagination} = this.state;
-    httpFetch.get(`${config.budgetUrl}/api/budget/item/companies/query?itemId=${this.props.params.itemId}&page=${pagination.page}&size=${pagination.pageSize}`).then((response)=>{
+    budgetService.itemAssignedCompany({itemId:this.props.params.itemId,page:pagination.page,size:pagination.pageSize}).then((response)=>{
       response.data.map((item)=>{
         item.key= item.id
       });
@@ -145,7 +143,7 @@ class BudgetItemDetail extends React.Component{
       });
       let param = [];
       param.push({"companyIds": companyIds, "resourceIds": resourceIds});
-      httpFetch.post(`${config.budgetUrl}/api/budget/item/companies/batch/assign/company`,param).then((response)=>{
+      budgetService.batchAddCompanyToItem(param).then((response)=>{
         if(response.status === 200){
           message.success(`${this.props.intl.formatMessage({id:"common.operate.success"})}`);
           this.setState({
@@ -204,8 +202,7 @@ class BudgetItemDetail extends React.Component{
           onChange={this.onChangePager}
           size="middle"
           bordered/>
-        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>返回</a>
-
+        <a style={{fontSize:'14px',paddingBottom:'20px'}} onClick={this.handleBack}><Icon type="rollback" style={{marginRight:'5px'}}/>{this.props.intl.formatMessage({id:"common.back"})}</a>
         <ListSelector type="company_item"
                       visible={companyListSelector}
                       onOk={this.handleListOk}

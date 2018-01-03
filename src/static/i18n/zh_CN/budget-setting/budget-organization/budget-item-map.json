@@ -8,5 +8,6 @@
   "itemMap.itemUpload": "预算项目映射导入",
   "itemMap.itemUploadFile": "预算项目映射导入文件",
   "item.itemUpload": "预算项目导入",
-  "item.itemUploadFile": "预算项目导入文件"
+  "item.itemUploadFile": "预算项目导入文件",
+  "itemMap.item": "预算项目"
 }

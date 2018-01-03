@@ -35,7 +35,7 @@ import financeSetting from 'share/routes/admin/finance-setting'  //财务设置
 import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
 import receiptTypeSetting from 'share/routes/admin/receipt-type-setting'  //单据类型设置
 import paySetting from  'share/routes/admin/pay-setting' //支付设置
-
+import financialAccountSetting from 'share/routes/admin/financial-accounting-setting.js' //财务核算设置
 
 /**
  * 项目菜单整体路由配置
@@ -72,6 +72,7 @@ const menu = [
   receiptTypeSetting,  //单据类型设置
   basicData,      //基础数据
   paySetting,   //支付设置
+  financialAccountSetting,  //财务核算设置
 
 ];
 

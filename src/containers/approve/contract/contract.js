@@ -2,9 +2,9 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
-import config from 'config'
-import httpFetch from 'share/httpFetch'
 import menuRoute from 'share/menuRoute'
+import { contractService } from 'service'
+import config from 'config'
 
 import SearchArea from 'components/search-area'
 import moment from 'moment'
@@ -13,6 +13,7 @@ class Contract extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
+      tabValue: 'unapproved',
       loading1: false,
       loading2: false,
       contractStatus: {
@@ -28,16 +29,19 @@ class Contract extends React.Component{
       SearchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'companyId', label: '申请人姓名/工号'},
-        {type: 'input', id: 'contractTypeName', label: '合同类型'},
-        {type: 'items', id: 'createdDate', items: [
-          {type: 'date', id: 'createdDateBegin', label: '提交时间从'},
-          {type: 'date', id: 'createdDateEnd', label: '提交时间至'}
+        {type: 'combobox', id: 'contractTypeId', label: '合同类型', searchUrl: `${config.contractUrl}/contract/api/contract/type/contract/type/by/company`,
+          method: 'get', searchKey: 'contractTypeName', options: [], getParams: {companyId: 138}, labelKey: 'id', valueKey: 'id', placeholder: '请输入合同类型名称'},
+        {type: 'items', id: 'dateRange', items: [
+          {type: 'date', id: 'signDateFrom', label: '提交时间从'},
+          {type: 'date', id: 'signDateTo', label: '提交时间至'}
         ]},
       ],
+      unApproveSearchParams: {},
+      approveSearchParams: {},
       columns: [
         {title: '序号', dataIndex: 'index', render:(value, record, index) => index + 1},
         {title: '申请人', dataIndex: 'createdName', render: (value, record) => value + ' - ' + record.createdBy},
-        {title: '提交时间', dataIndex: 'createdDate', render: value => moment(value).format('YYYY-MM-DD')},
+        {title: '提交时间', dataIndex: 'signDate', render: value => moment(value).format('YYYY-MM-DD')},
         {title: '合同类型', dataIndex: 'contractTypeName'},
         {title: '合同编号', dataIndex: 'contractNumber'},
         {title: '币种', dataIndex: 'currency'},
@@ -63,6 +67,7 @@ class Contract extends React.Component{
   }
 
   componentWillMount() {
+    this.setState({ tabValue: this.props.location.query.approved ? 'approved' : 'unapproved' });
     return new Promise((resolve, reject) => {
       this.getUnapprovedList(resolve, reject);
       this.getApprovedList(resolve, reject)
@@ -73,10 +78,9 @@ class Contract extends React.Component{
 
   //获取未审批列表
   getUnapprovedList = (resolve, reject) => {
-    const { unapprovedPage, unapprovedPageSize } = this.state;
-    let unapprovedUrl = `${config.contractUrl}/contract/api/contract/header/confirm/query?page=${unapprovedPage}&size=${unapprovedPageSize}`;
+    const { unapprovedPage, unapprovedPageSize, unApproveSearchParams } = this.state;
     this.setState({ loading1: true });
-    httpFetch.get(unapprovedUrl).then((res) => {
+    contractService.getUnapprovedContractList(unapprovedPage, unapprovedPageSize, unApproveSearchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           unapprovedData: res.data || [],
@@ -87,20 +91,19 @@ class Contract extends React.Component{
             onChange: this.onUnapprovedChangePaper
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ loading1: false });
-      reject()
+      reject && reject()
     })
   };
 
   //获取审批列表
   getApprovedList = (resolve, reject) => {
-    const { approvedPage, approvedPageSize } = this.state;
-    let approvedUrl = `${config.contractUrl}/contract/api/contract/header/confirmEd/query?page=${approvedPage}&size=${approvedPageSize}`;
+    const { approvedPage, approvedPageSize, approveSearchParams } = this.state;
     this.setState({ loading2: true });
-    httpFetch.get(approvedUrl).then((res) => {
+    contractService.getApprovedContractList(approvedPage, approvedPageSize, approveSearchParams).then((res) => {
       if (res.status === 200) {
         this.setState({
           approvedData: res.data || [],
@@ -111,11 +114,11 @@ class Contract extends React.Component{
             onChange: this.onApprovedChangePaper
           }
         });
-        resolve()
+        resolve && resolve()
       }
     }).catch(() => {
       this.setState({ loading2: false });
-      reject()
+      reject && reject()
     })
   };
 
@@ -139,12 +142,20 @@ class Contract extends React.Component{
 
   //未审批搜索
   unapprovedSearch = (values) => {
-    console.log(values)
+    values.signDateFrom && (values.signDateFrom = moment(values.signDateFrom).format('YYYY-MM-DD'));
+    values.signDateTo && (values.signDateTo = moment(values.signDateTo).format('YYYY-MM-DD'));
+    this.setState({ unApproveSearchParams: values }, () => {
+      this.getUnapprovedList()
+    })
   };
 
   //审批搜索
   approvedSearch = (values) => {
-    console.log(values)
+    values.signDateFrom && (values.signDateFrom = moment(values.signDateFrom).format('YYYY-MM-DD'));
+    values.signDateTo && (values.signDateTo = moment(values.signDateTo).format('YYYY-MM-DD'));
+    this.setState({ approveSearchParams: values }, () => {
+      this.getApprovedList()
+    })
   };
 
   //进入合同详情页
@@ -153,10 +164,10 @@ class Contract extends React.Component{
   };
 
   render() {
-    const { loading1, loading2, SearchForm, columns, unapprovedData, approvedData, unapprovedPagination, approvedPagination } = this.state;
+    const { tabValue, loading1, loading2, SearchForm, columns, unapprovedData, approvedData, unapprovedPagination, approvedPagination } = this.state;
     return (
       <div className="approve-contract">
-        <Tabs onChange={this.handleTabsChange}>
+        <Tabs defaultActiveKey={tabValue} onChange={this.handleTabsChange}>
           <TabPane tab="未审批" key="unapproved">
             <SearchArea searchForm={SearchForm}
                         submitHandle={this.unapprovedSearch}/>

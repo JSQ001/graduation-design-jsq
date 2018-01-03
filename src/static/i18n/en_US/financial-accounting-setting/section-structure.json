@@ -1,0 +1,15 @@
+{
+  "section.structure.header": "通过该页面定义总账科目段段值及与系统内的值的映射关系，每个账套下只能有一个启用状态的科目段结构。",
+  "section.setOfBook": "账套",
+  "section.structure.code": "科目段结构代码",
+  "section.structure.name": "科目段结构名称",
+  "section.new": "新建科目段结构",
+  "section.notification.left": "账套 {setOfBook} 下有启用状态的科目段结构 ",
+  "section.notification.right": "点击【继续】，将自动禁用原启用状态的科目段结构 {section}",
+  "section.continue": "继续",
+  "section.setting" : "科目段设置",
+  "section.code": "科目段代码",
+  "section.name": "科目段名称",
+  "section.field.code": "科目段字段代码",
+  "section.field.name": "科目段字段名称"
+}

@@ -5,8 +5,7 @@ import React from 'react';
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon} from 'antd';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
-import httpFetch from 'share/httpFetch';
-import config from 'config'
+import { budgetService } from 'service'
 import 'styles/budget-setting/budget-organization/budget-structure/new-budget-structure.scss';
 import menuRoute from 'share/menuRoute'
 import debounce from 'lodash.debounce';
@@ -42,7 +41,7 @@ class NewBudgetStructure extends React.Component{
       })
     });
     typeof this.props.organization.organizationName === "undefined" ?
-      httpFetch.get(`${config.budgetUrl}/api/budget/organizations/${this.props.params.id}`).then((response) =>{
+      budgetService.getOrganizationById(this.props.params.id).then((response) =>{
         this.setState({
           organization: response.data,
         })
@@ -63,7 +62,7 @@ class NewBudgetStructure extends React.Component{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         values.organizationId = this.state.organization.id;
-        httpFetch.post(`${config.budgetUrl}/api/budget/structures`,values).then((response)=>{
+        budgetService.addStructure(values).then((response)=>{
           if(response) {
             message.success(this.props.intl.formatMessage({id:"structure.saveSuccess"})); /*保存成功！*/
             response.data.organizationName = values.organizationName;
@@ -87,7 +86,11 @@ class NewBudgetStructure extends React.Component{
   };
 
   validateStructureCode = (item,value,callback)=>{
-    httpFetch.get(`${config.budgetUrl}/api/budget/structures/queryAll?organizationId=${this.props.params.id}&structureCode=${value}`).then((response)=>{
+    let params = {
+      organizationId: this.props.params.id,
+      structureCode: value
+    };
+    budgetService.getAllStructures(params).then((response)=>{
       let flag = false;
       if(response.data.length > 0 ){
         response.data.map((item)=>{

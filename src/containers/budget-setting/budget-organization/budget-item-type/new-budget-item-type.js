@@ -47,12 +47,13 @@ class NewBudgetItemType extends React.Component {
           this.setState({loading: false});
           this.props.form.resetFields();
           this.props.close(true);
-          message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budget.itemType"})}`}));
+          message.success(this.props.intl.formatMessage({id: "common.create.success"}, {name: `${this.props.intl.formatMessage({id: "budgetItemType.itemType"})}`}));
           console.log(this.props.id);
         }).catch((e) => {
           this.setState({loading: false});
 
-          message.error(this.props.intl.formatMessage({id: "common.save.filed"}));
+          message.error(this.props.intl.formatMessage({id: "common.save.filed"}) +
+            `, ${e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message}`);
         })
       }
     });
@@ -81,7 +82,7 @@ class NewBudgetItemType extends React.Component {
       <div className="new-value">
         <Form onSubmit={this.handleSave}>
           <FormItem {...formItemLayout}
-                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+                    label={this.props.intl.formatMessage({id: "budgetItemType.isEnabled"})}>
             {getFieldDecorator('isEnabled', {
               valuePropName: "defaultChecked",
               initialValue: isEnabled
@@ -105,7 +106,7 @@ class NewBudgetItemType extends React.Component {
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeCode"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetItemType.itemTypeCode"})}>
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true,
@@ -115,7 +116,7 @@ class NewBudgetItemType extends React.Component {
               <Input/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeName"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetItemType.itemTypeName"})}>
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,
@@ -136,12 +137,6 @@ class NewBudgetItemType extends React.Component {
     )
   }
 }
-
-
-/*NewBudgetItemType.propTypes = {
- isPut:React.PropTypes.bool,
- text:React.PropTypes.object
- };*/
 
 
 const WrappedNewBudgetItemType = Form.create()(NewBudgetItemType);

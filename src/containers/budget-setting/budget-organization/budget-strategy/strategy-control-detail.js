@@ -68,8 +68,17 @@ class StrategyControlDetail extends React.Component {
   getBasicInfo() {
     httpFetch.get(`${config.budgetUrl}/api/budget/control/strategy/details/${this.state.strategyControlId}`).then((res) => {
       if(res.status === 200) {
-        res.data.controlMethod.value === 'NO_MESSAGE' && (res.data.messageCode = {});
-        this.setState({ infoData: res.data })
+        let infoList = this.state.infoList;
+        if (res.data.controlMethod.value === 'NO_MESSAGE') {
+          res.data.messageCode = {};
+          infoList.map(item => {
+            if (item.id === 'messageCode') {
+              item.isRequired = false;
+              item.disabled = true
+            }
+          });
+        }
+        this.setState({ infoData: res.data, infoList })
       }
     })
   }

@@ -29,43 +29,43 @@ class BudgetJournalReCheck extends React.Component {
 
       searchForm: [
         {type: 'input', id: 'journalCode',
-          label: this.props.intl.formatMessage({id: 'budget.journalCode'}), /*预算日记账编号*/
+          label: this.props.intl.formatMessage({id: 'budgetJournal.journalCode'}), /*预算日记账编号*/
         },
-        {type: 'select', id:'journalTypeId', label: this.props.intl.formatMessage({id:"budget.journalTypeId"}), options: [], method: 'get',
+        {type: 'select', id:'journalTypeId', label: this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/journalType/selectByInput`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'journalTypeName', valueKey: 'id'},
-        {type:'value_list',label: this.props.intl.formatMessage({id:"budget.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
-        {type: 'select', id:'versionId', label: '预算版本', options: [], method: 'get',
+        {type:'value_list',label: this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"}) ,id:'periodStrategy',options: [], valueListCode: 2002},
+        {type: 'select', id:'versionId', label: this.props.intl.formatMessage({id:"budgetJournal.versionId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/versions/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'versionName', valueKey: 'id'},
-        {type: 'select', id:'structureId', label: '预算表',  options: [], method: 'get',
+        {type: 'select', id:'structureId', label: this.props.intl.formatMessage({id:"budgetJournal.structureId"}),  options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/structures/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'structureName', valueKey: 'id'},
-        {type: 'select', id:'scenarioId', label: '预算场景', options: [], method: 'get',
+        {type: 'select', id:'scenarioId', label: this.props.intl.formatMessage({id:"budgetJournal.scenarioId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/scenarios/queryAll`, getParams: {organizationId:this.props.organization.id},
           labelKey: 'scenarioName', valueKey: 'id'},
-        {type: 'select', id:'employeeId', label: '申请人', options: [], method: 'get',
+        {type: 'select', id:'employeeId',label: this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), options: [], method: 'get',
           getUrl: `${config.budgetUrl}/api/budget/journals/selectCheckedEmp`, getParams: {},
           labelKey: 'empName', valueKey: 'empOid'},
-        {type:'date',id:'createData', label: '创建时间'}
+        {type:'date',id:'createData', label:this.props.intl.formatMessage({id:"budgetJournal.createdDate"})}
       ],
 
       columns: [
         {          /*预算日记账编号*/
-          title: this.props.intl.formatMessage({id:"budget.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
+          title: this.props.intl.formatMessage({id:"budgetJournal.journalCode"}), key: "journalCode", dataIndex: 'journalCode'
         },
         {          /*预算日记账类型*/
-          title: this.props.intl.formatMessage({id:"budget.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.journalTypeId"}), key: "journalTypeName", dataIndex: 'journalTypeName',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*编制期段*/
-          title: this.props.intl.formatMessage({id:"budget.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.periodStrategy"}), key: "periodStrategyName", dataIndex: 'periodStrategyName',
         },
         {          /*预算表*/
-          title:"预算表", key: "structureName", dataIndex: 'structureName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.structureId"}), key: "structureName", dataIndex: 'structureName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -73,7 +73,7 @@ class BudgetJournalReCheck extends React.Component {
         },
         {
           /*预算场景*/
-          title: this.props.intl.formatMessage({id:"budget.scenarioId"}), key: "scenario", dataIndex: 'scenario',
+          title: this.props.intl.formatMessage({id:"budgetJournal.scenarioId"}), key: "scenario", dataIndex: 'scenario',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -81,14 +81,14 @@ class BudgetJournalReCheck extends React.Component {
         },
         {
           /*预算版本*/
-          title: this.props.intl.formatMessage({id:"budget.versionId"}), key: "versionName", dataIndex: 'versionName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.versionId"}), key: "versionName", dataIndex: 'versionName',
           render: recode => (
             <Popover content={recode}>
               {recode}
             </Popover>)
         },
         {          /*申请人*/
-          title: this.props.intl.formatMessage({id:"budget.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
+          title: this.props.intl.formatMessage({id:"budgetJournal.employeeId"}), key: "employeeName", dataIndex: 'employeeName',
           render: recode => (
             <Popover content={recode}>
               {recode}
@@ -96,25 +96,25 @@ class BudgetJournalReCheck extends React.Component {
         },
         {
           /*创建时间*/
-          title: this.props.intl.formatMessage({id:"budget.createdDate"}), key: "createdDate", dataIndex: 'createdDate',
+          title: this.props.intl.formatMessage({id:"budgetJournal.createdDate"}), key: "createdDate", dataIndex: 'createdDate',
           render: recode => (
             <Popover content={recode}>
               {String(recode).substring(0,10)}
             </Popover>)
         },
         {          /*状态*/
-          title: this.props.intl.formatMessage({id:"budget.status"}), key: "status", dataIndex: 'status',
+          title: this.props.intl.formatMessage({id:"budgetJournal.status"}), key: "status", dataIndex: 'status',
           render(recode,text){
             switch (recode){
               case 'NEW':{ return <Badge status="processing" text={text.statusName} />}
-              case 'SUBMIT':{ return   <Badge status="default"  style={{backgroundColor:"#d2eafb"}} text={text.statusName} />}
-              case 'SUBMIT_RETURN':{return <Badge status="default" style={{backgroundColor:"#fef0ef"}} text={text.statusName}/> }
+              case 'SUBMIT':{ return   <Badge status="default"   text={text.statusName} />}
+              case 'SUBMIT_RETURN':{return <Badge status="default" text={text.statusName}/> }
               case 'REJECT':{ return  <Badge status="error" text={text.statusName} />}
               case 'CHECKED':{return < Badge status="warning" text={text.statusName}/>}
               case 'CHECKING':{return <Badge  status="warning" text={text.statusName}/>}
               case 'POSTED':{return <Badge status="success" text={text.statusName}/>}
-              case 'BACKLASH_SUBMIT':{return <Badge status="default" style={{backgroundColor:"#c11c7b"}} text={text.statusName}/>}
-              case 'BACKLASH_CHECKED':{return <Badge status="default" style={{backgroundColor:"#42299a"}} text={text.statusName}/>}
+              case 'BACKLASH_SUBMIT':{return <Badge status="default"  text={text.statusName}/>}
+              case 'BACKLASH_CHECKED':{return <Badge status="default"  text={text.statusName}/>}
             }
           }
         },

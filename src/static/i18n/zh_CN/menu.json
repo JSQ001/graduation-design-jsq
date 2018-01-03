@@ -108,6 +108,7 @@
   "menu.cash-transaction-class-detail": "现金事务分类详情",
   "menu.pay-requisition-type-assign-transaction":"现金事务分配",
   "menu.subject-sheet": "科目表定义",
+  "menu.subject-sheet-detail":"科目表详情",
   "menu.receipt-type-setting": "单据类型设置",
   "menu.pre-payment-type": "预付款单类型定义",
   "menu.pre-payment":"预付款",
@@ -123,5 +124,19 @@
   "menu.announcement-information": "公告信息",
   "menu.supplier-type": "供应商类型定义",
   "menu.announcement-information-detail": "公告信息详情",
-  "menu.page-create": "网页生成器"
+  "menu.supplier-management": "供应商管理",
+  "menu.page-create": "网页生成器",
+  "menu.supplier-bank-account": "供应商银行账户",
+  "menu.supplier-company-delivery": "供应商公司分配",
+  "menu.financial-accounting-setting": "财务核算设置",
+  "menu.section-structure": "科目段结构",
+  "menu.section-setting": "科目段设置",
+  "menu.value-list-detail": "值列表详情",
+  "menu.accounting-source": "核算来源事物",
+  "menu.voucher-template": "凭证模板",
+  "menu.accounting-scenarios-system": "核算场景-系统级",
+  "menu.accounting-elements": "核算要素",
+  "menu.accounting-scenarios": "核算场景-账套级",
+  "menu.matching-group-elements": "匹配组与核算要素",
+  "menu.subject-matching-setting": "科目匹配设置"
 }

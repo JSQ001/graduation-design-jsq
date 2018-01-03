@@ -8,5 +8,7 @@
   "paymentCompanySetting.paymentCompany":"付款公司",
   "paymentCompanySetting.paymentCompanyCode":"付款公司代码",
   "paymentCompanySetting.paymentCompanyName":"付款公司名称",
-  "paymentCompanySetting.setOfBooks":"账套"
+  "paymentCompanySetting.setOfBooks":"账套",
+  "paymentCompanySetting.newPaymentCompanySetting":"新建付款公司配置",
+  "paymentCompanySetting.editPaymentCompanySetting":"编辑付款公司配置"
 }

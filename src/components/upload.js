@@ -19,6 +19,18 @@ class UploadFile extends React.Component{
     this.state = {
       fileList: [],
       OIDs: [],
+      defaultListTag: true,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.defaultFileList.length && this.state.defaultListTag) {
+      this.setState({
+        fileList: nextProps.defaultFileList,
+        OIDs: nextProps.defaultOIDs
+      },() => {
+        this.setState({ defaultListTag: false })
+      })
     }
   }
 
@@ -37,6 +49,7 @@ class UploadFile extends React.Component{
   };
 
   handleChange = (info) => {
+    this.setState({ defaultListTag: false });
     const fileNum = parseInt(`-${this.props.fileNum}`);
     let fileList = info.fileList;
     let OIDs = this.state.OIDs;
@@ -57,9 +70,10 @@ class UploadFile extends React.Component{
   };
 
   handleRemove = (info) => {
+    this.setState({ defaultListTag: false });
     let OIDs = this.state.OIDs;
     OIDs.map(OID => {
-      OID === info.response.attachmentOID && OIDs.delete(OID);
+      OID === (info.response ? info.response.attachmentOID : info.attachmentOID) && OIDs.delete(OID);
     });
     this.setState({ OIDs },() => {
       this.props.uploadHandle(this.state.OIDs)
@@ -68,7 +82,7 @@ class UploadFile extends React.Component{
 
   render() {
     const upload_headers = {
-      'Authorization': 'Bearer ' + localStorage.token
+      'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('hly.token')).access_token
     };
     return (
       <div className="upload">
@@ -97,6 +111,8 @@ UploadFile.propTypes = {
   attachmentType: React.PropTypes.string.isRequired,  //附件类型
   extensionName: React.PropTypes.string,  //附件支持的扩展名
   fileNum: React.PropTypes.number,  //最大上传文件的数量
+  defaultFileList: React.PropTypes.array,  //默认上传的文件列表，每项必须包含：uid，name
+  defaultOIDs: React.PropTypes.array,  //默认上传的文件列表OID
   uploadHandle: React.PropTypes.func, //获取上传文件的OID
 };
 
@@ -104,6 +120,8 @@ UploadFile.defaultProps={
   uploadUrl: `${config.baseUrl}/api/upload/attachment`,
   extensionName: '.rar .zip .doc .docx .pdf .jpg...',
   fileNum: 0,
+  defaultFileList: [],
+  defaultOIDs: [],
   uploadHandle: () => {}
 };
 

@@ -60,15 +60,12 @@ class PutBudgetItemType extends React.Component {
         }
         console.log(data);
         httpFetch.put(`${config.budgetUrl}/api/budget/itemType`, data).then((res) => {
-
           this.setState({loading: false});
           this.props.close(true);
-          message.success("操作成功");
-
-
+          message.success(  this.props.intl.formatMessage({id: "common.operate.success"}));
         }).catch((e) => {
           this.setState({loading: false});
-          message.error(e.response.data.validationErrors[0].message);
+          message.error(e.response.data.message);
         })
       }
     });
@@ -93,12 +90,10 @@ class PutBudgetItemType extends React.Component {
       wrapperCol: {span: 14, offset: 1},
     };
     return (
-
-
       <div className="new-value">
         <Form onSubmit={this.handlePut}>
           <FormItem {...formItemLayout}
-                    label={this.props.intl.formatMessage({id: "budget.isEnabled"})}>
+                    label={this.props.intl.formatMessage({id: "budgetItemType.isEnabled"})}>
             {getFieldDecorator('isEnabled', {})(
               <div>
                 <Switch defaultChecked={params.isEnabled} checkedChildren={<Icon type="check"/>}
@@ -118,7 +113,7 @@ class PutBudgetItemType extends React.Component {
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeCode"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetItemType.itemTypeCode"})}>
             {getFieldDecorator('itemTypeCode', {
               rules: [{
                 required: true
@@ -128,7 +123,7 @@ class PutBudgetItemType extends React.Component {
               <Input disabled/>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budget.itemTypeName"})}>
+          <FormItem {...formItemLayout} label={this.props.intl.formatMessage({id: "budgetItemType.itemTypeName"})}>
             {getFieldDecorator('itemTypeName', {
               rules: [{
                 required: true,

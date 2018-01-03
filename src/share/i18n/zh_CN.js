@@ -25,6 +25,12 @@ import cashFlowItem from 'static/i18n/zh_CN/pay-setting/cash-flow-item.json'
 import cashTransactionClass from 'static/i18n/zh_CN/pay-setting/cash-transaction-class.json'
 import subjectSheet from 'static/i18n/zh_CN/setting/subject-sheet.json'
 import checkCenter from 'static/i18n/zh_CN/financial-management/check-center.json'
+import supplierManagement from 'static/i18n/zh_CN/financial-management/supplier-management.json'
+import sectionStructure from 'static/i18n/zh_CN/financial-accounting-setting/section-structure.json'
+import accountingSource from 'static/i18n/zh_CN/financial-accounting-setting/accounting-source.json'
+import accountingScenariosSystem from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios-system.json'
+import accountingScenarios from 'static/i18n/zh_CN/financial-accounting-setting/accounting-scenarios.json'
+
 
 const i18nList = [
   common,  //公用
@@ -54,6 +60,11 @@ const i18nList = [
   checkCenter,    //对账中心
   announcementInformation,  //公告信息
   budgetItemMap,            //项目映射
+  supplierManagement,       //供应商管理
+  sectionStructure,       //科目段结构
+  accountingSource,       //核算来源事物
+  accountingScenariosSystem, //核算场景系统级
+  accountingScenarios,     //核算场景账套级
 ];
 
 let result = {};
