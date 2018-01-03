@@ -12,6 +12,8 @@ import moment from 'moment'
 import SlideFrame from 'components/slide-frame'
 import  NewPrePaymentDetail from 'containers/pre-payment/my-pre-payment/new-pre-payment-detail'
 import 'styles/pre-payment/my-pre-payment/pre-payment-detail.scss'
+import {connect} from 'react-redux'
+
 
 class PrePaymentCommon extends React.Component {
   constructor(props) {
@@ -52,7 +54,7 @@ class PrePaymentCommon extends React.Component {
         {title: '银行账号', dataIndex: 'partnerI'},
         {title: '银行户名', dataIndex: 'part'},
         {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '银行户名', dataIndex: 'part'},
+        {title: '银行户名', dataIndex: 'part1'},
         {title: '银行户名', dataIndex: 'partvfvf'},
         {title:'预付款方式类型',dataIndex:''},
         {title:'关联合同',dataIndex:'ggg'},
@@ -74,23 +76,28 @@ class PrePaymentCommon extends React.Component {
       page: 0,
       showSlideFrame: false,
       slideFrameTitle: '',
+      stateName: '',
       record: {}, //资金计划行信息
       NewContract: menuRoute.getRouteItem('new-contract', 'key'), //新建合同
+      EditPayRequisition: menuRoute.getRouteItem('new-pre-payment', 'key'), //新建预付款
     }
   }
 
   componentWillMount() {
+
+    console.log(this.props.company);
+
     this.getInfo();
     this.getPayInfo()
   }
 
   //获取合同信息
   getInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/header/${this.props.id}`;
+    let url = `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead/${this.props.id}`;
     this.setState({ detailLoading: true });
     httpFetch.get(url).then(res => {
       this.setState({
-        headerData: res.data,
+        headerData: res.data.head,
         detailLoading: false
       })
     }).catch(() => {
@@ -98,25 +105,33 @@ class PrePaymentCommon extends React.Component {
     })
   };
 
+
   //获取资金计划
   getPayInfo = () => {
-    let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}`;
-    this.setState({ planLoading: true });
-    httpFetch.get(url).then(res => {
-      let planAmount = 0;
-      res.data.map(item => {
-        planAmount += item.amount;
-      });
-      this.setState({
-        data: res.data,
-        planAmount,
-        planLoading: false,
-        pagination: {
-          total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
-        }
-      })
-    })
+    // let url = `${config.contractUrl}/contract/api/contract/line/herder/${this.props.id}`;
+    // this.setState({ planLoading: true });
+    // httpFetch.get(url).then(res => {
+    //   let planAmount = 0;
+    //   res.data.map(item => {
+    //     planAmount += item.amount;
+    //   });
+    //   this.setState({
+    //     data: res.data,
+    //     planAmount,
+    //     planLoading: false,
+    //     pagination: {
+    //       total: Number(res.headers['x-total-count']) ? Number(res.headers['x-total-count']) : 0,
+    //     }
+    //   })
+    // })
   };
+
+  getStateNameByCode = (code) => {
+    this.getSystemValueList(2028).then(res => {
+      let info = res.data.values.find(o => o.value == code);
+      this.setState({ stateName: info.messageKey });
+    })
+  }
 
   handleTabsChange = (tab) => {
     this.setState({ topTapValue: tab })
@@ -146,7 +161,7 @@ class PrePaymentCommon extends React.Component {
   };
   //编辑
   edit = () => {
-    this.context.router.push(this.state.NewContract.url.replace(':id', this.props.id))
+    this.context.router.push(this.state.EditPayRequisition.url.replace(':id',this.props.id).replace(':prePaymentTypeId',0));
   };
 
   //添加资金计划行
@@ -183,7 +198,7 @@ class PrePaymentCommon extends React.Component {
     })
   };
 
-  newItemTypeShowSlide=()=>{
+  newItemTypeShowSlide= () => {
 
   }
 
@@ -192,19 +207,19 @@ class PrePaymentCommon extends React.Component {
   }
 
   render() {
-    const { topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
+    const { stateName,topLoading, detailLoading,loading,planAmount,planLoading, topTapValue, subTabsList, pagination, columns, data, showSlideFrame, headerData, contractStatus, record, slideFrameTitle } = this.state;
     let contractInfo = (
-      <Spin spinning={topLoading}>
-        <h3 className="header-title">审计咨询合同 {headerData.contractCategory}
+      <Spin spinning={topLoading}> 
+        <h3 className="header-title">{headerData.typeName} 预付款
           {this.props.contractEdit && <Button type="primary" onClick={this.edit}>编 辑</Button>}
         </h3>
         <Row>
           <Col span={6}>
-            {this.renderList('创建人', null)}
+            {this.renderList('创建人', headerData.createByName)}
             {this.renderList('创建日期', moment(headerData.createdDate).format('YYYY-MM-DD'))}
           </Col>
           <Col span={6}>
-            {this.renderList('合同编号', headerData.contractNumber)}
+            {this.renderList('单据编号', headerData.requisitionNumber)}
           </Col>
           <Col span={12}>
             <div style={{float:'right'}}>
@@ -213,7 +228,7 @@ class PrePaymentCommon extends React.Component {
             </div>
             <div style={{float:'right', marginRight:'50px'}}>
               <div className="status-title">状态</div>
-              <div className="status-content">{contractStatus[headerData.status]}</div>
+              <div className="status-content">{headerData.statusName}</div>
             </div>
           </Col>
         </Row>
@@ -261,15 +276,18 @@ class PrePaymentCommon extends React.Component {
               {this.props.contractEdit && <a className="edit" onClick={this.edit}>编辑</a>}
             </h3>
             <Row>
-              <Col span={12}>{this.renderList('申请日期', moment(headerData.signDate).format('YYYY-MM-DD'))}</Col>
-              <Col span={12}>{this.renderList('公司', headerData.companyId)}</Col>
-              <Col span={12}>{this.renderList('申请人', headerData.companyId)}</Col>
-              <Col span={12}>{this.renderList('部门', headerData.partnerCategory)}</Col>
+              <Col span={12}>{this.renderList('申请日期', moment(headerData.requisitionDate).format('YYYY-MM-DD'))}</Col>
+              <Col span={12}>{this.renderList('公司', headerData.companyName)}</Col>
+              <Col span={12}>{this.renderList('申请人', headerData.employeeName)}</Col>
+              <Col span={12}>{this.renderList('部门', headerData.unitName)}</Col>
             </Row>
             <Row>
-              <Col span={8}>{this.renderList('事由说明', headerData.partnerId)}</Col>
+              <Col span={8}>{this.renderList('事由说明', headerData.description)}</Col>
             </Row>
             <h3 className="margin-20-0">附件信息</h3>
+            {headerData.attachments?headerData.attachments.map(item => {
+              return <div key={item.attachmentOID}>{item.fileName}</div>
+            }):""}
         </div>
           <div className="tab-container">
               <h3 className="sub-header-title">付款信息</h3>
@@ -303,7 +321,7 @@ class PrePaymentCommon extends React.Component {
         <div className="top-info">
           <Tabs onChange={this.handleTabsChange}>
             <TabPane tab="单据信息" key="contractInfo">{contractInfo}</TabPane>
-            <TabPane tab="单据历史" key="contractHistory">{contractHistory}</TabPane>
+            {/* <TabPane tab="单据历史" key="contractHistory">{contractHistory}</TabPane> */}
           </Tabs>
         </div>
         {topTapValue === 'contractInfo' &&
@@ -336,6 +354,15 @@ PrePaymentCommon.contextTypes = {
   router: React.PropTypes.object
 };
 
+
 const wrappedPrePaymentCommon = Form.create()(injectIntl(PrePaymentCommon));
 
-export default wrappedPrePaymentCommon;
+function mapStateToProps(state) {
+  return {
+    user: state.login.user,
+    company: state.login.company,
+    organization: state.login.organization
+  }
+}
+
+export default connect(mapStateToProps)(injectIntl(wrappedPrePaymentCommon));
