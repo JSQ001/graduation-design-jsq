@@ -15,5 +15,11 @@
   "accounting.selected": " 已选择 {count} 项",
   "accounting.subject.setting": "  匹配组：{name} 科目设置",
   "accounting.subject.code": "科目代码",
-  "accounting.subject.name": "科目名称"
+  "accounting.subject.name": "科目名称",
+  "accounting.subject.tips": "设置核算场景下不同核算要素组合时匹配的科目。",
+  "accounting.subject.mapping.add": "添加匹配科目",
+  "accounting.subject.mapping.update": "编辑匹配科目",
+  "account.select.subject": "请选择科目",
+  "accounting.subject": "科目",
+  "account.select.element": "请选择需要匹配的核算要素"
 }

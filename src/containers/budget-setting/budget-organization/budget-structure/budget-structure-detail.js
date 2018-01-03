@@ -140,7 +140,7 @@ class BudgetStructureDetail extends React.Component{
     });
 
     //获取某预算表某行的数据
-    budgetService.getStructuresById(this.props.params.structureId).then((response)=> {
+    budgetService.getStructureById(this.props.params.structureId).then((response)=> {
       let periodStrategy = {label:response.data.periodStrategyName,value:response.data.periodStrategy};
       response.data.periodStrategy = periodStrategy;
       if(response.status === 200){
