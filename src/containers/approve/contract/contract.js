@@ -4,6 +4,7 @@ import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
 import menuRoute from 'share/menuRoute'
 import { contractService } from 'service'
+import config from 'config'
 
 import SearchArea from 'components/search-area'
 import moment from 'moment'
@@ -28,7 +29,8 @@ class Contract extends React.Component{
       SearchForm: [
         {type: 'input', id: 'contractNumber', label: '合同编号'},
         {type: 'input', id: 'companyId', label: '申请人姓名/工号'},
-        {type: 'input', id: 'contractTypeId', label: '合同类型'},
+        {type: 'combobox', id: 'contractTypeId', label: '合同类型', searchUrl: `${config.contractUrl}/contract/api/contract/type/contract/type/by/company`,
+          method: 'get', searchKey: 'contractTypeName', options: [], getParams: {companyId: 138}, labelKey: 'id', valueKey: 'id', placeholder: '请输入合同类型名称'},
         {type: 'items', id: 'dateRange', items: [
           {type: 'date', id: 'signDateFrom', label: '提交时间从'},
           {type: 'date', id: 'signDateTo', label: '提交时间至'}

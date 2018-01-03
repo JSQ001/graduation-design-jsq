@@ -28,17 +28,20 @@ class ValueList extends React.Component{
       columns: [
         {title: '序号', dataIndex: 'index', width: '8%'},
         {title: '值列表名称', dataIndex: 'name', width: '77%'},
-        {title: '状态', key: 'enabled', width: '15%', render: enabled => <Badge status={enabled ? 'success' : 'error'} text={enabled ? '启用' : '禁用'} />}
+        {title: '状态', dataIndex: 'enabled', width: '15%', render: enabled => <Badge status={enabled ? 'success' : 'error'} text={enabled ? '启用' : '禁用'} />}
       ],
       pagination: {
         total: 0
       },
-      valueListPage: menuRoute.getRouteItem('new-value-list','key')   //新建值列表的页面项
+      valueListPage: menuRoute.getRouteItem('new-value-list','key'),   //新建值列表的页面项
+      valueListDetail: menuRoute.getRouteItem('value-list-detail','key')   //值列表详情的页面项
     };
   }
 
   componentWillMount(){
-    this.getList();
+    this.setState({ status: this.props.location.query.tab || 'SYSTEM' },() => {
+      this.getList()
+    })
   }
 
   //得到值列表数据
@@ -91,11 +94,15 @@ class ValueList extends React.Component{
     });
   };
 
+  handleRowClick = (record) => {
+    this.context.router.push(this.state.valueListDetail.url.replace(':customEnumerationOID', record.customEnumerationOID))
+  };
+
   render(){
     const { columns, data, loading,  pagination, status, valueListPage } = this.state;
     return (
       <div className="value-list">
-        <Tabs type="card" onChange={this.onChangeTabs}>
+        <Tabs type="card" defaultActiveKey={status} onChange={this.onChangeTabs}>
           {this.renderTabs()}
         </Tabs>
         <div className="table-header">
@@ -111,12 +118,19 @@ class ValueList extends React.Component{
                dataSource={data}
                pagination={pagination}
                loading={loading}
+               onRow={record => ({
+                 onClick: () => this.handleRowClick(record)
+               })}
                bordered
                size="middle"/>
       </div>
     )
   }
 }
+
+ValueList.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps(state) {
   return {}
