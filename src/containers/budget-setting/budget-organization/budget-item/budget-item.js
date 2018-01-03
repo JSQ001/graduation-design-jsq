@@ -88,7 +88,7 @@ class BudgetItem extends React.Component {
   componentWillMount(){
     this.getList();
     //查出所有预算项目，以方便预算项目的查询中可以选择
-    budgetService.getItem({organizationId: this.props.id,isEnabled: true}).then((response)=>{
+    budgetService.getItems({organizationId: this.props.id,isEnabled: true}).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
         let budgetItem = {
@@ -109,7 +109,7 @@ class BudgetItem extends React.Component {
     params.organizationId = this.props.id;
     params.page = this.state.page;
     params.pageSize = this.state.pageSize;
-    budgetService.getItemByOption(params).then((response)=>{
+    budgetService.getItemsByOption(params).then((response)=>{
       response.data.map((item,index)=>{
         item.key = item.id;
       });

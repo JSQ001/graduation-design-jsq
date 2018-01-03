@@ -84,7 +84,7 @@ export default {
   },
 
   //根据id查询预算表
-  getStructuresById(id){
+  getStructureById(id){
     return httpFetch.get(`${config.budgetUrl}/api/budget/structures/${id}`)
   },
 
@@ -134,12 +134,12 @@ export default {
   },
 
   //查询预算项目（不分页）
-  getItem(params){
+  getItems(params){
     return httpFetch.get(`${config.budgetUrl}/api/budget/items/find/all`,params)
   },
 
   //条件查询预算项目（分页）
-  getItemByOption(params){
+  getItemsByOption(params){
     return httpFetch.get(`${config.budgetUrl}/api/budget/items/query`,params)
   },
 

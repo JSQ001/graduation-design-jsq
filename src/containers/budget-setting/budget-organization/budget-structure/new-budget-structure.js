@@ -41,7 +41,7 @@ class NewBudgetStructure extends React.Component{
       })
     });
     typeof this.props.organization.organizationName === "undefined" ?
-      budgetService.getOrganizationsById(this.props.params.id).then((response) =>{
+      budgetService.getOrganizationById(this.props.params.id).then((response) =>{
         this.setState({
           organization: response.data,
         })
