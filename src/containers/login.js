@@ -50,7 +50,7 @@ class Login extends React.Component{
       this.context.router.push(menuRoute.indexUrl);
     }).catch((err)=>{
       this.setState({loading: false});
-      if(err.response.status === 401)
+      if(err.response.status === 401 || err.response.status === 400)
         message.error(this.props.intl.formatMessage({id: 'login.wrong'})); //用户名或密码错误，请重新输入:)
       else
         message.error(this.props.intl.formatMessage({id: 'login.error'})); //呼，服务器出了点问题，请联系管理员或稍后再试:(
