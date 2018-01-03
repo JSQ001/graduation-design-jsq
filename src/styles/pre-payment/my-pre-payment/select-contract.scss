@@ -1,4 +1,6 @@
- .components-table-demo-nested .ant-table-expanded-row > td:last-child {
+ 
+ .select-contract {
+  .components-table-demo-nested .ant-table-expanded-row > td:last-child {
     padding: 0 48px 0 8px;
   }
   
@@ -25,24 +27,30 @@
   .components-table-demo-nested .table-operation a:not(:last-child) {
     margin-right: 24px;
   }
-
-  .ant-checkbox-group .ant-checkbox-group-item {
-    display: block;
-    margin: 10px 0;
+ }
+ 
+  .select-department {
+    .ant-checkbox-group .ant-checkbox-group-item {
+      display: block;
+      margin: 10px 0;
+    }
   }
 
-  .ant-card .ant-card-body {
-    padding: 10px;
-    height: 320px;
-    overflow: auto;
+  .select-employee-group {
+    .ant-card .ant-card-body {
+      padding: 10px;
+      height: 320px;
+      overflow: auto;
+    }
+    .ant-card .ant-card-head-title {
+      padding: 7px;
+    }
+    .ant-card .ant-card-extra {
+      padding: 7px;
+    }
+    .ant-card .ant-card-head {
+      min-height: 0;
+      padding: 0 12px;
+    }
   }
-  .ant-card .ant-card-head-title {
-    padding: 7px;
-  }
-  .ant-card .ant-card-extra {
-    padding: 7px;
-  }
-  .ant-card .ant-card-head {
-    min-height: 0;
-    padding: 0 12px;
-  }
+

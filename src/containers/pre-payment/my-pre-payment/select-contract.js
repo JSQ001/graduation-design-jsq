@@ -254,7 +254,7 @@ class SelectContract extends React.Component {
         const { visible, onCancel, afterClose } = this.props;
         const { data, pagination, loading, columns, selectorItem, selectedData, rowSelection, inputValue, searchForm } = this.state;
         return (
-            <Modal title={"选择合同"} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
+            <Modal title={"选择合同"} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector select-contract">
                 {searchForm && searchForm.length > 0 ? <SearchArea searchForm={searchForm}
                     submitHandle={this.search}
                     clearHandle={this.clear} /> : null}

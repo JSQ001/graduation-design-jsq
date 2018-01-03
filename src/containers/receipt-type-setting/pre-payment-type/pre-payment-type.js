@@ -36,7 +36,8 @@ class PrePaymentType extends React.Component {
           )}, //状态
         {title: formatMessage({id:"common.operation"}), key: 'operation', width: '15%', render: (text, record) => (
           <span>
-            <a href="#" onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
+            <a style={{marginRight:10}} onClick={(e) => this.editItem(e, record)}>{formatMessage({id: "common.edit"})}</a>
+            <a onClick={(e) => this.editItem(e, record)}>分配公司</a>
           </span>)},  //操作
       ],
       pagination: {
