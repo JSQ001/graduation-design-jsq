@@ -28,11 +28,12 @@ class NewBudgetJournalType extends React.Component {
         values.organizationId = this.props.organization.id;
         httpFetch.post(`${config.budgetUrl}/api/budget/journal/types`, values).then((res)=>{
           this.setState({loading: false});
-          message.success(`项目组${res.data.journalTypeName}新建成功`);
+          message.success(`预算日记账${res.data.journalTypeName}新建成功`);
           this.context.router.replace(this.state.budgetJournalTypeDetailPage.url.replace(":typeId", res.data.id));
         }).catch((e)=>{
           if(e.response){
-            message.error(`新建失败, ${e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message}`);
+            message.error(`${this.props.intl.formatMessage({id: "common.save.filed"})}
+            , ${e.response.data.validationErrors ? e.response.data.validationErrors[0].message : e.response.data.message}`);
           }
           this.setState({loading: false});
         })
