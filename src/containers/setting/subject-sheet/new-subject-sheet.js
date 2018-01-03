@@ -24,7 +24,7 @@ class NewSubjectSheet extends React.Component {
 
     componentWillMount() {
         let params = this.props.params;
-        console.log(params);
+        //console.log(params);
         // if (params && JSON.stringify(params) != "{}") {
         //     this.setState({
         //         isDisabled: true,
@@ -83,7 +83,7 @@ class NewSubjectSheet extends React.Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { params} = this.state;
+        const { params} = this.state; 
         const formItemLayout = {
             labelCol: { span: 6, offset: 1 },
             wrapperCol: { span: 14, offset: 1 },
@@ -117,7 +117,7 @@ class NewSubjectSheet extends React.Component {
                         {getFieldDecorator('enabled', {
                             initialValue: this.props.params.id ? this.props.params.enabled : true
                         })(
-                            <Switch defaultChecked={this.props.params.id ? this.props.params.enabled : true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
+                            <Switch checked={this.props.params.id ? this.props.params.enabled : true} checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
                         )}&nbsp;&nbsp;&nbsp;&nbsp;{this.props.form.getFieldValue('enabled') ? this.props.intl.formatMessage({ id: "common.status.enable" }) : this.props.intl.formatMessage({ id: "common.status.disable" })}
                     </FormItem>
                     <div className="slide-footer">
