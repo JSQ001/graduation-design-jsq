@@ -1,7 +1,7 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
 import {connect} from 'react-redux'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import { Form, Card, Row, Col, Input, Affix, Button, Table, message } from 'antd'

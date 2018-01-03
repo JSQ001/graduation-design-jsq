@@ -8,7 +8,7 @@ import SearchArea from 'components/search-area'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 
-import menuRoute from "share/menuRoute";
+import menuRoute from "routes/menuRoute";
 
 class BudgetJournalType extends React.Component {
   constructor(props) {

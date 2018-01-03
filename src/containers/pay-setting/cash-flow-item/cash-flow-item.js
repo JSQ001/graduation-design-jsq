@@ -10,7 +10,7 @@ import { Button, Table, Badge, notification, Popover, Popconfirm ,message } from
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/pay-setting/cash-flow-item/cash-flow-item.scss'
 import SlideFrame from 'components/slide-frame'
 import CreateOrUpdateItem from 'containers/pay-setting/cash-flow-item/createOrUpdate-item'

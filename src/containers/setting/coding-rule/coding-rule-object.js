@@ -6,7 +6,7 @@ import { Table, Button, Badge } from 'antd';
 import httpFetch from 'share/httpFetch'
 
 import SearchArea from 'components/search-area'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class CodingRule extends React.Component {
   constructor(props) {

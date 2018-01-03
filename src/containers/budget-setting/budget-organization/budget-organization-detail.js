@@ -15,7 +15,7 @@ import BudgetControlRules from 'containers/budget-setting/budget-organization/bu
 import BudgetJournalType from 'containers/budget-setting/budget-organization/budget-journal-type/budget-journal-type'
 import BudgetItemMap from 'containers/budget-setting/budget-organization/budget-item-map/budget-item-map'
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class BudgetOrganizationDetail extends React.Component {
   constructor(props) {

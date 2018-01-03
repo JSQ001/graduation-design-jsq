@@ -5,7 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import budgetService from 'service/budgetService'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import { Form, Button, Select, Icon, Table, message, Popconfirm,  } from 'antd'
 

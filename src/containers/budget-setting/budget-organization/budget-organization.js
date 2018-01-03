@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Table, Badge, Button, Popover, message } from 'antd';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import budgetService from 'service/budgetService'
 import config from 'config'
 

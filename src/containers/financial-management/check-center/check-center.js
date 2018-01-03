@@ -7,7 +7,7 @@ const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { injectIntl } from 'react-intl';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Tabs, Table, Button, notification, Icon, Popover, Row, Col, Card } from 'antd';
 
 import 'styles/financial-management/check-center/check-center.scss'

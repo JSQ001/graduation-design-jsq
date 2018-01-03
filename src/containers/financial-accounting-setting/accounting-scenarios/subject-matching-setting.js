@@ -10,7 +10,7 @@ import NewUpdateSubjectMapping from 'containers/financial-accounting-setting/acc
 import SearchArea from 'components/search-area';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios/subject-matching-setting.scss'
 
 class subjectsMatchingSetting extends React.Component {

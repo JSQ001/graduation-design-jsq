@@ -12,7 +12,7 @@ import debounce from 'lodash.debounce';
 import Chooser from 'components/chooser'
 import SlideFrame from 'components/slide-frame'
 import BudgetBalanceCondition from 'containers/budget/budget-balance/budget-balance-condition'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import selectorData from 'share/selectorData'
 
 import 'styles/budget/budget-balance/budget-balance.scss'

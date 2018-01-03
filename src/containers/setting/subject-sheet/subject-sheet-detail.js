@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import SearchArea from 'components/search-area.js';
 import SlideFrame from 'components/slide-frame'
 import BasicInfo from 'components/basic-info'

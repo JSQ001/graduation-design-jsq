@@ -5,7 +5,7 @@ import config from 'config'
 import { Table, Button, Badge, message } from 'antd';
 import httpFetch from 'share/httpFetch'
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import BasicInfo from 'components/basic-info'
 
 class CodingRuleDetail extends React.Component {

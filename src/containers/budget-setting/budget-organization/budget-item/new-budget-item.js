@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Form, Select,Input, Col, Row, Switch, message, Icon } from 'antd';
 import budgetService from 'service/budgetService'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import ListSelector from 'components/list-selector'
 import "styles/budget-setting/budget-organization/budget-item/new-budget-item.scss"
 const FormItem = Form.Item;

@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl'
 import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
 import { contractService } from 'service'

@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { Form, Table, Badge, Modal } from 'antd'
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 
 import SearchArea from 'components/search-area.js';

@@ -8,7 +8,7 @@ import { Button, Table} from 'antd'
 import SearchArea from 'components/search-area';
 import budgetService from 'service/budgetService'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class BudgetControlRules extends React.Component {
   constructor(props) {

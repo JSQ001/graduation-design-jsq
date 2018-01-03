@@ -12,7 +12,7 @@ import Chooser from  'components/Chooser';
 import UploadFile from 'components/upload.js'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import "styles/budget/budget-journal/new-budget-journal.scss"
 
 class NewBudgetJournalFrom extends React.Component {

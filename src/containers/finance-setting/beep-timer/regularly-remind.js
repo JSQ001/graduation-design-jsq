@@ -8,7 +8,7 @@ import { injectIntl } from 'react-intl';
 import { Form, Input, Switch, Button, Icon ,Tabs,Row,Col,message} from 'antd'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 const FormItem = Form.Item;
 const TabPane =Tabs.TabPane;
 

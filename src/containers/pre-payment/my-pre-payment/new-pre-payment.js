@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl'
 import { Form, Card, Input, Row, Col, Affix, Button, DatePicker, Select, InputNumber, message, Spin } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import httpFetch from "share/httpFetch";
 
@@ -83,7 +83,7 @@ class MyNewPrePayment extends React.Component {
         this.setState({ departmentId: res.data.id });
       })
       // console.log(this.props.user);
-  
+
       Number(this.props.params.id) && this.getInfo(); //预付款编辑
       this.setState({ user: this.props.user });
       this.getSystemValueList(2107).then(res => { //合同方类型
@@ -147,7 +147,7 @@ class MyNewPrePayment extends React.Component {
           }
         }
         let url = `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead`;
-  
+
         this.setState({ loading: true });
         httpFetch.post(url, dataValue).then(res => {
           if (res.status === 200) {

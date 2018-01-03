@@ -10,7 +10,7 @@ import { Button, Form, InputNumber, Checkbox, Radio, Row, Col, message} from 'an
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce';
 
 import 'styles/setting/security-setting/security-setting.scss'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Form, Input, Switch, Button, Icon, Select, message, Spin, Tooltip } from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;

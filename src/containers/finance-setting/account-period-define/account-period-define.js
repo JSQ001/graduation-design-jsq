@@ -9,7 +9,7 @@ import NewAccountPeriod from 'containers/finance-setting/account-period-define/n
 import NewAccountRule from 'containers/finance-setting/account-period-define/new-account-rule'
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 
 class AccountPeriodDefine extends React.Component {

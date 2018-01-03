@@ -8,7 +8,7 @@ import "styles/budget/budget-journal/budget-journal-detail-submit.scss"
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 
 class BudgetJournalDetailSubmit extends React.Component {

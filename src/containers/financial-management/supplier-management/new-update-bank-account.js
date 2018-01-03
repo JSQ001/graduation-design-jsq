@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Table, Badge, Input, Switch, Select, Form, Row, Col, Icon, Cascader } from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-management/supplier-management/new-update-bank-account.scss'
 const FormItem = Form.Item;
 const Option = Select.Option;

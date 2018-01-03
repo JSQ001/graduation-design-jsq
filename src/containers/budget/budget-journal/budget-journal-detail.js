@@ -9,7 +9,7 @@ import "styles/budget/budget-journal/budget-journal-detail.scss";
 
 import httpFetch from 'share/httpFetch';
 import config from 'config';
-import menuRoute from 'share/menuRoute';
+import menuRoute from 'routes/menuRoute';
 
 import BasicInfo from 'components/basic-info';
 import SlideFrame from 'components/slide-frame.js';

@@ -1,6 +1,6 @@
 import React from 'react'
 import { injectIntl } from 'react-intl'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
 import { Form, Button, Table, message, Popover } from 'antd'

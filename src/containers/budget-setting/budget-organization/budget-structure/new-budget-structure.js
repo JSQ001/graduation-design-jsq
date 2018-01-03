@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { budgetService } from 'service'
 import 'styles/budget-setting/budget-organization/budget-structure/new-budget-structure.scss';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce';
 
 const FormItem = Form.Item;

@@ -7,7 +7,7 @@ import { injectIntl } from 'react-intl';
 import { Button, Table, Input, Select, Switch, Affix, DatePicker, Icon, Badge, message, Form  } from 'antd';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import Importer from 'components/template/importer'
 import 'styles/financial-management/supplier-management/new-update-supplier.scss'
 const { TextArea } = Input;

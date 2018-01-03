@@ -12,7 +12,7 @@ import SearchArea from 'components/search-area';
 import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-source/accounting-source.scss'
 
 class AccountingSource extends React.Component {

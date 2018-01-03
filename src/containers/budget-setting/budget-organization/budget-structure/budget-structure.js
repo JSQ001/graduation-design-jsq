@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table, Badge, notification, Popover  } from 'antd';
 import SearchArea from 'components/search-area.js';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/budget-setting/budget-organization/budget-structure/budget-structure.scss';
 import { budgetService } from 'service'
 

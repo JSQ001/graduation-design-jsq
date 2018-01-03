@@ -6,7 +6,7 @@ import { Tabs, Button, message, Icon, Table, Checkbox, Badge } from 'antd';
 const TabPane = Tabs.TabPane;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 
 import selectorData from 'share/selectorData'
