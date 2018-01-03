@@ -17,7 +17,7 @@ class WebpackDistConfig extends WebpackBaseConfig {
       cache: false,
       devtool: 'source-map',
       entry: {
-        app: ['./client.js'],
+        app: ['babel-polyfill', './client.js'],
         vendor: ['react', 'react-dom' ,'immutable', 'redux', 'redux-thunk', 'antd', 'draft-js'],
       },
       plugins: [
