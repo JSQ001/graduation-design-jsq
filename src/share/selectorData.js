@@ -550,6 +550,15 @@ const selectorData = {
     ],
     key: 'userId'
   },
+  'select_supplier_employee': {
+    title: '选择收款方',
+    url: `http://192.168.1.195:8072/api/cash/prepayment/requisitionHead/getReceivablesByName`,
+    searchForm: [{ type: 'input', id: 'name', label: '供应商或员工', defaultValue: 'sd'}],
+    columns: [
+      {title: '名称', dataIndex: 'name'}
+    ],
+    key: 'id'
+  }
 };
 
 export default selectorData;

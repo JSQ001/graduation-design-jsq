@@ -81,6 +81,10 @@ class MyPrePayment extends React.Component{
     //     })
     //   }
     // })
+
+    httpFetch.get("http://rjfin.haasgz.hand-china.com:30498/contract/api/contract/line/associate/query?companyId=138&partnerCategory=EMPLOYEE&partnerId=911143733222408193").then(res => {
+      console.log(res.data);
+    })
     this.getList();
   }
 

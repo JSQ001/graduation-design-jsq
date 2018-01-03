@@ -54,7 +54,7 @@ class PrePaymentCommon extends React.Component {
         {title: '银行账号', dataIndex: 'partnerI'},
         {title: '银行户名', dataIndex: 'part'},
         {title: '计划付款日期', dataIndex: 'dueDate', render: value => moment(value).format('YYYY-MM-DD')},
-        {title: '银行户名', dataIndex: 'part'},
+        {title: '银行户名', dataIndex: 'part1'},
         {title: '银行户名', dataIndex: 'partvfvf'},
         {title:'预付款方式类型',dataIndex:''},
         {title:'关联合同',dataIndex:'ggg'},
