@@ -125,7 +125,7 @@ class SelectEmployeeGroup extends React.Component {
         const { visible, onCancel, afterClose } = this.props;
         const { treeData } = this.state;
         return (
-            <Modal title={"选择人员组"} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector">
+            <Modal title={"选择人员组"} visible={visible} onCancel={onCancel} afterClose={afterClose} width={800} onOk={this.handleOk} className="list-selector select-department">
                 <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={this.onChange} />
                 <Tree
                     checkable
