@@ -10,7 +10,7 @@ import 'styles/my-account/new-expense.scss'
 
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import ExpenseSelector from 'components/template/expense-selector'
+import ExpenseTypeSelector from 'components/template/expense-type-selector'
 
 class NewExpense extends React.Component {
   constructor(props) {
@@ -30,6 +30,10 @@ class NewExpense extends React.Component {
 
   copyExpense = () => {};
 
+  handleSelectExpenseType = (expenseT) => {
+
+  };
+
   render(){
     const { formatMessage } = this.props.intl;
     const { getFieldDecorator } = this.props.form;
@@ -40,6 +44,7 @@ class NewExpense extends React.Component {
     };
     return (
       <div className="new-expense">
+        <ExpenseTypeSelector onSelect={this.handleSelectExpenseType}/>
         <Form onSubmit={this.handleSave}>
           <div className="slide-footer">
             <Button type="primary" htmlType="submit" loading={this.state.loading}>{formatMessage({id: 'common.save'})/* 保存 */}</Button>
