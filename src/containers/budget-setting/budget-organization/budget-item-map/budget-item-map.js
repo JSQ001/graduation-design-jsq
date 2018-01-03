@@ -95,7 +95,15 @@ class BudgetItemMap extends React.Component {
       if(typeof record.id === 'undefined'){
         let params = this.state.params;
         params.delete(params[index]);
-        this.setState({params});
+        let isSave = true;
+        params.map(item=>{
+          if(item.edit)
+            isSave = false
+        });
+        this.setState({
+          params,
+          isSave
+        });
         return
       }
     }
