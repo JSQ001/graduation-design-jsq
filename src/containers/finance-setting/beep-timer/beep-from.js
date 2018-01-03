@@ -36,6 +36,8 @@ class BeepFrom extends React.Component{
 
   }
 
+
+
   handleSave = (e) =>{
     e.preventDefault();
     let value = this.props.form.getFieldsValue();
@@ -56,12 +58,17 @@ class BeepFrom extends React.Component{
     })
   }
 
+  //取消
+  handCancal =()=>{
+    this.props.handCancel();
+  }
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const {} = this.state;
     const hourOption=[];
-    for(let i=0;i<=24;i++){
-      hourOption.push(<option value={i} key={i}>{i+":00"}</option>)
+    for(let i=0;i<=23;i++){
+      hourOption.push(<option value={String(i)} key={String(i)}>{i+":00"}</option>)
     }
     const formItemLayout = {
       labelCol: { span:24 },
@@ -74,163 +81,164 @@ class BeepFrom extends React.Component{
     }
 
     return (
-      <div className="beep-from">
-        <div className="beep-from-in">
-          <Form onSubmit={this.handSubmit}>
-            <Row>
-              <Col span={8}>
-              <FormItem {...formItemLayout} label="提醒标题" >
-                {getFieldDecorator('code', {
-                  rules: [{
-                  }],
-                })(
-                  <Input  />
-                )}
-              </FormItem>
-              </Col>
-            </Row>
-            <Row>
+      <div>
+        <div className="beep-from">
+          <div className="beep-from-in">
+            <Form onSubmit={this.handSubmit}>
+              <Row>
+                <Col span={8}>
+                <FormItem {...formItemLayout} label="提醒标题" >
+                  {getFieldDecorator('code', {
+                    rules: [{ }],
+                  })(
+                    <Input  />
+                  )}
+                </FormItem>
+                </Col>
+              </Row>
+              <Row>
 
-              <Col span={8}>
-              <FormItem {...formItemLayout} label="提醒内容" >
-                {getFieldDecorator('description', {
-                  rules: [{
-                  }],
-                  initialValue: ''
-                })(
-                  <TextArea/>
-                )}
-              </FormItem>
-              </Col>
-            </Row>
-            <Row>
-              <hr/>
-              <br/>
-            </Row>
-            {/*定时提醒*/}
-            {this.props.type === "regularly" && <Row>
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送日期" >
-                  {getFieldDecorator('date ', {
+                <Col span={8}>
+                <FormItem {...formItemLayout} label="提醒内容" >
+                  {getFieldDecorator('description', {
                     rules: [{
                     }],
                     initialValue: ''
                   })(
-                    <Input />
+                    <TextArea/>
                   )}
                 </FormItem>
-              </Col>
+                </Col>
+              </Row>
+              <Row gutter={24}>
+                <hr/>
+                <br/>
+              </Row>
+              {/*定时提醒*/}
+              {this.props.type === "regularly" && <Row gutter={24}>
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送日期" >
+                    {getFieldDecorator('date ', {
+                      rules: [{
+                      }],
+                      initialValue: ''
+                    })(
+                      <Input />
+                    )}
+                  </FormItem>
+                </Col>
 
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('hour', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <Select>
-                      {hourOption}
-                    </Select>
-                  )}
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送时间" >
+                    {getFieldDecorator('hour', {
+                      rules: [{
+                      }],
+                      initialValue: ''
+                    })(
+                      <Select>
+                        {hourOption}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+
+              </Row>}
+
+              {/*差旅申请单*/}
+              { this.props.type === "traver" && (<Row gutter={24}>
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送日期" >
+                    <span>预计还款日期前&nbsp;&nbsp;</span>
+                    {getFieldDecorator('date', {
+                      rules: [{
+                        required:true,
+                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"发送日期"})
+                      }],
+                    })(
+                      <InputNumber min={0} max={100} />
+                    )}
+                    <span> &nbsp;天提醒员工</span>
+                  </FormItem>
+
+                </Col>
+
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送时间" >
+                    {getFieldDecorator('hour', {
+                      rules: [{
+                        required:true,
+                        message: this.props.intl.formatMessage({id: "common.can.not.be.empty"}, {name:"发送日期"})
+                      }],
+                    })(
+                      <Select>
+                        {hourOption}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>)}
+              {/*借款申请单*/}
+              {this.props.type === "business-card" && <Row>
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送日期" >
+                    <span>预计还款日期前</span>
+                    {getFieldDecorator('data', {
+                      rules: [{
+                      }],
+                    })(
+                      <Input style={{width:40}} />
+                    )}
+                    <span> 天提醒员工</span>
+                  </FormItem>
+
+                </Col>
+
+                <Col span={8}>
+                  <FormItem {...formItemLayout} label="发送时间" >
+                    {getFieldDecorator('code4', {
+                      rules: [{
+                      }],
+                    })(
+                      <Input />
+                    )}
+                  </FormItem>
+                </Col>
+
+              </Row>}
+
+              {/*商务卡*/}
+              {this.props.type === "business-card" && <Row>
+
+
+              </Row>}
+              <Row>
+
+              </Row>
+              <Row>
+                <Col>
+
+                  <FormItem {...formItemLayout} label="适用单据" >
+                    {getFieldDecorator('code5', {
+                      rules: [{
+                      }],
+                    })(
+                      <CheckboxGroup options={this.state.options}  />
+                    )}
+
+                  </FormItem>
+
+                </Col>
+
+              </Row>
+              <Row>
+                <FormItem wrapperCol={{ offset: 0 }}>
+                  <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>保存</Button>
+                  <Button onClick={this.handCancel}>取消</Button>
                 </FormItem>
-              </Col>
+              </Row>
 
-            </Row>}
-
-            {/*差旅申请单*/}
-            { this.props.type === "traver" && (<Row>
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送日期" >
-                  <span>预计还款日期前</span>
-                  {getFieldDecorator('code3', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <Input style={{width:40}} />
-                  )}
-                  <span> 天提醒员工</span>
-                </FormItem>
-
-              </Col>
-
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('hour', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <Input />
-                  )}
-                </FormItem>
-              </Col>
-            </Row>)}
-            {/*借款申请单*/}
-            {this.props.type === "business-card" && <Row>
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送日期" >
-                  <span>预计还款日期前</span>
-                  {getFieldDecorator('data', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <Input style={{width:40}} />
-                  )}
-                  <span> 天提醒员工</span>
-                </FormItem>
-
-              </Col>
-
-              <Col span={8}>
-                <FormItem {...formItemLayout} label="发送时间" >
-                  {getFieldDecorator('code4', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <Input />
-                  )}
-                </FormItem>
-              </Col>
-
-            </Row>}
-
-            {/*商务卡*/}
-            {this.props.type === "business-card" && <Row>
-
-
-            </Row>}
-            <Row>
-
-            </Row>
-            <Row>
-              <Col>
-
-                <FormItem {...formItemLayout} label="适用单据" >
-                  {getFieldDecorator('code5', {
-                    rules: [{
-                    }],
-                    initialValue: ''
-                  })(
-                    <CheckboxGroup options={this.state.options}  />
-
-                  )}
-
-                </FormItem>
-
-              </Col>
-
-            </Row>
-            <Row>
-              <FormItem wrapperCol={{ offset: 0 }}>
-                <Button type="primary" htmlType="submit" loading={this.state.loading} style={{marginRight:'10px'}}>保存</Button>
-                <Button>取消</Button>
-              </FormItem>
-            </Row>
-
-          </Form>
+            </Form>
+          </div>
         </div>
       </div>
     )
@@ -240,7 +248,9 @@ class BeepFrom extends React.Component{
 
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    company: state.login.company,
+  }
 }
 
 const WrappedBeepFrom= Form.create()(BeepFrom);
@@ -249,7 +259,8 @@ WrappedBeepFrom.propTypes = {
   type: React.PropTypes.string,  //选择类型 "borrow","traver","business-card","regularly"
   applyData:React.PropTypes.object,
   onEdit:React.PropTypes.func,
-  submitHandle:React.PropTypes.func   //保存
+  submitHandle:React.PropTypes.func,  //保存
+  handCancel:React.PropTypes.func     //取消
 }
 WrappedBeepFrom.defaultProps = {
   applyData:{},
