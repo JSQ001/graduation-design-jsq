@@ -8,7 +8,7 @@ import { Tabs, Input, Modal, Button, Table, Form, Checkbox , Popconfirm, message
 import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/setting/announcement-information/announcement-information-detail.scss'
 import debounce from 'lodash.debounce';
 

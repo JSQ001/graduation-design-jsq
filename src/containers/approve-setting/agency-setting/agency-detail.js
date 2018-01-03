@@ -8,7 +8,7 @@ const Option = Select.Option;
 import debounce from 'lodash.debounce'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import AgencyRelation from 'containers/approve-setting/agency-setting/agency-relation'
 
 import moment from 'moment';

@@ -8,7 +8,7 @@ const Option = Select.Option;
 import debounce from 'lodash.debounce'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class NewAgency extends React.Component {
   constructor(props) {

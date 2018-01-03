@@ -9,7 +9,7 @@ const Option = Select.Option;
 import ListSelector from 'components/list-selector'
 import BasicInfo from 'components/basic-info'
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import { budgetService } from 'service'
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { Form, Input, Row, Col, Select, Button, message } from 'antd'

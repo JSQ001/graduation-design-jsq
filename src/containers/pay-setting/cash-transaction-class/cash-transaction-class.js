@@ -10,7 +10,7 @@ import { Button, Table, Badge, notification, Popover, Popconfirm ,message } from
 import SearchArea from 'components/search-area.js';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/pay-setting/cash-transaction-class/cash-transaction-class.scss'
 
 class CashTransactionClass extends React.Component{

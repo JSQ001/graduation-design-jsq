@@ -8,7 +8,7 @@ import { Button, Table, Badge, Form, Input, Switch, Icon, Select} from 'antd'
 import SlideFrame from 'components/slide-frame'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios/new-update-subject-mapping.scss'
 const Option = Select.Option;
 const FormItem = Form.Item;

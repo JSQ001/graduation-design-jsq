@@ -5,7 +5,7 @@ import { Form,Popover, Tabs, Table, message } from 'antd'
 const TabPane = Tabs.TabPane;
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import SearchArea from 'components/search-area'
 
 class BudgetJournalCheck extends React.Component{

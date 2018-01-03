@@ -5,7 +5,7 @@ import { Form, Switch, Icon, Input, Select, Button, Row, Col, message } from 'an
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { budgetService } from 'service'
 
 class NewBudgetGroup extends React.Component {

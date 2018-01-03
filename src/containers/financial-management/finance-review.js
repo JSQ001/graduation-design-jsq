@@ -9,7 +9,7 @@ const TabPane = Tabs.TabPane;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import SearchArea from 'components/search-area'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class FinanceReview extends React.Component {
   constructor(props) {

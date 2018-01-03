@@ -10,7 +10,7 @@ import NewUpdateScenariosSystem from 'containers/financial-accounting-setting/ac
 import SearchArea from 'components/search-area';
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/financial-accounting-setting/accounting-scenarios-system/accounting-scenarios-system.scss'
 
 class AccountingScenariosSystem extends React.Component {

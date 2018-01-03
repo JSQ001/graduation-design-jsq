@@ -23,7 +23,7 @@
           "components/",
           "stores/",
           "actions/",
-          "sources/",
+          "routes/",
           "styles/",
           "images/"
         ]

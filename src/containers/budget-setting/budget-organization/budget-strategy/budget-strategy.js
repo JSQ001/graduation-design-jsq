@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl'
 import { Button, Table, Badge, Popover } from 'antd'
 
 import SearchArea from 'components/search-area'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 

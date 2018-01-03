@@ -14,28 +14,28 @@ const menuIndexUrl = '/main/dashboard';
 const menuAdminIndexUrl = '/main/dashboard-admin';
 
 //非管理员模式下菜单
-import dashboard from 'share/routes/normal/dashboard'  //仪表盘
-import myAccount from 'share/routes/normal/my-account'  //我的账本
-import expenseReport from 'share/routes/normal/expense-report'  //报销单
-import request from 'share/routes/normal/request'  //申请单
-import pageCreate from 'share/routes/normal/page-create'  //网页生成器
-import financialManagement from 'share/routes/normal/finacial-management'  //财务管理
-import budget from 'share/routes/normal/budget'  //预算
-import pay from 'share/routes/normal/pay'  //支付
-import contract from 'share/routes/normal/contract'  //合同
-import approve from 'share/routes/normal/approve'  //审批
-import prePayment from 'share/routes/normal/pre-payment'  //预付款
+import dashboard from 'routes/normal/dashboard'  //仪表盘
+import myAccount from 'routes/normal/my-account'  //我的账本
+import expenseReport from 'routes/normal/expense-report'  //报销单
+import request from 'routes/normal/request'  //申请单
+import pageCreate from 'routes/normal/page-create'  //网页生成器
+import financialManagement from 'routes/normal/finacial-management'  //财务管理
+import budget from 'routes/normal/budget'  //预算
+import pay from 'routes/normal/pay'  //支付
+import contract from 'routes/normal/contract'  //合同
+import approve from 'routes/normal/approve'  //审批
+import prePayment from 'routes/normal/pre-payment'  //预付款
 
 //管理员模式下菜单
-import dashboardAdmin from 'share/routes/admin/dashboard-admin'  //管理员仪表盘
-import setting from 'share/routes/admin/setting'  //基础设置
-import basicData from 'share/routes/admin/basic-data' //基础数据
-import budgetSetting from 'share/routes/admin/budget-setting'  //预算设置
-import financeSetting from 'share/routes/admin/finance-setting'  //财务设置
-import approveSetting from 'share/routes/admin/approve-setting'  //审批设置
-import receiptTypeSetting from 'share/routes/admin/receipt-type-setting'  //单据类型设置
-import paySetting from  'share/routes/admin/pay-setting' //支付设置
-import financialAccountSetting from 'share/routes/admin/financial-accounting-setting.js' //财务核算设置
+import dashboardAdmin from 'routes/admin/dashboard-admin'  //管理员仪表盘
+import setting from 'routes/admin/setting'  //基础设置
+import basicData from 'routes/admin/basic-data' //基础数据
+import budgetSetting from 'routes/admin/budget-setting'  //预算设置
+import financeSetting from 'routes/admin/finance-setting'  //财务设置
+import approveSetting from 'routes/admin/approve-setting'  //审批设置
+import receiptTypeSetting from 'routes/admin/receipt-type-setting'  //单据类型设置
+import paySetting from  'routes/admin/pay-setting' //支付设置
+import financialAccountSetting from 'routes/admin/financial-accounting-setting.js' //财务核算设置
 
 /**
  * 项目菜单整体路由配置

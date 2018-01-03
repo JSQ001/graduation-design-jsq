@@ -7,7 +7,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import config from 'config'
 import Chooser from 'components/chooser'
 

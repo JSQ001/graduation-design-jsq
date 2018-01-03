@@ -10,7 +10,7 @@ import httpFetch from 'share/httpFetch'
 import config from 'config'
 import SlideFrame from 'components/slide-frame'
 import BudgetBalanceAmountDetail from 'containers/budget/budget-balance/budget-balance-amount-detail'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 class BudgetBalanceResult extends React.Component {
   constructor(props) {

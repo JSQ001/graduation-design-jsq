@@ -8,7 +8,7 @@ import { Form, Button, Table, message, Badge } from 'antd'
 import config from 'config'
 import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 
 import moment from 'moment'

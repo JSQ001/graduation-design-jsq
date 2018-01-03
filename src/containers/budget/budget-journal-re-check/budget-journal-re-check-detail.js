@@ -11,7 +11,7 @@ import "styles/budget/budget-journal-re-check/budget-journal-re-check-detail.scs
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 
 class BudgetJournalReCheckDetail extends React.Component {

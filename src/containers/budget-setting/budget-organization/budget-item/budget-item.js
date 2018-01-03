@@ -8,7 +8,7 @@ import { Button, Table, Select, Popover, Badge, message } from 'antd';
 import SearchArea from 'components/search-area';
 import "styles/budget-setting/budget-organization/budget-item/budget-item.scss"
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import ListSelector from 'components/list-selector'
 import Importer from 'components/template/importer'
 import budgetService from 'service/budgetService'

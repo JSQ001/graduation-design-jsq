@@ -5,7 +5,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Form, Affix, Button, message } from 'antd'
 
 import PrePaymentCommon  from 'containers/pre-payment/my-pre-payment/pre-payment-common'

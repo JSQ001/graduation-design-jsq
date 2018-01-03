@@ -8,7 +8,7 @@ import { Tabs, Button, Table, Form, Badge, Popconfirm, message } from 'antd'
 import ListSelector from 'components/list-selector'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/setting/announcement-information/announcement-information.scss'
 
 class AnnouncementInformation extends React.Component{

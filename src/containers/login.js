@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import Button from 'antd/lib/button';
 import { Input, message } from 'antd';
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { injectIntl } from 'react-intl';
 import Parallax from 'parallax-js'
 

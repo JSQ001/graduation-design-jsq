@@ -5,7 +5,7 @@ import React from 'react'
 import httpFetch from 'share/httpFetch'
 import config from 'config'
 import { connect } from 'react-redux'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { Form, Table, Button, Icon, Badge, Row, Col, Input, Switch, Dropdown, Menu, Modal, Upload, message, Checkbox, Tooltip } from 'antd';
 const FormItem = Form.Item;
 

@@ -9,7 +9,7 @@ import { Button, Form, Select,Input, Col, Row, Switch, message, Icon, DatePicker
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 
 import 'styles/pay-setting/cash-transaction-class/new-cash-transaction-class.scss'
 const FormItem = Form.Item;

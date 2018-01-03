@@ -6,7 +6,7 @@ import { Alert, Form, Switch, Icon, Input, Select, Button, Row, Col, message, Sp
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { budgetService, setOfBooksService } from 'service'
 
 import 'styles/budget-setting/budget-organization/new-budget-organization.scss'

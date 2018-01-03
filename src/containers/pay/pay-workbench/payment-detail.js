@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { paymentService } from 'service'
 import { Alert, Badge, Table, Card, Icon, Spin } from 'antd'
 

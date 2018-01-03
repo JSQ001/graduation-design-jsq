@@ -9,7 +9,7 @@ import { Form, Input, InputNumber, Row, Col, Button, Alert, message, DatePicker,
 
 import httpFetch from 'share/httpFetch';
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import ListSelector from 'components/list-selector.js'
 
 import "styles/setting/callback-setting/update-callback-setting.scss"

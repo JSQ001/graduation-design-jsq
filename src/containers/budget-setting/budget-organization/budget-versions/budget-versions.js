@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {injectIntl} from 'react-intl';
 import config from 'config'
 import httpFetch from 'share/httpFetch'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import {Button, Table, Badge, Popconfirm, Form, message, DatePicker, Col, Row, Switch, notification, Icon} from 'antd'
 import SearchArea from 'components/search-area'
 import NewBudgetVersion from 'containers/budget-setting/budget-organization/budget-versions/new-budget-versions'

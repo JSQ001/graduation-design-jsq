@@ -6,7 +6,7 @@ import { Button, Table, Badge, Input } from 'antd'
 const Search = Input.Search;
 import httpFetch from 'share/httpFetch'
 import config from 'config'
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import debounce from 'lodash.debounce'
 
 class AgencySetting extends React.Component {

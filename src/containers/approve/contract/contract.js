@@ -2,7 +2,7 @@ import React from 'react'
 import { injectIntl } from 'react-intl'
 import { Form, Tabs, Table, message, Badge } from 'antd'
 const TabPane = Tabs.TabPane;
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import { contractService } from 'service'
 import config from 'config'
 

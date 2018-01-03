@@ -12,7 +12,7 @@ const Option = Select.Option;
 import SearchArea from 'components/search-area.js';
 import config from 'config';
 import httpFetch from 'share/httpFetch';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import 'styles/pay-setting/payment-method/new-payment-method.scss'
 import ListSelector from 'components/list-selector'
 

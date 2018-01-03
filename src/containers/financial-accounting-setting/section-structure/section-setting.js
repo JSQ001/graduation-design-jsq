@@ -9,7 +9,7 @@ import SlideFrame from 'components/slide-frame'
 import NewUpdateSection from 'containers/financial-accounting-setting/section-structure/new-update-section'
 import SectionMappingSet from 'containers/financial-accounting-setting/section-structure/section-mapping-set'
 import SearchArea from 'components/search-area';
-import menuRoute from 'share/menuRoute'
+import menuRoute from 'routes/menuRoute'
 import httpFetch from 'share/httpFetch';
 import config from 'config'
 
