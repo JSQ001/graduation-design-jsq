@@ -3,39 +3,11 @@
  */
 import React from 'react';
 import { Router, Route, browserHistory } from 'react-router'
-
-import Main from 'containers/main'
-import requireAuthentication from 'components/requireAuthentication'
-
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
-const menuIndexUrl = '/main/dashboard';
-const menuAdminIndexUrl = '/main/dashboard-admin';
 
-//非管理员模式下菜单
-import dashboard from 'routes/normal/dashboard'  //仪表盘
-import myAccount from 'routes/normal/my-account'  //我的账本
-import expenseReport from 'routes/normal/expense-report'  //报销单
-import request from 'routes/normal/request'  //申请单
-import pageCreate from 'routes/normal/page-create'  //网页生成器
-import financialManagement from 'routes/normal/finacial-management'  //财务管理
-import budget from 'routes/normal/budget'  //预算
-import pay from 'routes/normal/pay'  //支付
-import contract from 'routes/normal/contract'  //合同
-import approve from 'routes/normal/approve'  //审批
-import prePayment from 'routes/normal/pre-payment'  //预付款
 
-//管理员模式下菜单
-import dashboardAdmin from 'routes/admin/dashboard-admin'  //管理员仪表盘
-import setting from 'routes/admin/setting'  //基础设置
-import basicData from 'routes/admin/basic-data' //基础数据
-import budgetSetting from 'routes/admin/budget-setting'  //预算设置
-import financeSetting from 'routes/admin/finance-setting'  //财务设置
-import approveSetting from 'routes/admin/approve-setting'  //审批设置
-import receiptTypeSetting from 'routes/admin/receipt-type-setting'  //单据类型设置
-import paySetting from  'routes/admin/pay-setting' //支付设置
-import financialAccountSetting from 'routes/admin/financial-accounting-setting.js' //财务核算设置
 
 /**
  * 项目菜单整体路由配置
@@ -51,30 +23,7 @@ import financialAccountSetting from 'routes/admin/financial-accounting-setting.j
  * @params subMenu    二级菜单列表
  * @params children    页面内部所有页面 key : page
  */
-const menu = [
-  dashboard,  //仪表盘
-  myAccount,  //我的账本
-  expenseReport,  //报销单
-  request,  //申请单
-  pageCreate,  //网页生成器
-  financialManagement,  //财务管理
-  budget,  //预算
-  pay,  //支付
-  contract, //合同
-  prePayment, //预付款
-  approve, //审批
-  /** 以下是管理员模式下的菜单 **/
-  dashboardAdmin,  //管理员仪表盘
-  setting,  //基础设置
-  budgetSetting,  //预算设置
-  financeSetting,  //财务设置
-  approveSetting,  //审批设置
-  receiptTypeSetting,  //单据类型设置
-  basicData,      //基础数据
-  paySetting,   //支付设置
-  financialAccountSetting,  //财务核算设置
-
-];
+const menu = []
 
 /**
  * 渲染二级菜单页内的children
@@ -96,6 +45,7 @@ const renderSubItem = (subItem) => {
  * 整个项目的路由配置，配置在项目入口可使每个页面可以单独进入
  * @type {DOM}
  */
+/*
 const ClientRoute = (
   <Route path={menuIndexUrl} component={requireAuthentication(Main)}>
     {menu.map(item =>
@@ -108,6 +58,7 @@ const ClientRoute = (
     }
   </Route>
 );
+*/
 
 function getChildrenList(){
   let result = [];
@@ -143,6 +94,7 @@ function getMenuList(){
  * @param attrName    值名称
  * @return {*}    菜单项
  */
+
 function getMenuItemByAttr(attr, attrName){
   let current = null;
   this.menu.map(menuItem => {
@@ -217,9 +169,9 @@ function getRouteItem(attr, attrName = 'key'){
 }
 
 const menuRoute = {
-  indexUrl: menuIndexUrl,
-  adminIndexUrl: menuAdminIndexUrl,
-  ClientRoute: ClientRoute,
+ /* indexUrl: menuIndexUrl,
+  adminIndexUrl: menuAdminIndexUrl,*/
+  //ClientRoute: ClientRoute,
   MainRoute: <Router history={browserHistory} onUpdate={updateCurrentPage}>{MainRoute}</Router>,
   menu: menu,
   getMenuItemByAttr: getMenuItemByAttr,

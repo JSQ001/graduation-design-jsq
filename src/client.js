@@ -13,6 +13,7 @@ import config from 'config'
 import 'ant-design-pro/dist/ant-design-pro.css';
 import 'babel-polyfill';
 
+
 import configureStore from 'stores';
 const store = configureStore.reduxStore();
 import { LocaleProvider } from 'antd';

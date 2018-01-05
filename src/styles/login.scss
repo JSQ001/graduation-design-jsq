@@ -1,4 +1,16 @@
 .login{
+  background:#eff1ed ;
+ // background:#F0F2F5 ;
+
+  .login-header{
+    height: 50px;
+    width: 100%;
+    background: #181816;
+    text-align: center;
+    color:#ffffff ;
+    line-height:50px;
+    overflow:hidden;
+  }
   width: 100%;
   height: 100%;
   min-width: 1366px;
@@ -6,48 +18,26 @@
   position: relative;
   font-family: PingFangSC-Regular;
   overflow: scroll;
-  .background-img{
-    position: fixed;
-    z-index: -1;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
   .login-area{
     position: absolute;
     width: 20%;
-    top: 20%;
+    top: 15%;
     left: 70%;
     text-align: center;
+
+    .login-validate-code{
+      width: 40px;
+      height: 30px;
+      background: #74ADEA;
+      margin-top: -31px;
+      margin-left: 80px;
+
+    }
+
     .login-logo-text{
       font-size: 32px;
-      color: white;
+      color: #666666;
       margin-bottom: 30px;
-    }
-    input{
-      border-radius: 0;
-      height: 40px;
-      line-height: 40px;
-      margin-bottom: 30px;
-      font-size: 16px;
-      border: none;
-      background: transparent;
-      color: white;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    input:focus{
-      border: none;
-      box-shadow: none;
-      border-bottom: 1px solid white;
-    }
-    .forget-password{
-      font-size: 14px;
-      color: #FFFFFF;
-      text-align: right;
-      margin-top: -10px;
-      width: 100%;
-      text-decoration: underline;
-      cursor: pointer;
     }
     button{
       background: #166CFB;
@@ -60,29 +50,7 @@
       margin-top: 46px;
     }
   }
-  #scene{
-    position: absolute;
-    left: 15%;
-    top: 10%;
-    width: 36%;
-    height: 80%;
-    div{
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      left: 0;
-      img{
-        margin-top: 10vh;
-        width: 100%;
-      }
-    }
-    .img-logo{
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 50px;
-    }
-  }
+
   .description{
     position: absolute;
     right: 40%;

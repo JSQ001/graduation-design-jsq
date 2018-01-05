@@ -1,30 +1,30 @@
 /**
- * Created by zaranengap on 2017/7/3.
+ * Created by jsq on 2018/1/4.
  */
 import React from 'react'
 import { connect } from 'react-redux'
 import Button from 'antd/lib/button';
-import { Input, message } from 'antd';
+import { Input, message ,Select, Form, Icon} from 'antd';
 import httpFetch from 'share/httpFetch'
 import menuRoute from 'routes/menuRoute'
 import { injectIntl } from 'react-intl';
 import Parallax from 'parallax-js'
-
 import 'styles/login.scss'
 
-import BG from 'images/login/BG.jpg'
-import logo from 'images/login/logo.png'
-import layer1 from 'images/login/layer01.png'
-import layer2 from 'images/login/layer02.png'
-import layer3 from 'images/login/layer03.png'
+const FormItem = Form.Item;
+const Option = Select.Option;
 
 class Login extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       loading: false,
-      username: '',
-      password: ''
+      userName: '',
+      password: '',
+      identity:[
+        {key: 'student', label: '学生'},
+        {key: 'teacher', label: '老师'}
+      ]
     }
   }
 
@@ -57,27 +57,98 @@ class Login extends React.Component{
     })
   };
 
+  emitEmpty = () => {
+    this.userNameInput.focus();
+    this.setState({ userName: '' });
+  };
+  onChangeUserName = (e) => {
+    this.setState({ userName: e.target.value });
+  };
+
   render(){
+    const { getFieldDecorator } = this.props.form;
+    const { formatMessage } = this.props.intl;
+    const { identity, userName} = this.state;
+    const formItemLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14, offset: 1 },
+    };
+
+    const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
+
     return (
       <div className="login">
-        <img src={BG} className="background-img"/>
+        <div className="login-header">
+          {formatMessage({id:"login.welcome"})}
+        </div>
         <div className="login-area">
-          <div className="login-logo-text">汇联易管理系统</div>
-          <Input
-            size="large"
-            placeholder={this.props.intl.formatMessage({id: 'login.username'})} //用户名
-            onChange={this.inputUsernameHandler}
-          />
-          <br/>
-          <Input
-            size="large"
-            type="password"
-            placeholder={this.props.intl.formatMessage({id: 'login.password'})}  //密码
-            onChange={this.inputPasswordHandler}
-            onPressEnter={this.login}
-          />
-          <br/>
-          <div className="forget-password">{this.props.intl.formatMessage({id: 'login.forget'})}</div>
+          <div className="login-logo-text">{formatMessage({id:"login.system"})}</div>
+          <Form>
+            <FormItem {...formItemLayout} label={formatMessage({id:'login.identity'})  /*身份*/}>
+            {getFieldDecorator('identity',
+              {
+                initialValue: 'student',
+              }
+            )(
+              <Select
+                className="input-disabled-color" placeholder={ formatMessage({id:"common.please.select"})}
+                onFocus={()=>{}}>
+                {
+                  identity.map((item)=><Option key={item.key}>{item.label}</Option>)
+                }
+              </Select>
+            )}
+            </FormItem>
+            <FormItem {...formItemLayout} label={formatMessage({id:'login.account'})  /*账号*/}>
+            {getFieldDecorator('account',
+              {
+               // initialValue: 'student',
+              }
+             )(
+              <Input
+                //style={{background:'#ffffff'}}
+                placeholder={ formatMessage({id:"common.please.enter"})}
+                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                suffix={suffix}
+                value={userName}
+                onChange={this.onChangeUserName}
+                ref={node => this.userNameInput = node}
+              />
+            )}
+            </FormItem>
+            <FormItem {...formItemLayout} label={formatMessage({id:'login.password'})  /*密码*/}>
+              {getFieldDecorator('password',
+                {
+                  // initialValue: 'student',
+                }
+              )(
+
+                <Input
+                  type='password'
+                   placeholder={ formatMessage({id:"common.please.enter"})}
+                   onChange={this.inputPasswordHandler}
+                   onPressEnter={this.login}
+                />
+              )}
+             {/* <a className="forget-password">{formatMessage({id: 'login.forget'})}</a>*/}
+            </FormItem>
+            <FormItem {...{labelCol: { span: 6 }, wrapperCol: { span: 5, offset: 1 },}}
+              label={formatMessage({id:'login.validateCode'})  /*验证码*/}>
+              {getFieldDecorator('validateCode')(
+                <div>
+                  <Input
+                    style={{width:70}}
+                    placeholder={ formatMessage({id:"common.please.enter"})}
+                    onChange={this.inputPasswordHandler}
+                    onPressEnter={this.login}
+                  />
+                  <div className="login-validate-code"></div>
+                </div>
+              )}
+              {/* <a className="forget-password">{formatMessage({id: 'login.forget'})}</a>*/}
+            </FormItem>
+          </Form>
+
           <br/>
           <Button type="primary" size="large" onClick={this.login} loading={this.state.loading}>登录</Button>
         </div>
@@ -86,17 +157,11 @@ class Login extends React.Component{
           <div className="phone-number">400-829-7878</div>
         </div>
 
-        <div id="scene">
-          <img src={logo} className="img-logo"/>
-          <div data-depth="0.2"><img src={layer1}/></div>
-          <div data-depth="0.4"><img src={layer2}/></div>
-          <div data-depth="0.6"><img src={layer3}/></div>
-        </div>
         <div className="description">
-          <div className="description-title">重新定义报销</div>
-          <div className="description-content">引领差旅报销云时代, 实现自动化管理</div>
+          <div className="description-title">哈哈哈哈哈哈哈哈</div>
+          <div className="description-content">考试无忧</div>
         </div>
-        <div className="footer">CopyRight  汇联易  |  沪ICP备16047366号</div>
+        <div className="footer">CopyRight  JSQ  |  沪ICP备16047366号</div>
 
       </div>
     )
@@ -110,5 +175,6 @@ Login.contextTypes = {
 function mapStateToProps(state) {
   return {}
 }
+const WrappedLogin = Form.create()(Login);
 
-export default connect(mapStateToProps)(injectIntl(Login));
+export default connect(mapStateToProps)(injectIntl(WrappedLogin));
