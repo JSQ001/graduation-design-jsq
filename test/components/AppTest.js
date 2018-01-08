@@ -8,7 +8,7 @@ describe('<App />', function () {
     this.component = shallow(<App />);
   });
 
-  describe('when rendering the component', function () {
+  describe('when rendering the components', function () {
 
     it('should have a className of "index"', function () {
       expect(this.component.hasClass('index')).to.equal(true);

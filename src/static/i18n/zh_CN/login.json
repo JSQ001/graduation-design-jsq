@@ -5,6 +5,9 @@
   "login.account": "账号",
   "login.password": "密码",
   "login.forget": "忘记密码",
-  "login.validateCode": "验证码"
+  "login.validateCode": "验证码",
+  "login.register": "注册",
+  "login.confirmPassword": "确认密码",
+  "register.account.tips": "学号或教师工号"
 
 }

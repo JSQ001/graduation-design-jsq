@@ -6,7 +6,8 @@ import { Router, Route, browserHistory } from 'react-router'
 import configureStore from 'stores';
 import {setCurrentPage} from 'actions/main'
 
-
+import Register from 'containers/register'
+import Admin from 'containers/admin/admin'
 
 
 /**
@@ -23,7 +24,18 @@ import {setCurrentPage} from 'actions/main'
  * @params subMenu    二级菜单列表
  * @params children    页面内部所有页面 key : page
  */
-const menu = []
+
+//注册
+const register  = {
+  key:'register',
+  url:'/main/register',
+  components: Register,
+  parent: 'main',
+};
+
+const menu = [
+  register, //注册
+];
 
 /**
  * 渲染二级菜单页内的children
@@ -41,24 +53,6 @@ const renderSubItem = (subItem) => {
   }
 };
 
-/**
- * 整个项目的路由配置，配置在项目入口可使每个页面可以单独进入
- * @type {DOM}
- */
-/*
-const ClientRoute = (
-  <Route path={menuIndexUrl} component={requireAuthentication(Main)}>
-    {menu.map(item =>
-      item.subMenu ? item.subMenu.map(subItem =>
-        <Route key={subItem.key} path={subItem.url} component={subItem.components}>
-          {renderSubItem(subItem)}
-        </Route>
-      ) :
-        <Route key={item.key} path={item.url} component={item.components}/>)
-    }
-  </Route>
-);
-*/
 
 function getChildrenList(){
   let result = [];
@@ -72,6 +66,13 @@ function getChildrenList(){
   });
   return result;
 }
+
+
+/**
+ * 整个项目的路由配置，配置在项目入口可使每个页面可以单独进入
+ * @type {DOM}
+ */
+const ClientRoute = menu.map(item => <Route key={item.key} path={item.url} component={item.components}/>)
 
 /**
  * 首页菜单的路由配置，配置后台主要的路由层级
@@ -171,7 +172,7 @@ function getRouteItem(attr, attrName = 'key'){
 const menuRoute = {
  /* indexUrl: menuIndexUrl,
   adminIndexUrl: menuAdminIndexUrl,*/
-  //ClientRoute: ClientRoute,
+  ClientRoute: ClientRoute,
   MainRoute: <Router history={browserHistory} onUpdate={updateCurrentPage}>{MainRoute}</Router>,
   menu: menu,
   getMenuItemByAttr: getMenuItemByAttr,

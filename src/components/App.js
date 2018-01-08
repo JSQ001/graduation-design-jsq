@@ -6,7 +6,7 @@ import menuRoute from 'routes/menuRoute'
 
 class AppComponent extends React.Component {
   render() {
-    const routes = [].concat(<Route path="/" component={Login} />);
+    const routes = [].concat(menuRoute.ClientRoute).concat(<Route path="/" component={Login} />);
     return (
       <Router history={browserHistory} routes={routes}/>
     );

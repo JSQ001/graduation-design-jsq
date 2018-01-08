@@ -28,12 +28,26 @@ class Login extends React.Component{
     }
   }
 
+  componentWillMount(){
+    this.validateCode()
+  }
+
   componentDidMount(){
     let scene = document.getElementById('scene');
     let parallaxInstance = new Parallax(scene, {
       calibrateX: true
     });
   }
+
+  //生成四位验证码
+  validateCode = ()=>{
+    let str = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+    let validateCode = "";
+    for(let i=0;i<4;i++){
+      validateCode += str[parseInt(Math.random()*str.length)]
+    }
+    this.setState({validateCode})
+  };
 
   inputUsernameHandler = (evt) => {
     this.setState({username: evt.target.value});
@@ -65,10 +79,18 @@ class Login extends React.Component{
     this.setState({ userName: e.target.value });
   };
 
+  //跳转注册页面
+  handleRegister = ()=>{
+    this.context.router.push(menuRoute.getMenuItemByAttr('register', 'key').url)
+    console.log(menuRoute.getMenuItemByAttr('register', 'key'))
+    console.log(menuRoute.menu)
+
+  };
+
   render(){
     const { getFieldDecorator } = this.props.form;
     const { formatMessage } = this.props.intl;
-    const { identity, userName} = this.state;
+    const { identity, userName, validateCode} = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14, offset: 1 },
@@ -81,6 +103,8 @@ class Login extends React.Component{
         <div className="login-header">
           {formatMessage({id:"login.welcome"})}
         </div>
+        <div className="login-content">怀化学院</div>
+        <div className="login-content-label">在线考试系统</div>
         <div className="login-area">
           <div className="login-logo-text">{formatMessage({id:"login.system"})}</div>
           <Form>
@@ -105,15 +129,15 @@ class Login extends React.Component{
                // initialValue: 'student',
               }
              )(
-              <Input
-                //style={{background:'#ffffff'}}
-                placeholder={ formatMessage({id:"common.please.enter"})}
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                suffix={suffix}
-                value={userName}
-                onChange={this.onChangeUserName}
-                ref={node => this.userNameInput = node}
-              />
+                <Input
+                  //style={{background:'#ffffff'}}
+                  placeholder={ formatMessage({id:"common.please.enter"})}
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  suffix={suffix}
+                  value={userName}
+                  onChange={this.onChangeUserName}
+                  ref={node => this.userNameInput = node}
+                />
             )}
             </FormItem>
             <FormItem {...formItemLayout} label={formatMessage({id:'login.password'})  /*密码*/}>
@@ -122,45 +146,39 @@ class Login extends React.Component{
                   // initialValue: 'student',
                 }
               )(
-
-                <Input
-                  type='password'
-                   placeholder={ formatMessage({id:"common.please.enter"})}
-                   onChange={this.inputPasswordHandler}
-                   onPressEnter={this.login}
-                />
+                  <Input
+                    type='password'
+                    placeholder={ formatMessage({id:"common.please.enter"})}
+                    onChange={this.inputPasswordHandler}
+                    onPressEnter={this.login}
+                  />
               )}
-             {/* <a className="forget-password">{formatMessage({id: 'login.forget'})}</a>*/}
             </FormItem>
             <FormItem {...{labelCol: { span: 6 }, wrapperCol: { span: 5, offset: 1 },}}
               label={formatMessage({id:'login.validateCode'})  /*验证码*/}>
               {getFieldDecorator('validateCode')(
                 <div>
                   <Input
-                    style={{width:70}}
+                    style={{width:73}}
                     placeholder={ formatMessage({id:"common.please.enter"})}
                     onChange={this.inputPasswordHandler}
                     onPressEnter={this.login}
                   />
-                  <div className="login-validate-code"></div>
+                  <div className="login-validate-code" onClick={this.validateCode}>{validateCode}</div>
                 </div>
               )}
               {/* <a className="forget-password">{formatMessage({id: 'login.forget'})}</a>*/}
             </FormItem>
-          </Form>
 
-          <br/>
-          <Button type="primary" size="large" onClick={this.login} loading={this.state.loading}>登录</Button>
+            <Button type="primary" onClick={this.login} loading={this.state.loading}>登录</Button>
+            <a onClick={this.handleRegister} className="login-register">{formatMessage({id: 'login.register'})}</a>{/*注册*/}
+            <a className="forget-password">{formatMessage({id: 'login.forget'})}</a>
+          </Form>
         </div>
-        <div className="message">
+      {/*  <div className="message">
           <div className="no-account">还没有账号？请联系客服</div>
           <div className="phone-number">400-829-7878</div>
-        </div>
-
-        <div className="description">
-          <div className="description-title">哈哈哈哈哈哈哈哈</div>
-          <div className="description-content">考试无忧</div>
-        </div>
+        </div>*/}
         <div className="footer">CopyRight  JSQ  |  沪ICP备16047366号</div>
 
       </div>
