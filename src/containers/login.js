@@ -58,6 +58,7 @@ class Login extends React.Component{
   };
 
   login = () => {
+    this.context.router.push(menuRoute.getMenuItemByAttr('register', 'key').url)
     this.setState({loading: true});
     httpFetch.login(this.state.username, this.state.password).then(()=>{
       this.setState({loading: false});

@@ -33,6 +33,12 @@ const register  = {
   parent: 'main',
 };
 
+//主页面
+const userCenter = {
+  key: 'user-center',
+  url: '/main/user-center'
+};
+
 const menu = [
   register, //注册
 ];
