@@ -214,6 +214,7 @@ class WebpackBaseConfig {
           actions: `${this.srcPathAbsolute}/actions/`,
           components: `${this.srcPathAbsolute}/components/`,
           config: `${this.srcPathAbsolute}/config/${this.env}.js`,
+          static: `${this.srcPathAbsolute}/static/`,
           images: `${this.srcPathAbsolute}/images/`,
           stores: `${this.srcPathAbsolute}/stores/`,
           styles: `${this.srcPathAbsolute}/styles/`,

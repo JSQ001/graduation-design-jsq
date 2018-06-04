@@ -4,7 +4,7 @@
 import axios from 'axios'
 import config from 'config'
 import configureStore from 'stores'
-import {setUser,setCompany,setProfile,setUserOrganization,setCompanyConfiguration} from 'actions/login'
+import {setUser,setRole} from 'actions/login'
 import { message } from 'antd'
 
 /**
@@ -18,6 +18,7 @@ import { message } from 'antd'
  * @return {*}
  */
 function checkStatus(response, needRefresh, url, params, header, method) {
+  console.log(response)
   if (response.status >= 200 && response.status < 300) {
     return Promise.resolve(response);
   } else {
@@ -46,12 +47,12 @@ const httpFetch = {
    * @return {Promise.<TResult>}
    */
   refreshToken: function(){
-    let refreshParams = `client_id=ArtemisApp&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${JSON.parse(localStorage.getItem('hly.token')).refresh_token}&grant_type=refresh_token`;
+    let refreshParams = `client_id=client_1&client_secret=nLCnwdIhizWbykHyuZM6TpQDd7KwK9IXDK8LGsa7SOW&refresh_token=${JSON.parse(localStorage.getItem('jsq.token')).refresh_token}&grant_type=refresh_token`;
     return axios(encodeURI(`${config.baseUrl}/oauth/token?${refreshParams}`),{
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('hly.token')).access_token
+        'Authorization': 'Bearer ' + JSON.parse(localStorage.getItem('jsq.token')).access_token
       }
     }).then(checkStatus).catch(e => {
       message.error(e.response.data.error_description);
@@ -62,42 +63,14 @@ const httpFetch = {
       let token = response.data;
       expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
       token.expires_at = expiredAt.getTime();
-      localStorage.setItem('hly.token', JSON.stringify(token));
+      localStorage.setItem('jsq.token', JSON.stringify(token));
 
-    })
-  },
-
-  /**
-   * 得到用户信息
-   * @return {*|Promise.<TResult>}
-   */
-  getInfo: function(){
-    return this.getUser().then(()=>{
-      return Promise.all([this.getCompany(),this.getProfile(),this.getCompanyConfiguration()])
     })
   },
 
   getUser: function(){
     return this.get(`${config.baseUrl}/api/account`,{}).then((response)=>{
       configureStore.store.dispatch(setUser(response.data));
-    })
-  },
-
-  getCompany: function(){
-    return this.get(`${config.baseUrl}/api/my/companies`,{}).then((response)=>{
-      configureStore.store.dispatch(setCompany(response.data));
-    })
-  },
-
-  getCompanyConfiguration: function(){
-    return this.get(`${config.baseUrl}/api/company/configurations/user`).then(response => {
-      configureStore.store.dispatch(setCompanyConfiguration(response.data));
-    })
-  },
-
-  getProfile: function(){
-    return this.get(`${config.baseUrl}/api/function/profiles`,{}).then((response)=>{
-      configureStore.store.dispatch(setProfile(response.data));
     })
   },
 
@@ -109,18 +82,20 @@ const httpFetch = {
    */
   login: function(username, password){
     return axios({
-      url: encodeURI(`${config.baseUrl}/oauth/token?scope&read write&grant_type=password&username=${username}&password=${password}`),
+      url: encodeURI(`${config.baseUrl}/oauth/token?scope=select&grant_type=password&client_id=client_2&client_secret=123456&username=${username}&password=${password}`),
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic QXJ0ZW1pc0FwcDpuTENud2RJaGl6V2J5a0h5dVpNNlRwUURkN0t3SzlJWERLOExHc2E3U09X'
+       // 'Authorization': 'Basic QXJ0ZW1pc0FwcDpuTENud2RJaGl6V2J5a0h5dVpNNlRwUURkN0t3SzlJWERLOExHc2E3U09X'
       }
     }).then(checkStatus).then((response)=>{
       let expiredAt = new Date();
       let token = response.data;
-      expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
-      token.expires_at = expiredAt.getTime();
-      localStorage.setItem('hly.token', JSON.stringify(token));
+      /*expiredAt.setSeconds(expiredAt.getSeconds() + token.expires_in);
+      token.expires_at = expiredAt.getTime();*/
+      console.log(JSON.stringify(token))
+
+      localStorage.setItem('jsq.token', JSON.stringify(token));
     });
   }
 };
@@ -130,7 +105,7 @@ methodList.map(method => {
   httpFetch[method] = function(url, params ,header, options = {}){
     if(!header)
       header = {};
-    header.Authorization = "Bearer " + JSON.parse(localStorage.getItem('hly.token')).access_token;
+    header.Authorization = "Bearer " + JSON.parse(localStorage.getItem('jsq.token')).access_token;
     let option = {
       url: url,
       method: method.toUpperCase(),

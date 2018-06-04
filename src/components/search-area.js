@@ -196,16 +196,10 @@ class SearchArea extends React.Component{
 
   //给select增加options
   getOptions = (item) => {
+    console.log(item)
     if(item.options.length === 0 || (item.options.length === 1 && item.options[0].temp)){
       let url = item.getUrl;
-      if(item.method === 'get' && item.getParams){
-        url += '?';
-        let keys = Object.keys(item.getParams);
-        keys.map(paramName => {
-          url += `&${paramName}=${item.getParams[paramName]}`
-        })
-      }else {
-        httpFetch[item.method](url, item.getParams).then((res) => {
+      httpFetch[item.method](url, item.getParams).then((res) => {
           let options = [];
           res.data.map(data => {
             options.push({label: item.renderOption ? item.renderOption(data) : data[item.labelKey], value: data[item.valueKey], data: data})
@@ -223,7 +217,6 @@ class SearchArea extends React.Component{
           });
           this.setState({ searchForm });
         })
-      }
     }
   };
 
@@ -270,6 +263,7 @@ class SearchArea extends React.Component{
     }
 
     if( (key !== undefined && key !== '') || key === undefined){
+      alert(1)
       httpFetch[item.method](url, params).then((res) => {
         let options = [];
         res.data.map(data => {

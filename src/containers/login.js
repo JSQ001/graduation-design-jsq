@@ -9,27 +9,32 @@ import httpFetch from 'share/httpFetch'
 import menuRoute from 'routes/menuRoute'
 import { injectIntl } from 'react-intl';
 import Parallax from 'parallax-js'
+import {setRole} from 'actions/login'
 import 'styles/login.scss'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
-
+import configureStore from 'stores'
 class Login extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       loading: false,
-      userName: '',
+      userNumber: '',
       password: '',
       identity:[
         {key: 'student', label: '学生'},
-        {key: 'teacher', label: '老师'}
+        {key: 'teacher', label: '老师'},
+        {key: 'admin', label: '管理员'}
       ]
     }
   }
 
   componentWillMount(){
     this.validateCode()
+    console.log(this.state.userNumber==="")
+    if(this.state.userNumber!=="")
+      this.props.form.setFieldsValue({"userNumber": this.state.userNumber})
   }
 
   componentDidMount(){
@@ -58,13 +63,19 @@ class Login extends React.Component{
   };
 
   login = () => {
-    this.context.router.push(menuRoute.getMenuItemByAttr('register', 'key').url)
     this.setState({loading: true});
-    httpFetch.login(this.state.username, this.state.password).then(()=>{
+    let role = this.props.form.getFieldValue("identity");
+    httpFetch.login(this.state.userNumber, this.state.password).then(()=>{
       this.setState({loading: false});
-      this.context.router.push(menuRoute.indexUrl);
+      localStorage.setItem("role",role);
+      httpFetch.getUser().then(()=>{
+        this.context.router.push(menuRoute.indexUrl);
+        console.log(configureStore.store.getState().login.user)
+        console.log(configureStore.store.getState().login.role)
+      });
     }).catch((err)=>{
       this.setState({loading: false});
+      console.log(err)
       if(err.response.status === 401 || err.response.status === 400)
         message.error(this.props.intl.formatMessage({id: 'login.wrong'})); //用户名或密码错误，请重新输入:)
       else
@@ -74,10 +85,10 @@ class Login extends React.Component{
 
   emitEmpty = () => {
     this.userNameInput.focus();
-    this.setState({ userName: '' });
+    this.setState({ userNumber: '' });
   };
   onChangeUserName = (e) => {
-    this.setState({ userName: e.target.value });
+    this.setState({ userNumber: e.target.value });
   };
 
   //跳转注册页面
@@ -104,7 +115,7 @@ class Login extends React.Component{
         <div className="login-header">
           {formatMessage({id:"login.welcome"})}
         </div>
-        <div className="login-content">怀化学院</div>
+        <div className="login-content">XXXX</div>
         <div className="login-content-label">在线考试系统</div>
         <div className="login-area">
           <div className="login-logo-text">{formatMessage({id:"login.system"})}</div>
@@ -125,7 +136,7 @@ class Login extends React.Component{
             )}
             </FormItem>
             <FormItem {...formItemLayout} label={formatMessage({id:'login.account'})  /*账号*/}>
-            {getFieldDecorator('account',
+            {getFieldDecorator('userNumber',
               {
                // initialValue: 'student',
               }
@@ -135,7 +146,7 @@ class Login extends React.Component{
                   placeholder={ formatMessage({id:"common.please.enter"})}
                   prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                   suffix={suffix}
-                  value={userName}
+                  //value={userName}
                   onChange={this.onChangeUserName}
                   ref={node => this.userNameInput = node}
                 />

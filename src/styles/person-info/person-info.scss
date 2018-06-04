@@ -1,0 +1,36 @@
+.person-info{
+  background: #F3F3F3;
+ .person-info-picture{
+   width: 100px;
+   height: 100px;
+   margin-left:20px;
+   margin-top: -65px;
+ }
+  .person-info-detail{
+    position: relative;
+    margin-left: 20px;
+    margin-top: 30px;
+    display: inline-block;
+    .detail-item-left{
+      font-size: 12px;
+      color: #afb8b5;
+      width: 140px;
+      display: inline-block;
+    }
+    .detail-item-center{
+      font-size: 12px;
+      color: #afb8b5;
+      width: 140px;
+      margin-left: 60px;
+      margin-top: 10px;
+      display: inline-block;
+    }
+    .detail-item-right{
+      font-size: 12px;
+      color: #afb8b5;
+      margin-left: 60px;
+      display: inline-block;
+    }
+  }
+
+}

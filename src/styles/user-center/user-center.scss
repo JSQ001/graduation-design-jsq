@@ -1,0 +1,40 @@
+.user-center{
+  background: #F3F3F3;
+  height: 100vh;
+  .user-center-head{
+    padding-left: 260px;
+    background: black;
+    height: 55px;
+    line-height: 55px;
+    color: #ffffff;
+
+    .head-user-tips{
+      color: #FF9900;
+    }
+
+    .head-tips{
+      margin-left: 300px;
+      .head-tips-item{
+        margin-left: 10px;
+      }
+    }
+
+  }
+
+  .user-center-menu{
+    margin-top: 7px;
+    padding-left: 280px;
+    .item-picture{
+      display: inline-block;
+      width: 100px;
+      margin-left: 15px;
+      text-align: center;
+    }
+  }
+
+  .user-center-content{
+    width: 56vw;
+    margin-left: 308px;
+    margin-top: 50px;
+  }
+}

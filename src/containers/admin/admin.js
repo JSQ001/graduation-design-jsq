@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { injectIntl } from 'react-intl';
 import { Button, Table} from 'antd'
 import SearchArea from 'components/search-area';
-import budgetService from 'service/budgetService'
 import config from 'config'
 import menuRoute from 'routes/menuRoute'
 
@@ -93,7 +92,7 @@ class BudgetControlRules extends React.Component {
   };
 
   //获取控制规则数据
-  getList(){
+/*  getList(){
     let params = Object.assign({}, this.state.searchParams);
     for(let paramsName in params){
       !params[paramsName] && delete params[paramsName];
@@ -122,7 +121,7 @@ class BudgetControlRules extends React.Component {
         })
       }
     })
-  }
+  }*/
 
   //分页点击
   onChangePager = (pagination,filters, sorter) =>{
