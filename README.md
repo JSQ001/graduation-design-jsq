@@ -1,8 +1,8 @@
-# 汇联易PC中控重构
+#在线考试系统，高校在线考试，学生、专业课程管理
 
 > huilianyi-refactoring
 
-  git clone https://gitlab.huilianyi.com/huilianyi/huilianyi-refactoring.git -b develop
+  git clone https://github.com/JSQ001/graduation-design-jsq.git -b develop
 
 > 环境配置
 
